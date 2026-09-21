@@ -55,6 +55,17 @@ mutate "ngân sách ngắt dòng của hình thoi lệch 10px" layout/size.go 'r
 mutate "Fmt làm tròn 3 chữ số thay vì 2" num/num.go "'f', 2, 64" "'f', 3, 64"
 mutate "Rnd làm tròn xuống thay vì lên" num/num.go 'math.Ceil(v/2.0)' 'math.Floor(v/2.0)'
 
+# source/markdown
+mutate "bỏ chuẩn hóa NFC" source/text.go 'return norm.NFC.String(b.String())' 'return b.String()'
+mutate "gạch đứng có escape vẫn ngăn cột" source/text.go "if c == '|' && !prevEscape {" "if c == '|' {"
+mutate "không gỡ escape markdown" source/text.go 'if r[i] == 0x5c && i+1 < len(r) && strings.ContainsRune(mdEscapable, r[i+1]) {' 'if false {'
+mutate "chỉ cắt dòng theo \\n, bỏ CRLF" source/text.go "case 0x0d:" "case 0x2400:"
+mutate "không hạ chữ thường cột type" source/markdown.go 'Type:   strings.ToLower(cells[1]),' 'Type:   cells[1],'
+mutate "Idx dùng số dòng thay vì thứ tự đọc được" source/markdown.go 'Idx:    len(rows),' 'Idx:    i,'
+mutate "khóa metadata cũng bị gỡ escape" source/markdown.go 'meta[strings.TrimSpace(k)] = unesc(strings.TrimSpace(v))' 'meta[unesc(strings.TrimSpace(k))] = unesc(strings.TrimSpace(v))'
+mutate "thẻ br phân biệt hoa thường" source/text.go 'low := strings.ToLower(s)' 'low := s'
+mutate "heading cấp hai cũng tính là tiêu đề" source/markdown.go 'if len(trimmed) == len(rest) {' 'if false {'
+
 echo
 echo "bắt được $caught, bỏ lọt $missed"
 [ "$missed" -eq 0 ]

@@ -31,7 +31,7 @@ func splitLines(s string) []string {
 		c := r[i]
 		n := 1
 		switch c {
-		case '\r':
+		case 0x0d:
 			if i+1 < len(r) && r[i+1] == '\n' {
 				n = 2
 			}
@@ -85,7 +85,7 @@ func unescape(s string) string {
 	var b strings.Builder
 	r := []rune(s)
 	for i := 0; i < len(r); i++ {
-		if r[i] == '\\' && i+1 < len(r) && strings.ContainsRune(mdEscapable, r[i+1]) {
+		if r[i] == 0x5c && i+1 < len(r) && strings.ContainsRune(mdEscapable, r[i+1]) {
 			b.WriteRune(r[i+1])
 			i++
 			continue
