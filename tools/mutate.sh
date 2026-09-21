@@ -8,6 +8,9 @@
 # và điều đó im lặng cho tới lúc bản port sai thật. Chạy lại sau mỗi lần thêm
 # module Go mới.
 #
+# Chuỗi đích nên tránh khoảng trắng canh lề: gofmt canh lại cột mỗi khi một
+# struct có thêm trường dài hơn, và đột biến sẽ không còn khớp.
+#
 # Khôi phục bằng git chứ không bằng sed ngược: sed ngược hỏng khi chuỗi thay thế
 # chứa chính chuỗi bị thay, và khi chuỗi đích xuất hiện ở nhiều chỗ.
 set -e
@@ -60,8 +63,8 @@ mutate "bỏ chuẩn hóa NFC" source/text.go 'return norm.NFC.String(b.String()
 mutate "gạch đứng có escape vẫn ngăn cột" source/text.go "if c == '|' && !prevEscape {" "if c == '|' {"
 mutate "không gỡ escape markdown" source/text.go 'if r[i] == 0x5c && i+1 < len(r) && strings.ContainsRune(mdEscapable, r[i+1]) {' 'if false {'
 mutate "chỉ cắt dòng theo \\n, bỏ CRLF" source/text.go "case 0x0d:" "case 0x2400:"
-mutate "không hạ chữ thường cột type" source/markdown.go 'Type:   strings.ToLower(cells[1]),' 'Type:   cells[1],'
-mutate "Idx dùng số dòng thay vì thứ tự đọc được" source/markdown.go 'Idx:    len(rows),' 'Idx:    i,'
+mutate "không hạ chữ thường cột type" source/markdown.go 'strings.ToLower(cells[1])' 'cells[1]'
+mutate "Idx dùng số dòng thay vì thứ tự đọc được" source/markdown.go 'len(rows),' 'i,'
 mutate "khóa metadata cũng bị gỡ escape" source/markdown.go 'meta[strings.TrimSpace(k)] = unesc(strings.TrimSpace(v))' 'meta[unesc(strings.TrimSpace(k))] = unesc(strings.TrimSpace(v))'
 mutate "thẻ br phân biệt hoa thường" source/text.go 'low := strings.ToLower(s)' 'low := s'
 mutate "heading cấp hai cũng tính là tiêu đề" source/markdown.go 'if len(trimmed) == len(rest) {' 'if false {'
