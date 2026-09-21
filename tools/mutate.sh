@@ -66,6 +66,26 @@ mutate "khóa metadata cũng bị gỡ escape" source/markdown.go 'meta[strings.
 mutate "thẻ br phân biệt hoa thường" source/text.go 'low := strings.ToLower(s)' 'low := s'
 mutate "heading cấp hai cũng tính là tiêu đề" source/markdown.go 'if len(trimmed) == len(rest) {' 'if false {'
 
+# schema và validate
+mutate "đảo thứ tự kiểm from và to" schema/schema.go '{Key: "from", Required: true, Note: edgeNote},
+			{Key: "to", Required: true, Note: edgeNote},' '{Key: "to", Required: true, Note: edgeNote},
+			{Key: "from", Required: true, Note: edgeNote},'
+mutate "attach của text thành bắt buộc" schema/schema.go '{Key: "attach", Note: attachNote, SameLane: true}' '{Key: "attach", Required: true, Note: attachNote, SameLane: true}'
+mutate "edge không nhận style dashed" schema/schema.go 'StyleValues: []string{"highlight", "dashed"}' 'StyleValues: []string{"highlight"}'
+mutate "id trùng thì dòng sau đè dòng trước" validate/validate.go 'if j, dup := v.byID[r.ID]; dup {' 'if j, dup := v.byID[r.ID]; false {'
+mutate "dòng đánh dấu phần còn lại cũng cần parent" validate/validate.go 'case !isMarker(r):' 'case true:'
+mutate "styleList không bỏ giá trị trùng" validate/validate.go 'if !dup {' 'if true {'
+mutate "vị trí lấy theo dòng đầu thay vì dòng cuối" validate/validate.go 'if r.ID != "" {
+			pos[r.ID] = i
+		}' 'if _, seen := pos[r.ID]; r.ID != "" && !seen {
+			pos[r.ID] = i
+		}'
+mutate "không bỏ qua db và text khi xét cạnh liền sau" validate/validate.go 'for p < len(v.rows) && schema.AttachTypes[v.rows[p].Type] && v.rows[p].Meta["attach"] == r.ID {' 'for false {'
+mutate "condition chỉ cần một cạnh ra" validate/validate.go 'r.Type == "condition" && len(es) < 2' 'r.Type == "condition" && len(es) < 1'
+mutate "không cảnh báo cạnh condition thiếu nhãn" validate/validate.go 'if e.Text() == "" {' 'if false {'
+mutate "quên bỏ qua dòng trùng id khi xét đồ thị" validate/validate.go 'if j, ok := v.byID[r.ID]; !ok || j != i {' 'if j, ok := v.byID[r.ID]; false || j == -1 && !ok {'
+mutate "thông điệp dùng %q thay vì nháy thẳng" validate/validate.go 'fmt.Sprintf("metadata \"%s\" không dùng cho type %s, bị bỏ qua", k, r.Type)' 'fmt.Sprintf("metadata %q không dùng cho type %s, bị bỏ qua", k, r.Type)'
+
 echo
 echo "bắt được $caught, bỏ lọt $missed"
 [ "$missed" -eq 0 ]
