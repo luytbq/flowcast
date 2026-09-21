@@ -1,0 +1,1 @@
+# Xuống dòng kiểu CR cũ| id | type | parent | content | metadata ||---|---|---|---|---|| A | lane | | Lane A | || A-1 | start | A | Vào | || E1 | edge | | nhãn | from=A-1; to=A-2 || A-2 | end | A | Xong | |
