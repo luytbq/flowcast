@@ -82,15 +82,21 @@
  },
  "issues": [],
  "place": {
+  "cols": {
+   "0": [
+    0,
+    1
+   ]
+  },
   "items": {
    "A-1": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 0
    },
    "A-2": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 1
@@ -102,7 +108,7 @@
     "row": 1
    },
    "A-4": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 2
@@ -111,11 +117,13 @@
   "lanes": [
    "A"
   ],
+  "nrows": 3,
   "topo": [
    "A-1",
    "A-2",
    "A-4"
-  ]
+  ],
+  "warnings": []
  },
  "route": {
   "edges": {

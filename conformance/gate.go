@@ -60,12 +60,29 @@ type TextStage struct {
 	Edges map[string]TextLabel `json:"edges"`
 }
 
+type PlaceItem struct {
+	Lane   int    `json:"lane"`
+	Row    int    `json:"row"`
+	Col    int    `json:"col"`
+	Attach string `json:"attach"`
+}
+
+type PlaceStage struct {
+	Lanes    []string             `json:"lanes"`
+	Topo     []string             `json:"topo"`
+	NRows    int                  `json:"nrows"`
+	Cols     map[string][]int     `json:"cols"`
+	Warnings []string             `json:"warnings"`
+	Items    map[string]PlaceItem `json:"items"`
+}
+
 // Dump là một file conformance/dumps/<case>.json.
 type Dump struct {
 	Name   string      // tên case, không có đuôi
 	Table  TableStage  `json:"table"`
 	Text   *TextStage  `json:"text"`
 	Issues []DumpIssue `json:"issues"`
+	Place  *PlaceStage `json:"place"`
 }
 
 // CaseFile trả về đường dẫn bảng đầu vào của một case.

@@ -149,27 +149,32 @@
   }
  ],
  "place": {
+  "cols": {
+   "0": [
+    0
+   ]
+  },
   "items": {
    "A-1": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 0
    },
    "A-2": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 1
    },
    "A-3": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 2
    },
    "A-4": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 3
@@ -178,11 +183,15 @@
   "lanes": [
    "A"
   ],
+  "nrows": 4,
   "topo": [
    "A-1",
    "A-2",
    "A-3",
    "A-4"
+  ],
+  "warnings": [
+   "có vòng lặp chưa đánh dấu back=true, xếp theo thứ tự bảng: A-2, A-3, A-4"
   ]
  },
  "route": {

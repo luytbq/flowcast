@@ -52,15 +52,20 @@
  },
  "issues": [],
  "place": {
+  "cols": {
+   "0": [
+    0
+   ]
+  },
   "items": {
    "A-1": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 0
    },
    "A-2": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 1
@@ -69,10 +74,12 @@
   "lanes": [
    "A"
   ],
+  "nrows": 2,
   "topo": [
    "A-1",
    "A-2"
-  ]
+  ],
+  "warnings": []
  },
  "route": {
   "edges": {

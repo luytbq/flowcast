@@ -108,11 +108,20 @@ def stage_issues(table, lay):
 
 
 def stage_place(table, lay):
-    """Lưới lane, row, col trước khi có pixel. Chốt module layout/place."""
+    """Lưới lane, row, col trước khi có pixel. Chốt module layout/place.
+
+    warnings lấy từ một lần chạy riêng chỉ gồm place(), vì danh sách cảnh báo
+    của lay còn lẫn cảnh báo của các pha sau.
+    """
+    alone = ft.Layout(table.rows, lay.cfg, lay.tm)
+    alone.place()
     return {
         'lanes': [l.id for l in lay.lanes],
         'topo': list(lay.topo_order),
-        'items': {it.id: {'lane': it.lane, 'row': it.row, 'col': it.col, 'attach': it.attach}
+        'nrows': lay.nrows,
+        'cols': {str(lane): lay.cols[lane] for lane in range(len(lay.lanes))},
+        'warnings': list(alone.warnings),
+        'items': {it.id: {'lane': it.lane, 'row': it.row, 'col': it.col, 'attach': it.attach or ''}
                   for it in lay.items.values()},
     }
 

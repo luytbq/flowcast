@@ -192,39 +192,47 @@
  },
  "issues": [],
  "place": {
+  "cols": {
+   "0": [
+    0
+   ],
+   "1": [
+    0
+   ]
+  },
   "items": {
    "A-1": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 0
    },
    "A-2": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 1
    },
    "A-3": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 0,
     "row": 2
    },
    "B-1": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 1,
     "row": 2
    },
    "B-2": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 1,
     "row": 3
    },
    "B-3": {
-    "attach": null,
+    "attach": "",
     "col": 0,
     "lane": 1,
     "row": 4
@@ -234,6 +242,7 @@
    "A",
    "B"
   ],
+  "nrows": 5,
   "topo": [
    "A-1",
    "A-2",
@@ -241,7 +250,8 @@
    "B-1",
    "B-2",
    "B-3"
-  ]
+  ],
+  "warnings": []
  },
  "route": {
   "edges": {
