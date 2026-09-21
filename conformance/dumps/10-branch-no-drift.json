@@ -468,6 +468,7 @@
   ]
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -645,6 +646,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Nhánh phụ không rời lane, dồn phải rồi trái"
  },
  "text": {

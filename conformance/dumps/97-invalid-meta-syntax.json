@@ -1,14 +1,21 @@
 {
  "issues": [
   {
-   "id": "A-2",
+   "id": "E1",
    "level": "error",
-   "loc": "dòng 8",
-   "msg": "condition chỉ có 1 cạnh ra, cần ít nhất 2"
+   "loc": "dòng 7",
+   "msg": "metadata sai cú pháp: \"back\" (cần key=value)"
   }
  ],
  "table": {
-  "issues": [],
+  "issues": [
+   {
+    "id": "E1",
+    "level": "error",
+    "loc": "dòng 7",
+    "msg": "metadata sai cú pháp: \"back\" (cần key=value)"
+   }
+  ],
   "rows": [
    {
     "id": "A",
@@ -50,40 +57,15 @@
     "id": "A-2",
     "idx": 3,
     "lines": [
-     "Rẽ?"
-    ],
-    "loc": "dòng 8",
-    "meta": {},
-    "parent": "A",
-    "type": "condition"
-   },
-   {
-    "id": "E2",
-    "idx": 4,
-    "lines": [
-     "Có"
-    ],
-    "loc": "dòng 9",
-    "meta": {
-     "from": "A-2",
-     "to": "A-3"
-    },
-    "parent": "",
-    "type": "edge"
-   },
-   {
-    "id": "A-3",
-    "idx": 5,
-    "lines": [
      "Xong"
     ],
-    "loc": "dòng 10",
+    "loc": "dòng 8",
     "meta": {},
     "parent": "A",
     "type": "end"
    }
   ],
   "source": "markdown",
-  "title": "Condition chỉ có một cạnh ra"
+  "title": "Metadata sai cú pháp"
  }
 }

@@ -163,6 +163,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -263,6 +264,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Một node có hai bảng dữ liệu"
  },
  "text": {

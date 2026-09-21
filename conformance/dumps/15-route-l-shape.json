@@ -241,6 +241,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -376,6 +377,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Đi dây chữ L ra mặt bên rồi xuống"
  },
  "text": {

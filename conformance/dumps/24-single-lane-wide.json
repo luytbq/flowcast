@@ -367,6 +367,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -555,6 +556,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Một lane, nhiều nhánh, gần với flowchart"
  },
  "text": {

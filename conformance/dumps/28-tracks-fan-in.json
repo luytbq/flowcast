@@ -838,6 +838,7 @@
   ]
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -1179,6 +1180,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Năm cạnh dài khác đích cùng vượt một máng"
  },
  "text": {

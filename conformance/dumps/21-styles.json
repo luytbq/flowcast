@@ -163,6 +163,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -266,6 +267,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Tô nhấn và nét đứt"
  },
  "text": {

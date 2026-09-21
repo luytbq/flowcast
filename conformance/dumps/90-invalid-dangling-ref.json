@@ -8,6 +8,7 @@
   }
  ],
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -46,6 +47,7 @@
     "type": "edge"
    }
   ],
+  "source": "markdown",
   "title": "Cạnh trỏ tới id không tồn tại"
  }
 }

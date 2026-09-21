@@ -14,6 +14,7 @@
   }
  ],
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -74,6 +75,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "db thiếu attach"
  }
 }

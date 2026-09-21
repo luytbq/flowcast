@@ -190,6 +190,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -289,6 +290,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Condition hai nhánh"
  },
  "text": {

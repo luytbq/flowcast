@@ -142,6 +142,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -216,6 +217,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Đầu vào ở dạng NFD, dấu tách rời chữ"
  },
  "text": {

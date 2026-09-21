@@ -238,6 +238,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -362,6 +363,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Condition ba nhánh, không nhận mũi tên ngang"
  },
  "text": {

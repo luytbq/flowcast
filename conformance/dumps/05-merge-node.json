@@ -328,6 +328,7 @@
   ]
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -466,6 +467,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Hợp nhánh về cột của node rẽ"
  },
  "text": {

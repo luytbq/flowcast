@@ -388,6 +388,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -598,6 +599,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Nhiều cạnh khác đích chạy song song trong một máng"
  },
  "text": {

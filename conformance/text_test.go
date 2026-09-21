@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/luytbq/flowcast/layout"
+	"github.com/luytbq/flowcast/model"
 	"github.com/luytbq/flowcast/num"
 	"github.com/luytbq/flowcast/text"
 )
@@ -104,6 +105,21 @@ func assertLines(t *testing.T, id string, got, want []string) {
 	for i := range got {
 		if got[i] != want[i] {
 			t.Errorf("%s: dòng %d = %q, cần %q", id, i, got[i], want[i])
+		}
+	}
+}
+
+func assertIssues(t *testing.T, got []model.Issue, want []DumpIssue) {
+	t.Helper()
+	if len(got) != len(want) {
+		t.Errorf("có %d phát hiện, cần %d:\n  Go %v\n  Py %v", len(got), len(want), got, want)
+		return
+	}
+	for i := range got {
+		g, w := got[i], want[i]
+		if g.Level != w.Level || g.Loc.String() != w.Loc || g.ID != w.ID || g.Msg != w.Msg {
+			t.Errorf("phát hiện %d:\n  Go %s %s [%s] %s\n  Py %s %s [%s] %s",
+				i, g.Level, g.Loc.String(), g.ID, g.Msg, w.Level, w.Loc, w.ID, w.Msg)
 		}
 	}
 }

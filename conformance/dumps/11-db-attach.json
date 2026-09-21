@@ -151,6 +151,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -238,6 +239,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Bảng dữ liệu bám node"
  },
  "text": {

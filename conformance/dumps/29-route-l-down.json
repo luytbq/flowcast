@@ -367,6 +367,7 @@
   ]
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -542,6 +543,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Ra mặt bên rồi xuống đỉnh node đích"
  },
  "text": {

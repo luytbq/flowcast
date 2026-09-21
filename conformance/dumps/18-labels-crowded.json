@@ -308,6 +308,7 @@
   ]
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -457,6 +458,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Nhiều nhãn cạnh tranh chỗ"
  },
  "text": {

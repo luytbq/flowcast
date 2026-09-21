@@ -114,6 +114,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -185,6 +186,7 @@
     "type": "task"
    }
   ],
+  "source": "markdown",
   "title": "Phần tử không đi tới được từ start"
  },
  "text": {

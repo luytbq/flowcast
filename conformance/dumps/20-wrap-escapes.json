@@ -142,6 +142,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -217,6 +218,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Xuống dòng, gạch đứng thoát, dấu tiếng Việt"
  },
  "text": {

@@ -14,6 +14,7 @@
   }
  ],
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -88,6 +89,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Cạnh ra không nằm liền sau node"
  }
 }

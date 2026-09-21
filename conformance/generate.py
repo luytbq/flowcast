@@ -33,14 +33,14 @@ DUMPS = os.path.join(HERE, 'dumps')
 def render(path):
     """Trả về (xml hoặc None, report, dump). xml là None khi bảng có lỗi."""
     out = []
-    table = ft.load(path)
+    table, parse_issues = dmp.load_split(path)
     for issue in sorted(table.issues, key=lambda i: i.level != 'error'):
         out.append(str(issue))
     nerr = sum(1 for i in table.issues if i.level == 'error')
     out.append(f'check: {nerr} lỗi, {len(table.issues) - nerr} cảnh báo')
     if nerr:
         out.append('build: dừng vì bảng có lỗi')
-        return None, '\n'.join(out) + '\n', dmp.encode(dmp.stages(table, None))
+        return None, '\n'.join(out) + '\n', dmp.encode(dmp.stages(table, None, parse_issues=parse_issues))
 
     tm = ft.TextMeasure()
     if not isinstance(tm.font, ft.TableMetrics):
@@ -57,7 +57,7 @@ def render(path):
         out.append(f'{level.upper():7} layout: {msg}')
     nerr = sum(1 for l, _ in findings if l == 'error')
     out.append(f'layout: {nerr} lỗi, {len(findings) - nerr} cảnh báo')
-    return xml, '\n'.join(out) + '\n', dmp.encode(dmp.stages(table, lay))
+    return xml, '\n'.join(out) + '\n', dmp.encode(dmp.stages(table, lay, parse_issues=parse_issues))
 
 
 def cases():

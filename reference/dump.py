@@ -56,14 +56,42 @@ def stage_text(table, lay):
     }
 
 
-def stage_table(table, lay):
+def load_split(path):
+    """Như ft.load, nhưng giữ riêng issue của tầng parse và của tầng validate.
+
+    ft.load gộp hai danh sách lại, nên không phân biệt được cái nào đến từ đâu.
+    Bản port cần phân biệt: module source phải chốt được bằng issue của riêng
+    nó, trước khi có module validate nào tồn tại.
+    """
+    ext = os.path.splitext(path)[1].lower()
+    if ext in ('.md', '.markdown', '.txt'):
+        table = ft.read_markdown(path)
+    elif ext in ('.csv', '.tsv'):
+        table = ft.read_csv(path)
+    elif ext in ('.xlsx', '.xlsm'):
+        table = ft.read_xlsx(path)
+    else:
+        raise ft.FlowTableError(f'đuôi file "{ext}" không hỗ trợ')
+    if not table.title:
+        table.title = os.path.splitext(os.path.basename(path))[0]
+    parse_issues = list(table.issues)
+    table.issues = parse_issues + ft.validate(table.rows)
+    return table, parse_issues
+
+
+def stage_table(table, lay, parse_issues=()):
     """Bảng sau khi parse, trước khi diễn giải theo ngữ nghĩa sơ đồ.
 
     Chốt module source và model. Không phụ thuộc layout, nên nó là chặng duy
     nhất dùng được cả với bảng có lỗi.
+
+    issues ở đây chỉ là issue của tầng parse. Issue của tầng validate nằm ở
+    chặng issues.
     """
     return {
         'title': table.title,
+        'source': table.source,
+        'issues': [{'level': i.level, 'loc': i.loc, 'id': i.id, 'msg': i.msg} for i in parse_issues],
         'rows': [{'idx': r.idx, 'loc': r.loc, 'id': r.id, 'type': r.type,
                   'parent': r.parent, 'lines': r.lines, 'meta': r.meta}
                  for r in table.rows],
@@ -126,23 +154,26 @@ FNS = {'text': stage_text, 'table': stage_table, 'issues': stage_issues,
        'place': stage_place, 'route': stage_route, 'geometry': stage_geometry}
 
 
-def stages(table, lay, want=STAGES):
+def stages(table, lay, want=STAGES, parse_issues=()):
     """lay là None khi bảng có lỗi; khi đó chỉ chặng table và issues có nghĩa."""
     out = {}
     for name in want:
         if lay is None and name not in ('table', 'issues'):
             continue
-        out[name] = FNS[name](table, lay)
+        if name == 'table':
+            out[name] = stage_table(table, lay, parse_issues)
+        else:
+            out[name] = FNS[name](table, lay)
     return out
 
 
 def render(path, want=STAGES):
-    table = ft.load(path)
+    table, parse_issues = load_split(path)
     lay = None
     if not any(i.level == 'error' for i in table.issues):
         tm = ft.TextMeasure()
         lay = ft.Layout(table.rows, ft.Config(), tm).run()
-    return stages(table, lay, want)
+    return stages(table, lay, want, parse_issues)
 
 
 def encode(data):

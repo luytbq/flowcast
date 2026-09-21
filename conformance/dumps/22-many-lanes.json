@@ -336,6 +336,7 @@
   ]
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -529,6 +530,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Năm lane, lưu lượng chéo"
  },
  "text": {

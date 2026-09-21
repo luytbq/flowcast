@@ -148,6 +148,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -233,6 +234,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Mũi tên ngang sang lane kế"
  },
  "text": {

@@ -25,9 +25,18 @@ type Row struct {
 	Meta   map[string]string `json:"meta"`
 }
 
+type DumpIssue struct {
+	Level string `json:"level"`
+	Loc   string `json:"loc"`
+	ID    string `json:"id"`
+	Msg   string `json:"msg"`
+}
+
 type TableStage struct {
-	Title string `json:"title"`
-	Rows  []Row  `json:"rows"`
+	Title  string      `json:"title"`
+	Source string      `json:"source"`
+	Issues []DumpIssue `json:"issues"`
+	Rows   []Row       `json:"rows"`
 }
 
 // TextBox là kích thước một phần tử trong chặng text. Số là chuỗi vì dump ghi
@@ -52,10 +61,13 @@ type TextStage struct {
 
 // Dump là một file conformance/dumps/<case>.json.
 type Dump struct {
-	Name  string
+	Name  string     // tên case, không có đuôi
 	Table TableStage `json:"table"`
 	Text  *TextStage `json:"text"`
 }
+
+// CaseFile trả về đường dẫn bảng đầu vào của một case.
+func CaseFile(dir, name string) string { return filepath.Join(dir, "cases", name+".md") }
 
 // Dir trả về thư mục bộ đối chiếu, tính từ vị trí gói này.
 func Dir() string { return "." }
@@ -80,7 +92,7 @@ func Load(dir string) ([]Dump, error) {
 		if err := json.Unmarshal(data, &d); err != nil {
 			return nil, fmt.Errorf("%s: %w", p, err)
 		}
-		d.Name = filepath.Base(p)
+		d.Name = strings.TrimSuffix(filepath.Base(p), ".json")
 		out = append(out, d)
 	}
 	return out, nil

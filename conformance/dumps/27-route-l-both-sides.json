@@ -292,6 +292,7 @@
   "segs": []
  },
  "table": {
+  "issues": [],
   "rows": [
    {
     "id": "A",
@@ -463,6 +464,7 @@
     "type": "end"
    }
   ],
+  "source": "markdown",
   "title": "Chữ L ra cả hai mặt bên"
  },
  "text": {
