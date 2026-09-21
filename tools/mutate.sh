@@ -102,6 +102,27 @@ mutate "không cảnh báo cạnh condition thiếu nhãn" validate/validate.go 
 mutate "quên bỏ qua dòng trùng id khi xét đồ thị" validate/validate.go 'if j, ok := v.byID[r.ID]; !ok || j != i {' 'if j, ok := v.byID[r.ID]; false || j == -1 && !ok {'
 mutate "thông điệp dùng %q thay vì nháy thẳng" validate/validate.go 'fmt.Sprintf("metadata \"%s\" không dùng cho type %s, bị bỏ qua", k, r.Type)' 'fmt.Sprintf("metadata %q không dùng cho type %s, bị bỏ qua", k, r.Type)'
 
+# layout/place
+mutate "topo ưu tiên dòng đứng sau thay vì đứng trước" layout/topo.go 'return h[i].Order < h[j].Order' 'return h[i].Order > h[j].Order'
+mutate "topo không bỏ qua cạnh back" layout/topo.go 'if _, ok := indeg[e.Dst]; ok && !e.Back {' 'if _, ok := indeg[e.Dst]; ok {'
+mutate "nhánh chính là cạnh ra đầu tiên thay vì cuối cùng" layout/branch.go 'return len(same) - 1 - i' 'return i'
+mutate "branchDrift đảo hướng" layout/branch.go 'if w.Lane < v.Lane {' 'if w.Lane > v.Lane {'
+mutate "branchDrift không dừng ở node hợp nhánh" layout/branch.go 'if l.nonBackIn(w.ID) > 1 {' 'if false {'
+mutate "nhánh không rõ hướng ưu tiên trái" layout/branch.go 'if next[1] <= next[-1] {' 'if next[1] < next[-1] {'
+mutate "bỏ qua mặt đã có mũi tên ngang" layout/branch.go "onlyLeft := busy['R'] && !busy['L']" 'onlyLeft := false'
+mutate "mergeCol chọn node rẽ xa nhất" layout/branch.go 'if best == nil || it.Row > best.Row' 'if best == nil || it.Row < best.Row'
+mutate "tắt mergeCol" layout/place.go 'if mc, ok := l.mergeCol(same, v); ok {' 'if mc, ok := l.mergeCol(same, v); false && ok {'
+mutate "attachSide mặc định sang trái" layout/branch.go 'if !right {' 'if right {'
+mutate "condition cần ba nhánh phụ mới giữ hai mặt" layout/place.go 'l.sideBranches(v) >= 2' 'l.sideBranches(v) >= 3'
+mutate "tắt mũi tên ngang" layout/place.go 'if len(preds) == 1 && l.nonBackIn(vid) == 1' 'if false && len(preds) == 1 && l.nonBackIn(vid) == 1'
+mutate "nhánh phụ chỉ dạt một cột" layout/place.go 'tries < 3' 'tries < 1'
+mutate "start không về hàng 0" layout/place.go 'case v.Kind == "start":' 'case false:'
+mutate "db và text thử phía ngược trước" layout/place.go '[]int{side, -side, 2 * side, -2 * side}' '[]int{-side, side, 2 * side, -2 * side}'
+mutate "mũi tên ngang không tránh mũi tên ngang khác" layout/place.go 'if s.row == r && s.a.less(b) && a.less(s.b) {' 'if false {'
+mutate "mũi tên ngang không tránh ô đã chiếm ở giữa" layout/place.go 'if k.row == r && a.less(gk{k.lane, k.col}) && (gk{k.lane, k.col}).less(b) {' 'if false {'
+mutate "nguồn tham chiếu là nguồn nông nhất" layout/place.go 'if a.Row > b.Row ||' 'if a.Row < b.Row ||'
+mutate "đảo phía hside" layout/place.go "l.addSide(u.ID, 'R')" "l.addSide(u.ID, 'L')"
+
 [ -n "$PREFLIGHT" ] && exit 0
 echo
 echo "bắt được $caught, bỏ lọt $missed"
