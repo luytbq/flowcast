@@ -8,6 +8,10 @@
 # và điều đó im lặng cho tới lúc bản port sai thật. Chạy lại sau mỗi lần thêm
 # module Go mới.
 #
+# Chạy hai lượt. Lượt đầu chỉ kiểm mọi chuỗi đích còn khớp đúng một chỗ, để một
+# đột biến cũ sau khi sửa code làm cả bộ dừng ngay từ đầu, thay vì dừng giữa
+# chừng sau khi đã tốn thời gian chạy test.
+#
 # Chuỗi đích nên tránh khoảng trắng canh lề: gofmt canh lại cột mỗi khi một
 # struct có thêm trường dài hơn, và đột biến sẽ không còn khớp.
 #
@@ -16,9 +20,14 @@
 set -e
 cd "$(dirname "$0")/.."
 
-if ! git diff --quiet || ! git diff --cached --quiet; then
-	echo 'ERROR cây làm việc đang bẩn; commit hoặc stash trước khi chạy'
-	exit 1
+if [ -z "$PREFLIGHT" ]; then
+	if ! git diff --quiet || ! git diff --cached --quiet; then
+		echo 'ERROR cây làm việc đang bẩn; commit hoặc stash trước khi chạy'
+		exit 1
+	fi
+	PREFLIGHT=1 sh "$0" || exit 1
+	echo 'mọi chuỗi đích còn khớp; bắt đầu đột biến'
+	echo
 fi
 
 caught=0
@@ -26,17 +35,19 @@ missed=0
 
 mutate() {
 	label="$1" file="$2" from="$3" to="$4"
-	python3 - "$file" "$from" "$to" <<'PY'
+	python3 - "$file" "$from" "$to" "${PREFLIGHT:-}" <<'EOPY'
 import io, sys
-p, a, b = sys.argv[1:4]
+p, a, b, preflight = sys.argv[1:5]
 s = io.open(p, encoding='utf-8').read()
 n = s.count(a)
 # Đúng một chỗ, không hơn không kém. Thay chỗ đầu khi có nhiều chỗ sẽ để lại
 # bản sao còn nguyên và đột biến thành vô hại, khiến cổng trông như bỏ lọt.
 if n != 1:
     sys.exit(f'ERROR {p}: tìm thấy {n} chỗ khớp {a!r}, cần đúng 1')
-io.open(p, 'w', encoding='utf-8').write(s.replace(a, b))
-PY
+if not preflight:
+    io.open(p, 'w', encoding='utf-8').write(s.replace(a, b))
+EOPY
+	[ -n "$PREFLIGHT" ] && return 0
 	if go test -count=1 ./... >/dev/null 2>&1; then
 		echo "BỎ LỌT     $label"
 		missed=$((missed + 1))
@@ -47,6 +58,7 @@ PY
 	git checkout -- "$file"
 }
 
+# num, text, layout/size
 mutate "bỏ ký tự - khỏi chỗ được ngắt" text/measure.go '=&?-"' '=&?"'
 mutate "bỏ nhánh :: khỏi chỗ được ngắt" text/measure.go "return i >= 2 && r[i-1] == ':' && r[i-2] == ':'" 'return false'
 mutate "codepoint lạ đo bằng 0 thay vì notdef" text/metrics.go 'total += m.Notdef' 'total += 0'
@@ -62,12 +74,13 @@ mutate "Rnd làm tròn xuống thay vì lên" num/num.go 'math.Ceil(v/2.0)' 'mat
 mutate "bỏ chuẩn hóa NFC" source/text.go 'return norm.NFC.String(b.String())' 'return b.String()'
 mutate "gạch đứng có escape vẫn ngăn cột" source/text.go "if c == '|' && !prevEscape {" "if c == '|' {"
 mutate "không gỡ escape markdown" source/text.go 'if r[i] == 0x5c && i+1 < len(r) && strings.ContainsRune(mdEscapable, r[i+1]) {' 'if false {'
-mutate "chỉ cắt dòng theo \\n, bỏ CRLF" source/text.go "case 0x0d:" "case 0x2400:"
+mutate "không coi CR là ranh giới dòng" source/text.go "case 0x0d:" "case 0x2400:"
 mutate "không hạ chữ thường cột type" source/markdown.go 'strings.ToLower(cells[1])' 'cells[1]'
 mutate "Idx dùng số dòng thay vì thứ tự đọc được" source/markdown.go 'len(rows),' 'i,'
-mutate "khóa metadata cũng bị gỡ escape" source/markdown.go 'meta[strings.TrimSpace(k)] = unesc(strings.TrimSpace(v))' 'meta[unesc(strings.TrimSpace(k))] = unesc(strings.TrimSpace(v))'
+mutate "khóa metadata cũng bị gỡ escape" source/markdown.go 'key := strings.TrimSpace(k)' 'key := unesc(strings.TrimSpace(k))'
 mutate "thẻ br phân biệt hoa thường" source/text.go 'low := strings.ToLower(s)' 'low := s'
 mutate "heading cấp hai cũng tính là tiêu đề" source/markdown.go 'if len(trimmed) == len(rest) {' 'if false {'
+mutate "thứ tự key metadata theo map thay vì theo ô" source/markdown.go 'if _, seen := meta[key]; !seen {' 'if _, seen := meta[key]; seen {'
 
 # schema và validate
 mutate "đảo thứ tự kiểm from và to" schema/schema.go '{Key: "from", Required: true, Note: edgeNote},
@@ -89,6 +102,7 @@ mutate "không cảnh báo cạnh condition thiếu nhãn" validate/validate.go 
 mutate "quên bỏ qua dòng trùng id khi xét đồ thị" validate/validate.go 'if j, ok := v.byID[r.ID]; !ok || j != i {' 'if j, ok := v.byID[r.ID]; false || j == -1 && !ok {'
 mutate "thông điệp dùng %q thay vì nháy thẳng" validate/validate.go 'fmt.Sprintf("metadata \"%s\" không dùng cho type %s, bị bỏ qua", k, r.Type)' 'fmt.Sprintf("metadata %q không dùng cho type %s, bị bỏ qua", k, r.Type)'
 
+[ -n "$PREFLIGHT" ] && exit 0
 echo
 echo "bắt được $caught, bỏ lọt $missed"
 [ "$missed" -eq 0 ]
