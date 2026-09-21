@@ -153,20 +153,45 @@ tools/coverage.py đo từng nhánh thuật toán và thoát với mã 1 nếu c
 
 | nhánh | số lần chạm |
 |---|---|
-| đi dây A (thẳng đứng) | 79 |
-| đi dây B (thẳng ngang) | 38 |
+| đi dây A (thẳng đứng) | 88 |
+| đi dây B (thẳng ngang) | 40 |
 | đi dây C (chữ L) | 1 |
-| đi dây D (qua kênh và máng) | 16 |
+| đi dây D (qua kênh và máng) | 19 |
 | nhánh dạt trái (drift -1) | 11 |
 | nhánh dạt phải (drift 1) | 14 |
-| nhánh không rõ hướng (drift 0) | 75 |
+| nhánh không rõ hướng (drift 0) | 88 |
 | track thứ hai trở lên | 4 |
-| db hoặc text bám node | 7 |
+| db hoặc text bám node | 8 |
 | cạnh back | 2 |
-| cạnh có nhãn | 70 |
-| phần tử tô nhấn | 3 |
+| cạnh có nhãn | 75 |
+| phần tử tô nhấn | 4 |
 | ngắt dòng cứng giữa từ | 1 |
 | đầu vào ở dạng NFD | 1 |
+| validate: id trống | 1 |
+| validate: id dành riêng của draw.io | 1 |
+| validate: id trùng | 2 |
+| validate: type lạ | 1 |
+| validate: bảng không có lane | 1 |
+| validate: lane hoặc edge có parent | 2 |
+| validate: thiếu parent | 3 |
+| validate: parent không phải lane | 1 |
+| validate: key metadata lạ | 4 |
+| validate: style lạ | 3 |
+| validate: back sai giá trị | 1 |
+| validate: edge thiếu from hoặc to | 1 |
+| validate: from hoặc to treo | 4 |
+| validate: from hoặc to sai loại | 1 |
+| validate: db thiếu attach | 1 |
+| validate: attach treo | 1 |
+| validate: attach sai loại | 1 |
+| validate: attach khác lane | 1 |
+| validate: condition thiếu nhánh | 1 |
+| validate: node không có cạnh ra | 6 |
+| validate: start có cạnh vào | 1 |
+| validate: end có cạnh ra | 2 |
+| validate: nhánh condition không nhãn | 1 |
+| validate: cạnh ra lệch chỗ | 4 |
+| validate: quay ngược mà thiếu back=true | 3 |
 
 ### Lỗ hổng đã biết
 
@@ -181,6 +206,19 @@ sung trước khi port phần merge sang Go.
 **Chưa có case csv và xlsx.** reference/tests/test_inputs.py đã khẳng định ba
 định dạng cho ra cùng một file, nên rủi ro thấp, nhưng bản port cần bộ riêng cho
 việc đoán dấu phân cách, bảng mã, ô gộp và hàng ẩn.
+
+## Hành vi kỳ quặc được port nguyên
+
+Việc của bản port là khớp, không phải sửa. Những chỗ dưới đây là hành vi của
+bản tham chiếu mà golden cố tình mang theo. Sửa chúng là một thay đổi hành vi có
+chủ đích, làm sau khi bản Go khớp 100%, và mỗi cái sẽ làm golden đổi.
+
+**Id trùng sinh ra lỗi "cạnh ra không nằm liền sau" giả.** Tra cứu theo id lấy
+dòng đầu tiên mang id đó, nhưng vị trí của id lại lấy dòng cuối cùng. Khi một id
+xuất hiện hai lần, luật kiểm cạnh liền sau đi tìm cạnh ra phía sau dòng cuối,
+không thấy, rồi báo lỗi cho dòng đầu dù cạnh ra của nó nằm đúng chỗ. Người dùng
+vẫn thấy lỗi id trùng thật, nhưng kèm một lỗi thừa gây nhiễu. Chốt bởi case
+`992-invalid-refs-order`.
 
 ## Thêm case
 

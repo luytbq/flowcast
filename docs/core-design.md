@@ -493,7 +493,7 @@ trung gian vào bản tham chiếu**, và bản Go dump đúng cùng định d�
 | 1 | dump trung gian trong bản tham chiếu | xong |
 | 2 | text | xong, cùng `num` và `layout.SizeItem` |
 | 3 | model, source/markdown | xong |
-| 4 | schema, validate | chốt bằng 6 case 9x, đúng nguyên văn và số dòng |
+| 4 | schema, validate | xong |
 | 5 | layout/place | phần nhiều luật nhất, đi chậm |
 | 6 | layout/route, layout/tracks | 4 kiểu đi dây, tô màu khoảng |
 | 7 | layout/geometry, layout/labels | |
