@@ -12,6 +12,7 @@ thì thoát với mã 1.
 """
 import collections
 import os
+import unicodedata
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -36,12 +37,16 @@ THRESHOLDS = {
     'cạnh có nhãn': 1,
     'phần tử tô nhấn': 1,
     'ngắt dòng cứng giữa từ': 1,
+    'đầu vào ở dạng NFD': 1,
 }
 
 
 def measure():
     hits = collections.Counter()
     for name in sorted(f for f in os.listdir(CASES) if f.endswith('.md')):
+        raw = open(os.path.join(CASES, name), encoding='utf-8').read()
+        if unicodedata.normalize('NFC', raw) != raw:
+            hits['đầu vào ở dạng NFD'] += 1
         table = ft.load(os.path.join(CASES, name))
         if any(i.level == 'error' for i in table.issues):
             continue
