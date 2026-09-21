@@ -1,0 +1,323 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": [
+     "303",
+     "140"
+    ],
+    "label_off": [
+     "25.16",
+     "0"
+    ],
+    "label_t": "-0.03",
+    "points": [
+     [
+      "298",
+      "134"
+     ],
+     [
+      "298",
+      "164"
+     ]
+    ]
+   },
+   "E2": {
+    "label": [
+     "364",
+     "169"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.51",
+    "points": [
+     [
+      "358",
+      "189"
+     ],
+     [
+      "444.66",
+      "189"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "80",
+    "x": "258",
+    "y": "90"
+   },
+   "A-2": {
+    "h": "50",
+    "w": "120",
+    "x": "238",
+    "y": "164"
+   },
+   "A-3": {
+    "h": "28",
+    "w": "150",
+    "x": "48",
+    "y": "175"
+   },
+   "B-1": {
+    "h": "50",
+    "w": "130",
+    "x": "444.66",
+    "y": "164"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "420.66",
+    "x": "0"
+   },
+   {
+    "id": "B",
+    "w": "178",
+    "x": "420.66"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "244",
+   "w": "598.66"
+  }
+ },
+ "issues": [],
+ "place": {
+  "items": {
+   "A-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "A-3": {
+    "attach": "A-2",
+    "col": -1,
+    "lane": 0,
+    "row": 1
+   },
+   "B-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 1
+   }
+  },
+  "lanes": [
+   "A",
+   "B"
+  ],
+  "topo": [
+   "A-1",
+   "A-2",
+   "B-1"
+  ]
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "B",
+    "entry": "L",
+    "entry_frac": [
+     "0",
+     "0.5"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ]
+   }
+  },
+  "segs": []
+ },
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B",
+    "idx": 1,
+    "lines": [
+     "Lane B"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 2,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "style": "highlight"
+    },
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 3,
+    "lines": [
+     "chính"
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "from": "A-1",
+     "style": "highlight",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 4,
+    "lines": [
+     "Xử lý"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "A-3",
+    "idx": 5,
+    "lines": [
+     "Ghi chú được tô nhấn"
+    ],
+    "loc": "dòng 10",
+    "meta": {
+     "attach": "A-2",
+     "style": "highlight"
+    },
+    "parent": "A",
+    "type": "text"
+   },
+   {
+    "id": "E2",
+    "idx": 6,
+    "lines": [
+     "phụ"
+    ],
+    "loc": "dòng 11",
+    "meta": {
+     "from": "A-2",
+     "style": "dashed",
+     "to": "B-1"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-1",
+    "idx": 7,
+    "lines": [
+     "Nhánh phụ"
+    ],
+    "loc": "dòng 12",
+    "meta": {},
+    "parent": "B",
+    "type": "end"
+   }
+  ],
+  "title": "Tô nhấn và nét đứt"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "17",
+    "lines": [
+     "chính"
+    ],
+    "lw": "40.33"
+   },
+   "E2": {
+    "lh": "17",
+    "lines": [
+     "phụ"
+    ],
+    "lw": "30.66"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "Vào"
+    ],
+    "w": "80"
+   },
+   "A-2": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Xử lý"
+    ],
+    "w": "120"
+   },
+   "A-3": {
+    "h": "28",
+    "kind": "text",
+    "lines": [
+     "Ghi chú được tô nhấn"
+    ],
+    "w": "150"
+   },
+   "B-1": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Nhánh phụ"
+    ],
+    "w": "130"
+   }
+  }
+ }
+}

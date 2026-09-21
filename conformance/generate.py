@@ -23,13 +23,15 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, 'reference'))
 
 import flowtable2drawio as ft  # noqa: E402
+import dump as dmp  # noqa: E402
 
 CASES = os.path.join(HERE, 'cases')
 GOLDEN = os.path.join(HERE, 'golden')
+DUMPS = os.path.join(HERE, 'dumps')
 
 
 def render(path):
-    """Trả về (xml hoặc None, report). xml là None khi bảng có lỗi."""
+    """Trả về (xml hoặc None, report, dump). xml là None khi bảng có lỗi."""
     out = []
     table = ft.load(path)
     for issue in sorted(table.issues, key=lambda i: i.level != 'error'):
@@ -38,7 +40,7 @@ def render(path):
     out.append(f'check: {nerr} lỗi, {len(table.issues) - nerr} cảnh báo')
     if nerr:
         out.append('build: dừng vì bảng có lỗi')
-        return None, '\n'.join(out) + '\n'
+        return None, '\n'.join(out) + '\n', dmp.encode(dmp.stages(table, None))
 
     tm = ft.TextMeasure()
     if not isinstance(tm.font, ft.TableMetrics):
@@ -55,7 +57,7 @@ def render(path):
         out.append(f'{level.upper():7} layout: {msg}')
     nerr = sum(1 for l, _ in findings if l == 'error')
     out.append(f'layout: {nerr} lỗi, {len(findings) - nerr} cảnh báo')
-    return xml, '\n'.join(out) + '\n'
+    return xml, '\n'.join(out) + '\n', dmp.encode(dmp.stages(table, lay))
 
 
 def cases():
@@ -81,16 +83,20 @@ def write(path, text):
 def main(argv):
     check = '--check' in argv
     os.makedirs(GOLDEN, exist_ok=True)
+    os.makedirs(DUMPS, exist_ok=True)
     bad = []
     for name in cases():
         stem = name[:-3]
-        xml, report = render(os.path.join(CASES, name))
-        want = {f'{stem}.drawio': xml, f'{stem}.report.txt': report}
-        for fname, text in want.items():
-            path = os.path.join(GOLDEN, fname)
+        xml, report, dump_json = render(os.path.join(CASES, name))
+        want = {
+            os.path.join(GOLDEN, f'{stem}.drawio'): xml,
+            os.path.join(GOLDEN, f'{stem}.report.txt'): report,
+            os.path.join(DUMPS, f'{stem}.json'): dump_json,
+        }
+        for path, text in want.items():
             if check:
                 if read(path) != text:
-                    bad.append(fname)
+                    bad.append(os.path.relpath(path, HERE))
             else:
                 write(path, text)
     if check:

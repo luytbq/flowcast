@@ -1,0 +1,87 @@
+{
+ "issues": [
+  {
+   "id": "A-2",
+   "level": "error",
+   "loc": "dòng 8",
+   "msg": "condition chỉ có 1 cạnh ra, cần ít nhất 2"
+  }
+ ],
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 2,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 3,
+    "lines": [
+     "Rẽ?"
+    ],
+    "loc": "dòng 8",
+    "meta": {},
+    "parent": "A",
+    "type": "condition"
+   },
+   {
+    "id": "E2",
+    "idx": 4,
+    "lines": [
+     "Có"
+    ],
+    "loc": "dòng 9",
+    "meta": {
+     "from": "A-2",
+     "to": "A-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-3",
+    "idx": 5,
+    "lines": [
+     "Xong"
+    ],
+    "loc": "dòng 10",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   }
+  ],
+  "title": "Condition chỉ có một cạnh ra"
+ }
+}

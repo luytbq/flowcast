@@ -1,0 +1,456 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "468.81",
+      "134"
+     ],
+     [
+      "468.81",
+      "164"
+     ]
+    ]
+   },
+   "E2": {
+    "label": [
+     "389.15",
+     "174"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.1",
+    "points": [
+     [
+      "418.81",
+      "194"
+     ],
+     [
+      "379.14",
+      "194"
+     ]
+    ]
+   },
+   "E3": {
+    "label": [
+     "473.81",
+     "230"
+    ],
+    "label_off": [
+     "28.13",
+     "0"
+    ],
+    "label_t": "-0.03",
+    "points": [
+     [
+      "468.81",
+      "224"
+     ],
+     [
+      "468.81",
+      "254"
+     ]
+    ]
+   },
+   "E4": {
+    "label": [
+     "182",
+     "174"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.44",
+    "points": [
+     [
+      "231.14",
+      "194"
+     ],
+     [
+      "132",
+      "194"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "50",
+    "w": "108",
+    "x": "24",
+    "y": "169"
+   },
+   "B-1": {
+    "h": "44",
+    "w": "80",
+    "x": "428.81",
+    "y": "90"
+   },
+   "B-2": {
+    "h": "60",
+    "w": "100",
+    "x": "418.81",
+    "y": "164"
+   },
+   "B-3": {
+    "h": "50",
+    "w": "148",
+    "x": "231.14",
+    "y": "169"
+   },
+   "B-4": {
+    "h": "50",
+    "w": "106",
+    "x": "415.81",
+    "y": "254"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "156",
+    "x": "0"
+   },
+   {
+    "id": "B",
+    "w": "389.81",
+    "x": "156"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "334",
+   "w": "545.81"
+  }
+ },
+ "issues": [],
+ "place": {
+  "items": {
+   "A-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "B-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 0
+   },
+   "B-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 1
+   },
+   "B-3": {
+    "attach": null,
+    "col": -1,
+    "lane": 1,
+    "row": 1
+   },
+   "B-4": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 2
+   }
+  },
+  "lanes": [
+   "A",
+   "B"
+  ],
+  "topo": [
+   "B-1",
+   "B-2",
+   "B-3",
+   "A-1",
+   "B-4"
+  ]
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "B",
+    "entry": "R",
+    "entry_frac": [
+     "1",
+     "0.5"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.5"
+    ]
+   },
+   "E3": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E4": {
+    "back": false,
+    "case": "B",
+    "entry": "R",
+    "entry_frac": [
+     "1",
+     "0.5"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.5"
+    ]
+   }
+  },
+  "segs": []
+ },
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B",
+    "idx": 1,
+    "lines": [
+     "Lane B"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B-1",
+    "idx": 2,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 7",
+    "meta": {},
+    "parent": "B",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 3,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "from": "B-1",
+     "to": "B-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-2",
+    "idx": 4,
+    "lines": [
+     "Lỗi?"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "parent": "B",
+    "type": "condition"
+   },
+   {
+    "id": "E2",
+    "idx": 5,
+    "lines": [
+     "Có"
+    ],
+    "loc": "dòng 10",
+    "meta": {
+     "from": "B-2",
+     "to": "B-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E3",
+    "idx": 6,
+    "lines": [
+     "Không"
+    ],
+    "loc": "dòng 11",
+    "meta": {
+     "from": "B-2",
+     "to": "B-4"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-3",
+    "idx": 7,
+    "lines": [
+     "Dựng thông báo lỗi"
+    ],
+    "loc": "dòng 12",
+    "meta": {},
+    "parent": "B",
+    "type": "task"
+   },
+   {
+    "id": "E4",
+    "idx": 8,
+    "lines": [
+     "trả lỗi"
+    ],
+    "loc": "dòng 13",
+    "meta": {
+     "from": "B-3",
+     "to": "A-1"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-1",
+    "idx": 9,
+    "lines": [
+     "Nhận lỗi"
+    ],
+    "loc": "dòng 14",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   },
+   {
+    "id": "B-4",
+    "idx": 10,
+    "lines": [
+     "Tiếp tục"
+    ],
+    "loc": "dòng 15",
+    "meta": {},
+    "parent": "B",
+    "type": "end"
+   }
+  ],
+  "title": "Nhánh phụ dẫn sang lane bên trái"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "17",
+    "lines": [
+     "Có"
+    ],
+    "lw": "23.66"
+   },
+   "E3": {
+    "lh": "17",
+    "lines": [
+     "Không"
+    ],
+    "lw": "46.26"
+   },
+   "E4": {
+    "lh": "17",
+    "lines": [
+     "trả lỗi"
+    ],
+    "lw": "43.14"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Nhận lỗi"
+    ],
+    "w": "108"
+   },
+   "B-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "Vào"
+    ],
+    "w": "80"
+   },
+   "B-2": {
+    "h": "60",
+    "kind": "condition",
+    "lines": [
+     "Lỗi?"
+    ],
+    "w": "100"
+   },
+   "B-3": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Dựng thông báo lỗi"
+    ],
+    "w": "148"
+   },
+   "B-4": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Tiếp tục"
+    ],
+    "w": "106"
+   }
+  }
+ }
+}

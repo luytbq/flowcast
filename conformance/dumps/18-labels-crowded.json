@@ -1,0 +1,541 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": [
+     "111",
+     "100"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.56",
+    "points": [
+     [
+      "105",
+      "120"
+     ],
+     [
+      "459.4",
+      "120"
+     ]
+    ]
+   },
+   "E2": {
+    "label": [
+     "611.4",
+     "100"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.03",
+    "points": [
+     [
+      "605.4",
+      "120"
+     ],
+     [
+      "760.34",
+      "120"
+     ]
+    ]
+   },
+   "E3": {
+    "label": [
+     "537.4",
+     "156"
+    ],
+    "label_off": [
+     "63.99",
+     "0"
+    ],
+    "label_t": "-0.41",
+    "points": [
+     [
+      "532.4",
+      "150"
+     ],
+     [
+      "532.4",
+      "199"
+     ]
+    ]
+   },
+   "E4": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "820.34",
+      "145"
+     ],
+     [
+      "820.34",
+      "187"
+     ],
+     [
+      "532.4",
+      "187"
+     ],
+     [
+      "532.4",
+      "199"
+     ]
+    ]
+   },
+   "E5": {
+    "label": [
+     "322.36",
+     "204"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.57",
+    "points": [
+     [
+      "472.4",
+      "224"
+     ],
+     [
+      "106",
+      "224"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "80",
+    "x": "25",
+    "y": "98"
+   },
+   "A-2": {
+    "h": "50",
+    "w": "82",
+    "x": "24",
+    "y": "199"
+   },
+   "B-1": {
+    "h": "60",
+    "w": "146",
+    "x": "459.4",
+    "y": "90"
+   },
+   "B-2": {
+    "h": "50",
+    "w": "120",
+    "x": "760.34",
+    "y": "95"
+   },
+   "B-3": {
+    "h": "50",
+    "w": "120",
+    "x": "472.4",
+    "y": "199"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "283.37",
+    "x": "0"
+   },
+   {
+    "id": "B",
+    "w": "620.98",
+    "x": "283.37"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "279",
+   "w": "904.34"
+  }
+ },
+ "issues": [],
+ "place": {
+  "items": {
+   "A-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "B-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 0
+   },
+   "B-2": {
+    "attach": null,
+    "col": 1,
+    "lane": 1,
+    "row": 0
+   },
+   "B-3": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 1
+   }
+  },
+  "lanes": [
+   "A",
+   "B"
+  ],
+  "topo": [
+   "A-1",
+   "B-1",
+   "B-2",
+   "B-3",
+   "A-2"
+  ]
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "B",
+    "entry": "L",
+    "entry_frac": [
+     "0",
+     "0.5"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "B",
+    "entry": "L",
+    "entry_frac": [
+     "0",
+     "0.5"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ]
+   },
+   "E3": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E4": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E5": {
+    "back": false,
+    "case": "B",
+    "entry": "R",
+    "entry_frac": [
+     "1",
+     "0.5"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.5"
+    ]
+   }
+  },
+  "segs": [
+   {
+    "hi": 6,
+    "key": "('to', 'B-3')",
+    "lo": 4,
+    "res": [
+     "C",
+     "1"
+    ],
+    "stubs": [
+     [
+      6,
+      -1
+     ],
+     [
+      4,
+      1
+     ]
+    ],
+    "track": 0
+   }
+  ]
+ },
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B",
+    "idx": 1,
+    "lines": [
+     "Lane B"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 2,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 7",
+    "meta": {},
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 3,
+    "lines": [
+     "yêu cầu khởi tạo phiên"
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "from": "A-1",
+     "to": "B-1"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-1",
+    "idx": 4,
+    "lines": [
+     "Phiên hợp lệ?"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "parent": "B",
+    "type": "condition"
+   },
+   {
+    "id": "E2",
+    "idx": 5,
+    "lines": [
+     "phiên hết hạn, cấp lại"
+    ],
+    "loc": "dòng 10",
+    "meta": {
+     "from": "B-1",
+     "to": "B-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E3",
+    "idx": 6,
+    "lines": [
+     "phiên còn hiệu lực"
+    ],
+    "loc": "dòng 11",
+    "meta": {
+     "from": "B-1",
+     "to": "B-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-2",
+    "idx": 7,
+    "lines": [
+     "Cấp phiên mới"
+    ],
+    "loc": "dòng 12",
+    "meta": {},
+    "parent": "B",
+    "type": "task"
+   },
+   {
+    "id": "E4",
+    "idx": 8,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 13",
+    "meta": {
+     "from": "B-2",
+     "to": "B-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-3",
+    "idx": 9,
+    "lines": [
+     "Trả dữ liệu"
+    ],
+    "loc": "dòng 14",
+    "meta": {},
+    "parent": "B",
+    "type": "task"
+   },
+   {
+    "id": "E5",
+    "idx": 10,
+    "lines": [
+     "kết quả kèm mã phiên"
+    ],
+    "loc": "dòng 15",
+    "meta": {
+     "from": "B-3",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 11,
+    "lines": [
+     "Nhận"
+    ],
+    "loc": "dòng 16",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   }
+  ],
+  "title": "Nhiều nhãn cạnh tranh chỗ"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "17",
+    "lines": [
+     "yêu cầu khởi tạo phiên"
+    ],
+    "lw": "145.37"
+   },
+   "E2": {
+    "lh": "17",
+    "lines": [
+     "phiên hết hạn, cấp lại"
+    ],
+    "lw": "138.94"
+   },
+   "E3": {
+    "lh": "17",
+    "lines": [
+     "phiên còn hiệu lực"
+    ],
+    "lw": "117.98"
+   },
+   "E4": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E5": {
+    "lh": "17",
+    "lines": [
+     "kết quả kèm mã phiên"
+    ],
+    "lw": "144.04"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "Vào"
+    ],
+    "w": "80"
+   },
+   "A-2": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Nhận"
+    ],
+    "w": "82"
+   },
+   "B-1": {
+    "h": "60",
+    "kind": "condition",
+    "lines": [
+     "Phiên hợp lệ?"
+    ],
+    "w": "146"
+   },
+   "B-2": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Cấp phiên mới"
+    ],
+    "w": "120"
+   },
+   "B-3": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Trả dữ liệu"
+    ],
+    "w": "120"
+   }
+  }
+ }
+}

@@ -1,0 +1,265 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "142",
+      "134"
+     ],
+     [
+      "142",
+      "164"
+     ]
+    ]
+   },
+   "E2": {
+    "label": [
+     "147",
+     "220"
+    ],
+    "label_off": [
+     "62.71",
+     "0"
+    ],
+    "label_t": "-0.03",
+    "points": [
+     [
+      "142",
+      "214"
+     ],
+     [
+      "142",
+      "244"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "92",
+    "x": "96",
+    "y": "90"
+   },
+   "A-2": {
+    "h": "50",
+    "w": "192",
+    "x": "46",
+    "y": "164"
+   },
+   "A-3": {
+    "h": "50",
+    "w": "236",
+    "x": "24",
+    "y": "244"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "284",
+    "x": "0"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "324",
+   "w": "284"
+  }
+ },
+ "issues": [],
+ "place": {
+  "items": {
+   "A-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "A-3": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 2
+   }
+  },
+  "lanes": [
+   "A"
+  ],
+  "topo": [
+   "A-1",
+   "A-2",
+   "A-3"
+  ]
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   }
+  },
+  "segs": []
+ },
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "Bắt đầu"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 2,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 3,
+    "lines": [
+     "Dòng một",
+     "Dòng hai | có gạch | đứng"
+    ],
+    "loc": "dòng 8",
+    "meta": {},
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "E2",
+    "idx": 4,
+    "lines": [
+     "nhãn <có> ngoặc"
+    ],
+    "loc": "dòng 9",
+    "meta": {
+     "from": "A-2",
+     "to": "A-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-3",
+    "idx": 5,
+    "lines": [
+     "Kết thúc phiên đối soát"
+    ],
+    "loc": "dòng 10",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   }
+  ],
+  "title": "Xuống dòng, gạch đứng thoát, dấu tiếng Việt"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "17",
+    "lines": [
+     "nhãn <có> ngoặc"
+    ],
+    "lw": "115.41"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "Bắt đầu"
+    ],
+    "w": "92"
+   },
+   "A-2": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Dòng một",
+     "Dòng hai | có gạch | đứng"
+    ],
+    "w": "192"
+   },
+   "A-3": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Kết thúc phiên đối soát"
+    ],
+    "w": "236"
+   }
+  }
+ }
+}

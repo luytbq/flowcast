@@ -1,0 +1,820 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "84",
+      "134"
+     ],
+     [
+      "84",
+      "164"
+     ]
+    ]
+   },
+   "E2": {
+    "label": [
+     "140",
+     "174"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.93",
+    "points": [
+     [
+      "134",
+      "194"
+     ],
+     [
+      "190.66",
+      "194"
+     ],
+     [
+      "190.66",
+      "486"
+     ],
+     [
+      "301.66",
+      "486"
+     ],
+     [
+      "301.66",
+      "504"
+     ]
+    ]
+   },
+   "E3": {
+    "label": [
+     "89",
+     "230"
+    ],
+    "label_off": [
+     "28.13",
+     "0"
+    ],
+    "label_t": "-0.03",
+    "points": [
+     [
+      "84",
+      "224"
+     ],
+     [
+      "84",
+      "254"
+     ]
+    ]
+   },
+   "E4": {
+    "label": [
+     "140",
+     "264"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.88",
+    "points": [
+     [
+      "134",
+      "284"
+     ],
+     [
+      "202.66",
+      "284"
+     ],
+     [
+      "202.66",
+      "406"
+     ],
+     [
+      "301.66",
+      "406"
+     ],
+     [
+      "301.66",
+      "424"
+     ]
+    ]
+   },
+   "E5": {
+    "label": [
+     "89",
+     "320"
+    ],
+    "label_off": [
+     "28.13",
+     "0"
+    ],
+    "label_t": "-0.03",
+    "points": [
+     [
+      "84",
+      "314"
+     ],
+     [
+      "84",
+      "344"
+     ]
+    ]
+   },
+   "E6": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "144",
+      "369"
+     ],
+     [
+      "241.66",
+      "369"
+     ]
+    ]
+   },
+   "E7": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "301.66",
+      "394"
+     ],
+     [
+      "301.66",
+      "424"
+     ]
+    ]
+   },
+   "E8": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "301.66",
+      "474"
+     ],
+     [
+      "301.66",
+      "504"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "80",
+    "x": "44",
+    "y": "90"
+   },
+   "A-2": {
+    "h": "60",
+    "w": "100",
+    "x": "34",
+    "y": "164"
+   },
+   "A-3": {
+    "h": "60",
+    "w": "100",
+    "x": "34",
+    "y": "254"
+   },
+   "A-4": {
+    "h": "50",
+    "w": "120",
+    "x": "24",
+    "y": "344"
+   },
+   "B-1": {
+    "h": "50",
+    "w": "120",
+    "x": "241.66",
+    "y": "344"
+   },
+   "B-2": {
+    "h": "50",
+    "w": "120",
+    "x": "241.66",
+    "y": "424"
+   },
+   "B-3": {
+    "h": "50",
+    "w": "108",
+    "x": "247.66",
+    "y": "504"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "217.66",
+    "x": "0"
+   },
+   {
+    "id": "B",
+    "w": "168",
+    "x": "217.66"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "584",
+   "w": "385.66"
+  }
+ },
+ "issues": [],
+ "place": {
+  "items": {
+   "A-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "A-3": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 2
+   },
+   "A-4": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 3
+   },
+   "B-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 3
+   },
+   "B-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 4
+   },
+   "B-3": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 5
+   }
+  },
+  "lanes": [
+   "A",
+   "B"
+  ],
+  "topo": [
+   "A-1",
+   "A-2",
+   "A-3",
+   "A-4",
+   "B-1",
+   "B-2",
+   "B-3"
+  ]
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ]
+   },
+   "E3": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E4": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ]
+   },
+   "E5": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E6": {
+    "back": false,
+    "case": "B",
+    "entry": "L",
+    "entry_frac": [
+     "0",
+     "0.5"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ]
+   },
+   "E7": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E8": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   }
+  },
+  "segs": [
+   {
+    "hi": 4,
+    "key": "('to', 'B-2')",
+    "lo": 2,
+    "res": [
+     "C",
+     "4"
+    ],
+    "stubs": [
+     [
+      4,
+      1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 4,
+    "key": "('to', 'B-3')",
+    "lo": 2,
+    "res": [
+     "C",
+     "5"
+    ],
+    "stubs": [
+     [
+      4,
+      1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 10,
+    "key": "('to', 'B-3')",
+    "lo": 3,
+    "res": [
+     "G",
+     "0",
+     "1"
+    ],
+    "stubs": [
+     [
+      3,
+      -1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 8,
+    "key": "('to', 'B-2')",
+    "lo": 5,
+    "res": [
+     "G",
+     "0",
+     "1"
+    ],
+    "stubs": [
+     [
+      5,
+      -1
+     ]
+    ],
+    "track": 1
+   }
+  ]
+ },
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B",
+    "idx": 1,
+    "lines": [
+     "Lane B"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 2,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 7",
+    "meta": {},
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 3,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 4,
+    "lines": [
+     "Rẽ sớm?"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "parent": "A",
+    "type": "condition"
+   },
+   {
+    "id": "E2",
+    "idx": 5,
+    "lines": [
+     "Có"
+    ],
+    "loc": "dòng 10",
+    "meta": {
+     "from": "A-2",
+     "to": "B-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E3",
+    "idx": 6,
+    "lines": [
+     "Không"
+    ],
+    "loc": "dòng 11",
+    "meta": {
+     "from": "A-2",
+     "to": "A-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-3",
+    "idx": 7,
+    "lines": [
+     "Rẽ giữa?"
+    ],
+    "loc": "dòng 12",
+    "meta": {},
+    "parent": "A",
+    "type": "condition"
+   },
+   {
+    "id": "E4",
+    "idx": 8,
+    "lines": [
+     "Có"
+    ],
+    "loc": "dòng 13",
+    "meta": {
+     "from": "A-3",
+     "to": "B-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E5",
+    "idx": 9,
+    "lines": [
+     "Không"
+    ],
+    "loc": "dòng 14",
+    "meta": {
+     "from": "A-3",
+     "to": "A-4"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-4",
+    "idx": 10,
+    "lines": [
+     "Đường dài"
+    ],
+    "loc": "dòng 15",
+    "meta": {},
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "E6",
+    "idx": 11,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 16",
+    "meta": {
+     "from": "A-4",
+     "to": "B-1"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-1",
+    "idx": 12,
+    "lines": [
+     "Nhận cuối"
+    ],
+    "loc": "dòng 17",
+    "meta": {},
+    "parent": "B",
+    "type": "task"
+   },
+   {
+    "id": "E7",
+    "idx": 13,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 18",
+    "meta": {
+     "from": "B-1",
+     "to": "B-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-2",
+    "idx": 14,
+    "lines": [
+     "Nhận giữa"
+    ],
+    "loc": "dòng 19",
+    "meta": {},
+    "parent": "B",
+    "type": "task"
+   },
+   {
+    "id": "E8",
+    "idx": 15,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 20",
+    "meta": {
+     "from": "B-2",
+     "to": "B-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-3",
+    "idx": 16,
+    "lines": [
+     "Kết thúc"
+    ],
+    "loc": "dòng 21",
+    "meta": {},
+    "parent": "B",
+    "type": "end"
+   }
+  ],
+  "title": "Cạnh dài vượt nhiều hàng, khác đích, chồng máng"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "17",
+    "lines": [
+     "Có"
+    ],
+    "lw": "23.66"
+   },
+   "E3": {
+    "lh": "17",
+    "lines": [
+     "Không"
+    ],
+    "lw": "46.26"
+   },
+   "E4": {
+    "lh": "17",
+    "lines": [
+     "Có"
+    ],
+    "lw": "23.66"
+   },
+   "E5": {
+    "lh": "17",
+    "lines": [
+     "Không"
+    ],
+    "lw": "46.26"
+   },
+   "E6": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E7": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E8": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "Vào"
+    ],
+    "w": "80"
+   },
+   "A-2": {
+    "h": "60",
+    "kind": "condition",
+    "lines": [
+     "Rẽ sớm?"
+    ],
+    "w": "100"
+   },
+   "A-3": {
+    "h": "60",
+    "kind": "condition",
+    "lines": [
+     "Rẽ giữa?"
+    ],
+    "w": "100"
+   },
+   "A-4": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Đường dài"
+    ],
+    "w": "120"
+   },
+   "B-1": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Nhận cuối"
+    ],
+    "w": "120"
+   },
+   "B-2": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Nhận giữa"
+    ],
+    "w": "120"
+   },
+   "B-3": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Kết thúc"
+    ],
+    "w": "108"
+   }
+  }
+ }
+}

@@ -1,0 +1,447 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "286.35",
+      "134"
+     ],
+     [
+      "286.35",
+      "164"
+     ]
+    ]
+   },
+   "E2": {
+    "label": [
+     "202",
+     "174"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.52",
+    "points": [
+     [
+      "236.35",
+      "194"
+     ],
+     [
+      "152",
+      "194"
+     ]
+    ]
+   },
+   "E3": {
+    "label": [
+     "291.35",
+     "230"
+    ],
+    "label_off": [
+     "21.79",
+     "0"
+    ],
+    "label_t": "-0.92",
+    "points": [
+     [
+      "286.35",
+      "224"
+     ],
+     [
+      "286.35",
+      "261"
+     ],
+     [
+      "615.35",
+      "261"
+     ],
+     [
+      "615.35",
+      "273"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "50",
+    "w": "128",
+    "x": "24",
+    "y": "169"
+   },
+   "B-1": {
+    "h": "44",
+    "w": "80",
+    "x": "246.35",
+    "y": "90"
+   },
+   "B-2": {
+    "h": "60",
+    "w": "100",
+    "x": "236.35",
+    "y": "164"
+   },
+   "B-3": {
+    "h": "60",
+    "w": "100",
+    "x": "376.35",
+    "y": "164"
+   },
+   "C-1": {
+    "h": "50",
+    "w": "134",
+    "x": "548.35",
+    "y": "273"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "176",
+    "x": "0"
+   },
+   {
+    "id": "B",
+    "w": "348.35",
+    "x": "176"
+   },
+   {
+    "id": "C",
+    "w": "182",
+    "x": "524.35"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "353",
+   "w": "706.35"
+  }
+ },
+ "issues": [],
+ "place": {
+  "items": {
+   "A-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "B-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 0
+   },
+   "B-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 1
+   },
+   "B-3": {
+    "attach": "B-2",
+    "col": 1,
+    "lane": 1,
+    "row": 1
+   },
+   "C-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 2,
+    "row": 2
+   }
+  },
+  "lanes": [
+   "A",
+   "B",
+   "C"
+  ],
+  "topo": [
+   "B-1",
+   "B-2",
+   "A-1",
+   "C-1"
+  ]
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "B",
+    "entry": "R",
+    "entry_frac": [
+     "1",
+     "0.5"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.5"
+    ]
+   },
+   "E3": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   }
+  },
+  "segs": [
+   {
+    "hi": 9,
+    "key": "('to', 'C-1')",
+    "lo": 4,
+    "res": [
+     "C",
+     "2"
+    ],
+    "stubs": [
+     [
+      4,
+      -1
+     ],
+     [
+      9,
+      1
+     ]
+    ],
+    "track": 0
+   }
+  ]
+ },
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B",
+    "idx": 1,
+    "lines": [
+     "Lane B"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "C",
+    "idx": 2,
+    "lines": [
+     "Lane C"
+    ],
+    "loc": "dòng 7",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B-1",
+    "idx": 3,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 8",
+    "meta": {},
+    "parent": "B",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 4,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 9",
+    "meta": {
+     "from": "B-1",
+     "to": "B-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-2",
+    "idx": 5,
+    "lines": [
+     "Rẽ?"
+    ],
+    "loc": "dòng 10",
+    "meta": {},
+    "parent": "B",
+    "type": "condition"
+   },
+   {
+    "id": "B-3",
+    "idx": 6,
+    "lines": [
+     "DB.LOG"
+    ],
+    "loc": "dòng 11",
+    "meta": {
+     "attach": "B-2"
+    },
+    "parent": "B",
+    "type": "db"
+   },
+   {
+    "id": "E2",
+    "idx": 7,
+    "lines": [
+     "trái"
+    ],
+    "loc": "dòng 12",
+    "meta": {
+     "from": "B-2",
+     "to": "A-1"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E3",
+    "idx": 8,
+    "lines": [
+     "phải"
+    ],
+    "loc": "dòng 13",
+    "meta": {
+     "from": "B-2",
+     "to": "C-1"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-1",
+    "idx": 9,
+    "lines": [
+     "Nhánh trái"
+    ],
+    "loc": "dòng 14",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   },
+   {
+    "id": "C-1",
+    "idx": 10,
+    "lines": [
+     "Nhánh phải"
+    ],
+    "loc": "dòng 15",
+    "meta": {},
+    "parent": "C",
+    "type": "end"
+   }
+  ],
+  "title": "Node có cạnh hai bên, db phải dạt ra"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "17",
+    "lines": [
+     "trái"
+    ],
+    "lw": "28.35"
+   },
+   "E3": {
+    "lh": "17",
+    "lines": [
+     "phải"
+    ],
+    "lw": "33.57"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Nhánh trái"
+    ],
+    "w": "128"
+   },
+   "B-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "Vào"
+    ],
+    "w": "80"
+   },
+   "B-2": {
+    "h": "60",
+    "kind": "condition",
+    "lines": [
+     "Rẽ?"
+    ],
+    "w": "100"
+   },
+   "B-3": {
+    "h": "60",
+    "kind": "db",
+    "lines": [
+     "DB.LOG"
+    ],
+    "w": "100"
+   },
+   "C-1": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Nhánh phải"
+    ],
+    "w": "134"
+   }
+  }
+ }
+}

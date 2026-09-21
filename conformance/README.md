@@ -13,7 +13,8 @@ thành máy sinh đáp án chứ không phải tài liệu tham khảo.
 
 ```
 cases/    bảng đầu vào, viết tay, mỗi file chốt một nhánh thuật toán
-golden/   đầu ra do bản tham chiếu sinh, commit vào repo
+golden/   đầu ra cuối cùng do bản tham chiếu sinh
+dumps/    trạng thái trung gian, cổng chặn cho từng module Go
 ```
 
 Mỗi case cho ra hai file trong golden/:
@@ -27,12 +28,65 @@ Case mang tiền tố 9x là bảng có lỗi. Chúng không có file .drawio, c
 Đó là cố ý: chúng chốt hành vi kiểm tra đầu vào, thứ bản port cũng phải tái tạo
 đúng, kể cả nguyên văn thông điệp và số dòng.
 
+## Dump trung gian
+
+So từng byte file .drawio chỉ làm được ở cuối chuỗi. Port xong layout/place mà
+chưa có writer thì không có cách nào biết nó đúng hay sai. Vì vậy mỗi case còn
+có một file `dumps/<case>.json` cắt trạng thái thành sáu chặng:
+
+| chặng | chốt module | nội dung |
+|---|---|---|
+| `table` | source, model | bảng sau parse: idx, loc, id, type, parent, lines, meta |
+| `issues` | schema, validate | level, loc, id, msg |
+| `text` | text | dòng đã ngắt và bề rộng, bề cao từng phần tử |
+| `place` | layout/place | lane, row, col của từng phần tử, cộng thứ tự topo |
+| `route` | layout/route, tracks | kiểu đi dây, cổng ra vào, các đoạn dây kèm track |
+| `geometry` | layout/geometry, labels | toạ độ cuối cùng, điểm gấp, vị trí nhãn |
+
+Bảng có lỗi thì chỉ có hai chặng `table` và `issues`, vì không có layout nào
+được dựng.
+
+Sinh ra bằng `reference/dump.py`, dùng riêng được:
+
+```
+python3 reference/dump.py <file> [--stage place]
+```
+
+### Ba quy ước để hai ngôn ngữ so được với nhau
+
+**Số.** Mọi số thực đi qua `ft.fmt`, đúng hàm sinh số trong file .drawio, nên
+dump và đầu ra cuối cùng chuẩn hóa số giống hệt nhau. Bản Go phải tái tạo cả
+những góc kỳ quặc: `fmt(-0.001)` ra `"-0"`, không phải `"0"` hay `"-0.00"`.
+
+**Thứ tự.** Phần tử và cạnh xếp theo thứ tự dòng trong bảng. Đoạn dây xếp theo
+khóa chuẩn hóa, vì hai bản có thể sinh cùng tập đoạn dây theo thứ tự append khác
+nhau. Khóa JSON luôn sắp xếp.
+
+**Mã lỗi không nằm trong dump.** Chặng `issues` chốt level, loc, id và msg. Mã
+máy là thứ mới do `docs/core-design.md` quy định, không phải hành vi được port,
+nên bản tham chiếu không có gì để đối chiếu ở đó.
+
+### Chặng phải thật sự phản ứng
+
+Một chặng luôn ra cùng một giá trị thì không chốt được gì, và điều đó im lặng
+cho tới lúc bản port sai đúng ở module ấy mà vẫn qua cổng. `DumpTest` trong
+`reference/tests/test_conformance.py` canh ba điều:
+
+- mỗi chặng phải khác nhau giữa các case;
+- `text` và `geometry` phải đổi khi bề rộng hộp đổi;
+- `place` và `route` phải **không** đổi khi tham số pixel đổi.
+
+Điều thứ ba là một bất biến của thiết kế, không chỉ của dump: các chặng lưới
+sống trên lane, row, col và chưa biết tới pixel. Mục 7 của `docs/core-design.md`
+dựa vào đúng tính chất này để LR và BT và RL chỉ là bốn giá trị của một ánh xạ.
+
 ## Lệnh
 
 ```
-python3 conformance/generate.py            # sinh lại golden
-python3 conformance/generate.py --check    # so golden hiện có, lệch thì mã thoát 1
+python3 conformance/generate.py            # sinh lại golden và dumps
+python3 conformance/generate.py --check    # so với bản đã commit, lệch thì mã thoát 1
 python3 tools/coverage.py                  # đo bộ case chạm tới nhánh nào
+python3 reference/dump.py <file>           # xem trạng thái trung gian của một bảng
 ```
 
 Sửa bản tham chiếu mà golden đổi thì phải xem từng thay đổi trong diff rồi mới

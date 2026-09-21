@@ -1,0 +1,451 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "84",
+      "134"
+     ],
+     [
+      "84",
+      "164"
+     ]
+    ]
+   },
+   "E2": {
+    "label": [
+     "150",
+     "169"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.71",
+    "points": [
+     [
+      "144",
+      "189"
+     ],
+     [
+      "278.21",
+      "189"
+     ]
+    ]
+   },
+   "E3": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "338.21",
+      "214"
+     ],
+     [
+      "338.21",
+      "244"
+     ]
+    ]
+   },
+   "E4": {
+    "label": [
+     "228.68",
+     "249"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.6",
+    "points": [
+     [
+      "278.21",
+      "269"
+     ],
+     [
+      "138",
+      "269"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "80",
+    "x": "44",
+    "y": "90"
+   },
+   "A-2": {
+    "h": "50",
+    "w": "120",
+    "x": "24",
+    "y": "164"
+   },
+   "A-3": {
+    "h": "50",
+    "w": "108",
+    "x": "30",
+    "y": "244"
+   },
+   "B-1": {
+    "h": "50",
+    "w": "120",
+    "x": "278.21",
+    "y": "164"
+   },
+   "B-2": {
+    "h": "50",
+    "w": "120",
+    "x": "278.21",
+    "y": "244"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "202.69",
+    "x": "0"
+   },
+   {
+    "id": "B",
+    "w": "219.53",
+    "x": "202.69"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "324",
+   "w": "422.21"
+  }
+ },
+ "issues": [],
+ "place": {
+  "items": {
+   "A-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "A-3": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 2
+   },
+   "B-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 1
+   },
+   "B-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 2
+   }
+  },
+  "lanes": [
+   "A",
+   "B"
+  ],
+  "topo": [
+   "A-1",
+   "A-2",
+   "B-1",
+   "B-2",
+   "A-3"
+  ]
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "B",
+    "entry": "L",
+    "entry_frac": [
+     "0",
+     "0.5"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ]
+   },
+   "E3": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E4": {
+    "back": false,
+    "case": "B",
+    "entry": "R",
+    "entry_frac": [
+     "1",
+     "0.5"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.5"
+    ]
+   }
+  },
+  "segs": []
+ },
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B",
+    "idx": 1,
+    "lines": [
+     "Lane B"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 2,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 7",
+    "meta": {},
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 3,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 4,
+    "lines": [
+     "Chuẩn bị"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "E2",
+    "idx": 5,
+    "lines": [
+     "gửi"
+    ],
+    "loc": "dòng 10",
+    "meta": {
+     "from": "A-2",
+     "to": "B-1"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-1",
+    "idx": 6,
+    "lines": [
+     "Nhận"
+    ],
+    "loc": "dòng 11",
+    "meta": {},
+    "parent": "B",
+    "type": "task"
+   },
+   {
+    "id": "E3",
+    "idx": 7,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 12",
+    "meta": {
+     "from": "B-1",
+     "to": "B-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-2",
+    "idx": 8,
+    "lines": [
+     "Ghi nhận"
+    ],
+    "loc": "dòng 13",
+    "meta": {},
+    "parent": "B",
+    "type": "task"
+   },
+   {
+    "id": "E4",
+    "idx": 9,
+    "lines": [
+     "trả về"
+    ],
+    "loc": "dòng 14",
+    "meta": {
+     "from": "B-2",
+     "to": "A-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-3",
+    "idx": 10,
+    "lines": [
+     "Kết thúc"
+    ],
+    "loc": "dòng 15",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   }
+  ],
+  "title": "Đi dây chữ L ra mặt bên rồi xuống"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "17",
+    "lines": [
+     "gửi"
+    ],
+    "lw": "26.69"
+   },
+   "E3": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E4": {
+    "lh": "17",
+    "lines": [
+     "trả về"
+    ],
+    "lw": "43.53"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "Vào"
+    ],
+    "w": "80"
+   },
+   "A-2": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Chuẩn bị"
+    ],
+    "w": "120"
+   },
+   "A-3": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Kết thúc"
+    ],
+    "w": "108"
+   },
+   "B-1": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Nhận"
+    ],
+    "w": "120"
+   },
+   "B-2": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Ghi nhận"
+    ],
+    "w": "120"
+   }
+  }
+ }
+}

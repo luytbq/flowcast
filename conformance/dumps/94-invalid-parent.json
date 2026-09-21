@@ -1,0 +1,68 @@
+{
+ "issues": [
+  {
+   "id": "A-2",
+   "level": "error",
+   "loc": "dòng 8",
+   "msg": "parent \"A-1\" không phải id của một lane"
+  },
+  {
+   "id": "A-2",
+   "level": "warning",
+   "loc": "dòng 8",
+   "msg": "task không có cạnh ra"
+  }
+ ],
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 2,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 3,
+    "lines": [
+     "Sai parent"
+    ],
+    "loc": "dòng 8",
+    "meta": {},
+    "parent": "A-1",
+    "type": "task"
+   }
+  ],
+  "title": "Phần tử có parent không phải lane"
+ }
+}

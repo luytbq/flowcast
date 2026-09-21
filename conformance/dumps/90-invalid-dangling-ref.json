@@ -1,0 +1,51 @@
+{
+ "issues": [
+  {
+   "id": "E1",
+   "level": "error",
+   "loc": "dòng 7",
+   "msg": "to=A-9 trỏ tới id không tồn tại"
+  }
+ ],
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 2,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "from": "A-1",
+     "to": "A-9"
+    },
+    "parent": "",
+    "type": "edge"
+   }
+  ],
+  "title": "Cạnh trỏ tới id không tồn tại"
+ }
+}

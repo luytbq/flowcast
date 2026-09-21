@@ -1,0 +1,720 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "265.66",
+      "134"
+     ],
+     [
+      "265.66",
+      "164"
+     ]
+    ]
+   },
+   "E2": {
+    "label": [
+     "176",
+     "174"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.55",
+    "points": [
+     [
+      "205.66",
+      "194"
+     ],
+     [
+      "126",
+      "194"
+     ]
+    ]
+   },
+   "E3": {
+    "label": [
+     "270.66",
+     "230"
+    ],
+    "label_off": [
+     "28.13",
+     "0"
+    ],
+    "label_t": "-0.03",
+    "points": [
+     [
+      "265.66",
+      "224"
+     ],
+     [
+      "265.66",
+      "254"
+     ]
+    ]
+   },
+   "E4": {
+    "label": [
+     "181",
+     "264"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.6",
+    "points": [
+     [
+      "210.66",
+      "284"
+     ],
+     [
+      "122",
+      "284"
+     ]
+    ]
+   },
+   "E5": {
+    "label": [
+     "270.66",
+     "320"
+    ],
+    "label_off": [
+     "28.13",
+     "0"
+    ],
+    "label_t": "-0.03",
+    "points": [
+     [
+      "265.66",
+      "314"
+     ],
+     [
+      "265.66",
+      "344"
+     ]
+    ]
+   },
+   "E6": {
+    "label": [
+     "184",
+     "354"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.62",
+    "points": [
+     [
+      "213.66",
+      "374"
+     ],
+     [
+      "119",
+      "374"
+     ]
+    ]
+   },
+   "E7": {
+    "label": [
+     "270.66",
+     "410"
+    ],
+    "label_off": [
+     "28.13",
+     "0"
+    ],
+    "label_t": "-0.03",
+    "points": [
+     [
+      "265.66",
+      "404"
+     ],
+     [
+      "265.66",
+      "434"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "50",
+    "w": "102",
+    "x": "24",
+    "y": "169"
+   },
+   "A-2": {
+    "h": "50",
+    "w": "94",
+    "x": "28",
+    "y": "259"
+   },
+   "A-3": {
+    "h": "50",
+    "w": "88",
+    "x": "31",
+    "y": "349"
+   },
+   "B-1": {
+    "h": "44",
+    "w": "80",
+    "x": "225.66",
+    "y": "90"
+   },
+   "B-2": {
+    "h": "60",
+    "w": "120",
+    "x": "205.66",
+    "y": "164"
+   },
+   "B-3": {
+    "h": "60",
+    "w": "110",
+    "x": "210.66",
+    "y": "254"
+   },
+   "B-4": {
+    "h": "60",
+    "w": "104",
+    "x": "213.66",
+    "y": "344"
+   },
+   "B-5": {
+    "h": "50",
+    "w": "106",
+    "x": "212.66",
+    "y": "434"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "150",
+    "x": "0"
+   },
+   {
+    "id": "B",
+    "w": "199.66",
+    "x": "150"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "514",
+   "w": "349.66"
+  }
+ },
+ "issues": [],
+ "place": {
+  "items": {
+   "A-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "A-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 2
+   },
+   "A-3": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 3
+   },
+   "B-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 0
+   },
+   "B-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 1
+   },
+   "B-3": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 2
+   },
+   "B-4": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 3
+   },
+   "B-5": {
+    "attach": null,
+    "col": 0,
+    "lane": 1,
+    "row": 4
+   }
+  },
+  "lanes": [
+   "A",
+   "B"
+  ],
+  "topo": [
+   "B-1",
+   "B-2",
+   "A-1",
+   "B-3",
+   "A-2",
+   "B-4",
+   "A-3",
+   "B-5"
+  ]
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "B",
+    "entry": "R",
+    "entry_frac": [
+     "1",
+     "0.5"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.5"
+    ]
+   },
+   "E3": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E4": {
+    "back": false,
+    "case": "B",
+    "entry": "R",
+    "entry_frac": [
+     "1",
+     "0.5"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.5"
+    ]
+   },
+   "E5": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E6": {
+    "back": false,
+    "case": "B",
+    "entry": "R",
+    "entry_frac": [
+     "1",
+     "0.5"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.5"
+    ]
+   },
+   "E7": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   }
+  },
+  "segs": []
+ },
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B",
+    "idx": 1,
+    "lines": [
+     "Lane B"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B-1",
+    "idx": 2,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 7",
+    "meta": {},
+    "parent": "B",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 3,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "from": "B-1",
+     "to": "B-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-2",
+    "idx": 4,
+    "lines": [
+     "Chặn một?"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "parent": "B",
+    "type": "condition"
+   },
+   {
+    "id": "E2",
+    "idx": 5,
+    "lines": [
+     "Có"
+    ],
+    "loc": "dòng 10",
+    "meta": {
+     "from": "B-2",
+     "to": "A-1"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E3",
+    "idx": 6,
+    "lines": [
+     "Không"
+    ],
+    "loc": "dòng 11",
+    "meta": {
+     "from": "B-2",
+     "to": "B-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-1",
+    "idx": 7,
+    "lines": [
+     "Lỗi một"
+    ],
+    "loc": "dòng 12",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   },
+   {
+    "id": "B-3",
+    "idx": 8,
+    "lines": [
+     "Chặn hai?"
+    ],
+    "loc": "dòng 13",
+    "meta": {},
+    "parent": "B",
+    "type": "condition"
+   },
+   {
+    "id": "E4",
+    "idx": 9,
+    "lines": [
+     "Có"
+    ],
+    "loc": "dòng 14",
+    "meta": {
+     "from": "B-3",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E5",
+    "idx": 10,
+    "lines": [
+     "Không"
+    ],
+    "loc": "dòng 15",
+    "meta": {
+     "from": "B-3",
+     "to": "B-4"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 11,
+    "lines": [
+     "Lỗi hai"
+    ],
+    "loc": "dòng 16",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   },
+   {
+    "id": "B-4",
+    "idx": 12,
+    "lines": [
+     "Chặn ba?"
+    ],
+    "loc": "dòng 17",
+    "meta": {},
+    "parent": "B",
+    "type": "condition"
+   },
+   {
+    "id": "E6",
+    "idx": 13,
+    "lines": [
+     "Có"
+    ],
+    "loc": "dòng 18",
+    "meta": {
+     "from": "B-4",
+     "to": "A-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E7",
+    "idx": 14,
+    "lines": [
+     "Không"
+    ],
+    "loc": "dòng 19",
+    "meta": {
+     "from": "B-4",
+     "to": "B-5"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-3",
+    "idx": 15,
+    "lines": [
+     "Lỗi ba"
+    ],
+    "loc": "dòng 20",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   },
+   {
+    "id": "B-5",
+    "idx": 16,
+    "lines": [
+     "Qua hết"
+    ],
+    "loc": "dòng 21",
+    "meta": {},
+    "parent": "B",
+    "type": "end"
+   }
+  ],
+  "title": "Nhiều cạnh khác đích chạy song song trong một máng"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "17",
+    "lines": [
+     "Có"
+    ],
+    "lw": "23.66"
+   },
+   "E3": {
+    "lh": "17",
+    "lines": [
+     "Không"
+    ],
+    "lw": "46.26"
+   },
+   "E4": {
+    "lh": "17",
+    "lines": [
+     "Có"
+    ],
+    "lw": "23.66"
+   },
+   "E5": {
+    "lh": "17",
+    "lines": [
+     "Không"
+    ],
+    "lw": "46.26"
+   },
+   "E6": {
+    "lh": "17",
+    "lines": [
+     "Có"
+    ],
+    "lw": "23.66"
+   },
+   "E7": {
+    "lh": "17",
+    "lines": [
+     "Không"
+    ],
+    "lw": "46.26"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Lỗi một"
+    ],
+    "w": "102"
+   },
+   "A-2": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Lỗi hai"
+    ],
+    "w": "94"
+   },
+   "A-3": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Lỗi ba"
+    ],
+    "w": "88"
+   },
+   "B-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "Vào"
+    ],
+    "w": "80"
+   },
+   "B-2": {
+    "h": "60",
+    "kind": "condition",
+    "lines": [
+     "Chặn một?"
+    ],
+    "w": "120"
+   },
+   "B-3": {
+    "h": "60",
+    "kind": "condition",
+    "lines": [
+     "Chặn hai?"
+    ],
+    "w": "110"
+   },
+   "B-4": {
+    "h": "60",
+    "kind": "condition",
+    "lines": [
+     "Chặn ba?"
+    ],
+    "w": "104"
+   },
+   "B-5": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Qua hết"
+    ],
+    "w": "106"
+   }
+  }
+ }
+}

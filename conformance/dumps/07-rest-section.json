@@ -1,0 +1,225 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "84",
+      "134"
+     ],
+     [
+      "84",
+      "164"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "80",
+    "x": "44",
+    "y": "90"
+   },
+   "A-2": {
+    "h": "50",
+    "w": "80",
+    "x": "44",
+    "y": "164"
+   },
+   "A-3": {
+    "h": "50",
+    "w": "120",
+    "x": "24",
+    "y": "244"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "168",
+    "x": "0"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "324",
+   "w": "168"
+  }
+ },
+ "issues": [
+  {
+   "id": "A-3",
+   "level": "warning",
+   "loc": "dòng 10",
+   "msg": "task không có cạnh ra"
+  }
+ ],
+ "place": {
+  "items": {
+   "A-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "A-3": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 2
+   }
+  },
+  "lanes": [
+   "A"
+  ],
+  "topo": [
+   "A-1",
+   "A-2",
+   "A-3"
+  ]
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   }
+  },
+  "segs": []
+ },
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 2,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 3,
+    "lines": [
+     "Xong"
+    ],
+    "loc": "dòng 8",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   },
+   {
+    "id": "A-9",
+    "idx": 4,
+    "lines": [
+     "Phần còn lại"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "parent": "A",
+    "type": "text"
+   },
+   {
+    "id": "A-3",
+    "idx": 5,
+    "lines": [
+     "Việc rời rạc"
+    ],
+    "loc": "dòng 10",
+    "meta": {},
+    "parent": "A",
+    "type": "task"
+   }
+  ],
+  "title": "Phần tử không đi tới được từ start"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "Vào"
+    ],
+    "w": "80"
+   },
+   "A-2": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Xong"
+    ],
+    "w": "80"
+   },
+   "A-3": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Việc rời rạc"
+    ],
+    "w": "120"
+   }
+  }
+ }
+}

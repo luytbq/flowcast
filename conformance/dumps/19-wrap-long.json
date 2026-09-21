@@ -1,0 +1,380 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "122",
+      "134"
+     ],
+     [
+      "122",
+      "171"
+     ]
+    ]
+   },
+   "E2": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "122",
+      "237"
+     ],
+     [
+      "122",
+      "274"
+     ]
+    ]
+   },
+   "E3": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "122",
+      "340"
+     ],
+     [
+      "122",
+      "370"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "92",
+    "x": "76",
+    "y": "90"
+   },
+   "A-2": {
+    "h": "66",
+    "w": "196",
+    "x": "24",
+    "y": "171"
+   },
+   "A-3": {
+    "h": "80",
+    "w": "154",
+    "x": "260",
+    "y": "164"
+   },
+   "A-4": {
+    "h": "66",
+    "w": "192",
+    "x": "26",
+    "y": "274"
+   },
+   "A-5": {
+    "h": "50",
+    "w": "80",
+    "x": "82",
+    "y": "370"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "462",
+    "x": "0"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "450",
+   "w": "462"
+  }
+ },
+ "issues": [],
+ "place": {
+  "items": {
+   "A-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "A-3": {
+    "attach": "A-2",
+    "col": 1,
+    "lane": 0,
+    "row": 1
+   },
+   "A-4": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 2
+   },
+   "A-5": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 3
+   }
+  },
+  "lanes": [
+   "A"
+  ],
+  "topo": [
+   "A-1",
+   "A-2",
+   "A-4",
+   "A-5"
+  ]
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E3": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   }
+  },
+  "segs": []
+ },
+ "table": {
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "Bắt đầu"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 2,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 3,
+    "lines": [
+     "Đối soát giao dịch với cổng thanh toán rồi ghi nhận kết quả vào sổ cái nội bộ"
+    ],
+    "loc": "dòng 8",
+    "meta": {},
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "A-3",
+    "idx": 4,
+    "lines": [
+     "DBTHANHTOANDOISOATGIAODICHNGOAITE"
+    ],
+    "loc": "dòng 9",
+    "meta": {
+     "attach": "A-2"
+    },
+    "parent": "A",
+    "type": "db"
+   },
+   {
+    "id": "E2",
+    "idx": 5,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 10",
+    "meta": {
+     "from": "A-2",
+     "to": "A-4"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-4",
+    "idx": 6,
+    "lines": [
+     "https://api.example.com/v1/transactions/reconcile?from=2026-01-01"
+    ],
+    "loc": "dòng 11",
+    "meta": {},
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "E3",
+    "idx": 7,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 12",
+    "meta": {
+     "from": "A-4",
+     "to": "A-5"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-5",
+    "idx": 8,
+    "lines": [
+     "Xong"
+    ],
+    "loc": "dòng 13",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   }
+  ],
+  "title": "Chữ dài phải ngắt dòng và ngắt cứng"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E3": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "Bắt đầu"
+    ],
+    "w": "92"
+   },
+   "A-2": {
+    "h": "66",
+    "kind": "task",
+    "lines": [
+     "Đối soát giao dịch với cổng",
+     "thanh toán rồi ghi nhận",
+     "kết quả vào sổ cái nội bộ"
+    ],
+    "w": "196"
+   },
+   "A-3": {
+    "h": "80",
+    "kind": "db",
+    "lines": [
+     "DBTHANHTOANDOIS",
+     "OATGIAODICHNGOAI",
+     "TE"
+    ],
+    "w": "154"
+   },
+   "A-4": {
+    "h": "66",
+    "kind": "task",
+    "lines": [
+     "https://api.example.com/",
+     "v1/transactions/reconcile?",
+     "from=2026-01-01"
+    ],
+    "w": "192"
+   },
+   "A-5": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Xong"
+    ],
+    "w": "80"
+   }
+  }
+ }
+}
