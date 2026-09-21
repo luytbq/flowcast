@@ -153,19 +153,20 @@ tools/coverage.py đo từng nhánh thuật toán và thoát với mã 1 nếu c
 
 | nhánh | số lần chạm |
 |---|---|
-| đi dây A, thẳng đứng | 73 |
-| đi dây B, thẳng ngang | 38 |
-| đi dây C, chữ L | 1 |
-| đi dây D, qua kênh và máng | 16 |
-| nhánh dạt trái | 11 |
-| nhánh dạt phải | 14 |
-| nhánh không rõ hướng | 69 |
-| đoạn nằm ở track thứ hai trở lên | 4 |
+| đi dây A (thẳng đứng) | 79 |
+| đi dây B (thẳng ngang) | 38 |
+| đi dây C (chữ L) | 1 |
+| đi dây D (qua kênh và máng) | 16 |
+| nhánh dạt trái (drift -1) | 11 |
+| nhánh dạt phải (drift 1) | 14 |
+| nhánh không rõ hướng (drift 0) | 75 |
+| track thứ hai trở lên | 4 |
 | db hoặc text bám node | 7 |
 | cạnh back | 2 |
-| cạnh có nhãn | 66 |
+| cạnh có nhãn | 70 |
 | phần tử tô nhấn | 3 |
 | ngắt dòng cứng giữa từ | 1 |
+| đầu vào ở dạng NFD | 1 |
 
 ### Lỗ hổng đã biết
 

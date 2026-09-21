@@ -13,9 +13,11 @@ chính sách của bên kia.
 Go, module `github.com/luytbq/flowcast`, mốc tương thích là phiên bản Go ổn định
 hiện hành.
 
-Core **chỉ dùng stdlib**. `archive/zip` và `encoding/xml` đủ để đọc xlsx; số đo
-font đọc từ `data/verdana.json` nên không cần thư viện font. Các package cli,
-web và render được dùng thư viện ngoài.
+Core **chỉ dùng stdlib, trừ một ngoại lệ**. `archive/zip` và `encoding/xml` đủ
+để đọc xlsx; số đo font đọc từ `data/verdana.json` nên không cần thư viện font.
+Ngoại lệ duy nhất là `golang.org/x/text/unicode/norm` cho chuẩn hóa NFC, vì
+stdlib không có và viết lại chuẩn hóa Unicode cho đúng là bãi mìn; lý do đầy đủ
+trong ADR-0005. Các package cli, web và render được dùng thư viện ngoài.
 
 Đây là một bản port, không phải một bản viết mới. Bản Python trong `reference/`
 ở lại repo và là máy sinh đáp án: mọi module Go phải tái tạo đúng từng byte đầu
@@ -46,11 +48,11 @@ flowcast/
   conformance/             bộ đối chiếu: cases/ và golden/
   data/verdana.json        bảng độ rộng glyph, dùng chung hai bản
   go.mod
-  issue.go                 Issue, Location, danh mục mã lỗi
-  model.go                 Row, Table
-  config.go                CoreConfig, Field, hồ sơ cli và web
   build.go                 hàm Build, điểm vào duy nhất của core
-  source/                  registry, đoán định dạng
+  config.go                CoreConfig, Field, hồ sơ cli và web
+  model/                   Row, Table, Issue, Location, Error
+  num/                     Fmt và Rnd, hai quy tắc chuẩn hóa số
+  source/                  Source, đoán định dạng, các adapter
     markdown.go  csv.go  xlsx.go  mermaid.go
   schema/                  lược đồ metadata
   validate/
@@ -68,8 +70,9 @@ flowcast/
   render/                  adapter drawio CLI: png, svg, verify
 ```
 
-Chia file theo pha đã có sẵn trong Layout.run của bản tham chiếu, không phải
-theo số dòng. Giữ đúng ranh giới đó làm cho việc đối chiếu từng module với bản
+model và num nằm riêng khỏi gói gốc vì mọi adapter đều cần chúng, còn gói gốc
+lại cần các adapter; gói gốc phơi lại bằng bí danh kiểu. Chia file theo pha đã
+có sẵn trong Layout.run của bản tham chiếu, không phải theo số dòng. Giữ đúng ranh giới đó làm cho việc đối chiếu từng module với bản
 Python trở nên khả thi.
 
 ## 3. Interface công khai
@@ -489,7 +492,7 @@ trung gian vào bản tham chiếu**, và bản Go dump đúng cùng định d�
 |---|---|---|
 | 1 | dump trung gian trong bản tham chiếu | xong |
 | 2 | text | xong, cùng `num` và `layout.SizeItem` |
-| 3 | model, source/markdown | định dạng gốc, không phải csv hay xlsx |
+| 3 | model, source/markdown | xong |
 | 4 | schema, validate | chốt bằng 6 case 9x, đúng nguyên văn và số dòng |
 | 5 | layout/place | phần nhiều luật nhất, đi chậm |
 | 6 | layout/route, layout/tracks | 4 kiểu đi dây, tô màu khoảng |
