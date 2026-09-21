@@ -45,6 +45,7 @@ func TestChangTable(t *testing.T) {
 				}
 				assertLines(t, w.ID+".lines", g.Lines, w.Lines)
 				assertMeta(t, w.ID, g.Meta, w.Meta)
+				assertLines(t, w.ID+".meta_order", g.MetaKeys, w.MetaOrder)
 			}
 			assertIssues(t, got.Issues, d.Table.Issues)
 		})

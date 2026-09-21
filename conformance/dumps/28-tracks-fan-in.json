@@ -848,6 +848,7 @@
     ],
     "loc": "dòng 5",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "lane"
    },
@@ -859,6 +860,7 @@
     ],
     "loc": "dòng 6",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "lane"
    },
@@ -870,6 +872,7 @@
     ],
     "loc": "dòng 7",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "start"
    },
@@ -884,6 +887,10 @@
      "from": "A-1",
      "to": "A-2"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -895,6 +902,7 @@
     ],
     "loc": "dòng 9",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "condition"
    },
@@ -909,6 +917,10 @@
      "from": "A-2",
      "to": "B-5"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -923,6 +935,10 @@
      "from": "A-2",
      "to": "A-3"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -934,6 +950,7 @@
     ],
     "loc": "dòng 12",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "condition"
    },
@@ -948,6 +965,10 @@
      "from": "A-3",
      "to": "B-4"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -962,6 +983,10 @@
      "from": "A-3",
      "to": "A-4"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -973,6 +998,7 @@
     ],
     "loc": "dòng 15",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "condition"
    },
@@ -987,6 +1013,10 @@
      "from": "A-4",
      "to": "B-3"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -1001,6 +1031,10 @@
      "from": "A-4",
      "to": "A-5"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -1012,6 +1046,7 @@
     ],
     "loc": "dòng 18",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "condition"
    },
@@ -1026,6 +1061,10 @@
      "from": "A-5",
      "to": "B-2"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -1040,6 +1079,10 @@
      "from": "A-5",
      "to": "A-6"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -1051,6 +1094,7 @@
     ],
     "loc": "dòng 21",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "task"
    },
@@ -1065,6 +1109,10 @@
      "from": "A-6",
      "to": "B-1"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -1076,6 +1124,7 @@
     ],
     "loc": "dòng 23",
     "meta": {},
+    "meta_order": [],
     "parent": "B",
     "type": "task"
    },
@@ -1090,6 +1139,10 @@
      "from": "B-1",
      "to": "B-2"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -1101,6 +1154,7 @@
     ],
     "loc": "dòng 25",
     "meta": {},
+    "meta_order": [],
     "parent": "B",
     "type": "task"
    },
@@ -1115,6 +1169,10 @@
      "from": "B-2",
      "to": "B-3"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -1126,6 +1184,7 @@
     ],
     "loc": "dòng 27",
     "meta": {},
+    "meta_order": [],
     "parent": "B",
     "type": "task"
    },
@@ -1140,6 +1199,10 @@
      "from": "B-3",
      "to": "B-4"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -1151,6 +1214,7 @@
     ],
     "loc": "dòng 29",
     "meta": {},
+    "meta_order": [],
     "parent": "B",
     "type": "task"
    },
@@ -1165,6 +1229,10 @@
      "from": "B-4",
      "to": "B-5"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -1176,6 +1244,7 @@
     ],
     "loc": "dòng 31",
     "meta": {},
+    "meta_order": [],
     "parent": "B",
     "type": "end"
    }

@@ -92,8 +92,12 @@ def stage_table(table, lay, parse_issues=()):
         'title': table.title,
         'source': table.source,
         'issues': [{'level': i.level, 'loc': i.loc, 'id': i.id, 'msg': i.msg} for i in parse_issues],
+        # meta_order là thứ tự key viết trong ô. Khóa JSON được sắp xếp nên
+        # meta không giữ được thứ tự đó, mà vòng cảnh báo key lạ lại duyệt
+        # theo đúng nó.
         'rows': [{'idx': r.idx, 'loc': r.loc, 'id': r.id, 'type': r.type,
-                  'parent': r.parent, 'lines': r.lines, 'meta': r.meta}
+                  'parent': r.parent, 'lines': r.lines, 'meta': r.meta,
+                  'meta_order': list(r.meta)}
                  for r in table.rows],
     }
 

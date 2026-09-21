@@ -123,6 +123,7 @@
     ],
     "loc": "dòng 5",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "lane"
    },
@@ -134,6 +135,7 @@
     ],
     "loc": "dòng 6",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "start"
    },
@@ -149,6 +151,11 @@
      "style": "zzz,aaa,dashed,mmm",
      "to": "A-2"
     },
+    "meta_order": [
+     "from",
+     "to",
+     "style"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -160,6 +167,7 @@
     ],
     "loc": "dòng 8",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "end"
    }

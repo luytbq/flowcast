@@ -346,6 +346,7 @@
     ],
     "loc": "dòng 5",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "lane"
    },
@@ -357,6 +358,7 @@
     ],
     "loc": "dòng 6",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "lane"
    },
@@ -368,6 +370,7 @@
     ],
     "loc": "dòng 7",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "lane"
    },
@@ -379,6 +382,7 @@
     ],
     "loc": "dòng 8",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "lane"
    },
@@ -390,6 +394,7 @@
     ],
     "loc": "dòng 9",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "lane"
    },
@@ -401,6 +406,7 @@
     ],
     "loc": "dòng 10",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "start"
    },
@@ -415,6 +421,10 @@
      "from": "A-1",
      "to": "B-1"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -426,6 +436,7 @@
     ],
     "loc": "dòng 12",
     "meta": {},
+    "meta_order": [],
     "parent": "B",
     "type": "task"
    },
@@ -440,6 +451,10 @@
      "from": "B-1",
      "to": "C-1"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -451,6 +466,7 @@
     ],
     "loc": "dòng 14",
     "meta": {},
+    "meta_order": [],
     "parent": "C",
     "type": "task"
    },
@@ -465,6 +481,10 @@
      "from": "C-1",
      "to": "D-1"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -476,6 +496,7 @@
     ],
     "loc": "dòng 16",
     "meta": {},
+    "meta_order": [],
     "parent": "D",
     "type": "task"
    },
@@ -490,6 +511,10 @@
      "from": "D-1",
      "to": "E-1"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -501,6 +526,7 @@
     ],
     "loc": "dòng 18",
     "meta": {},
+    "meta_order": [],
     "parent": "E",
     "type": "task"
    },
@@ -515,6 +541,10 @@
      "from": "E-1",
      "to": "A-2"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -526,6 +556,7 @@
     ],
     "loc": "dòng 20",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "end"
    }

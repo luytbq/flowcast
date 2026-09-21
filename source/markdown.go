@@ -55,15 +55,16 @@ func ParseMarkdown(data []byte) (model.Table, error) {
 			})
 			continue
 		}
-		meta := parseMeta(cells[4], loc, cells[0], &issues, unescape)
+		meta, metaKeys := parseMeta(cells[4], loc, cells[0], &issues, unescape)
 		rows = append(rows, model.Row{
-			Idx:    len(rows),
-			Loc:    loc,
-			ID:     cells[0],
-			Type:   strings.ToLower(cells[1]),
-			Parent: cells[2],
-			Lines:  mdLines(cells[3]),
-			Meta:   meta,
+			Idx:      len(rows),
+			Loc:      loc,
+			ID:       cells[0],
+			Type:     strings.ToLower(cells[1]),
+			Parent:   cells[2],
+			Lines:    mdLines(cells[3]),
+			Meta:     meta,
+			MetaKeys: metaKeys,
 		})
 	}
 	return model.Table{Title: title, Rows: rows, Issues: issues, Source: "markdown"}, nil
@@ -123,8 +124,9 @@ func mdLines(cell string) []string {
 //
 // Khóa không được gỡ escape, chỉ giá trị. Khóa trùng thì cái sau đè cái trước.
 func parseMeta(cell string, loc model.Location, rid string, issues *[]model.Issue,
-	unesc func(string) string) map[string]string {
+	unesc func(string) string) (map[string]string, []string) {
 	meta := map[string]string{}
+	var order []string
 	for _, part := range strings.Split(cell, ";") {
 		part = strings.TrimSpace(part)
 		if part == "" {
@@ -137,11 +139,17 @@ func parseMeta(cell string, loc model.Location, rid string, issues *[]model.Issu
 				Level: model.LevelError,
 				Loc:   loc,
 				ID:    rid,
-				Msg:   fmt.Sprintf("metadata sai cú pháp: %q (cần key=value)", part),
+				Msg:   fmt.Sprintf("metadata sai cú pháp: \"%s\" (cần key=value)", part),
 			})
 			continue
 		}
-		meta[strings.TrimSpace(k)] = unesc(strings.TrimSpace(v))
+		key := strings.TrimSpace(k)
+		// Key viết lại thì giá trị đè lên nhưng vị trí giữ nguyên, đúng như
+		// dict của Python.
+		if _, seen := meta[key]; !seen {
+			order = append(order, key)
+		}
+		meta[key] = unesc(strings.TrimSpace(v))
 	}
-	return meta
+	return meta, order
 }

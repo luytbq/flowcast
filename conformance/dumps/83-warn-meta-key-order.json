@@ -10,11 +10,11 @@
     "label_t": "0",
     "points": [
      [
-      "84",
+      "64",
       "134"
      ],
      [
-      "84",
+      "64",
       "164"
      ]
     ]
@@ -24,26 +24,20 @@
    "A-1": {
     "h": "44",
     "w": "80",
-    "x": "44",
+    "x": "24",
     "y": "90"
    },
    "A-2": {
     "h": "50",
     "w": "80",
-    "x": "44",
-    "y": "164"
-   },
-   "A-3": {
-    "h": "50",
-    "w": "120",
     "x": "24",
-    "y": "244"
+    "y": "164"
    }
   },
   "lanes": [
    {
     "id": "A",
-    "w": "168",
+    "w": "128",
     "x": "0"
    }
   ],
@@ -52,16 +46,28 @@
    "40"
   ],
   "pool": {
-   "h": "324",
-   "w": "168"
+   "h": "244",
+   "w": "128"
   }
  },
  "issues": [
   {
-   "id": "A-3",
+   "id": "E1",
    "level": "warning",
-   "loc": "dòng 10",
-   "msg": "task không có cạnh ra"
+   "loc": "dòng 7",
+   "msg": "metadata \"zeta\" không dùng cho type edge, bị bỏ qua"
+  },
+  {
+   "id": "E1",
+   "level": "warning",
+   "loc": "dòng 7",
+   "msg": "metadata \"alpha\" không dùng cho type edge, bị bỏ qua"
+  },
+  {
+   "id": "E1",
+   "level": "warning",
+   "loc": "dòng 7",
+   "msg": "metadata \"mu\" không dùng cho type edge, bị bỏ qua"
   }
  ],
  "place": {
@@ -77,12 +83,6 @@
     "col": 0,
     "lane": 0,
     "row": 1
-   },
-   "A-3": {
-    "attach": null,
-    "col": 0,
-    "lane": 0,
-    "row": 2
    }
   },
   "lanes": [
@@ -90,8 +90,7 @@
   ],
   "topo": [
    "A-1",
-   "A-2",
-   "A-3"
+   "A-2"
   ]
  },
  "route": {
@@ -148,12 +147,20 @@
     ],
     "loc": "dòng 7",
     "meta": {
+     "alpha": "2",
      "from": "A-1",
-     "to": "A-2"
+     "mu": "3",
+     "style": "highlight",
+     "to": "A-2",
+     "zeta": "1"
     },
     "meta_order": [
      "from",
-     "to"
+     "to",
+     "zeta",
+     "alpha",
+     "style",
+     "mu"
     ],
     "parent": "",
     "type": "edge"
@@ -169,34 +176,10 @@
     "meta_order": [],
     "parent": "A",
     "type": "end"
-   },
-   {
-    "id": "A-9",
-    "idx": 4,
-    "lines": [
-     "Phần còn lại"
-    ],
-    "loc": "dòng 9",
-    "meta": {},
-    "meta_order": [],
-    "parent": "A",
-    "type": "text"
-   },
-   {
-    "id": "A-3",
-    "idx": 5,
-    "lines": [
-     "Việc rời rạc"
-    ],
-    "loc": "dòng 10",
-    "meta": {},
-    "meta_order": [],
-    "parent": "A",
-    "type": "task"
    }
   ],
   "source": "markdown",
-  "title": "Phần tử không đi tới được từ start"
+  "title": "Nhiều key metadata lạ trên một dòng"
  },
  "text": {
   "edges": {
@@ -222,14 +205,6 @@
      "Xong"
     ],
     "w": "80"
-   },
-   "A-3": {
-    "h": "50",
-    "kind": "task",
-    "lines": [
-     "Việc rời rạc"
-    ],
-    "w": "120"
    }
   }
  }

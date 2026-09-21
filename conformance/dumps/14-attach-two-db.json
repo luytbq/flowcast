@@ -173,6 +173,7 @@
     ],
     "loc": "dòng 5",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "lane"
    },
@@ -184,6 +185,7 @@
     ],
     "loc": "dòng 6",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "start"
    },
@@ -198,6 +200,10 @@
      "from": "A-1",
      "to": "A-2"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -209,6 +215,7 @@
     ],
     "loc": "dòng 8",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "task"
    },
@@ -222,6 +229,9 @@
     "meta": {
      "attach": "A-2"
     },
+    "meta_order": [
+     "attach"
+    ],
     "parent": "A",
     "type": "db"
    },
@@ -235,6 +245,9 @@
     "meta": {
      "attach": "A-2"
     },
+    "meta_order": [
+     "attach"
+    ],
     "parent": "A",
     "type": "db"
    },
@@ -249,6 +262,10 @@
      "from": "A-2",
      "to": "A-5"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -260,6 +277,7 @@
     ],
     "loc": "dòng 12",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "end"
    }

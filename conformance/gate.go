@@ -16,13 +16,14 @@ import (
 
 // Row là một dòng bảng như chặng table của dump ghi lại.
 type Row struct {
-	Idx    int               `json:"idx"`
-	Loc    string            `json:"loc"`
-	ID     string            `json:"id"`
-	Type   string            `json:"type"`
-	Parent string            `json:"parent"`
-	Lines  []string          `json:"lines"`
-	Meta   map[string]string `json:"meta"`
+	Idx       int               `json:"idx"`
+	Loc       string            `json:"loc"`
+	ID        string            `json:"id"`
+	Type      string            `json:"type"`
+	Parent    string            `json:"parent"`
+	Lines     []string          `json:"lines"`
+	Meta      map[string]string `json:"meta"`
+	MetaOrder []string          `json:"meta_order"`
 }
 
 type DumpIssue struct {
@@ -61,9 +62,10 @@ type TextStage struct {
 
 // Dump là một file conformance/dumps/<case>.json.
 type Dump struct {
-	Name  string     // tên case, không có đuôi
-	Table TableStage `json:"table"`
-	Text  *TextStage `json:"text"`
+	Name   string      // tên case, không có đuôi
+	Table  TableStage  `json:"table"`
+	Text   *TextStage  `json:"text"`
+	Issues []DumpIssue `json:"issues"`
 }
 
 // CaseFile trả về đường dẫn bảng đầu vào của một case.

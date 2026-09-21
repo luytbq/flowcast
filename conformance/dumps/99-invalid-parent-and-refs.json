@@ -60,6 +60,7 @@
     ],
     "loc": "dòng 5",
     "meta": {},
+    "meta_order": [],
     "parent": "A",
     "type": "lane"
    },
@@ -71,6 +72,7 @@
     ],
     "loc": "dòng 6",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "lane"
    },
@@ -82,6 +84,7 @@
     ],
     "loc": "dòng 7",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "task"
    },
@@ -95,6 +98,9 @@
     "meta": {
      "from": "A-1"
     },
+    "meta_order": [
+     "from"
+    ],
     "parent": "A",
     "type": "edge"
    },
@@ -109,6 +115,10 @@
      "from": "A",
      "to": "A-1"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -122,6 +132,9 @@
     "meta": {
      "attach": "KHONGCO"
     },
+    "meta_order": [
+     "attach"
+    ],
     "parent": "A",
     "type": "db"
    },
@@ -135,6 +148,9 @@
     "meta": {
      "attach": "B"
     },
+    "meta_order": [
+     "attach"
+    ],
     "parent": "A",
     "type": "text"
    }

@@ -30,6 +30,7 @@
     ],
     "loc": "dòng 5",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "start"
    },
@@ -44,6 +45,10 @@
      "from": "A-1",
      "to": "A-2"
     },
+    "meta_order": [
+     "from",
+     "to"
+    ],
     "parent": "",
     "type": "edge"
    },
@@ -55,6 +60,7 @@
     ],
     "loc": "dòng 7",
     "meta": {},
+    "meta_order": [],
     "parent": "",
     "type": "end"
    }

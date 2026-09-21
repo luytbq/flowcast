@@ -15,6 +15,9 @@ type Row struct {
 	Parent string
 	Lines  []string
 	Meta   map[string]string
+	// MetaKeys là thứ tự key viết trong ô. Cần vì map của Go duyệt ngẫu nhiên,
+	// còn thứ tự cảnh báo về key lạ phải theo đúng thứ tự người dùng viết.
+	MetaKeys []string
 }
 
 // Text nối các dòng nội dung rồi cắt khoảng trắng, đúng cách bản tham chiếu
