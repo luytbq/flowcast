@@ -47,11 +47,11 @@ PY
 mutate "bỏ ký tự - khỏi chỗ được ngắt" text/measure.go '=&?-"' '=&?"'
 mutate "bỏ nhánh :: khỏi chỗ được ngắt" text/measure.go "return i >= 2 && r[i-1] == ':' && r[i-2] == ':'" 'return false'
 mutate "codepoint lạ đo bằng 0 thay vì notdef" text/metrics.go 'total += m.Notdef' 'total += 0'
-mutate "quên guard chỉ số trong breakAfter" text/measure.go 'if i < 1 || i > len(r) {' 'if false {'
 mutate "bỏ thu hẹp nhị phân trong Wrap" text/measure.go 'out = append(out, t.wrapLine(line, float64(hi))...)' 'out = append(out, first...)'
 mutate "không bật cờ hard khi cắt cứng" text/measure.go 't.hard = true' '_ = 0'
-mutate "ngân sách ngắt dòng của task lệch 2px" layout/size.go 'cfg.TaskMaxW-32' 'cfg.TaskMaxW-30'
-mutate "ngân sách ngắt dòng của hình thoi lệch 10px" layout/size.go 'float64(cfg.CondWrap))' 'float64(cfg.CondWrap)+10)'
+mutate "ngân sách ngắt dòng của task lệch 2px" layout/size.go 'cfg.TaskMaxW - 32' 'cfg.TaskMaxW - 30'
+mutate "ngân sách của loại lạ dùng DBWrap" layout/size.go 'return float64(cfg.TextWrap)' 'return float64(cfg.DBWrap)'
+mutate "ngân sách ngắt dòng của hình thoi lệch 10px" layout/size.go 'return float64(cfg.CondWrap)' 'return float64(cfg.CondWrap) + 10'
 mutate "Fmt làm tròn 3 chữ số thay vì 2" num/num.go "'f', 2, 64" "'f', 3, 64"
 mutate "Rnd làm tròn xuống thay vì lên" num/num.go 'math.Ceil(v/2.0)' 'math.Floor(v/2.0)'
 

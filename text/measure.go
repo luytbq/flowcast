@@ -46,10 +46,8 @@ func (t *Measure) Box(lines []string) (w, h float64) {
 	return w, float64(len(lines)) * t.LineH
 }
 
+// breakAfter nói có được ngắt ngay trước vị trí i hay không. Gọi với 1 <= i <= len(r).
 func breakAfter(r []rune, i int) bool {
-	if i < 1 || i > len(r) {
-		return false
-	}
 	if strings.ContainsRune(breakChars, r[i-1]) {
 		return true
 	}

@@ -70,7 +70,14 @@ def main(argv):
             wl, w, h = lay.size_item(kind, [content])
             rows.append({'text': content, 'lines': wl, 'w': ft.fmt(w), 'h': ft.fmt(h)})
         sizes.append({'kind': kind, 'rows': rows})
-    doc = {'size': tm.size, 'line_h': tm.line_h, 'samples': out, 'sizes': sizes}
+    cfg = ft.Config()
+    budgets = {k: {'task': cfg.task_max_w - 32, 'condition': cfg.cond_wrap,
+                   'start': cfg.term_wrap, 'end': cfg.term_wrap, 'external': cfg.term_wrap,
+                   'db': cfg.db_wrap}.get(k, cfg.text_wrap)
+               for k in KINDS + ['loại lạ']}
+    budgets['__label__'] = cfg.label_wrap
+    doc = {'size': tm.size, 'line_h': tm.line_h, 'samples': out, 'sizes': sizes,
+           'budgets': budgets}
     with open(argv[0], 'w', encoding='utf-8') as f:
         json.dump(doc, f, ensure_ascii=False, separators=(',', ':'), sort_keys=True)
         f.write('\n')

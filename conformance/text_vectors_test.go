@@ -42,6 +42,7 @@ type vectorFile struct {
 	LineH   float64        `json:"line_h"`
 	Samples []sampleVector `json:"samples"`
 	Sizes   []sizeKind     `json:"sizes"`
+	Budgets map[string]int `json:"budgets"`
 }
 
 // TestVectorNgatDong quét bề rộng từng pixel một.
@@ -99,6 +100,38 @@ func TestVectorNgatDong(t *testing.T) {
 		t.Errorf("... và %d vector lệch nữa", failed-5)
 	}
 	t.Logf("đã so %d vector", checked)
+}
+
+// TestNganSachNgatDong chốt thẳng con số, không qua hành vi.
+//
+// Một hằng số lệch 2px gần như không lộ ra qua đầu ra: ranh giới ký tự phải rơi
+// đúng vào khoảng lệch đó mới đổi số dòng, và với chữ rộng khoảng 7px thì cửa
+// sổ 2px thường rỗng. Đã kiểm bằng mutation test.
+func TestNganSachNgatDong(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join(Dir(), "text-vectors.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var vf vectorFile
+	if err := json.Unmarshal(data, &vf); err != nil {
+		t.Fatal(err)
+	}
+	if len(vf.Budgets) == 0 {
+		t.Fatal("vector không có mục ngân sách; chạy lại tools/text_vectors.py")
+	}
+	cfg := layout.DefaultConfig()
+	for kind, want := range vf.Budgets {
+		if kind == "__label__" {
+			if got := cfg.LabelWrap; got != want {
+				t.Errorf("ngân sách nhãn cạnh = %d, cần %d", got, want)
+			}
+			continue
+		}
+		if got := layout.WrapBudget(cfg, kind); got != float64(want) {
+			t.Errorf("ngân sách của %q = %v, cần %d", kind, got, want)
+		}
+	}
+	t.Logf("đã so %d ngân sách", len(vf.Budgets))
 }
 
 // TestVectorKichThuoc chốt ngân sách ngắt dòng của từng loại phần tử.
