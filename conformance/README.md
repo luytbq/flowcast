@@ -12,9 +12,10 @@ thành máy sinh đáp án chứ không phải tài liệu tham khảo.
 ## Cấu trúc
 
 ```
-cases/    bảng đầu vào, viết tay, mỗi file chốt một nhánh thuật toán
-golden/   đầu ra cuối cùng do bản tham chiếu sinh
-dumps/    trạng thái trung gian, cổng chặn cho từng module Go
+cases/             bảng đầu vào, viết tay, mỗi file chốt một nhánh thuật toán
+golden/            đầu ra cuối cùng do bản tham chiếu sinh
+dumps/             trạng thái trung gian, cổng chặn cho từng module Go
+text-vectors.json  vector riêng cho việc đo chữ và ngắt dòng
 ```
 
 Mỗi case cho ra hai file trong golden/:
@@ -79,6 +80,47 @@ cho tới lúc bản port sai đúng ở module ấy mà vẫn qua cổng. `Dump
 Điều thứ ba là một bất biến của thiết kế, không chỉ của dump: các chặng lưới
 sống trên lane, row, col và chưa biết tới pixel. Mục 7 của `docs/core-design.md`
 dựa vào đúng tính chất này để LR và BT và RL chỉ là bốn giá trị của một ánh xạ.
+
+## Vector đo chữ
+
+Bộ case sơ đồ quá lỏng để chốt module text, và điều đó chỉ lộ ra khi đem thử
+đột biến. Nguyên nhân nằm trong chính thuật toán: `Wrap` thu hẹp về bề rộng nhỏ
+nhất vẫn giữ nguyên số dòng, nên đổi ngân sách vài pixel mà không lật số dòng
+thì đầu ra y hệt. Đổi `CondWrap` thêm 10 vẫn không làm case nào đỏ.
+
+`text-vectors.json` vá chỗ đó bằng ba lớp:
+
+| lớp | số lượng | chốt |
+|---|---|---|
+| quét bề rộng từng pixel, 20 tới 300 | 2529 | `Wrap`, `Box`, cờ ngắt cứng |
+| thang bậc nội dung dài dần theo từng loại | 770 | `SizeItem` |
+| ngân sách ngắt dòng theo từng loại | 9 | `WrapBudget` |
+
+Lớp thứ ba chốt thẳng con số thay vì chốt qua hành vi, vì một hằng số lệch 2px
+gần như không lộ ra: ranh giới ký tự phải rơi đúng vào khoảng lệch mới đổi số
+dòng, mà chữ rộng khoảng 7px nên cửa sổ 2px thường rỗng.
+
+Sinh lại bằng:
+
+```
+python3 tools/text_vectors.py conformance/text-vectors.json
+```
+
+## Thử đột biến
+
+```
+sh tools/mutate.sh
+```
+
+Cố tình làm sai từng chỗ rồi xem test có đỏ không. Một bộ đối chiếu trông đồ sộ
+mà không bắt được đột biến nào thì không chốt gì, và điều đó im lặng cho tới lúc
+bản port sai thật. Chạy lại sau mỗi lần thêm module Go.
+
+Công cụ khôi phục bằng `git checkout` chứ không bằng sed ngược, và bắt buộc
+chuỗi đích xuất hiện đúng một lần. Cả hai luật đó đến từ việc làm sai: sed ngược
+từng ghi đè nhầm một mệnh đề canh và để lại code hỏng vẫn qua được test, còn
+thay chỗ đầu khi có nhiều chỗ thì để lại bản sao nguyên vẹn và khiến đột biến
+vô hại trông như cổng bỏ lọt.
 
 ## Lệnh
 
