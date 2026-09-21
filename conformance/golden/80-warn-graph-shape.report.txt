@@ -1,0 +1,9 @@
+WARNING dòng 6 [A-1]: start có cạnh đi vào: E5
+WARNING dòng 9 [E2]: cạnh ra của condition A-2 không có nhãn
+WARNING dòng 11 [A-3]: end có cạnh đi ra: E4
+WARNING dòng 13 [A-4]: end có cạnh đi ra: E5
+WARNING dòng 14 [E5]: A-1 đứng trước nguồn A-4 nhưng cạnh không ghi back=true
+check: 0 lỗi, 5 cảnh báo
+build: 1 lane, 4 phần tử, 5 cạnh, 432.18x353px
+WARNING layout: có vòng lặp chưa đánh dấu back=true, xếp theo thứ tự bảng: A-1, A-2, A-3, A-4
+layout: 0 lỗi, 0 cảnh báo

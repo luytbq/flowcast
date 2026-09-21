@@ -1,0 +1,145 @@
+{
+ "issues": [
+  {
+   "id": "A",
+   "level": "error",
+   "loc": "dòng 5",
+   "msg": "lane phải để trống parent"
+  },
+  {
+   "id": "A-1",
+   "level": "error",
+   "loc": "dòng 7",
+   "msg": "thiếu parent (id của lane chứa phần tử)"
+  },
+  {
+   "id": "E1",
+   "level": "error",
+   "loc": "dòng 8",
+   "msg": "edge phải để trống parent"
+  },
+  {
+   "id": "E1",
+   "level": "error",
+   "loc": "dòng 8",
+   "msg": "edge thiếu to"
+  },
+  {
+   "id": "E2",
+   "level": "error",
+   "loc": "dòng 9",
+   "msg": "from=A là lane; cạnh chỉ nối start/end/task/condition/external"
+  },
+  {
+   "id": "A-2",
+   "level": "error",
+   "loc": "dòng 10",
+   "msg": "attach=KHONGCO trỏ tới id không tồn tại"
+  },
+  {
+   "id": "A-3",
+   "level": "error",
+   "loc": "dòng 11",
+   "msg": "attach=B là lane; chỉ gắn được vào start/end/task/condition/external"
+  },
+  {
+   "id": "A-1",
+   "level": "warning",
+   "loc": "dòng 7",
+   "msg": "task không có cạnh ra"
+  }
+ ],
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane không được có parent"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "A",
+    "type": "lane"
+   },
+   {
+    "id": "B",
+    "idx": 1,
+    "lines": [
+     "Lane B"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 2,
+    "lines": [
+     "Thiếu parent"
+    ],
+    "loc": "dòng 7",
+    "meta": {},
+    "parent": "",
+    "type": "task"
+   },
+   {
+    "id": "E1",
+    "idx": 3,
+    "lines": [
+     "Edge không được có parent"
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "from": "A-1"
+    },
+    "parent": "A",
+    "type": "edge"
+   },
+   {
+    "id": "E2",
+    "idx": 4,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 9",
+    "meta": {
+     "from": "A",
+     "to": "A-1"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 5,
+    "lines": [
+     "DB.X"
+    ],
+    "loc": "dòng 10",
+    "meta": {
+     "attach": "KHONGCO"
+    },
+    "parent": "A",
+    "type": "db"
+   },
+   {
+    "id": "A-3",
+    "idx": 6,
+    "lines": [
+     "Ghi chú"
+    ],
+    "loc": "dòng 11",
+    "meta": {
+     "attach": "B"
+    },
+    "parent": "A",
+    "type": "text"
+   }
+  ],
+  "source": "markdown",
+  "title": "Parent và tham chiếu sai"
+ }
+}

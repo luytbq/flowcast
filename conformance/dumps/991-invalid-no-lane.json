@@ -1,0 +1,65 @@
+{
+ "issues": [
+  {
+   "id": "",
+   "level": "error",
+   "loc": "",
+   "msg": "bảng không có lane nào"
+  },
+  {
+   "id": "A-1",
+   "level": "error",
+   "loc": "dòng 5",
+   "msg": "thiếu parent (id của lane chứa phần tử)"
+  },
+  {
+   "id": "A-2",
+   "level": "error",
+   "loc": "dòng 7",
+   "msg": "thiếu parent (id của lane chứa phần tử)"
+  }
+ ],
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A-1",
+    "idx": 0,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 1,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 6",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 2,
+    "lines": [
+     "Xong"
+    ],
+    "loc": "dòng 7",
+    "meta": {},
+    "parent": "",
+    "type": "end"
+   }
+  ],
+  "source": "markdown",
+  "title": "Bảng không có lane nào"
+ }
+}

@@ -1,0 +1,464 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "84",
+      "134"
+     ],
+     [
+      "84",
+      "164"
+     ]
+    ]
+   },
+   "E2": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "84",
+      "214"
+     ],
+     [
+      "84",
+      "244"
+     ]
+    ]
+   },
+   "E3": {
+    "label": [
+     "140",
+     "254"
+    ],
+    "label_off": [
+     "0",
+     "-11.5"
+    ],
+    "label_t": "-0.88",
+    "points": [
+     [
+      "134",
+      "274"
+     ],
+     [
+      "190.66",
+      "274"
+     ],
+     [
+      "190.66",
+      "146"
+     ],
+     [
+      "84",
+      "146"
+     ],
+     [
+      "84",
+      "164"
+     ]
+    ]
+   },
+   "E4": {
+    "label": [
+     "89",
+     "310"
+    ],
+    "label_off": [
+     "28.13",
+     "0"
+    ],
+    "label_t": "-0.03",
+    "points": [
+     [
+      "84",
+      "304"
+     ],
+     [
+      "84",
+      "334"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "80",
+    "x": "44",
+    "y": "90"
+   },
+   "A-2": {
+    "h": "50",
+    "w": "120",
+    "x": "24",
+    "y": "164"
+   },
+   "A-3": {
+    "h": "60",
+    "w": "100",
+    "x": "34",
+    "y": "244"
+   },
+   "A-4": {
+    "h": "50",
+    "w": "80",
+    "x": "44",
+    "y": "334"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "205.66",
+    "x": "0"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "414",
+   "w": "205.66"
+  }
+ },
+ "issues": [
+  {
+   "id": "E3",
+   "level": "warning",
+   "loc": "dòng 11",
+   "msg": "back=\"maybe\" không hợp lệ, chỉ nhận true/false"
+  },
+  {
+   "id": "E3",
+   "level": "warning",
+   "loc": "dòng 11",
+   "msg": "A-2 đứng trước nguồn A-3 nhưng cạnh không ghi back=true"
+  }
+ ],
+ "place": {
+  "items": {
+   "A-1": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-2": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "A-3": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 2
+   },
+   "A-4": {
+    "attach": null,
+    "col": 0,
+    "lane": 0,
+    "row": 3
+   }
+  },
+  "lanes": [
+   "A"
+  ],
+  "topo": [
+   "A-1",
+   "A-2",
+   "A-3",
+   "A-4"
+  ]
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   },
+   "E3": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ]
+   },
+   "E4": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ]
+   }
+  },
+  "segs": [
+   {
+    "hi": 2,
+    "key": "('to', 'A-2')",
+    "lo": 1,
+    "res": [
+     "C",
+     "1"
+    ],
+    "stubs": [
+     [
+      1,
+      1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 5,
+    "key": "('to', 'A-2')",
+    "lo": 2,
+    "res": [
+     "G",
+     "0",
+     "1"
+    ],
+    "stubs": [
+     [
+      5,
+      -1
+     ]
+    ],
+    "track": 0
+   }
+  ]
+ },
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 2,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 3,
+    "lines": [
+     "Thử"
+    ],
+    "loc": "dòng 8",
+    "meta": {},
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "E2",
+    "idx": 4,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 9",
+    "meta": {
+     "from": "A-2",
+     "to": "A-3"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-3",
+    "idx": 5,
+    "lines": [
+     "Lại?"
+    ],
+    "loc": "dòng 10",
+    "meta": {},
+    "parent": "A",
+    "type": "condition"
+   },
+   {
+    "id": "E3",
+    "idx": 6,
+    "lines": [
+     "Có"
+    ],
+    "loc": "dòng 11",
+    "meta": {
+     "back": "maybe",
+     "from": "A-3",
+     "to": "A-2"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E4",
+    "idx": 7,
+    "lines": [
+     "Không"
+    ],
+    "loc": "dòng 12",
+    "meta": {
+     "from": "A-3",
+     "to": "A-4"
+    },
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-4",
+    "idx": 8,
+    "lines": [
+     "Xong"
+    ],
+    "loc": "dòng 13",
+    "meta": {},
+    "parent": "A",
+    "type": "end"
+   }
+  ],
+  "source": "markdown",
+  "title": "back có giá trị lạ trên cạnh quay ngược"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E3": {
+    "lh": "17",
+    "lines": [
+     "Có"
+    ],
+    "lw": "23.66"
+   },
+   "E4": {
+    "lh": "17",
+    "lines": [
+     "Không"
+    ],
+    "lw": "46.26"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "Vào"
+    ],
+    "w": "80"
+   },
+   "A-2": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "Thử"
+    ],
+    "w": "120"
+   },
+   "A-3": {
+    "h": "60",
+    "kind": "condition",
+    "lines": [
+     "Lại?"
+    ],
+    "w": "100"
+   },
+   "A-4": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "Xong"
+    ],
+    "w": "80"
+   }
+  }
+ }
+}

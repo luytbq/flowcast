@@ -12,6 +12,7 @@ thì thoát với mã 1.
 """
 import collections
 import os
+import re
 import unicodedata
 import sys
 
@@ -40,6 +41,41 @@ THRESHOLDS = {
     'đầu vào ở dạng NFD': 1,
 }
 
+# Luật trong validate, nhận diện bằng mẫu trên thông điệp.
+#
+# Đo riêng vì 16 trên 25 luật từng không được case nào chạm tới, mà điều đó
+# không nhìn thấy được qua số lượng case.
+VALIDATE_RULES = [
+    (r'^id trống', 'validate: id trống'),
+    (r'trùng id dành riêng', 'validate: id dành riêng của draw.io'),
+    (r'^id trùng với', 'validate: id trùng'),
+    (r'^type không hợp lệ', 'validate: type lạ'),
+    (r'^bảng không có lane', 'validate: bảng không có lane'),
+    (r'phải để trống parent', 'validate: lane hoặc edge có parent'),
+    (r'^thiếu parent', 'validate: thiếu parent'),
+    (r'không phải id của một lane', 'validate: parent không phải lane'),
+    (r'^metadata ".*" không dùng', 'validate: key metadata lạ'),
+    (r'^style ".*" không dùng', 'validate: style lạ'),
+    (r'^back=', 'validate: back sai giá trị'),
+    (r'thiếu from|thiếu to', 'validate: edge thiếu from hoặc to'),
+    (r'^(from|to)=.*trỏ tới id không tồn tại', 'validate: from hoặc to treo'),
+    (r'^(from|to)=.*là .*; cạnh chỉ nối', 'validate: from hoặc to sai loại'),
+    (r'^db thiếu attach', 'validate: db thiếu attach'),
+    (r'^attach=.*trỏ tới id không tồn tại', 'validate: attach treo'),
+    (r'^attach=.*là .*; chỉ gắn', 'validate: attach sai loại'),
+    (r'nhưng gắn vào .* thuộc lane', 'validate: attach khác lane'),
+    (r'cạnh ra, cần ít nhất 2', 'validate: condition thiếu nhánh'),
+    (r'không có cạnh ra', 'validate: node không có cạnh ra'),
+    (r'^start có cạnh đi vào', 'validate: start có cạnh vào'),
+    (r'^end có cạnh đi ra', 'validate: end có cạnh ra'),
+    (r'của condition .* không có nhãn', 'validate: nhánh condition không nhãn'),
+    (r'^cạnh ra phải nằm liền sau', 'validate: cạnh ra lệch chỗ'),
+    (r'đứng trước nguồn', 'validate: quay ngược mà thiếu back=true'),
+]
+
+for _pat, _name in VALIDATE_RULES:
+    THRESHOLDS[_name] = 1
+
 
 def measure():
     hits = collections.Counter()
@@ -48,6 +84,10 @@ def measure():
         if unicodedata.normalize('NFC', raw) != raw:
             hits['đầu vào ở dạng NFD'] += 1
         table = ft.load(os.path.join(CASES, name))
+        for issue in table.issues:
+            for pat, label in VALIDATE_RULES:
+                if re.search(pat, issue.msg):
+                    hits[label] += 1
         if any(i.level == 'error' for i in table.issues):
             continue
         tm = ft.TextMeasure()

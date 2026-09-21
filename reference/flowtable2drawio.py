@@ -119,7 +119,21 @@ class Row:
         return '\n'.join(self.lines).strip()
 
     def styles(self):
-        return {s.strip() for s in self.meta.get('style', '').split(',') if s.strip()}
+        return set(self.style_list())
+
+    def style_list(self):
+        """Giá trị style theo đúng thứ tự viết trong ô, đã bỏ trùng.
+
+        styles() trả về set nên duyệt nó cho ra thứ tự phụ thuộc hash, tức là
+        thứ tự cảnh báo đổi giữa hai lần chạy. Chỗ nào cần duyệt thì dùng hàm
+        này; chỗ nào chỉ hỏi có hay không thì dùng styles().
+        """
+        out = []
+        for s in self.meta.get('style', '').split(','):
+            s = s.strip()
+            if s and s not in out:
+                out.append(s)
+        return out
 
     def is_marker(self):
         return self.type == 'text' and self.text == REST_MARKER and not self.meta.get('attach')
@@ -467,7 +481,7 @@ def validate(rows):
             if k not in allowed:
                 warn(r, f'metadata "{k}" không dùng cho type {r.type}, bị bỏ qua')
         valid_styles = STYLE_VALUES.get(r.type, {'highlight'})
-        for s in r.styles():
+        for s in r.style_list():
             if s not in valid_styles:
                 warn(r, f'style "{s}" không dùng cho type {r.type}, bị bỏ qua')
         if 'back' in r.meta and r.meta['back'] not in ('true', 'false'):

@@ -1,0 +1,6 @@
+WARNING dòng 7 [E1]: style "zzz" không dùng cho type edge, bị bỏ qua
+WARNING dòng 7 [E1]: style "aaa" không dùng cho type edge, bị bỏ qua
+WARNING dòng 7 [E1]: style "mmm" không dùng cho type edge, bị bỏ qua
+check: 0 lỗi, 3 cảnh báo
+build: 1 lane, 2 phần tử, 1 cạnh, 128x244px
+layout: 0 lỗi, 0 cảnh báo

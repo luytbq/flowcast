@@ -1,0 +1,10 @@
+ERROR   dòng 5 [A]: lane phải để trống parent
+ERROR   dòng 7 [A-1]: thiếu parent (id của lane chứa phần tử)
+ERROR   dòng 8 [E1]: edge phải để trống parent
+ERROR   dòng 8 [E1]: edge thiếu to
+ERROR   dòng 9 [E2]: from=A là lane; cạnh chỉ nối start/end/task/condition/external
+ERROR   dòng 10 [A-2]: attach=KHONGCO trỏ tới id không tồn tại
+ERROR   dòng 11 [A-3]: attach=B là lane; chỉ gắn được vào start/end/task/condition/external
+WARNING dòng 7 [A-1]: task không có cạnh ra
+check: 7 lỗi, 1 cảnh báo
+build: dừng vì bảng có lỗi
