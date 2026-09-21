@@ -48,7 +48,7 @@ func (t *Measure) Box(lines []string) (w, h float64) {
 
 func breakAfter(r []rune, i int) bool {
 	if i < 1 || i > len(r) {
-		return i >= 2 && r[i-1] == ':' && r[i-2] == ':'
+		return false
 	}
 	if strings.ContainsRune(breakChars, r[i-1]) {
 		return true

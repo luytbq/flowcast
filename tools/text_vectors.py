@@ -27,7 +27,20 @@ SAMPLES = [
     'a::b::c::d_e.f,g(h)i{j}k=l&m?n-o/p',
     'Kiểm tra dữ liệu đầu vào',
     'AAAA BBBB CCCC DDDD EEEE FFFF GGGG HHHH',
+    # Ký tự ngoài bảng số đo, để chốt đường lùi về advance của glyph .notdef.
+    'Trạng thái 状態 プロセス',
 ]
+
+# Thang bậc để chốt ngân sách ngắt dòng của từng loại phần tử.
+#
+# Ngân sách là hằng số trong SizeItem, và Wrap thu hẹp về bề rộng nhỏ nhất vẫn
+# giữ nguyên số dòng, nên lệch vài pixel ở ngân sách thường vô hình. Một thang
+# bậc dài dần sẽ vượt qua mọi ranh giới số dòng, nên chỗ lật sẽ dịch đi nếu
+# ngân sách sai dù chỉ 2px.
+KINDS = ['task', 'condition', 'start', 'end', 'external', 'db', 'text']
+LADDER = [' '.join(['abc'] * n) for n in range(1, 31)] + \
+         [' '.join(['nghiệp'] * n) for n in range(1, 21)] + \
+         ['x' * n for n in range(1, 61)]
 
 LO, HI = 20, 300
 
@@ -49,12 +62,21 @@ def main(argv):
             widths.append({'maxw': maxw, 'lines': wrapped, 'hard': tm.hard,
                            'w': ft.fmt(w), 'h': ft.fmt(h)})
         out.append({'text': s, 'widths': widths})
-    doc = {'size': tm.size, 'line_h': tm.line_h, 'samples': out}
+    lay = ft.Layout([], ft.Config(), tm)
+    sizes = []
+    for kind in KINDS:
+        rows = []
+        for content in LADDER:
+            wl, w, h = lay.size_item(kind, [content])
+            rows.append({'text': content, 'lines': wl, 'w': ft.fmt(w), 'h': ft.fmt(h)})
+        sizes.append({'kind': kind, 'rows': rows})
+    doc = {'size': tm.size, 'line_h': tm.line_h, 'samples': out, 'sizes': sizes}
     with open(argv[0], 'w', encoding='utf-8') as f:
         json.dump(doc, f, ensure_ascii=False, separators=(',', ':'), sort_keys=True)
         f.write('\n')
     n = sum(len(s['widths']) for s in out)
-    print(f'{argv[0]}: {len(out)} chuỗi x {HI - LO + 1} bề rộng = {n} vector')
+    k = sum(len(x['rows']) for x in sizes)
+    print(f'{argv[0]}: {n} vector ngắt dòng, {k} vector kích thước')
     return 0
 
 

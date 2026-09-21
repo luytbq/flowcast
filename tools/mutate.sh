@@ -27,9 +27,12 @@ mutate() {
 import io, sys
 p, a, b = sys.argv[1:4]
 s = io.open(p, encoding='utf-8').read()
-if a not in s:
-    sys.exit(f'ERROR không tìm thấy trong {p}: {a!r}')
-io.open(p, 'w', encoding='utf-8').write(s.replace(a, b, 1))
+n = s.count(a)
+# Đúng một chỗ, không hơn không kém. Thay chỗ đầu khi có nhiều chỗ sẽ để lại
+# bản sao còn nguyên và đột biến thành vô hại, khiến cổng trông như bỏ lọt.
+if n != 1:
+    sys.exit(f'ERROR {p}: tìm thấy {n} chỗ khớp {a!r}, cần đúng 1')
+io.open(p, 'w', encoding='utf-8').write(s.replace(a, b))
 PY
 	if go test -count=1 ./... >/dev/null 2>&1; then
 		echo "BỎ LỌT     $label"
@@ -44,6 +47,7 @@ PY
 mutate "bỏ ký tự - khỏi chỗ được ngắt" text/measure.go '=&?-"' '=&?"'
 mutate "bỏ nhánh :: khỏi chỗ được ngắt" text/measure.go "return i >= 2 && r[i-1] == ':' && r[i-2] == ':'" 'return false'
 mutate "codepoint lạ đo bằng 0 thay vì notdef" text/metrics.go 'total += m.Notdef' 'total += 0'
+mutate "quên guard chỉ số trong breakAfter" text/measure.go 'if i < 1 || i > len(r) {' 'if false {'
 mutate "bỏ thu hẹp nhị phân trong Wrap" text/measure.go 'out = append(out, t.wrapLine(line, float64(hi))...)' 'out = append(out, first...)'
 mutate "không bật cờ hard khi cắt cứng" text/measure.go 't.hard = true' '_ = 0'
 mutate "ngân sách ngắt dòng của task lệch 2px" layout/size.go 'cfg.TaskMaxW-32' 'cfg.TaskMaxW-30'

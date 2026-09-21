@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/luytbq/flowcast/layout"
 	"github.com/luytbq/flowcast/num"
 	"github.com/luytbq/flowcast/text"
 )
@@ -24,10 +25,23 @@ type sampleVector struct {
 	Widths []widthVector `json:"widths"`
 }
 
+type sizeRow struct {
+	Text  string   `json:"text"`
+	Lines []string `json:"lines"`
+	W     string   `json:"w"`
+	H     string   `json:"h"`
+}
+
+type sizeKind struct {
+	Kind string    `json:"kind"`
+	Rows []sizeRow `json:"rows"`
+}
+
 type vectorFile struct {
 	Size    float64        `json:"size"`
 	LineH   float64        `json:"line_h"`
 	Samples []sampleVector `json:"samples"`
+	Sizes   []sizeKind     `json:"sizes"`
 }
 
 // TestVectorNgatDong quét bề rộng từng pixel một.
@@ -85,4 +99,58 @@ func TestVectorNgatDong(t *testing.T) {
 		t.Errorf("... và %d vector lệch nữa", failed-5)
 	}
 	t.Logf("đã so %d vector", checked)
+}
+
+// TestVectorKichThuoc chốt ngân sách ngắt dòng của từng loại phần tử.
+//
+// Ngân sách là hằng số trong SizeItem, và nó gần như vô hình với bộ case sơ đồ:
+// Wrap thu hẹp về bề rộng nhỏ nhất vẫn giữ nguyên số dòng, nên lệch vài pixel
+// hiếm khi đổi đầu ra. Thang bậc dài dần dưới đây vượt qua mọi ranh giới số
+// dòng, nên chỗ lật dịch đi ngay khi ngân sách sai dù chỉ 2px.
+func TestVectorKichThuoc(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join(Dir(), "text-vectors.json"))
+	if err != nil {
+		t.Fatalf("không đọc được vector: %v; chạy tools/text_vectors.py", err)
+	}
+	var vf vectorFile
+	if err := json.Unmarshal(data, &vf); err != nil {
+		t.Fatal(err)
+	}
+	m, err := text.LoadMetrics(filepath.Join("..", "data", "verdana.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	tm := text.NewMeasure(m)
+	cfg := layout.DefaultConfig()
+
+	checked, failed := 0, 0
+	for _, k := range vf.Sizes {
+		for _, r := range k.Rows {
+			checked++
+			lines, w, h := layout.SizeItem(tm, cfg, k.Kind, []string{r.Text})
+			bad := num.Fmt(w) != r.W || num.Fmt(h) != r.H || len(lines) != len(r.Lines)
+			if !bad {
+				for i := range lines {
+					if lines[i] != r.Lines[i] {
+						bad = true
+						break
+					}
+				}
+			}
+			if bad {
+				failed++
+				if failed <= 5 {
+					t.Errorf("%s %q:\n  Go lines=%q w=%s h=%s\n  Py lines=%q w=%s h=%s",
+						k.Kind, r.Text, lines, num.Fmt(w), num.Fmt(h), r.Lines, r.W, r.H)
+				}
+			}
+		}
+	}
+	if failed > 5 {
+		t.Errorf("... và %d vector lệch nữa", failed-5)
+	}
+	if checked == 0 {
+		t.Fatal("không có vector kích thước nào")
+	}
+	t.Logf("đã so %d vector kích thước", checked)
 }
