@@ -1,0 +1,10 @@
+# Dòng Phần còn lại không có parent
+
+| id | type | parent | content | metadata |
+|---|---|---|---|---|
+| A | lane | | Lane A | |
+| A-1 | start | A | Vào | |
+| E1 | edge | | | from=A-1; to=A-2 |
+| A-2 | end | A | Xong | |
+| R | text | | Phần còn lại | |
+| A-3 | task | A | Việc rời rạc | |

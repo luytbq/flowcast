@@ -1,0 +1,155 @@
+{
+ "issues": [
+  {
+   "id": "A-1",
+   "level": "error",
+   "loc": "dòng 12",
+   "msg": "id trùng với dòng 6"
+  },
+  {
+   "id": "E9",
+   "level": "error",
+   "loc": "dòng 11",
+   "msg": "from=KHONG1 trỏ tới id không tồn tại"
+  },
+  {
+   "id": "E9",
+   "level": "error",
+   "loc": "dòng 11",
+   "msg": "to=KHONG2 trỏ tới id không tồn tại"
+  },
+  {
+   "id": "A-1",
+   "level": "error",
+   "loc": "dòng 6",
+   "msg": "cạnh ra phải nằm liền sau A-1 (và các db/text gắn vào nó); đang lệch: E1"
+  },
+  {
+   "id": "E1",
+   "level": "warning",
+   "loc": "dòng 7",
+   "msg": "A-2 đứng trước nguồn A-1 nhưng cạnh không ghi back=true"
+  }
+ ],
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "Vào"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 2,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 3,
+    "lines": [
+     "Đích"
+    ],
+    "loc": "dòng 8",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "E2",
+    "idx": 4,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 9",
+    "meta": {
+     "from": "A-2",
+     "to": "A-3"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-3",
+    "idx": 5,
+    "lines": [
+     "Xong"
+    ],
+    "loc": "dòng 10",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "end"
+   },
+   {
+    "id": "E9",
+    "idx": 6,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 11",
+    "meta": {
+     "from": "KHONG1",
+     "to": "KHONG2"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-1",
+    "idx": 7,
+    "lines": [
+     "Trùng id A-1, đứng sau A-2"
+    ],
+    "loc": "dòng 12",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "task"
+   }
+  ],
+  "source": "markdown",
+  "title": "from và to cùng hỏng, id trùng lật thứ tự"
+ }
+}
