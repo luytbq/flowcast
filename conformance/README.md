@@ -143,6 +143,30 @@ thiết kế case cho các pha sau:
 - Muốn ép nhánh phụ dạt qua nhiều ô bị chặn, dùng mũi tên ngang sang lane khác:
   nó chặn mọi cột dương của lane nguồn trên cùng hàng.
 
+### Khi thiết kế tay quá chậm: sinh bảng ngẫu nhiên
+
+```
+python3 tools/fuzz_cases.py tools/mutants/route.py --stage route --seconds 150 --out /tmp/found
+```
+
+Ở pha đi dây, điều kiện bị hình học ràng buộc chặt tới mức thiết kế case bằng
+tay rất chậm và suy luận dễ sai. Công cụ này sinh hàng nghìn bảng hợp lệ, chạy
+từng đột biến trên bản Python, giữ lại bảng nhỏ nhất giết được mỗi đột biến rồi
+thu nhỏ tiếp. Lần chạy đầu ở pha đi dây: 107.848 bảng trong 150 giây, giết 16
+trên 18, và bản Go khớp cả 16 case ngay lần đầu.
+
+Bài học đáng nhớ: hai nhánh tôi từng suy luận là thừa đều bị bảng ngẫu nhiên
+giết. Phép kiểm db trong kiểu B chịu lực vì `attach_sides` xét dấu của cột chứ
+không xét có sát hay không, nên một db rơi vào ứng viên `-2 lần phía` có thể
+nhảy qua nguồn rồi nằm hẳn bên kia, mà không ô nào giữa hai node bị chiếm. Chỉ
+chứng minh tương đương cho những đột biến sống sót qua một lần chạy đủ dài;
+danh sách đã chứng minh nằm ở đầu `tools/mutate.sh`.
+
+Các case sinh ra từ đây mang số 60 trở lên và có nội dung kiểu `A-1 x`, `d0`.
+Chúng là case hồi quy do máy tìm, không phải ví dụ để đọc: tên file và tiêu đề
+nói chúng chốt nhánh nào, còn nội dung giữ nguyên vì đổi chữ là đổi bề rộng
+hộp, và có thể làm case thôi giết được đột biến.
+
 ## Lệnh
 
 ```
@@ -174,21 +198,21 @@ tools/coverage.py đo từng nhánh thuật toán và thoát với mã 1 nếu c
 
 | nhánh | số lần chạm |
 |---|---|
-| đi dây A (thẳng đứng) | 111 |
-| đi dây B (thẳng ngang) | 52 |
-| đi dây C (chữ L) | 3 |
-| đi dây D (qua kênh và máng) | 22 |
-| nhánh dạt trái (drift -1) | 13 |
+| đi dây A (thẳng đứng) | 120 |
+| đi dây B (thẳng ngang) | 56 |
+| đi dây C (chữ L) | 7 |
+| đi dây D (qua kênh và máng) | 49 |
+| nhánh dạt trái (drift -1) | 14 |
 | nhánh dạt phải (drift 1) | 17 |
-| nhánh không rõ hướng (drift 0) | 119 |
-| track thứ hai trở lên | 4 |
-| db hoặc text bám node | 13 |
-| cạnh back | 2 |
+| nhánh không rõ hướng (drift 0) | 144 |
+| track thứ hai trở lên | 13 |
+| db hoặc text bám node | 27 |
+| cạnh back | 5 |
 | cạnh có nhãn | 94 |
 | phần tử tô nhấn | 4 |
 | ngắt dòng cứng giữa từ | 1 |
 | đầu vào ở dạng NFD | 1 |
-| db hoặc text tràn ra ngoài bốn ô cạnh node | 1 |
+| db hoặc text tràn ra ngoài bốn ô cạnh node | 3 |
 | validate: id trống | 1 |
 | validate: id dành riêng của draw.io | 1 |
 | validate: id trùng | 2 |
@@ -208,8 +232,8 @@ tools/coverage.py đo từng nhánh thuật toán và thoát với mã 1 nếu c
 | validate: attach sai loại | 1 |
 | validate: attach khác lane | 1 |
 | validate: condition thiếu nhánh | 1 |
-| validate: node không có cạnh ra | 6 |
-| validate: start có cạnh vào | 1 |
+| validate: node không có cạnh ra | 11 |
+| validate: start có cạnh vào | 4 |
 | validate: end có cạnh ra | 2 |
 | validate: nhánh condition không nhãn | 1 |
 | validate: cạnh ra lệch chỗ | 4 |
