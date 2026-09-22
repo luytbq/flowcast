@@ -4,6 +4,7 @@ package validate
 
 import (
 	"fmt"
+	"github.com/luytbq/flowcast/internal/pystr"
 	"strings"
 
 	"github.com/luytbq/flowcast/model"
@@ -160,7 +161,7 @@ func (v *validator) checkRefs(r model.Row, spec schema.TypeSpec) {
 func styleList(r model.Row) []string {
 	var out []string
 	for _, s := range strings.Split(r.Meta["style"], ",") {
-		s = strings.TrimSpace(s)
+		s = pystr.Strip(s)
 		if s == "" {
 			continue
 		}

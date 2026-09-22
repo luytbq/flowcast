@@ -1,0 +1,15 @@
+# input: 37-unicode-edges -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 3 phần tử, 2 cạnh, 168x340px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+08cc0a4811c459fc  in.drawio
+2274061c9b02ce67  in.md

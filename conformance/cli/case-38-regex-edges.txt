@@ -1,0 +1,15 @@
+# input: 38-regex-edges -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 2 phần tử, 1 cạnh, 128x244px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+9364c11754ee20ad  in.drawio
+e475a29e66e9bd83  in.md

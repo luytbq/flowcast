@@ -1,6 +1,7 @@
 package layout
 
 import (
+	"github.com/luytbq/flowcast/internal/pystr"
 	"math"
 	"strings"
 
@@ -146,7 +147,7 @@ func (l *Layout) computeGeometry(lzG map[gzKey]float64, lzC map[int]float64) {
 		total += cw
 		// Tên lane nối các dòng bằng ký tự xuống dòng rồi mới đo, nên mỗi lần
 		// xuống dòng được tính thêm bề rộng một glyph .notdef.
-		head := l.tm.W(strings.TrimSpace(strings.Join(lrow.Lines, "\n"))) + 30
+		head := l.tm.W(pystr.Strip(strings.Join(lrow.Lines, "\n"))) + 30
 		if need := pyMax(float64(cfg.MinLaneW), head) - total; need > 0 {
 			widths[0] += need / 2
 			widths[len(widths)-1] += need / 2

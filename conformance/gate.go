@@ -8,6 +8,7 @@ package conformance
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/luytbq/flowcast/internal/pystr"
 	"os"
 	"path/filepath"
 	"sort"
@@ -165,5 +166,5 @@ func Load(dir string) ([]Dump, error) {
 }
 
 func trimSpace(s string) string {
-	return strings.TrimSpace(s)
+	return pystr.Strip(s)
 }

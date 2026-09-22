@@ -1,11 +1,15 @@
 package layout
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/luytbq/flowcast/internal/pystr"
+)
 
 func splitStyle(s string) []string {
 	var out []string
 	for _, p := range strings.Split(s, ",") {
-		if p = strings.TrimSpace(p); p != "" {
+		if p = pystr.Strip(p); p != "" {
 			out = append(out, p)
 		}
 	}

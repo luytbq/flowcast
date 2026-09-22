@@ -18,9 +18,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/source"
 	"io"
 	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 	"syscall"
@@ -64,7 +65,7 @@ var supported = map[string]bool{".md": true, ".markdown": true, ".txt": true,
 
 // read đọc file đầu vào thành Source. Lỗi trả về đã ở dạng thông điệp in ra.
 func (c *cli) read() (flowcast.Source, error) {
-	ext := strings.ToLower(pyExt(c.a.file))
+	ext := pystr.Lower(source.Ext(c.a.file))
 	if !supported[ext] {
 		return flowcast.Source{}, fmt.Errorf("đuôi file \"%s\" không hỗ trợ; dùng .md, .csv hoặc .xlsx", ext)
 	}
@@ -139,7 +140,7 @@ func (c *cli) build() int {
 
 	out := c.a.output
 	if out == "" {
-		out = strings.TrimSuffix(c.a.file, pyExt(c.a.file)) + ".drawio"
+		out = strings.TrimSuffix(c.a.file, source.Ext(c.a.file)) + ".drawio"
 	}
 	mode, ok := c.chooseMode(out)
 	if !ok {
@@ -219,7 +220,7 @@ func (c *cli) chooseMode(out string) (string, bool) {
 	}
 	fmt.Fprint(c.out, out+" đã tồn tại. [m]erge giữ chỉnh sửa tay / [f]orce sinh lại toàn bộ / [q]uit: ")
 	line, _ := bufio.NewReader(c.stdin).ReadString('\n')
-	switch strings.ToLower(strings.TrimSpace(line)) {
+	switch pystr.Lower(pystr.Strip(line)) {
 	case "m", "merge":
 		return "merge", true
 	case "f", "force":
@@ -235,18 +236,6 @@ func isTerminal(r io.Reader) bool {
 	}
 	st, err := f.Stat()
 	return err == nil && st.Mode()&os.ModeCharDevice != 0
-}
-
-// pyExt tách đuôi file như os.path.splitext của Python: dấu chấm ở đầu tên file
-// không tính là dấu tách đuôi, nên ".hidden" không có đuôi.
-func pyExt(path string) string {
-	base := filepath.Base(path)
-	trimmed := strings.TrimLeft(base, ".")
-	i := strings.LastIndex(trimmed, ".")
-	if i < 0 {
-		return ""
-	}
-	return trimmed[i:]
 }
 
 // strerror dựng lại thông điệp lỗi hệ thống theo kiểu strerror của C, thứ bản

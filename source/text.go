@@ -5,8 +5,8 @@
 package source
 
 import (
+	"github.com/luytbq/flowcast/internal/pystr"
 	"strings"
-	"unicode"
 
 	"golang.org/x/text/unicode/norm"
 )
@@ -55,7 +55,7 @@ func splitLines(s string) []string {
 // Chỉ gạch đứng không có gạch chéo ngược phía trước mới là dấu ngăn cột, nên
 // nội dung viết \| giữ được gạch đứng mà không vỡ bảng.
 func splitCells(line string) []string {
-	s := strings.TrimSpace(line)
+	s := pystr.Strip(line)
 	s = strings.TrimPrefix(s, "|")
 	if strings.HasSuffix(s, "|") && !strings.HasSuffix(s, "\\|") {
 		s = s[:len(s)-1]
@@ -65,7 +65,7 @@ func splitCells(line string) []string {
 	prevEscape := false
 	for _, c := range s {
 		if c == '|' && !prevEscape {
-			cells = append(cells, strings.TrimSpace(cur.String()))
+			cells = append(cells, pystr.Strip(cur.String()))
 			cur.Reset()
 			prevEscape = false
 			continue
@@ -73,7 +73,7 @@ func splitCells(line string) []string {
 		cur.WriteRune(c)
 		prevEscape = c == '\\' && !prevEscape
 	}
-	return append(cells, strings.TrimSpace(cur.String()))
+	return append(cells, pystr.Strip(cur.String()))
 }
 
 // unescape gỡ gạch chéo ngược của markdown rồi chuẩn hóa về NFC.
@@ -97,49 +97,57 @@ func unescape(s string) string {
 
 func normalize(s string) string { return norm.NFC.String(s) }
 
-// splitBR cắt một ô tại các thẻ xuống dòng của html, không phân biệt hoa thường.
+// splitBR cắt một ô tại các thẻ xuống dòng của html, như BR_RE.split của bản
+// tham chiếu với biểu thức <br\s*/?> không phân biệt hoa thường.
 func splitBR(cell string) []string {
+	r := []rune(cell)
 	var out []string
-	rest := cell
-	for {
-		i, n := findBR(rest)
-		if i < 0 {
-			return append(out, rest)
-		}
-		out = append(out, rest[:i])
-		rest = rest[i+n:]
-	}
-}
-
-// findBR trả về vị trí và độ dài của thẻ <br>, <br/> hoặc <br />; -1 nếu không có.
-func findBR(s string) (int, int) {
-	low := strings.ToLower(s)
-	for i := 0; i+3 <= len(low); i++ {
-		if low[i:i+3] != "<br" {
+	start := 0
+	for i := 0; i < len(r); {
+		if n := matchBR(r[i:]); n > 0 {
+			out = append(out, string(r[start:i]))
+			i += n
+			start = i
 			continue
 		}
-		j := i + 3
-		for j < len(low) && (low[j] == ' ' || low[j] == '\t' || low[j] == '\n' || low[j] == '\r') {
-			j++
-		}
-		if j < len(low) && low[j] == '/' {
-			j++
-		}
-		if j < len(low) && low[j] == '>' {
-			return i, j + 1 - i
-		}
+		i++
 	}
-	return -1, 0
+	return append(out, string(r[start:]))
+}
+
+// matchBR trả về số ký tự của thẻ br ở đầu r, hoặc 0 nếu không có.
+//
+// So từng ký tự thay vì hạ chữ thường cả chuỗi rồi dò vị trí: hạ chữ thường đổi
+// được độ dài chuỗi, như İ thành i cộng dấu chấm, nên vị trí dò trên chuỗi đã hạ
+// không cắt đúng chuỗi gốc. Không phân biệt hoa thường chỉ áp cho b và r; với
+// hai chữ này, re.IGNORECASE của Python không khớp thêm ký tự nào ngoài B và R.
+// Tham lam không lùi là đủ: khoảng trắng, dấu gạch chéo và dấu lớn hơn không lẫn
+// vào nhau nên không có cách lùi nào khớp được khi cách tham lam không khớp.
+func matchBR(r []rune) int {
+	if len(r) < 4 || r[0] != '<' || (r[1] != 'b' && r[1] != 'B') || (r[2] != 'r' && r[2] != 'R') {
+		return 0
+	}
+	i := 3
+	for i < len(r) && pystr.IsSpace(r[i]) {
+		i++
+	}
+	if i < len(r) && r[i] == '/' {
+		i++
+	}
+	if i < len(r) && r[i] == '>' {
+		return i + 1
+	}
+	return 0
 }
 
 func trimLeftSpace(s string) string {
-	return strings.TrimLeftFunc(s, unicode.IsSpace)
+	return pystr.LStrip(s)
 }
 
 func lower(cells []string) []string {
 	out := make([]string, len(cells))
 	for i, c := range cells {
-		out[i] = strings.ToLower(c)
+		out[i] = pystr.Lower(c)
 	}
 	return out
 }

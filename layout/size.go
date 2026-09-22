@@ -1,6 +1,7 @@
 package layout
 
 import (
+	"github.com/luytbq/flowcast/internal/pystr"
 	"strings"
 
 	"github.com/luytbq/flowcast/num"
@@ -88,5 +89,5 @@ func SizeLabel(tm *text.Measure, cfg Config, lines []string) (wrapped []string, 
 // HasText cho biết nội dung một dòng bảng có chữ thật hay không, theo đúng cách
 // bản tham chiếu tính: nối các dòng bằng xuống dòng rồi cắt khoảng trắng.
 func HasText(lines []string) bool {
-	return strings.TrimSpace(strings.Join(lines, "\n")) != ""
+	return pystr.Strip(strings.Join(lines, "\n")) != ""
 }

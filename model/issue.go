@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/luytbq/flowcast/internal/pystr"
 	"strings"
 )
 
@@ -68,7 +69,7 @@ func (i Issue) String() string {
 }
 
 func joinLines(lines []string) string { return strings.Join(lines, "\n") }
-func trimSpace(s string) string       { return strings.TrimSpace(s) }
+func trimSpace(s string) string       { return pystr.Strip(s) }
 
 // Error là lỗi khiến việc đọc không thể tiếp tục và không quy được về một dòng
 // cụ thể: không tìm thấy header, file hỏng, vượt giới hạn. Mọi thứ khác là

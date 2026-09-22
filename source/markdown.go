@@ -2,8 +2,8 @@ package source
 
 import (
 	"fmt"
+	"github.com/luytbq/flowcast/internal/pystr"
 	"strings"
-	"unicode"
 
 	"github.com/luytbq/flowcast/model"
 )
@@ -60,7 +60,7 @@ func ParseMarkdown(data []byte) (model.Table, error) {
 			Idx:      len(rows),
 			Loc:      loc,
 			ID:       cells[0],
-			Type:     strings.ToLower(cells[1]),
+			Type:     pystr.Lower(cells[1]),
 			Parent:   cells[2],
 			Lines:    mdLines(cells[3]),
 			Meta:     meta,
@@ -70,37 +70,42 @@ func ParseMarkdown(data []byte) (model.Table, error) {
 	return model.Table{Title: title, Rows: rows, Issues: issues, Source: "markdown"}, nil
 }
 
-// h1Title nhận đúng heading cấp một: dấu thăng ở đầu dòng, rồi ít nhất một
-// khoảng trắng, rồi nội dung. "##" và "#không-khoảng-trắng" đều không tính.
+// h1Title nhận đúng heading cấp một theo biểu thức ^#\s+(.+?)\s*$ của bản
+// tham chiếu: dấu thăng ở đầu dòng, ít nhất một khoảng trắng, rồi nội dung.
+// "##" và "#không-khoảng-trắng" đều không tính.
+//
+// Dòng chỉ gồm dấu thăng và từ hai khoảng trắng trở lên vẫn khớp, với tiêu đề là
+// đúng khoảng trắng cuối cùng: \s+ lùi lại một ký tự để nhóm (.+?) có cái mà
+// khớp.
 func h1Title(ln string) (string, bool) {
 	if !strings.HasPrefix(ln, "#") {
 		return "", false
 	}
-	rest := ln[1:]
-	trimmed := strings.TrimLeftFunc(rest, unicode.IsSpace)
-	if len(trimmed) == len(rest) {
+	rest := []rune(ln[1:])
+	if len(rest) < 2 || !pystr.IsSpace(rest[0]) {
 		return "", false
 	}
-	t := strings.TrimRightFunc(trimmed, unicode.IsSpace)
-	if t == "" {
-		return "", false
+	i := 0
+	for i < len(rest) && pystr.IsSpace(rest[i]) {
+		i++
 	}
-	return unescape(t), true
+	if i == len(rest) {
+		return unescape(string(rest[len(rest)-1:])), true
+	}
+	return unescape(pystr.RStrip(string(rest[i:]))), true
 }
 
-// isSeparator nhận dòng |---|---| ngay dưới header, kể cả dạng có dấu hai chấm
-// canh lề.
+// isSeparator nhận dòng |---|---| ngay dưới header theo biểu thức
+// ^\s*\|[\s:\-|]+\|?\s*$ của bản tham chiếu. Chỉ cắt khoảng trắng đầu dòng:
+// khoảng trắng cuối dòng thuộc tập ký tự hợp lệ, nên "| " cũng là một dòng phân
+// cách.
 func isSeparator(ln string) bool {
-	s := strings.TrimSpace(ln)
-	if !strings.HasPrefix(s, "|") {
+	s := pystr.LStrip(ln)
+	if !strings.HasPrefix(s, "|") || len(s) == 1 {
 		return false
 	}
-	rest := s[1:]
-	if rest == "" {
-		return false
-	}
-	for _, c := range rest {
-		if !unicode.IsSpace(c) && c != ':' && c != '-' && c != '|' {
+	for _, c := range s[1:] {
+		if !pystr.IsSpace(c) && c != ':' && c != '-' && c != '|' {
 			return false
 		}
 	}
@@ -128,7 +133,7 @@ func parseMeta(cell string, loc model.Location, rid string, issues *[]model.Issu
 	meta := map[string]string{}
 	var order []string
 	for _, part := range strings.Split(cell, ";") {
-		part = strings.TrimSpace(part)
+		part = pystr.Strip(part)
 		if part == "" {
 			continue
 		}
@@ -143,13 +148,13 @@ func parseMeta(cell string, loc model.Location, rid string, issues *[]model.Issu
 			})
 			continue
 		}
-		key := strings.TrimSpace(k)
+		key := pystr.Strip(k)
 		// Key viết lại thì giá trị đè lên nhưng vị trí giữ nguyên, đúng như
 		// dict của Python.
 		if _, seen := meta[key]; !seen {
 			order = append(order, key)
 		}
-		meta[key] = unesc(strings.TrimSpace(v))
+		meta[key] = unesc(pystr.Strip(v))
 	}
 	return meta, order
 }
