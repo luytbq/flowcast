@@ -241,10 +241,6 @@ tools/coverage.py đo từng nhánh thuật toán và thoát với mã 1 nếu c
 
 ### Lỗ hổng đã biết
 
-**Đi dây kiểu C chỉ được chạm đúng 1 lần.** Một case là đủ để nói nhánh đó có
-chạy, không đủ để nói nó chạy đúng trong nhiều tình huống. Cần thêm case trước
-khi tin vào bộ này cho phần C.
-
 **Chưa có case nào cho merge.** Ngữ nghĩa merge là 490 dòng cộng 255 dòng test
 trong reference/tests/test_merge.py, và nó chưa nằm trong bộ đối chiếu. Phải bổ
 sung trước khi port phần merge sang Go.
