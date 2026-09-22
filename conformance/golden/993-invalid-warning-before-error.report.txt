@@ -1,0 +1,4 @@
+ERROR   dòng 7 [E1]: to=A-9 trỏ tới id không tồn tại
+WARNING dòng 6 [A-1]: metadata "mau" không dùng cho type start, bị bỏ qua
+check: 1 lỗi, 1 cảnh báo
+build: dừng vì bảng có lỗi
