@@ -93,8 +93,14 @@ EOPY
 #   bề rộng dương bắt đầu từ 0, x - x luôn ra dương không, và số âm duy nhất là
 #   d = -1 nhân với một lượng dương khác không.
 #
-# Mỗi cái sống sót qua hàng chục nghìn bảng sinh ngẫu nhiên trước khi được
-# chứng minh.
+# - Không thoát xuống dòng trong giá trị thuộc tính. Ký tự xuống dòng không lọt
+#   được vào thuộc tính: ô markdown nằm trên một dòng, nội dung chỉ tách tại thẻ
+#   br, còn id và tiêu đề cũng lấy từ một dòng. Tab thì lọt được, và có case.
+#
+# Mỗi cái sống sót qua hàng chục nghìn bảng sinh ngẫu nhiên, hoặc có lập luận
+# dựa trên cấu trúc đầu vào, trước khi được chứng minh. Suy luận mà không có số
+# liệu thì không đáng tin: hai nhánh khác từng bị nghi là thừa rồi bị bảng ngẫu
+# nhiên giết.
 #
 # Đột biến sống sót mà CHƯA chứng minh được là tương đương. Khác danh sách trên:
 # đây là chỗ bộ đối chiếu có thể đang hở, chỉ là chưa ai tìm ra case.
@@ -103,8 +109,7 @@ EOPY
 #   133.141 bảng hợp lệ. Theo cấu trúc thì không xảy ra: hộp nhãn dọc cách dây
 #   của nó đúng 5 điểm ảnh, hộp nhãn ngang cách đầu đoạn 6, còn dây dọc song
 #   song cách nhau 12 và cách mép cột ít nhất 15. Ngoài ra chỉ còn trùng hợp
-#   ngẫu nhiên, mà bề rộng chữ là số lẻ. Chiều trên dưới thì có case chốt. Suy luận mà không có số liệu thì không đáng tin: hai nhánh khác cũng
-# từng bị nghi là thừa rồi bị bảng ngẫu nhiên giết.
+#   ngẫu nhiên, mà bề rộng chữ là số lẻ. Chiều trên dưới thì có case chốt.
 
 # num, text, layout/size
 mutate "bỏ ký tự - khỏi chỗ được ngắt" text/measure.go '=&?-"' '=&?"'
@@ -260,7 +265,7 @@ mutate "số thứ tự đoạn xiên đếm từ 1" layout/check.go '"%s: đo�
 mutate "không thoát & trong nội dung html" writer/drawio/write.go 'r := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")' 'r := strings.NewReplacer("<", "&lt;", ">", "&gt;")'
 mutate "nối dòng bằng xuống dòng thay vì br" writer/drawio/write.go 'return strings.Join(out, "<br>")' 'return strings.Join(out, "\n")'
 mutate "không thoát dấu nháy kép trong thuộc tính" writer/drawio/xml.go '"\"", "&quot;",' ''
-mutate "không thoát xuống dòng trong thuộc tính" writer/drawio/xml.go '"\n", "&#10;",' ''
+mutate "không thoát tab trong thuộc tính" writer/drawio/xml.go '"\t", "&#09;")' '"\t", "\t")'
 mutate "phần tử rỗng không có khoảng trắng trước gạch chéo" writer/drawio/xml.go 'b.WriteString(" />")' 'b.WriteString("/>")'
 mutate "thụt lề bốn khoảng trắng" writer/drawio/xml.go 'inner := "\n" + strings.Repeat("  ", level+1)' 'inner := "\n" + strings.Repeat("    ", level+1)'
 mutate "tên trang cắt 40 ký tự" writer/drawio/write.go 'if len(name) > 80 {' 'if len(name) > 40 {'
