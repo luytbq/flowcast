@@ -80,10 +80,6 @@ func (v *validator) checkIDs() {
 			v.lanes[r.ID] = true
 		}
 	}
-	if len(v.lanes) == 0 {
-		v.issues = append(v.issues, model.Issue{
-			Code: "table.no_lane", Level: model.LevelError, Msg: "bảng không có lane nào"})
-	}
 }
 
 // isMarker nhận dòng text đánh dấu phần còn lại của bảng. Dòng đó không phải
@@ -103,6 +99,11 @@ func (v *validator) checkRows() {
 				v.err(r, "table.parent_not_empty", fmt.Sprintf("%s phải để trống parent", r.Type))
 			}
 		case !isMarker(r):
+			// Bảng không có lane là flowchart: mọi phần tử nằm chung một vùng
+			// và để trống parent.
+			if r.Parent == "" && len(v.lanes) == 0 {
+				break
+			}
 			if r.Parent == "" {
 				v.err(r, "ref.missing_parent", "thiếu parent (id của lane chứa phần tử)")
 			} else if !v.lanes[r.Parent] {

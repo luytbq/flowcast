@@ -1,0 +1,4 @@
+# Case mà bản Go cố ý khác bản tham chiếu, kèm lý do. Test Go bỏ qua chúng khi
+# so với đáp án của Python; hành vi mới được chốt bằng case riêng ở chỗ khác.
+# Mỗi dòng: <tên case>: <lý do>
+991-invalid-no-lane: bảng không có lane là flowchart hợp lệ, chốt ở conformance/flowchart

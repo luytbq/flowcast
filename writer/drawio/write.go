@@ -74,14 +74,16 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 	root.Add("mxCell", "id", "0")
 	root.Add("mxCell", "id", "1", "parent", "0")
 
-	pool := root.Add("mxCell", "id", "pool", "value", htmlLines([]string{title}), "vertex", "1", "parent", "1",
-		"style", "swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;"+
-			"resizeParentMax=0;startSize="+itoa(r.PoolHeader)+";collapsible=0;fontStyle=1;"+font+mark)
-	geo(pool, ox, oy, r.PoolW, r.PoolH)
-	for i, lane := range r.Lanes {
-		c := root.Add("mxCell", "id", lane.ID, "value", htmlLines(lane.Lines), "vertex", "1", "parent", "pool",
-			"style", "swimlane;html=1;startSize="+itoa(r.LaneHeader)+";collapsible=0;"+font+mark)
-		geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH-float64(r.PoolHeader))
+	// Toạ độ trong Result tính theo pool. Sơ đồ không có lane thì không có pool
+	// làm cha: phần tử và dây nằm thẳng trên layer, nên cộng gốc pool vào.
+	parentOf := func(it layout.PlacedItem) string { return r.Lanes[it.Lane].ID }
+	edgeParent, dx, dy := "pool", 0.0, 0.0
+	if r.NoLanes {
+		parentOf = func(layout.PlacedItem) string { return "1" }
+		edgeParent, dx, dy = "1", ox, oy
+	}
+	if !r.NoLanes {
+		writePool(root, r, title, ox, oy)
 	}
 	for _, it := range r.Items {
 		style := shapeStyle[it.Kind]
@@ -93,8 +95,12 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 			}
 		}
 		c := root.Add("mxCell", "id", it.ID, "value", htmlLines(it.Lines), "vertex", "1",
-			"parent", r.Lanes[it.Lane].ID, "style", style+font+mark)
-		geo(c, it.X-r.LaneX[it.Lane], it.Y-float64(r.PoolHeader), it.W, it.H)
+			"parent", parentOf(it), "style", style+font+mark)
+		if r.NoLanes {
+			geo(c, it.X+ox, it.Y+oy, it.W, it.H)
+		} else {
+			geo(c, it.X-r.LaneX[it.Lane], it.Y-float64(r.PoolHeader), it.W, it.H)
+		}
 	}
 	for _, e := range r.Edges {
 		style := "edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" +
@@ -115,7 +121,7 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 		if e.Highlight {
 			style += highlightEdge
 		}
-		c := root.Add("mxCell", "id", e.ID, "value", htmlLines(e.Lines), "edge", "1", "parent", "pool",
+		c := root.Add("mxCell", "id", e.ID, "value", htmlLines(e.Lines), "edge", "1", "parent", edgeParent,
 			"source", e.Src, "target", e.Dst, "style", style+font+mark)
 		g := c.Add("mxGeometry", "relative", "1", "as", "geometry")
 		withLabel := e.Label != nil && !e.NoLabelPos && !e.Auto
@@ -133,7 +139,7 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 		if len(pts) > 0 {
 			arr := g.Add("Array", "as", "points")
 			for _, p := range pts {
-				arr.Add("mxPoint", "x", f(p[0]), "y", f(p[1]))
+				arr.Add("mxPoint", "x", f(p[0]+dx), "y", f(p[1]+dy))
 			}
 		}
 		if withLabel {
@@ -144,6 +150,18 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 	mxfile.Children = append(mxfile.Children, pages...)
 	etree.Indent(mxfile)
 	return mxfile.String()
+}
+
+func writePool(root *etree.Element, r layout.Result, title string, ox, oy float64) {
+	pool := root.Add("mxCell", "id", "pool", "value", htmlLines([]string{title}), "vertex", "1", "parent", "1",
+		"style", "swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;"+
+			"resizeParentMax=0;startSize="+itoa(r.PoolHeader)+";collapsible=0;fontStyle=1;"+font+mark)
+	geo(pool, ox, oy, r.PoolW, r.PoolH)
+	for i, lane := range r.Lanes {
+		c := root.Add("mxCell", "id", lane.ID, "value", htmlLines(lane.Lines), "vertex", "1", "parent", "pool",
+			"style", "swimlane;html=1;startSize="+itoa(r.LaneHeader)+";collapsible=0;"+font+mark)
+		geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH-float64(r.PoolHeader))
+	}
 }
 
 func itoa(n int) string {

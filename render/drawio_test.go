@@ -21,13 +21,14 @@ func TestDrawioThatVeDungToaDo(t *testing.T) {
 	if exe == "" {
 		t.Fatal("không có drawio CLI")
 	}
-	for _, c := range []string{"05-merge-node", "16-route-general", "18-labels-crowded", "28-tracks-fan-in",
-		"47-place-attach-overflow"} {
-		src, err := os.ReadFile("../conformance/cases/" + c + ".md")
+	for _, c := range []string{"cases/05-merge-node", "cases/16-route-general", "cases/18-labels-crowded",
+		"cases/28-tracks-fan-in", "cases/47-place-attach-overflow", "flowchart/05-merge-node",
+		"flowchart/11-labels-crowded", "flowchart/15-tracks-fan-in"} {
+		src, err := os.ReadFile("../conformance/" + c + ".md")
 		if err != nil {
 			t.Fatal(err)
 		}
-		r, err := flowcast.Build(flowcast.Source{Name: c + ".md", Data: src}, flowcast.Options{})
+		r, err := flowcast.Build(flowcast.Source{Name: filepath.Base(c) + ".md", Data: src}, flowcast.Options{})
 		if err != nil {
 			t.Fatal(err)
 		}

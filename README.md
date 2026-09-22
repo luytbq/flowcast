@@ -63,6 +63,10 @@ Những chỗ khác có chủ đích:
 - `--encoding` nhận utf-8, utf-8-sig, cp1252 và latin-1 cùng các tên gọi khác của
   chúng. Python nhận hàng trăm bảng mã; tên lạ được xử lý như Python xử lý một
   tên nó không biết.
+- Bảng không có dòng lane nào được dựng thành flowchart: mọi phần tử nằm chung
+  một vùng, không vẽ pool hay lane, và phần tử để trống parent. Bản Python báo
+  lỗi "bảng không có lane nào". Case lệch có chủ đích được liệt kê trong
+  `conformance/diverge.txt`.
 - CLI chặn bảng quá 50000 dòng hoặc file quá 64 MB, theo hồ sơ CLILimits.
   Bản Python không chặn.
 - File .drawio cũ không đọc được khi merge: mã thoát và câu hướng dẫn giống,

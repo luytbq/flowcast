@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/luytbq/flowcast/conformance"
 	"os"
 	"path/filepath"
 	"sort"
@@ -25,10 +26,20 @@ func TestCLIKhopBanThamChieu(t *testing.T) {
 	if err != nil || len(paths) == 0 {
 		t.Fatalf("không có bản ghi nào: %v; chạy tools/cli_transcripts.py", err)
 	}
+	// Bản ghi của case trong diverge.txt là hành vi cũ mà bản Go cố ý bỏ.
+	skip, err := conformance.Diverged("../../conformance")
+	if err != nil {
+		t.Fatal(err)
+	}
 	for _, p := range paths {
 		want, err := os.ReadFile(p)
 		if err != nil {
 			t.Fatal(err)
+		}
+		var input string
+		fmt.Sscanf(string(want), "# input: %s", &input)
+		if _, ok := skip[input]; ok {
+			continue
 		}
 		t.Run(strings.TrimSuffix(filepath.Base(p), ".txt"), func(t *testing.T) {
 			got := replay(t, string(want))

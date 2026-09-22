@@ -14,11 +14,14 @@ type Result struct {
 	PoolW, PoolH           float64
 	Origin                 [2]float64
 	PoolHeader, LaneHeader int
-	MinChannel             int
-	Lanes                  []PlacedLane
-	LaneX, LaneW           []float64
-	Items                  []PlacedItem // theo thứ tự dòng trong bảng
-	Edges                  []PlacedEdge // theo thứ tự dòng trong bảng
+	// NoLanes: sơ đồ không có lane. Lanes khi đó là một lane ẩn không được vẽ,
+	// và không có pool.
+	NoLanes      bool
+	MinChannel   int
+	Lanes        []PlacedLane
+	LaneX, LaneW []float64
+	Items        []PlacedItem // theo thứ tự dòng trong bảng
+	Edges        []PlacedEdge // theo thứ tự dòng trong bảng
 	// TopoOrder là thứ tự topo của các node. Merge đặt node mới theo thứ tự này
 	// để node đứng trước trong luồng có chỗ trước.
 	TopoOrder []string
@@ -75,7 +78,8 @@ func (l *Layout) Result() Result {
 	r := Result{
 		PoolW: l.PoolW, PoolH: l.PoolH, Origin: Origin,
 		PoolHeader: l.Cfg.PoolHeader, LaneHeader: l.Cfg.LaneHeader, MinChannel: l.Cfg.MinChannel,
-		LaneX: l.LaneX, LaneW: l.LaneW, TopoOrder: l.TopoOrder,
+		NoLanes: l.NoLanes,
+		LaneX:   l.LaneX, LaneW: l.LaneW, TopoOrder: l.TopoOrder,
 	}
 	for _, ln := range l.Lanes {
 		r.Lanes = append(r.Lanes, PlacedLane{ln.ID, ln.Lines})

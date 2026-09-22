@@ -1,0 +1,9 @@
+# Luồng thẳng một lane
+
+| id | type | parent | content | metadata |
+|---|---|---|---|---|
+| A-1 | start |  | Bắt đầu |  |
+| E1 | edge | | | from=A-1; to=A-2 |
+| A-2 | task |  | Xử lý |  |
+| E2 | edge | | | from=A-2; to=A-3 |
+| A-3 | end |  | Xong |  |

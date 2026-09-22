@@ -60,6 +60,8 @@ type Layout struct {
 
 	Lanes   []model.Row
 	laneIdx map[string]int
+	// NoLanes: bảng không có lane nào, Lanes chỉ chứa một lane ẩn.
+	NoLanes bool
 
 	// items và Edges giữ thứ tự dòng trong bảng. Map của Go duyệt ngẫu nhiên,
 	// nên mọi vòng duyệt cần thứ tự đều đi qua ItemOrder.
@@ -113,6 +115,14 @@ func New(rows []model.Row, cfg Config, tm *text.Measure) *Layout {
 			l.laneIdx[r.ID] = len(l.Lanes)
 			l.Lanes = append(l.Lanes, r)
 		}
+	}
+	if len(l.Lanes) == 0 {
+		// Flowchart: một lane ẩn chứa mọi phần tử, không có header nào. Thuật
+		// toán xếp hình chạy nguyên vẹn trên một lane.
+		l.NoLanes = true
+		l.laneIdx[""] = 0
+		l.Lanes = []model.Row{{Type: "lane"}}
+		l.Cfg.PoolHeader, l.Cfg.LaneHeader = 0, 0
 	}
 	for _, r := range rows {
 		if !schema.NodeTypes[r.Type] && !(schema.AttachTypes[r.Type] && !isMarker(r)) {

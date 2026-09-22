@@ -591,6 +591,18 @@ mutate "web bỏ header nosniff" cmd/flowcastd/server.go '		w.Header().Set("X-Co
 mutate "web không truyền tùy chọn đọc" cmd/flowcastd/server.go '			src.Options[k] = v' '			_ = v'
 mutate "web không dùng giới hạn" cmd/flowcastd/server.go '	opt := flowcast.Options{Title: strings.TrimSpace(r.FormValue("title")), Limits: &s.lim}' '	opt := flowcast.Options{Title: strings.TrimSpace(r.FormValue("title"))}'
 
+# flowchart: bảng không có lane
+mutate "bảng không có lane vẫn đòi parent" validate/validate.go '			if r.Parent == "" && len(v.lanes) == 0 {' '			if false {'
+mutate "flowchart giữ header của pool và lane" layout/model.go '		l.Cfg.PoolHeader, l.Cfg.LaneHeader = 0, 0' '		_ = l.Cfg'
+mutate "flowchart vẫn vẽ pool" writer/drawio/write.go '	if !r.NoLanes {
+		writePool' '	if true {
+		writePool'
+mutate "flowchart không cộng gốc vào node" writer/drawio/write.go '			geo(c, it.X+ox, it.Y+oy, it.W, it.H)' '			geo(c, it.X, it.Y, it.W, it.H)'
+mutate "flowchart không cộng gốc vào điểm gấp" writer/drawio/write.go '		edgeParent, dx, dy = "1", ox, oy' '		edgeParent = "1"'
+mutate "merge flowchart so parent với lane ẩn" merge/merge.go '	if m.r.NoLanes {
+		return "1"
+	}' ''
+
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang
 # hỏng, và mọi kết quả phía trên đều không đáng tin.

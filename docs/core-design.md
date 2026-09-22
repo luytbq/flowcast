@@ -534,7 +534,7 @@ còn là đáp án nữa:
 
 | bước | việc |
 |---|---|
-| 14 | lane thành tùy chọn |
+| 14 | lane thành tùy chọn. Xong: bảng không có lane dựng trên một lane ẩn, header bằng 0, không vẽ pool; merge chạy được |
 | 15 | bộ sơ đồ đo, rồi heuristic độ sâu đường đi |
 | 16 | source/mermaid, hướng khác TD quy về TD kèm cảnh báo |
 | 17 | axis, LR và BT và RL |

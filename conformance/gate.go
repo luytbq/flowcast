@@ -165,7 +165,28 @@ func ParseCase(dir, name string) (model.Table, error) {
 // Dir trả về thư mục bộ đối chiếu, tính từ vị trí gói này.
 func Dir() string { return "." }
 
-// Load đọc mọi dump, sắp theo tên case.
+// Diverged đọc diverge.txt: tên các case mà bản Go cố ý khác bản tham chiếu,
+// kèm lý do.
+func Diverged(dir string) (map[string]string, error) {
+	data, err := os.ReadFile(filepath.Join(dir, "diverge.txt"))
+	if err != nil {
+		return nil, err
+	}
+	out := map[string]string{}
+	for _, ln := range strings.Split(string(data), "\n") {
+		if ln = strings.TrimSpace(ln); ln == "" || strings.HasPrefix(ln, "#") {
+			continue
+		}
+		name, why, ok := strings.Cut(ln, ":")
+		if !ok {
+			return nil, fmt.Errorf("diverge.txt: dòng %q thiếu lý do", ln)
+		}
+		out[strings.TrimSpace(name)] = strings.TrimSpace(why)
+	}
+	return out, nil
+}
+
+// Load đọc mọi dump, sắp theo tên case, trừ các case trong diverge.txt.
 func Load(dir string) ([]Dump, error) {
 	paths, err := filepath.Glob(filepath.Join(dir, "dumps", "*.json"))
 	if err != nil {
@@ -175,8 +196,15 @@ func Load(dir string) ([]Dump, error) {
 	if len(paths) == 0 {
 		return nil, fmt.Errorf("không có dump nào trong %s/dumps; chạy conformance/generate.py", dir)
 	}
+	skip, err := Diverged(dir)
+	if err != nil {
+		return nil, err
+	}
 	out := make([]Dump, 0, len(paths))
 	for _, p := range paths {
+		if _, ok := skip[strings.TrimSuffix(filepath.Base(p), ".json")]; ok {
+			continue
+		}
 		data, err := os.ReadFile(p)
 		if err != nil {
 			return nil, err

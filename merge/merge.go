@@ -384,7 +384,7 @@ func (m *merger) placeOldItems() {
 		if c == nil || !c.vertex() || !m.gen[it.ID] {
 			continue
 		}
-		laneID := r.Lanes[it.Lane].ID
+		laneID := m.laneCell(it.Lane)
 		if c.parent() != laneID {
 			m.rep.LaneChanged = append(m.rep.LaneChanged, it.ID)
 			continue
@@ -400,6 +400,15 @@ func (m *merger) placeOldItems() {
 		m.pinned[it.ID] = true
 		m.rep.Pinned = append(m.rep.Pinned, it.ID)
 	}
+}
+
+// laneCell là id của cell cha chứa các node của lane i trong file. Sơ đồ không
+// có lane đặt node thẳng trên layer "1", nên lane ẩn ứng với layer đó.
+func (m *merger) laneCell(i int) string {
+	if m.r.NoLanes {
+		return "1"
+	}
+	return m.r.Lanes[i].ID
 }
 
 func (m *merger) neighbors(id string) []string {

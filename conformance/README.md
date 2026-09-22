@@ -26,7 +26,15 @@ etree-vectors.json  XML ngẫu nhiên, so việc đọc ghi với ElementTree
 merge-vectors.json  vector cho float(), b64decode và unquote kiểu Python
 verify-vectors.json SVG thật do drawio xuất, cho kiểm render
 drawio-fakes/       drawio CLI giả cho bản ghi có --png và --verify
+flowchart/          bảng không có lane; golden của chúng nằm ở golden/flowchart
+diverge.txt         case mà bản Go cố ý khác bản tham chiếu, kèm lý do
 ```
+
+Từ bước 14, bản Go có hành vi mà bản tham chiếu không có. Case của hành vi cũ
+được ghi vào diverge.txt và test Go bỏ qua chúng; hành vi mới được chốt bằng
+case riêng, có golden do bản Go sinh. Golden đó là bộ chống hồi quy, không phải
+đáp án: sinh lại bằng `go test ./conformance -run Flowchart -update`, và phải
+xem ảnh cùng diff trước khi commit.
 
 Mỗi case cho ra hai file trong golden/:
 
