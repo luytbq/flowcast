@@ -15,18 +15,6 @@ func (l *Layout) sameLaneOuts(nid string) []*Edge {
 	return out
 }
 
-// branchOffset là khoảng cách từ cạnh này tới nhánh chính, tính bằng số cạnh.
-// Nhánh chính là cạnh ra cuối cùng và có offset 0.
-func (l *Layout) branchOffset(e *Edge) int {
-	same := l.sameLaneOuts(e.Src)
-	for i, x := range same {
-		if x == e {
-			return len(same) - 1 - i
-		}
-	}
-	return 0
-}
-
 // branchDrift nói nhánh này rốt cuộc đi sang lane bên nào: -1 trái, 1 phải, 0
 // chưa rõ.
 //
@@ -170,15 +158,14 @@ func (l *Layout) mergeCol(same []*Edge, v *Item) (col int, ok bool) {
 	return best.Col, true
 }
 
-// sideBranches đếm số nhánh phụ cùng lane của một node.
+// sideBranches đếm số nhánh phụ cùng lane: mọi cạnh ra cùng lane trừ nhánh
+// chính. Bản tham chiếu đếm các cạnh có khoảng cách tới nhánh chính lớn hơn 0;
+// khoảng cách đó là một hoán vị của 0 tới n-1, nên hai cách đếm luôn bằng nhau.
 func (l *Layout) sideBranches(v *Item) int {
-	n := 0
-	for _, e := range l.outs[v.ID] {
-		if !e.Back && l.items[e.Dst].Lane == v.Lane && l.branchOffset(e) > 0 {
-			n++
-		}
+	if n := len(l.sameLaneOuts(v.ID)); n > 0 {
+		return n - 1
 	}
-	return n
+	return 0
 }
 
 // attachSide chọn phía cho db và text đứng cạnh node: phía không có cạnh nối.

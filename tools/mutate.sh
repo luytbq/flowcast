@@ -105,7 +105,6 @@ mutate "thông điệp dùng %q thay vì nháy thẳng" validate/validate.go 'fm
 # layout/place
 mutate "topo ưu tiên dòng đứng sau thay vì đứng trước" layout/topo.go 'return h[i].Order < h[j].Order' 'return h[i].Order > h[j].Order'
 mutate "topo không bỏ qua cạnh back" layout/topo.go 'if _, ok := indeg[e.Dst]; ok && !e.Back {' 'if _, ok := indeg[e.Dst]; ok {'
-mutate "nhánh chính là cạnh ra đầu tiên thay vì cuối cùng" layout/branch.go 'return len(same) - 1 - i' 'return i'
 mutate "branchDrift đảo hướng" layout/branch.go 'if w.Lane < v.Lane {' 'if w.Lane > v.Lane {'
 mutate "branchDrift không dừng ở node hợp nhánh" layout/branch.go 'if l.nonBackIn(w.ID) > 1 {' 'if false {'
 mutate "nhánh không rõ hướng ưu tiên trái" layout/branch.go 'if next[1] <= next[-1] {' 'if next[1] < next[-1] {'
@@ -121,7 +120,8 @@ mutate "db và text thử phía ngược trước" layout/place.go '[]int{side, 
 mutate "mũi tên ngang không tránh mũi tên ngang khác" layout/place.go 'if s.row == r && s.a.less(b) && a.less(s.b) {' 'if false {'
 mutate "mũi tên ngang không tránh ô đã chiếm ở giữa" layout/place.go 'if k.row == r && a.less(gk{k.lane, k.col}) && (gk{k.lane, k.col}).less(b) {' 'if false {'
 mutate "nguồn tham chiếu là nguồn nông nhất" layout/place.go 'if a.Row > b.Row ||' 'if a.Row < b.Row ||'
-mutate "đảo phía hside" layout/place.go "l.addSide(u.ID, 'R')" "l.addSide(u.ID, 'L')"
+mutate "đảo phía hside" layout/place.go 'toRight := (gk{u.Lane, u.Col}).less(gk{v.Lane, col})' 'toRight := !(gk{u.Lane, u.Col}).less(gk{v.Lane, col})'
+mutate "đếm cả nhánh chính là nhánh phụ" layout/branch.go 'return n - 1' 'return n'
 
 [ -n "$PREFLIGHT" ] && exit 0
 echo
