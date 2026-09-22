@@ -250,6 +250,21 @@ mutate "không bỏ phát hiện trùng" layout/check.go 'if !seen[f] {' 'if tru
 mutate "cặp node chồng không sắp theo id" layout/check.go 'sort.Strings(ids)' 'sort.Sort(sort.Reverse(sort.StringSlice(ids)))'
 mutate "số thứ tự đoạn xiên đếm từ 1" layout/check.go '"%s: đoạn %d không vuông góc", e.ID, k)' '"%s: đoạn %d không vuông góc", e.ID, k+1)'
 
+# writer/drawio
+mutate "không thoát & trong nội dung html" writer/drawio/write.go 'r := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")' 'r := strings.NewReplacer("<", "&lt;", ">", "&gt;")'
+mutate "nối dòng bằng xuống dòng thay vì br" writer/drawio/write.go 'return strings.Join(out, "<br>")' 'return strings.Join(out, "\n")'
+mutate "không thoát dấu nháy kép trong thuộc tính" writer/drawio/xml.go '"\"", "&quot;",' ''
+mutate "không thoát xuống dòng trong thuộc tính" writer/drawio/xml.go '"\n", "&#10;",' ''
+mutate "phần tử rỗng không có khoảng trắng trước gạch chéo" writer/drawio/xml.go 'b.WriteString(" />")' 'b.WriteString("/>")'
+mutate "thụt lề bốn khoảng trắng" writer/drawio/xml.go 'inner := "\n" + strings.Repeat("  ", level+1)' 'inner := "\n" + strings.Repeat("    ", level+1)'
+mutate "tên trang cắt 40 ký tự" writer/drawio/write.go 'if len(name) > 80 {' 'if len(name) > 40 {'
+mutate "tên trang cắt theo byte thay vì rune" writer/drawio/write.go 'name := []rune(title)' 'name := []rune(string([]byte(title)[:min(len(title), 80)]))'
+mutate "ghi chú tô nhấn dùng style của node" writer/drawio/write.go 'if it.Kind == "text" {' 'if false {'
+mutate "bỏ nét đứt" writer/drawio/write.go 'style += "dashed=1;"' 'style += ""'
+mutate "bỏ thuộc tính x của nhãn" writer/drawio/write.go 'g.set("x", f(e.LabelT))' '_ = e.LabelT'
+mutate "ghi cả điểm đầu và điểm cuối vào points" writer/drawio/write.go 'for _, p := range e.Pts[1 : len(e.Pts)-1] {' 'for _, p := range e.Pts {'
+mutate "lane không trừ header của pool" writer/drawio/write.go 'geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH-float64(r.PoolHeader))' 'geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH)'
+
 [ -n "$PREFLIGHT" ] && exit 0
 echo
 echo "bắt được $caught, bỏ lọt $missed"
