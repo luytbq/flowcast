@@ -1,0 +1,15 @@
+# input: 14-attach-two-db -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 5 phần tử, 2 cạnh, 500x334px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+dbebcd8d3a0898a2  in.drawio
+0dc86ee58a5d6a26  in.md

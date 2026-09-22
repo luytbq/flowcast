@@ -1,0 +1,15 @@
+# input: 25-tracks-parallel -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 8 phần tử, 7 cạnh, 349.66x514px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+57e10a8d12ea4a5a  in.drawio
+1a38d4307a6f115c  in.md

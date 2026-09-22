@@ -1,0 +1,16 @@
+# input: 55-label-tie-first -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (3 lane, 2 phần tử, 1 cạnh, 590.09x238px)
+WARNING layout: E1: nhãn "gửi yêu cầu" không tìm được chỗ trống hoàn toàn
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+b06234e48dd81f09  in.drawio
+e0af75a31ee66faf  in.md

@@ -1,0 +1,17 @@
+# input: 81-warn-attach-other-lane -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 10 [A-2]: nằm ở lane A nhưng gắn vào B-1 thuộc lane B; sẽ vẽ trong lane B
+check: 0 lỗi, 1 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 10 [A-2]: nằm ở lane A nhưng gắn vào B-1 thuộc lane B; sẽ vẽ trong lane B
+check: 0 lỗi, 1 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 4 phần tử, 2 cạnh, 510x250px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+3bfea6ac8dfbe78a  in.drawio
+4b8703230285a1ab  in.md

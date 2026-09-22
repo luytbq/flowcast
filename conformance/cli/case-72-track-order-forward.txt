@@ -1,0 +1,15 @@
+# input: 72-track-order-forward -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (3 lane, 5 phần tử, 4 cạnh, 598x278px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+b2ec643ddcd4597d  in.drawio
+19d3e7440f659199  in.md

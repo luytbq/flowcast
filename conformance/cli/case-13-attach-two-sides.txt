@@ -1,0 +1,15 @@
+# input: 13-attach-two-sides -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (3 lane, 5 phần tử, 3 cạnh, 706.35x353px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+b093db906227d458  in.drawio
+897ba041edba099c  in.md

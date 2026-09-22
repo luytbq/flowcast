@@ -1,0 +1,17 @@
+# input: 50-geom-hug-side-busy -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 12 [A-3]: task không có cạnh ra
+check: 0 lỗi, 1 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 12 [A-3]: task không có cạnh ra
+check: 0 lỗi, 1 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 5 phần tử, 2 cạnh, 468.02x263px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+186e0110b213c074  in.drawio
+12d458fe2a9c0dbe  in.md

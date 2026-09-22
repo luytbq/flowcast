@@ -1,0 +1,15 @@
+# input: 46-place-merge-two-roots -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 8 phần tử, 7 cạnh, 336x667px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+a727ccab6e1ed19c  in.drawio
+e549194ae6aa1592  in.md

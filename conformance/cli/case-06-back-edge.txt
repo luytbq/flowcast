@@ -1,0 +1,15 @@
+# input: 06-back-edge -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 4 cạnh, 239.1x414px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+9bc635b6bd021413  in.drawio
+09b29456e6b9bc82  in.md

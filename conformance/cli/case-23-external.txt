@@ -1,0 +1,15 @@
+# input: 23-external -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 3 cạnh, 413.66x334px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+ee3ec6714c336827  in.drawio
+a1db683ebcb1e400  in.md

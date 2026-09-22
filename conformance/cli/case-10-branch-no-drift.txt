@@ -1,0 +1,15 @@
+# input: 10-branch-no-drift -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 6 phần tử, 7 cạnh, 495.64x433px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+99eb866b6e5b0b1b  in.drawio
+0765484b0acb68ea  in.md

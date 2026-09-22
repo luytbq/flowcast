@@ -1,0 +1,17 @@
+# input: 70-port-avoid-center -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 12 [A-3]: task không có cạnh ra
+check: 0 lỗi, 1 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 12 [A-3]: task không có cạnh ra
+check: 0 lỗi, 1 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 3 cạnh, 296x250px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+4dc93f6f86b2742d  in.drawio
+62bb875a38086202  in.md

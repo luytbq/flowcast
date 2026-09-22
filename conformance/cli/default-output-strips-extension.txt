@@ -1,0 +1,11 @@
+# input: 03-condition-two -> so.do.md
+$ ["build", "$T/so.do.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/so.do.drawio (1 lane, 4 phần tử, 3 cạnh, 325.26x334px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+d6401975adfee782  so.do.drawio
+35ce030c1847ff7d  so.do.md

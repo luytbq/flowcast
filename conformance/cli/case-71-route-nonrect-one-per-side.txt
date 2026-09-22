@@ -1,0 +1,15 @@
+# input: 71-route-nonrect-one-per-side -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 3 phần tử, 2 cạnh, 138x318px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+92eb4844b2ebff51  in.drawio
+6a104f3386cbfbf3  in.md

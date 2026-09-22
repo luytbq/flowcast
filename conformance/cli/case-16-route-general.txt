@@ -1,0 +1,15 @@
+# input: 16-route-general -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (3 lane, 5 phần tử, 4 cạnh, 599.92x250px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+926af73a45e001e1  in.drawio
+f851ef794b7c3fcd  in.md

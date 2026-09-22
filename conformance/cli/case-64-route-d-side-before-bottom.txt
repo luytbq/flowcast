@@ -1,0 +1,15 @@
+# input: 64-route-d-side-before-bottom -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 3 phần tử, 1 cạnh, 138x324px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+287aa8ec6b3b001c  in.drawio
+801be1dbd8531936  in.md

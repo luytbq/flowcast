@@ -1,0 +1,15 @@
+# input: 44-place-hside-before-branch -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 5 phần tử, 4 cạnh, 468.01x334px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+e48bb63203234608  in.drawio
+3804f79455585333  in.md

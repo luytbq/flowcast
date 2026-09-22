@@ -1,0 +1,14 @@
+# input: 90-invalid-dangling-ref -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 7 [E1]: to=A-9 trỏ tới id không tồn tại
+check: 1 lỗi, 0 cảnh báo
+[exit 1]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 7 [E1]: to=A-9 trỏ tới id không tồn tại
+check: 1 lỗi, 0 cảnh báo
+build: dừng vì bảng có lỗi
+[exit 1]
+--- files
+ecfa0cd9628083d9  in.md

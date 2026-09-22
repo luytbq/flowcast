@@ -1,0 +1,15 @@
+# input: 05-merge-node -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 5 phần tử, 5 cạnh, 345.26x433px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+5fe65cdc898e212c  in.drawio
+cfec3086adb5d4eb  in.md

@@ -1,0 +1,15 @@
+# input: 58-label-lane-separator -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 2 cạnh, 260x263px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+6e48c4b4c02e7c25  in.drawio
+7e2d54725f4f6dd3  in.md

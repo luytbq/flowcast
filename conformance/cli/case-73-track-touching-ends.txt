@@ -1,0 +1,15 @@
+# input: 73-track-touching-ends -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 5 phần tử, 2 cạnh, 350x414px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+f007a1176801356d  in.drawio
+9c4907021233afd4  in.md

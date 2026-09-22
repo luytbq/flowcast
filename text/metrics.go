@@ -33,18 +33,27 @@ func LoadMetrics(path string) (*Metrics, error) {
 	if err != nil {
 		return nil, err
 	}
-	var f metricsFile
-	if err := json.Unmarshal(data, &f); err != nil {
+	m, err := ParseMetrics(data)
+	if err != nil {
 		return nil, fmt.Errorf("%s: %w", path, err)
 	}
+	return m, nil
+}
+
+// ParseMetrics đọc bảng số đo từ bytes, ví dụ từ bảng nhúng trong gói data.
+func ParseMetrics(data []byte) (*Metrics, error) {
+	var f metricsFile
+	if err := json.Unmarshal(data, &f); err != nil {
+		return nil, err
+	}
 	if f.UPEM == 0 {
-		return nil, fmt.Errorf("%s: thiếu upem", path)
+		return nil, fmt.Errorf("thiếu upem")
 	}
 	m := &Metrics{Family: f.Family, UPEM: f.UPEM, Notdef: f.Notdef, adv: make(map[rune]int, len(f.Advances))}
 	for k, v := range f.Advances {
 		cp, err := strconv.Atoi(k)
 		if err != nil {
-			return nil, fmt.Errorf("%s: codepoint %q không phải số", path, k)
+			return nil, fmt.Errorf("codepoint %q không phải số", k)
 		}
 		m.adv[rune(cp)] = v
 	}

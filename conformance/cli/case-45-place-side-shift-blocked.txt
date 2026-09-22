@@ -1,0 +1,15 @@
+# input: 45-place-side-shift-blocked -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 8 phần tử, 7 cạnh, 678.2x504px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+a7d9066647c34048  in.drawio
+36494e582628e2a4  in.md

@@ -1,0 +1,17 @@
+# input: 69-track-bus-first -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 14 [A-4]: task không có cạnh ra
+check: 0 lỗi, 1 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 14 [A-4]: task không có cạnh ra
+check: 0 lỗi, 1 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 5 cạnh, 186x404px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+cc206c487e997cb2  in.drawio
+508e4320c2c2b711  in.md

@@ -1,0 +1,15 @@
+# input: 20-wrap-escapes -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 3 phần tử, 2 cạnh, 284x324px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+9f913836fcdaec7d  in.drawio
+045002ee06472776  in.md

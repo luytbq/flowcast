@@ -1,0 +1,17 @@
+# input: 66-route-back-no-bottom -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 6 [A-1]: start có cạnh đi vào: E2
+check: 0 lỗi, 1 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 6 [A-1]: start có cạnh đi vào: E2
+check: 0 lỗi, 1 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 3 phần tử, 1 cạnh, 338x254px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+01d376d689458ef3  in.drawio
+5ecbe7dfdf3706e1  in.md

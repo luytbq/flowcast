@@ -1,0 +1,21 @@
+# input: 35-style-values-order -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 7 [E1]: style "zzz" không dùng cho type edge, bị bỏ qua
+WARNING dòng 7 [E1]: style "aaa" không dùng cho type edge, bị bỏ qua
+WARNING dòng 7 [E1]: style "mmm" không dùng cho type edge, bị bỏ qua
+check: 0 lỗi, 3 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 7 [E1]: style "zzz" không dùng cho type edge, bị bỏ qua
+WARNING dòng 7 [E1]: style "aaa" không dùng cho type edge, bị bỏ qua
+WARNING dòng 7 [E1]: style "mmm" không dùng cho type edge, bị bỏ qua
+check: 0 lỗi, 3 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 2 phần tử, 1 cạnh, 128x244px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+001d83259baebc4e  in.drawio
+263aa92e6746eff8  in.md

@@ -1,0 +1,15 @@
+# input: 30-input-nfd -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 3 phần tử, 2 cạnh, 250x340px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+ed907cea40880994  in.drawio
+5448885fec63e9ba  in.md

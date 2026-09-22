@@ -1,0 +1,15 @@
+# input: 32-crlf -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 2 phần tử, 1 cạnh, 128x244px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+5e458f9569829ba0  in.drawio
+28bd370ccd925ac8  in.md

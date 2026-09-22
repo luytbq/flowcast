@@ -1,0 +1,16 @@
+# input: 48-place-attach-overflow-span -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 6 phần tử, 2 cạnh, 800x260px)
+WARNING layout: D3: không còn ô trống cạnh A-2, đặt xa hơn
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+b0bdfefc5a0bb0b9  in.drawio
+e795f18c684c7113  in.md

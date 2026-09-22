@@ -1,0 +1,17 @@
+# input: 34-parse-quirks -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 9 [E1]: metadata "st\_yle" không dùng cho type edge, bị bỏ qua
+check: 0 lỗi, 1 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 9 [E1]: metadata "st\_yle" không dùng cho type edge, bị bỏ qua
+check: 0 lỗi, 1 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 2 phần tử, 1 cạnh, 148x260px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+ba34d22fa488fd0d  in.drawio
+95562592753a5869  in.md

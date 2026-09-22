@@ -1,0 +1,15 @@
+# input: 51-geom-lane-header-multiline -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 0 phần tử, 0 cạnh, 135.19x90px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+a12ab79c5f4d757b  in.drawio
+4710babca2349050  in.md

@@ -1,0 +1,15 @@
+# input: 61-route-b-attach-far-side -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 6 phần tử, 2 cạnh, 530x260px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+cbb26c97e8573ddf  in.drawio
+a1d3496af431d925  in.md

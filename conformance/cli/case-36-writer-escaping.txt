@@ -1,0 +1,15 @@
+# input: 36-writer-escaping -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 3 phần tử, 2 cạnh, 238x324px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+ddd36cbc8a639f6f  in.drawio
+7b335d58a21ead09  in.md

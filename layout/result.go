@@ -29,6 +29,7 @@ type PlacedItem struct {
 	ID         string
 	Kind       string
 	Lane       int
+	Row, Col   int
 	Lines      []string
 	Highlight  bool
 	X, Y, W, H float64
@@ -38,6 +39,7 @@ func (it PlacedItem) box() box { return box{it.X, it.Y, it.X + it.W, it.Y + it.H
 
 type PlacedEdge struct {
 	ID, Src, Dst        string
+	Case, ExitSide      byte
 	Lines               []string
 	Dashed, Highlight   bool
 	ExitFrac, EntryFrac [2]float64
@@ -58,11 +60,12 @@ func (l *Layout) Result() Result {
 		r.Lanes = append(r.Lanes, PlacedLane{ln.ID, ln.Lines})
 	}
 	for _, it := range l.ItemOrder {
-		r.Items = append(r.Items, PlacedItem{it.ID, it.Kind, it.Lane, it.Lines, it.Highlight, it.X, it.Y, it.W, it.H})
+		r.Items = append(r.Items, PlacedItem{it.ID, it.Kind, it.Lane, it.Row, it.Col, it.Lines, it.Highlight, it.X, it.Y, it.W, it.H})
 	}
 	for _, e := range l.Edges {
 		r.Edges = append(r.Edges, PlacedEdge{
-			ID: e.ID, Src: e.Src, Dst: e.Dst, Lines: e.Lines, Dashed: e.Dashed, Highlight: e.Highlight,
+			ID: e.ID, Src: e.Src, Dst: e.Dst, Case: e.Case, ExitSide: e.ExitSide,
+			Lines: e.Lines, Dashed: e.Dashed, Highlight: e.Highlight,
 			ExitFrac: e.ExitFrac, EntryFrac: e.EntryFrac, Pts: e.Pts,
 			Label: e.Label, LabelT: e.LabelT, LabelOff: e.LabelOff,
 		})

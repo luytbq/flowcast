@@ -1,0 +1,16 @@
+# input: 96-invalid-cell-count -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 6: dòng có 4 cột, cần 5 (gạch đứng trong nội dung phải viết \|)
+ERROR   dòng 7 [E1]: from=A-1 trỏ tới id không tồn tại
+check: 2 lỗi, 0 cảnh báo
+[exit 1]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 6: dòng có 4 cột, cần 5 (gạch đứng trong nội dung phải viết \|)
+ERROR   dòng 7 [E1]: from=A-1 trỏ tới id không tồn tại
+check: 2 lỗi, 0 cảnh báo
+build: dừng vì bảng có lỗi
+[exit 1]
+--- files
+1d951657c3ea6751  in.md

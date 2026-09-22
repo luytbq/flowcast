@@ -1,0 +1,11 @@
+# input: 19-wrap-long -> in.md
+$ ["build", "$T/in.md", "--task-max-w", "160", "--text-wrap", "120", "--db-wrap", "90", "--track-gap", "20", "--min-gutter", "40", "--min-channel", "50"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 5 phần tử, 3 cạnh, 430x594px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+e0e51b9d13551964  in.drawio
+d1350bf5743f0531  in.md

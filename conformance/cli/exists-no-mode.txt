@@ -1,0 +1,17 @@
+# input: 03-condition-two -> in.md
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 3 cạnh, 325.26x334px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+ERROR   $T/in.drawio đã tồn tại; chọn --mode merge (giữ vị trí, lane, waypoint đã sửa tay) hoặc --mode force (sinh lại toàn bộ)
+build: dừng, chưa chọn chế độ ghi
+[exit 4]
+--- files
+d6401975adfee782  in.drawio
+35ce030c1847ff7d  in.md

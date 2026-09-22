@@ -1,0 +1,11 @@
+# input: 28-tracks-fan-in -> in.md
+$ ["build", "$T/in.md", "--output=$T/ra.drawio", "--task-max-w=200", "--title=Có dấu bằng"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/ra.drawio (2 lane, 11 phần tử, 14 cạnh, 409.66x924px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+229c0013e87e8e72  in.md
+d48b3e28bd1516ea  ra.drawio

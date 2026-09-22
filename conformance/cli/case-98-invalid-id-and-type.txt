@@ -1,0 +1,20 @@
+# input: 98-invalid-id-and-type -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 6: id trống
+ERROR   dòng 7 [pool]: id "pool" trùng id dành riêng của draw.io
+ERROR   dòng 8 [A-1]: type không hợp lệ: "procedure"
+WARNING dòng 7 [pool]: task không có cạnh ra
+check: 3 lỗi, 1 cảnh báo
+[exit 1]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 6: id trống
+ERROR   dòng 7 [pool]: id "pool" trùng id dành riêng của draw.io
+ERROR   dòng 8 [A-1]: type không hợp lệ: "procedure"
+WARNING dòng 7 [pool]: task không có cạnh ra
+check: 3 lỗi, 1 cảnh báo
+build: dừng vì bảng có lỗi
+[exit 1]
+--- files
+39297693977e1ae5  in.md

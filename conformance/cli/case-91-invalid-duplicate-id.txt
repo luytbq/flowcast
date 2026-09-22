@@ -1,0 +1,16 @@
+# input: 91-invalid-duplicate-id -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 9 [A-2]: id trùng với dòng 8
+WARNING dòng 8 [A-2]: task không có cạnh ra
+check: 1 lỗi, 1 cảnh báo
+[exit 1]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 9 [A-2]: id trùng với dòng 8
+WARNING dòng 8 [A-2]: task không có cạnh ra
+check: 1 lỗi, 1 cảnh báo
+build: dừng vì bảng có lỗi
+[exit 1]
+--- files
+3313a3569b2cda0d  in.md

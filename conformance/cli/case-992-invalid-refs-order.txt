@@ -1,0 +1,22 @@
+# input: 992-invalid-refs-order -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 12 [A-1]: id trùng với dòng 6
+ERROR   dòng 11 [E9]: from=KHONG1 trỏ tới id không tồn tại
+ERROR   dòng 11 [E9]: to=KHONG2 trỏ tới id không tồn tại
+ERROR   dòng 6 [A-1]: cạnh ra phải nằm liền sau A-1 (và các db/text gắn vào nó); đang lệch: E1
+WARNING dòng 7 [E1]: A-2 đứng trước nguồn A-1 nhưng cạnh không ghi back=true
+check: 4 lỗi, 1 cảnh báo
+[exit 1]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 12 [A-1]: id trùng với dòng 6
+ERROR   dòng 11 [E9]: from=KHONG1 trỏ tới id không tồn tại
+ERROR   dòng 11 [E9]: to=KHONG2 trỏ tới id không tồn tại
+ERROR   dòng 6 [A-1]: cạnh ra phải nằm liền sau A-1 (và các db/text gắn vào nó); đang lệch: E1
+WARNING dòng 7 [E1]: A-2 đứng trước nguồn A-1 nhưng cạnh không ghi back=true
+check: 4 lỗi, 1 cảnh báo
+build: dừng vì bảng có lỗi
+[exit 1]
+--- files
+5a0e6f2b0a291ed4  in.md

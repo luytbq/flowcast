@@ -1,0 +1,15 @@
+# input: 04-condition-three -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 5 phần tử, 4 cạnh, 459.64x334px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+45522ef0c4cbd2cf  in.drawio
+035ea9dc9eafa6e3  in.md

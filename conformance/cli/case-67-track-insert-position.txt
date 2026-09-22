@@ -1,0 +1,15 @@
+# input: 67-track-insert-position -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 5 phần tử, 2 cạnh, 350x414px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+d5248979f951d647  in.drawio
+319d5259fd43356e  in.md

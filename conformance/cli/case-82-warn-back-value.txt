@@ -1,0 +1,20 @@
+# input: 82-warn-back-value -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 11 [E3]: back="maybe" không hợp lệ, chỉ nhận true/false
+WARNING dòng 11 [E3]: A-2 đứng trước nguồn A-3 nhưng cạnh không ghi back=true
+check: 0 lỗi, 2 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 11 [E3]: back="maybe" không hợp lệ, chỉ nhận true/false
+WARNING dòng 11 [E3]: A-2 đứng trước nguồn A-3 nhưng cạnh không ghi back=true
+check: 0 lỗi, 2 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 4 cạnh, 205.66x414px)
+WARNING layout: có vòng lặp chưa đánh dấu back=true, xếp theo thứ tự bảng: A-2, A-3, A-4
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+ece0d422a07bf82f  in.drawio
+e489fdefa4915377  in.md

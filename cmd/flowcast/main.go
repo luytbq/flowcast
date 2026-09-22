@@ -1,0 +1,310 @@
+// Lệnh flowcast đọc một Flow Table rồi ghi file .drawio.
+//
+// Đầu ra, mã thoát và tên cờ giữ đúng như bản tham chiếu Python, để subagent
+// flowtable-drawio chuyển sang dùng flowcast mà không phải đổi gì: nó đọc mã
+// thoát và chép nguyên văn các dòng ERROR layout:, ERROR render:, merge:.
+//
+// Mã thoát:
+//
+//	0  ổn, có thể vẫn có cảnh báo
+//	1  bảng có lỗi, không vẽ
+//	2  tự kiểm hình học có lỗi
+//	3  ảnh render lệch toạ độ, hoặc drawio CLI lỗi
+//	4  file đích đã tồn tại mà chưa chọn chế độ, hoặc không đọc được file đích
+package main
+
+import (
+	"bufio"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
+	"syscall"
+	"unicode"
+
+	"github.com/luytbq/flowcast"
+	"github.com/luytbq/flowcast/model"
+	"github.com/luytbq/flowcast/num"
+)
+
+func main() {
+	os.Exit(run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr))
+}
+
+func run(argv []string, stdin io.Reader, stdout, stderr io.Writer) int {
+	a, err := parseArgs(argv)
+	if err != nil {
+		fmt.Fprintln(stderr, "flowcast:", err)
+		fmt.Fprintln(stderr, "dùng: flowcast check <file> | flowcast build <file> [-o out.drawio] [--mode merge|force] ...")
+		return 2
+	}
+	c := &cli{a: a, stdin: stdin, out: stdout}
+	if a.cmd == "check" {
+		return c.check()
+	}
+	return c.build()
+}
+
+type cli struct {
+	a     *args
+	stdin io.Reader
+	out   io.Writer
+}
+
+func (c *cli) println(s ...any) { fmt.Fprintln(c.out, s...) }
+
+// supported là các đuôi file đọc được, xét trước khi mở file, đúng như bản
+// tham chiếu: đuôi lạ bị từ chối kể cả khi file không tồn tại.
+var supported = map[string]bool{".md": true, ".markdown": true, ".txt": true,
+	".csv": true, ".tsv": true, ".xlsx": true, ".xlsm": true}
+
+// read đọc file đầu vào thành Source. Lỗi trả về đã ở dạng thông điệp in ra.
+func (c *cli) read() (flowcast.Source, error) {
+	ext := strings.ToLower(pyExt(c.a.file))
+	if !supported[ext] {
+		return flowcast.Source{}, fmt.Errorf("đuôi file \"%s\" không hỗ trợ; dùng .md, .csv hoặc .xlsx", ext)
+	}
+	data, err := os.ReadFile(c.a.file)
+	if err != nil {
+		return flowcast.Source{}, fmt.Errorf("không đọc được %s: %s", c.a.file, strerror(err))
+	}
+	opts := map[string]string{}
+	for k, v := range map[string]string{"sheet": c.a.sheet, "delimiter": c.a.delimiter, "encoding": c.a.encoding} {
+		if v != "" {
+			opts[k] = v
+		}
+	}
+	return flowcast.Source{Data: data, Name: c.a.file, Options: opts}, nil
+}
+
+// printIssues in lỗi trước cảnh báo sau, giữ nguyên thứ tự trong mỗi nhóm, rồi
+// trả về số lỗi.
+func (c *cli) printIssues(issues []model.Issue) int {
+	sorted := append([]model.Issue(nil), issues...)
+	sort.SliceStable(sorted, func(i, j int) bool {
+		return sorted[i].Level == model.LevelError && sorted[j].Level != model.LevelError
+	})
+	ne := 0
+	for _, i := range sorted {
+		c.println(i.String())
+		if i.Level == model.LevelError {
+			ne++
+		}
+	}
+	c.println(fmt.Sprintf("check: %d lỗi, %d cảnh báo", ne, len(issues)-ne))
+	return ne
+}
+
+func (c *cli) check() int {
+	src, err := c.read()
+	if err != nil {
+		c.println("ERROR   " + err.Error())
+		return 1
+	}
+	r, err := flowcast.Check(src)
+	if err != nil {
+		c.println("ERROR   " + err.Error())
+		return 1
+	}
+	c.println("check: đọc bảng từ " + r.Source)
+	if c.printIssues(r.Issues) > 0 {
+		return 1
+	}
+	return 0
+}
+
+func (c *cli) build() int {
+	src, err := c.read()
+	if err != nil {
+		c.println("ERROR   " + err.Error())
+		return 1
+	}
+	chk, err := flowcast.Check(src)
+	if err != nil {
+		c.println("ERROR   " + err.Error())
+		return 1
+	}
+	c.println("check: đọc bảng từ " + chk.Source)
+	if c.printIssues(chk.Issues) > 0 {
+		c.println("build: dừng vì bảng có lỗi")
+		return 1
+	}
+	if c.a.font != "" {
+		c.println("WARNING --font bị bỏ qua: flowcast đo chữ bằng bảng số đo nhúng sẵn, không đọc file font")
+	}
+
+	out := c.a.output
+	if out == "" {
+		out = strings.TrimSuffix(c.a.file, pyExt(c.a.file)) + ".drawio"
+	}
+	mode, ok := c.chooseMode(out)
+	if !ok {
+		c.println("build: dừng, chưa chọn chế độ ghi")
+		return 4
+	}
+	if mode == "merge" {
+		c.println("ERROR   --mode merge chưa hỗ trợ trong bản này; không ghi đè. Dùng --mode force nếu muốn sinh lại toàn bộ")
+		return 4
+	}
+
+	r, err := flowcast.Build(src, flowcast.Options{Config: &c.a.cfg, Title: c.a.title})
+	if err != nil {
+		c.println("ERROR   " + err.Error())
+		return 1
+	}
+	backup := ""
+	if mode == "force" && !c.a.noBackup {
+		backup = out + ".bak"
+		if err := copyFile(out, backup); err != nil {
+			c.println("ERROR   " + err.Error())
+			return 4
+		}
+	}
+	if err := os.WriteFile(out, []byte(r.Text), 0o644); err != nil {
+		c.println("ERROR   " + err.Error())
+		return 1
+	}
+	c.println("build: chế độ " + map[string]string{
+		"new": "tạo mới", "force": "force, sinh lại toàn bộ", "merge": "merge, giữ chỉnh sửa tay"}[mode])
+	s := r.Stats
+	c.println(fmt.Sprintf("build: đã ghi %s (%d lane, %d phần tử, %d cạnh, %sx%spx)",
+		out, s.Lanes, s.Items, s.Edges, num.Fmt(s.W), num.Fmt(s.H)))
+	if backup != "" {
+		c.println("build: bản sao file cũ " + backup)
+	}
+	if c.a.layoutJSON != "" {
+		if err := writeLayoutJSON(c.a.layoutJSON, r); err != nil {
+			c.println("ERROR   " + err.Error())
+			return 1
+		}
+	}
+	for _, w := range r.Warnings {
+		c.println("WARNING layout: " + w)
+	}
+	nerr := 0
+	for _, f := range r.Findings {
+		c.println(fmt.Sprintf("%-7s layout: %s", strings.ToUpper(f.Level), f.Msg))
+		if f.Level == "error" {
+			nerr++
+		}
+	}
+	c.println(fmt.Sprintf("layout: %d lỗi, %d cảnh báo", nerr, len(r.Findings)-nerr))
+	code := 0
+	if nerr > 0 {
+		code = 2
+	}
+	if c.a.png != "" || c.a.verify {
+		c.println("WARNING render: xuất ảnh và kiểm render chưa hỗ trợ trong bản này, bỏ qua")
+	}
+	return code
+}
+
+// chooseMode trả về "new", "force" hoặc "merge". ok là false khi phải dừng: file
+// đích đã có, chưa chọn chế độ, và không có ai ở terminal để hỏi.
+func (c *cli) chooseMode(out string) (string, bool) {
+	if _, err := os.Stat(out); err != nil {
+		return "new", true
+	}
+	if c.a.mode != "" {
+		return c.a.mode, true
+	}
+	if !isTerminal(c.stdin) {
+		c.println("ERROR   " + out + " đã tồn tại; chọn --mode merge (giữ vị trí, lane, waypoint đã sửa tay) " +
+			"hoặc --mode force (sinh lại toàn bộ)")
+		return "", false
+	}
+	fmt.Fprint(c.out, out+" đã tồn tại. [m]erge giữ chỉnh sửa tay / [f]orce sinh lại toàn bộ / [q]uit: ")
+	line, _ := bufio.NewReader(c.stdin).ReadString('\n')
+	switch strings.ToLower(strings.TrimSpace(line)) {
+	case "m", "merge":
+		return "merge", true
+	case "f", "force":
+		return "force", true
+	}
+	return "", false
+}
+
+func isTerminal(r io.Reader) bool {
+	f, ok := r.(*os.File)
+	if !ok {
+		return false
+	}
+	st, err := f.Stat()
+	return err == nil && st.Mode()&os.ModeCharDevice != 0
+}
+
+// pyExt tách đuôi file như os.path.splitext của Python: dấu chấm ở đầu tên file
+// không tính là dấu tách đuôi, nên ".hidden" không có đuôi.
+func pyExt(path string) string {
+	base := filepath.Base(path)
+	trimmed := strings.TrimLeft(base, ".")
+	i := strings.LastIndex(trimmed, ".")
+	if i < 0 {
+		return ""
+	}
+	return trimmed[i:]
+}
+
+// strerror dựng lại thông điệp lỗi hệ thống theo kiểu strerror của C, thứ bản
+// tham chiếu in ra: "No such file or directory" chứ không phải "open x: no such
+// file or directory" như Go.
+func strerror(err error) string {
+	var errno syscall.Errno
+	if errors.As(err, &errno) {
+		msg := errno.Error()
+		r := []rune(msg)
+		r[0] = unicode.ToUpper(r[0])
+		return string(r)
+	}
+	return err.Error()
+}
+
+// copyFile chép file cũ trước khi ghi đè, giữ quyền và thời điểm sửa như
+// shutil.copy2.
+func copyFile(src, dst string) error {
+	st, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	data, err := os.ReadFile(src)
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(dst, data, st.Mode().Perm()); err != nil {
+		return err
+	}
+	return os.Chtimes(dst, st.ModTime(), st.ModTime())
+}
+
+// writeLayoutJSON ghi toạ độ đã tính, cùng cấu trúc khóa với bản tham chiếu.
+// Cách viết số thì theo Go, không khớp từng byte: bản tham chiếu viết 334 hay
+// 334.0 tùy giá trị đó tình cờ là int hay float trong Python. Đây là file gỡ
+// lỗi, không phải sản phẩm.
+func writeLayoutJSON(path string, r flowcast.Result) error {
+	l := r.Layout
+	lanes := []map[string]any{}
+	for i, ln := range l.Lanes {
+		lanes = append(lanes, map[string]any{"id": ln.ID, "x": l.LaneX[i], "w": l.LaneW[i]})
+	}
+	items := map[string]any{}
+	for _, it := range l.Items {
+		items[it.ID] = map[string]any{"kind": it.Kind, "row": it.Row, "col": it.Col,
+			"x": it.X, "y": it.Y, "w": it.W, "h": it.H}
+	}
+	edges := map[string]any{}
+	for _, e := range l.Edges {
+		edges[e.ID] = map[string]any{"case": string(e.Case), "exit": string(e.ExitSide),
+			"points": e.Pts, "label": e.Label}
+	}
+	b, err := json.MarshalIndent(map[string]any{
+		"pool": map[string]any{"w": l.PoolW, "h": l.PoolH}, "lanes": lanes, "items": items, "edges": edges,
+	}, "", " ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, b, 0o644)
+}

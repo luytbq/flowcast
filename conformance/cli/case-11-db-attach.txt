@@ -1,0 +1,15 @@
+# input: 11-db-attach -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 2 cạnh, 332x334px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+4e78e1b7bd0e6060  in.drawio
+c085aebdf8a6cef0  in.md

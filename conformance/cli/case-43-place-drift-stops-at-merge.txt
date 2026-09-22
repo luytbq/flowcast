@@ -1,0 +1,15 @@
+# input: 43-place-drift-stops-at-merge -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (3 lane, 6 phần tử, 6 cạnh, 586.66x433px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+1d3c366c9d68737a  in.drawio
+ebef901eab924281  in.md

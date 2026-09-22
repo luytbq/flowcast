@@ -1,0 +1,14 @@
+# input: 92-invalid-condition-one-branch -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 8 [A-2]: condition chỉ có 1 cạnh ra, cần ít nhất 2
+check: 1 lỗi, 0 cảnh báo
+[exit 1]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+ERROR   dòng 8 [A-2]: condition chỉ có 1 cạnh ra, cần ít nhất 2
+check: 1 lỗi, 0 cảnh báo
+build: dừng vì bảng có lỗi
+[exit 1]
+--- files
+160c8bae3cc6630d  in.md

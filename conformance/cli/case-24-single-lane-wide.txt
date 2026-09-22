@@ -1,0 +1,15 @@
+# input: 24-single-lane-wide -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 7 phần tử, 7 cạnh, 609.92x504px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+ed08682671b67550  in.drawio
+2e35398f36657213  in.md

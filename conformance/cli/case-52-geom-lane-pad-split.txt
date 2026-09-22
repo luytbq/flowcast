@@ -1,0 +1,15 @@
+# input: 52-geom-lane-pad-split -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 1 phần tử, 0 cạnh, 135.19x164px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+7a30759eebc89919  in.drawio
+405d9517bddd0df4  in.md

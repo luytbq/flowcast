@@ -1,0 +1,23 @@
+# input: 53-label-node-overlap-weight -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 14 [A-5]: task không có cạnh ra
+check: 0 lỗi, 1 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+WARNING dòng 14 [A-5]: task không có cạnh ra
+check: 0 lỗi, 1 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 5 phần tử, 4 cạnh, 338x386px)
+WARNING layout: E3: nhãn "trả kết quả kèm mã lỗi chi tiết" không tìm được chỗ trống hoàn toàn
+WARNING layout: E5: nhãn "trả kết quả kèm mã lỗi chi tiết" không tìm được chỗ trống hoàn toàn
+WARNING layout: nhãn E3 đè nhãn E5
+WARNING layout: nhãn E3 đè dây E5
+WARNING layout: nhãn E5 đè dây E3
+WARNING layout: nhãn E5 đè dây E4
+layout: 0 lỗi, 4 cảnh báo
+[exit 0]
+--- files
+8d9277ba3a931cc0  in.drawio
+9b4a37752a0ced56  in.md

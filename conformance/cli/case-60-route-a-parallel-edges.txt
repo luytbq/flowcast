@@ -1,0 +1,15 @@
+# input: 60-route-a-parallel-edges -> in.md
+$ ["check", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 2 phần tử, 2 cạnh, 134x238px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+9c2a6243e4c23a69  in.drawio
+d1376964c46dcb56  in.md
