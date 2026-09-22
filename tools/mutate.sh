@@ -561,6 +561,36 @@ mutate "kiểm render ghi đè mã tự kiểm" cmd/flowcast/main.go '		if len(p
 mutate "merge vẫn kiểm render" cmd/flowcast/main.go '	if r.Merge != nil && verify {' '	if false {'
 mutate "png mặc định giữ đuôi .drawio" cmd/flowcast/main.go 'png = strings.TrimSuffix(out, source.Ext(out)) + ".png"' 'png = out + ".png"'
 
+# giới hạn tài nguyên
+mutate "không chặn kích thước đầu vào" limits.go '	if b.lim.MaxBytes > 0 && len(src.Data) > b.lim.MaxBytes {' '	if false {'
+mutate "chặn số dòng lệch một" limits.go '	if b.lim.MaxRows > 0 && len(t.Rows) > b.lim.MaxRows {' '	if b.lim.MaxRows > 0 && len(t.Rows) >= b.lim.MaxRows {'
+mutate "không đếm cạnh" limits.go '			edges++' '			_ = r'
+mutate "không truyền giới hạn giải nén" limits.go '		src.MaxUnzipped = b.lim.MaxUnzipped' '		_ = src'
+mutate "không kiểm thời gian" limits.go '	if b.lim.Timeout > 0 && time.Since(b.start) > b.lim.Timeout {' '	if false {'
+mutate "giải nén không đếm dồn" source/xlsx.go '		unzipped += int64(len(b))' '		_ = b'
+mutate "Check bỏ qua giới hạn" build.go '	t, err := parseWithin(src, newBudget(opt.Limits))' '	t, err := parseWithin(src, newBudget(nil))'
+
+# cmd/flowcastd
+mutate "web không giới hạn thân yêu cầu" cmd/flowcastd/server.go '	r.Body = http.MaxBytesReader(w, r.Body, int64(s.lim.MaxBytes)+multipartSlack)' '	_ = multipartSlack'
+mutate "web giữ cả đường dẫn trong tên file" cmd/flowcastd/server.go '	name := path.Base(strings.ReplaceAll(hdr.Filename, "\\", "/"))' '	name := hdr.Filename'
+mutate "web không bao giờ báo bận" cmd/flowcastd/server.go '	case <-t.C:
+	case <-ctx.Done():
+	}
+	return false' '	case <-t.C:
+	case <-ctx.Done():
+	}
+	return true'
+mutate "web bảng lỗi vẫn trả 200" cmd/flowcastd/server.go '		status = http.StatusUnprocessableEntity
+	}
+	if build && resp.OK {' '	}
+	if build && resp.OK {'
+mutate "web vượt giới hạn trả 422" cmd/flowcastd/server.go '	case strings.HasPrefix(code, "limit."):
+		return http.StatusRequestEntityTooLarge' '	case false:
+		return http.StatusRequestEntityTooLarge'
+mutate "web bỏ header nosniff" cmd/flowcastd/server.go '		w.Header().Set("X-Content-Type-Options", "nosniff")' ''
+mutate "web không truyền tùy chọn đọc" cmd/flowcastd/server.go '			src.Options[k] = v' '			_ = v'
+mutate "web không dùng giới hạn" cmd/flowcastd/server.go '	opt := flowcast.Options{Title: strings.TrimSpace(r.FormValue("title")), Limits: &s.lim}' '	opt := flowcast.Options{Title: strings.TrimSpace(r.FormValue("title"))}'
+
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang
 # hỏng, và mọi kết quả phía trên đều không đáng tin.

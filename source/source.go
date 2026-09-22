@@ -19,6 +19,9 @@ type Source struct {
 	Name    string
 	Format  string // rỗng nghĩa là tự đoán từ Name
 	Options map[string]string
+	// MaxUnzipped chặn tổng số byte giải nén từ một file xlsx, vì một file zip
+	// vài KB có thể giải ra hàng GB. 0 là không chặn.
+	MaxUnzipped int64
 }
 
 // Parse đọc một Source thành Table.
@@ -40,7 +43,7 @@ func Parse(s Source) (model.Table, error) {
 	case "csv":
 		t, err = ParseCSV(s.Data, s.Name, s.Options["delimiter"], s.Options["encoding"])
 	case "xlsx":
-		t, err = ParseXLSX(s.Data, s.Name, s.Options["sheet"])
+		t, err = parseXLSX(s.Data, s.Name, s.Options["sheet"], s.MaxUnzipped)
 	case "":
 		return model.Table{}, model.Errf("source.unknown_format",
 			"không đoán được định dạng của %q; truyền Format", s.Name)

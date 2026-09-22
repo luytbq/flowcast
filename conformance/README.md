@@ -24,6 +24,8 @@ merge/              kịch bản merge: bảng đã sửa cùng file .drawio cũ
 cli/                bản ghi phiên làm việc của CLI, kể cả merge
 etree-vectors.json  XML ngẫu nhiên, so việc đọc ghi với ElementTree
 merge-vectors.json  vector cho float(), b64decode và unquote kiểu Python
+verify-vectors.json SVG thật do drawio xuất, cho kiểm render
+drawio-fakes/       drawio CLI giả cho bản ghi có --png và --verify
 ```
 
 Mỗi case cho ra hai file trong golden/:

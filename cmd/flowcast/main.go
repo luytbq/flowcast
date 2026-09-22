@@ -110,7 +110,7 @@ func (c *cli) check() int {
 		c.println("ERROR   " + err.Error())
 		return 1
 	}
-	r, err := flowcast.Check(src)
+	r, err := flowcast.Check(src, flowcast.Options{Limits: &flowcast.CLILimits})
 	if err != nil {
 		c.println("ERROR   " + err.Error())
 		return 1
@@ -128,7 +128,7 @@ func (c *cli) build() int {
 		c.println("ERROR   " + err.Error())
 		return 1
 	}
-	chk, err := flowcast.Check(src)
+	chk, err := flowcast.Check(src, flowcast.Options{Limits: &flowcast.CLILimits})
 	if err != nil {
 		c.println("ERROR   " + err.Error())
 		return 1
@@ -165,7 +165,8 @@ func (c *cli) build() int {
 		}
 	}
 
-	r, err := flowcast.Build(src, flowcast.Options{Config: &c.a.cfg, Title: c.a.title, Previous: prev})
+	r, err := flowcast.Build(src, flowcast.Options{Config: &c.a.cfg, Title: c.a.title, Previous: prev,
+		Limits: &flowcast.CLILimits})
 	if err != nil {
 		c.println("ERROR   " + err.Error())
 		return 1

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>flowcast</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<main>
+  <h1>flowcast</h1>
+  <p class="lead">Tải lên bảng luồng dạng markdown, csv hoặc xlsx, nhận về file draw.io có bố cục tất định.</p>
+  <form id="form">
+    <label class="drop" id="drop">
+      <input type="file" name="file" id="file" accept=".md,.markdown,.txt,.csv,.xlsx" required>
+      <span id="drop-text">Chọn hoặc kéo thả file vào đây</span>
+    </label>
+    <label>Tiêu đề <input type="text" name="title" placeholder="lấy từ file nếu để trống"></label>
+    <details>
+      <summary>Tùy chọn đọc file</summary>
+      <label>Sheet (xlsx) <input type="text" name="sheet"></label>
+      <label>Dấu phân cách (csv) <input type="text" name="delimiter" maxlength="1" placeholder="tự đoán"></label>
+      <label>Bảng mã (csv) <input type="text" name="encoding" placeholder="tự đoán"></label>
+    </details>
+    <div class="actions">
+      <button type="submit" id="build">Tạo file .drawio</button>
+      <button type="button" id="check" class="secondary">Chỉ kiểm tra bảng</button>
+    </div>
+  </form>
+  <section id="result" hidden>
+    <p id="summary"></p>
+    <a id="download" class="button" hidden>Tải lại file</a>
+    <ul id="issues"></ul>
+  </section>
+  <p class="foot">Định dạng bảng: năm cột id, type, parent, content, metadata. File không được lưu lại trên máy chủ.</p>
+</main>
+</body>
+</html>

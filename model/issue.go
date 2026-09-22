@@ -17,12 +17,12 @@ const (
 // Có cấu trúc chứ không phải chuỗi, để web trỏ đúng ô và đúng dòng. String
 // dựng lại đúng chuỗi mà bản tham chiếu in ra, nên cổng đối chiếu so được.
 type Location struct {
-	Kind   string // "table" hoặc "text"
-	Row    int    // table: số dòng trong file, 0 nghĩa là không xác định
-	Sheet  string // xlsx
-	Cell   string // xlsx: địa chỉ ô, ví dụ B7, hoặc vùng ô gộp như A1:B2
-	Column string // table: tên cột, khi phát hiện quy được về một ô
-	Line   int    // text: số dòng trong nguồn, dùng cho mermaid
+	Kind   string `json:"kind"`             // "table" hoặc "text"
+	Row    int    `json:"row,omitempty"`    // table: số dòng trong file, 0 nghĩa là không xác định
+	Sheet  string `json:"sheet,omitempty"`  // xlsx
+	Cell   string `json:"cell,omitempty"`   // xlsx: địa chỉ ô, ví dụ B7, hoặc vùng ô gộp như A1:B2
+	Column string `json:"column,omitempty"` // table: tên cột, khi phát hiện quy được về một ô
+	Line   int    `json:"line,omitempty"`   // text: số dòng trong nguồn, dùng cho mermaid
 }
 
 // LineLoc là vị trí của một dòng bảng trong file văn bản.

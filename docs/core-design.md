@@ -373,7 +373,7 @@ thuật toán.
 Vượt giới hạn là FlowTableError mã limit.*, không phải Issue, vì không có kết
 quả bộ phận nào đáng trả về.
 
-Hồ sơ web siết chặt hơn hồ sơ cli. Con số cụ thể là dữ liệu trong config.py, để
+Hồ sơ web siết chặt hơn hồ sơ cli. Con số cụ thể là dữ liệu trong limits.go (CLILimits, WebLimits), để
 đổi được mà không sửa code.
 
 ## 11. Font và tính tất định
@@ -525,7 +525,7 @@ trung gian vào bản tham chiếu**, và bản Go dump đúng cùng định d�
 | 10 | build, cmd/flowcast | xong: CLI khớp bản tham chiếu từng dòng trên 103 bản ghi |
 | 11 | source/csv, source/xlsx | xong |
 | 12 | merge | xong phần port nguyên. Overrides và tự kiểm sau merge ở mục 9 là thay đổi hành vi, làm sau khi port xong |
-| 13 | render, giới hạn tài nguyên, cmd/flowcastd | đủ điều kiện chạy dịch vụ |
+| 13 | render, giới hạn tài nguyên, cmd/flowcastd | xong |
 
 ### Sau khi khớp
 

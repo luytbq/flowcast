@@ -36,12 +36,18 @@ type Options struct {
 	// thì sơ đồ mới giữ lại những chỉnh sửa đó, xem gói merge. Previous chỉ dùng
 	// được một lần: các trang của nó được chuyển sang file mới.
 	Previous *merge.Old
+	// Limits chặn tài nguyên, xem CLILimits và WebLimits. nil là không chặn.
+	// Vượt giới hạn là lỗi trả về, mã model.Error bắt đầu bằng "limit.".
+	Limits *Limits
 }
 
 // Stats là kích thước của sơ đồ đã dựng.
 type Stats struct {
-	Lanes, Items, Edges int
-	W, H                float64
+	Lanes int     `json:"lanes"`
+	Items int     `json:"items"`
+	Edges int     `json:"edges"`
+	W     float64 `json:"width"`
+	H     float64 `json:"height"`
 }
 
 // Result là kết quả của một lần dựng.
@@ -88,8 +94,8 @@ func defaultMetrics() (*text.Metrics, error) {
 //
 // Lỗi trả về là lỗi khiến việc đọc không thể tiếp tục, như không tìm thấy
 // header. Lỗi của từng dòng nằm trong Result.Issues.
-func Check(src Source) (Result, error) {
-	t, err := source.Parse(src)
+func Check(src Source, opt Options) (Result, error) {
+	t, err := parseWithin(src, newBudget(opt.Limits))
 	if err != nil {
 		return Result{}, err
 	}
@@ -99,7 +105,8 @@ func Check(src Source) (Result, error) {
 
 // Build đọc, kiểm tra và dựng sơ đồ.
 func Build(src Source, opt Options) (Result, error) {
-	t, err := source.Parse(src)
+	b := newBudget(opt.Limits)
+	t, err := parseWithin(src, b)
 	if err != nil {
 		return Result{}, err
 	}
@@ -119,7 +126,13 @@ func Build(src Source, opt Options) (Result, error) {
 	if opt.Config != nil {
 		cfg = *opt.Config
 	}
+	if err := b.check(); err != nil {
+		return Result{}, err
+	}
 	l := layout.New(t.Rows, cfg, text.NewMeasure(m)).Run()
+	if err := b.check(); err != nil {
+		return Result{}, err
+	}
 	res := l.Result()
 	r.Layout = &res
 	r.Warnings = l.Warnings

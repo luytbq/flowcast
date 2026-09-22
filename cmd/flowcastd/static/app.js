@@ -1,0 +1,88 @@
+'use strict';
+const form = document.getElementById('form');
+const fileInput = document.getElementById('file');
+const drop = document.getElementById('drop');
+const dropText = document.getElementById('drop-text');
+const result = document.getElementById('result');
+const summary = document.getElementById('summary');
+const issues = document.getElementById('issues');
+const download = document.getElementById('download');
+const buttons = [document.getElementById('build'), document.getElementById('check')];
+let lastURL = null;
+
+fileInput.addEventListener('change', () => {
+  dropText.textContent = fileInput.files[0] ? fileInput.files[0].name : 'Chọn hoặc kéo thả file vào đây';
+});
+drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+drop.addEventListener('drop', (e) => {
+  e.preventDefault();
+  drop.classList.remove('over');
+  if (e.dataTransfer.files.length) {
+    fileInput.files = e.dataTransfer.files;
+    fileInput.dispatchEvent(new Event('change'));
+  }
+});
+
+function item(level, loc, text) {
+  const li = document.createElement('li');
+  li.className = 'lv-' + level;
+  if (loc) {
+    const s = document.createElement('span');
+    s.className = 'loc';
+    s.textContent = loc + ': ';
+    li.appendChild(s);
+  }
+  li.appendChild(document.createTextNode(text));
+  issues.appendChild(li);
+}
+
+function show(data, built) {
+  result.hidden = false;
+  issues.replaceChildren();
+  download.hidden = true;
+  if (data.error) {
+    summary.className = 'bad';
+    summary.textContent = data.error.message;
+    return;
+  }
+  const errs = data.issues.filter((i) => i.level === 'error').length;
+  const warns = data.issues.length - errs;
+  for (const i of data.issues) item(i.level, (i.location || '') + (i.id ? ' [' + i.id + ']' : ''), i.message);
+  for (const w of data.warnings || []) item('warning', 'layout', w);
+  for (const f of data.findings || []) item(f.level, 'layout', f.message);
+  if (!data.ok) {
+    summary.className = 'bad';
+    summary.textContent = `Bảng có ${errs} lỗi, ${warns} cảnh báo. Sửa lỗi rồi thử lại.`;
+    return;
+  }
+  summary.className = 'ok';
+  if (!built) {
+    summary.textContent = `Bảng hợp lệ: 0 lỗi, ${warns} cảnh báo.`;
+    return;
+  }
+  const s = data.stats;
+  summary.textContent = `Đã tạo ${data.filename}: ${s.lanes} lane, ${s.items} phần tử, ${s.edges} cạnh.`;
+  if (lastURL) URL.revokeObjectURL(lastURL);
+  lastURL = URL.createObjectURL(new Blob([data.drawio], { type: 'application/vnd.jgraph.mxfile' }));
+  download.href = lastURL;
+  download.download = data.filename;
+  download.hidden = false;
+  download.click();
+}
+
+async function send(built) {
+  if (!fileInput.files[0]) { fileInput.click(); return; }
+  buttons.forEach((b) => { b.disabled = true; });
+  try {
+    const res = await fetch(built ? '/api/build' : '/api/check', { method: 'POST', body: new FormData(form) });
+    show(await res.json(), built);
+  } catch (e) {
+    show({ error: { message: 'Không gửi được file: ' + e.message } }, built);
+  } finally {
+    buttons.forEach((b) => { b.disabled = false; });
+  }
+}
+
+form.addEventListener('submit', (e) => { e.preventDefault(); send(true); });
+document.getElementById('check').addEventListener('click', () => send(false));

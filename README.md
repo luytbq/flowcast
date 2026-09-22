@@ -13,14 +13,16 @@ tất định, đã qua nhiều vòng sửa theo sơ đồ thật.
 Đang port từ Python sang Go. Bản Go đọc được bảng markdown, csv và xlsx, cho ra
 đúng từng byte file .drawio như bản Python, in ra đúng từng dòng, và trả đúng mã
 thoát, kể cả khi sinh lại bằng --mode merge để giữ những gì đã sửa tay trong
-draw.io. Chưa có: xuất ảnh và kiểm render. Hai cờ đó được báo rõ là chưa hỗ trợ
-khi gọi tới.
+draw.io, và khi xuất ảnh rồi kiểm render bằng drawio CLI. Có thêm dịch vụ web
+flowcastd: tải bảng lên, nhận về file .drawio.
 
 | thư mục | nội dung |
 |---|---|
 | `cmd/flowcast/` | CLI |
 | gốc, `model/`, `source/`, `schema/`, `validate/`, `text/`, `layout/`, `writer/` | core |
 | `merge/` | sinh lại mà giữ chỉnh sửa tay; chỉ CLI dùng |
+| `render/` | gọi drawio CLI: xuất PNG, SVG, kiểm render; ngoài core |
+| `cmd/flowcastd/` | dịch vụ web |
 | `internal/` | đọc ghi XML kiểu ElementTree, chuỗi kiểu Python, kiểm tĩnh |
 | `reference/` | bản Python đầy đủ, đồng thời là máy sinh đáp án cho bản port |
 | `conformance/` | bộ đối chiếu: bảng đầu vào và đầu ra chuẩn |
@@ -40,6 +42,19 @@ go build -o flowcast ./cmd/flowcast
 ./flowcast build bang.md [-o ra.drawio] [--title "..."] [--mode merge|force] [--task-max-w 280 ...]
 ```
 
+Dịch vụ web:
+
+```
+go build -o flowcastd ./cmd/flowcastd
+./flowcastd -addr :8080
+curl -F file=@bang.md 'localhost:8080/api/build?download=1' -o bang.drawio
+```
+
+POST /api/build và /api/check nhận multipart với trường file, cùng các trường
+tùy chọn title, sheet, delimiter, encoding, và trả JSON gồm issue có mã máy và
+vị trí. Bảng có lỗi trả 422, vượt giới hạn trả 413, máy chủ bận trả 503. Dịch vụ
+dùng hồ sơ giới hạn WebLimits trong limits.go, không merge và không gọi drawio.
+
 Tên cờ, các dòng in ra và mã thoát giống hệt bản Python, xem `reference/README.md`.
 Những chỗ khác có chủ đích:
 
@@ -48,6 +63,8 @@ Những chỗ khác có chủ đích:
 - `--encoding` nhận utf-8, utf-8-sig, cp1252 và latin-1 cùng các tên gọi khác của
   chúng. Python nhận hàng trăm bảng mã; tên lạ được xử lý như Python xử lý một
   tên nó không biết.
+- CLI chặn bảng quá 50000 dòng hoặc file quá 64 MB, theo hồ sơ CLILimits.
+  Bản Python không chặn.
 - File .drawio cũ không đọc được khi merge: mã thoát và câu hướng dẫn giống,
   nhưng phần mô tả lỗi của bộ đọc XML và của zlib là của Go. File khai báo một
   bảng mã khác UTF-8 không đọc được; draw.io luôn ghi UTF-8.

@@ -233,6 +233,32 @@ func xlsxGrid(sheet *xnode, shared []string, name string) ([][]string, []model.L
 
 // ParseXLSX đọc bảng từ sheet đầu tiên có hàng header, hoặc từ sheet chỉ định.
 func ParseXLSX(data []byte, name, sheet string) (model.Table, error) {
+	return parseXLSX(data, name, sheet, 0)
+}
+
+func parseXLSX(data []byte, name, sheet string, maxUnzipped int64) (model.Table, error) {
+	var unzipped int64
+	over := false
+	t, err := readXLSX(data, name, sheet, func(rc io.Reader) ([]byte, error) {
+		if maxUnzipped <= 0 {
+			return io.ReadAll(rc)
+		}
+		b, err := io.ReadAll(io.LimitReader(rc, maxUnzipped-unzipped+1))
+		unzipped += int64(len(b))
+		if unzipped > maxUnzipped {
+			over = true
+			return nil, errors.New("vượt giới hạn giải nén")
+		}
+		return b, err
+	})
+	if over {
+		return model.Table{}, model.Errf("limit.unzipped",
+			"%s giải nén ra quá %d byte; file xlsx lớn bất thường hoặc hỏng", name, maxUnzipped)
+	}
+	return t, err
+}
+
+func readXLSX(data []byte, name, sheet string, readAll func(io.Reader) ([]byte, error)) (model.Table, error) {
 	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
 	if err != nil {
 		// Thông điệp của zipfile.BadZipFile trong bản tham chiếu.
@@ -252,7 +278,7 @@ func ParseXLSX(data []byte, name, sheet string) (model.Table, error) {
 			return nil, false
 		}
 		defer rc.Close()
-		b, err := io.ReadAll(rc)
+		b, err := readAll(rc)
 		return b, err == nil
 	}
 	parse := func(p string) (*xnode, error) {
