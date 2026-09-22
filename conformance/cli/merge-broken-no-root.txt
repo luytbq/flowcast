@@ -1,0 +1,9 @@
+# input: merge/broken-no-root -> *
+$ ["build", "$T/flow.md", "--mode", "merge"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+ERROR   $T/flow.drawio không có mxGraphModel/root; không ghi đè. Dùng --mode force nếu muốn sinh lại toàn bộ
+[exit 4]
+--- files
+f8aea739dfd06e96  flow.drawio
+d34be23b45c40188  flow.md

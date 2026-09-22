@@ -9,8 +9,11 @@ Mỗi kịch bản chạy trong một thư mục tạm mới, với file đầu 
 gồm từng lệnh, những gì lệnh in ra, mã thoát, và cuối cùng là danh sách file trong
 thư mục kèm sha256 nội dung. Đường dẫn thư mục tạm được thay bằng $T.
 
-Không có ở đây, vì thuộc các bước sau của lộ trình port hoặc cố ý khác: merge,
---png, --verify, --font, và --layout-json, file mà CLI Go ghi số theo cách của Go.
+Đầu vào "merge/<kịch bản>" là cả thư mục conformance/merge/<kịch bản>: bảng đã
+sửa cùng file .drawio cũ đã sửa tay.
+
+Không có ở đây, vì thuộc các bước sau của lộ trình port hoặc cố ý khác: --png,
+--verify, --font, và --layout-json, file mà CLI Go ghi số theo cách của Go.
 """
 import hashlib
 import io
@@ -24,6 +27,7 @@ import tempfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOOL = os.path.join(ROOT, 'reference', 'flowtable2drawio.py')
 CASES = os.path.join(ROOT, 'conformance', 'cases')
+MERGE = os.path.join(ROOT, 'conformance', 'merge')
 
 # Kịch bản đặc biệt: (tên, case đầu vào, tên file đầu vào, các lệnh).
 SPECIAL = [
@@ -60,6 +64,17 @@ SPECIAL = [
     ('csv-encoding-unknown', 'csv-01-comma', 'in.csv', [['check', '$T/in.csv', '--encoding', 'klingon']]),
     ('xlsx-sheet-explicit', 'xlsx-08-two-flows', 'in.xlsx', [['build', '$T/in.xlsx', '--sheet', 'Hai']]),
     ('xlsx-sheet-missing', 'xlsx-08-two-flows', 'in.xlsx', [['check', '$T/in.xlsx', '--sheet', 'Không có']]),
+    # --mode merge khi chưa có file đích thì chỉ là tạo mới.
+    ('merge-without-old-file', '03-condition-two', 'in.md', [['build', '$T/in.md', '--mode', 'merge']]),
+    ('merge-twice', '03-condition-two', 'in.md',
+     [['build', '$T/in.md'], ['build', '$T/in.md', '--mode', 'merge'], ['build', '$T/in.md', '--mode', 'merge']]),
+    ('merge-no-backup', 'merge/moved-node', '*', [['build', '$T/flow.md', '--mode', 'merge', '--no-backup']]),
+    ('merge-output-title', 'merge/moved-node', '*',
+     [['build', '$T/flow.md', '--mode', 'merge', '-o', '$T/flow.drawio', '--title', 'Tiêu đề mới']]),
+    ('merge-config-flags', 'merge/new-node', '*',
+     [['build', '$T/flow.md', '--mode', 'merge', '--min-channel', '50', '--task-max-w', '160']]),
+    ('merge-then-force', 'merge/freehand-note', '*',
+     [['build', '$T/flow.md', '--mode', 'merge'], ['build', '$T/flow.md', '--mode', 'force']]),
 ]
 
 
@@ -84,7 +99,12 @@ def transcript(case, fname, cmds):
     tmp = tempfile.mkdtemp()
     try:
         tmp = os.path.realpath(tmp)
-        shutil.copy(case_file(case), os.path.join(tmp, fname))
+        if case.startswith('merge/'):
+            src = os.path.join(MERGE, case[len('merge/'):])
+            for n in sorted(os.listdir(src)):
+                shutil.copy(os.path.join(src, n), os.path.join(tmp, n))
+        else:
+            shutil.copy(case_file(case), os.path.join(tmp, fname))
         # Lệnh ghi bằng mảng JSON, vì đối số có thể chứa khoảng trắng.
         out = [f'# input: {case} -> {fname}\n']
         for cmd in cmds:
@@ -115,6 +135,10 @@ def main(argv):
         fn = 'in' + ext
         text = transcript(case, fn, [['check', '$T/' + fn], ['build', '$T/' + fn]])
         io.open(os.path.join(dst, f'case-{case}.txt'), 'w', encoding='utf-8').write(text)
+        n += 1
+    for sc in sorted(os.listdir(MERGE)):
+        text = transcript('merge/' + sc, '*', [['build', '$T/flow.md', '--mode', 'merge']])
+        io.open(os.path.join(dst, f'merge-{sc}.txt'), 'w', encoding='utf-8').write(text)
         n += 1
     for name, case, fname, cmds in SPECIAL:
         io.open(os.path.join(dst, f'{name}.txt'), 'w', encoding='utf-8').write(transcript(case, fname, cmds))

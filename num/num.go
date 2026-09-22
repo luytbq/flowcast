@@ -16,6 +16,16 @@ import (
 // Giữ nguyên cả những góc kỳ quặc của bản tham chiếu: Fmt(-0.001) ra "-0", vì
 // làm tròn cho "-0.00" rồi cắt hết số 0 còn lại dấu trừ và số 0 đầu.
 func Fmt(v float64) string {
+	// Toạ độ đọc từ file .drawio cũ có thể là inf hay nan; Python in chúng bằng
+	// chữ thường và không có dấu cộng.
+	switch {
+	case math.IsNaN(v):
+		return "nan"
+	case math.IsInf(v, 1):
+		return "inf"
+	case math.IsInf(v, -1):
+		return "-inf"
+	}
 	s := strconv.FormatFloat(v, 'f', 2, 64)
 	s = strings.TrimRight(s, "0")
 	return strings.TrimRight(s, ".")

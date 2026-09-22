@@ -98,9 +98,6 @@ EOPY
 #   máy trạng thái luôn thấy ký tự xuống dòng trước khi thấy hết dòng.
 # - .text của phần tử xlsx gom cả chữ nằm sau phần tử con. Bộ đọc chỉ đọc text
 #   của t và v, hai phần tử không bao giờ có con trong SpreadsheetML hợp lệ.
-# - Không thoát xuống dòng trong giá trị thuộc tính. Ký tự xuống dòng không lọt
-#   được vào thuộc tính: ô markdown nằm trên một dòng, nội dung chỉ tách tại thẻ
-#   br, còn id và tiêu đề cũng lấy từ một dòng. Tab thì lọt được, và có case.
 #
 # Mỗi cái sống sót qua hàng chục nghìn bảng sinh ngẫu nhiên, hoặc có lập luận
 # dựa trên cấu trúc đầu vào, trước khi được chứng minh. Suy luận mà không có số
@@ -269,16 +266,56 @@ mutate "số thứ tự đoạn xiên đếm từ 1" layout/check.go '"%s: đo�
 # writer/drawio
 mutate "không thoát & trong nội dung html" writer/drawio/write.go 'r := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")' 'r := strings.NewReplacer("<", "&lt;", ">", "&gt;")'
 mutate "nối dòng bằng xuống dòng thay vì br" writer/drawio/write.go 'return strings.Join(out, "<br>")' 'return strings.Join(out, "\n")'
-mutate "không thoát dấu nháy kép trong thuộc tính" writer/drawio/xml.go '"\"", "&quot;",' ''
-mutate "không thoát tab trong thuộc tính" writer/drawio/xml.go '"\t", "&#09;")' '"\t", "\t")'
-mutate "phần tử rỗng không có khoảng trắng trước gạch chéo" writer/drawio/xml.go 'b.WriteString(" />")' 'b.WriteString("/>")'
-mutate "thụt lề bốn khoảng trắng" writer/drawio/xml.go 'inner := "\n" + strings.Repeat("  ", level+1)' 'inner := "\n" + strings.Repeat("    ", level+1)'
 mutate "tên trang cắt 40 ký tự" writer/drawio/write.go 'if len(name) > 80 {' 'if len(name) > 40 {'
 mutate "tên trang cắt theo byte thay vì rune" writer/drawio/write.go 'name := []rune(title)' 'name := []rune(string([]byte(title)[:min(len(title), 80)]))'
 mutate "ghi chú tô nhấn dùng style của node" writer/drawio/write.go 'if it.Kind == "text" {' 'if false {'
 mutate "bỏ nét đứt" writer/drawio/write.go 'style += "dashed=1;"' 'style += ""'
-mutate "bỏ thuộc tính x của nhãn" writer/drawio/write.go 'g.set("x", f(e.LabelT))' '_ = e.LabelT'
-mutate "ghi cả điểm đầu và điểm cuối vào points" writer/drawio/write.go 'for _, p := range e.Pts[1 : len(e.Pts)-1] {' 'for _, p := range e.Pts {'
+mutate "bỏ thuộc tính x của nhãn" writer/drawio/write.go 'g.Set("x", f(e.LabelT))' '_ = e.LabelT'
+mutate "ghi cả điểm đầu và điểm cuối vào points" writer/drawio/write.go 'pts = e.Pts[1 : len(e.Pts)-1]' 'pts = e.Pts'
+mutate "dây giữ từ file cũ vẫn ghi điểm neo tính được" writer/drawio/write.go '		case e.Kept:
+			for _, kv := range e.Constraints {' '		case false:
+			for _, kv := range e.Constraints {'
+mutate "dây tự đi vẫn ghi điểm neo" writer/drawio/write.go '		switch {
+		case e.Auto:
+		case e.Kept:
+			for' '		switch {
+		case false:
+		case e.Kept:
+			for'
+mutate "dây giữ từ file cũ vẫn ghi điểm gấp tính được" writer/drawio/write.go '			pts = e.Waypoints' '			pts = e.Pts'
+mutate "nhãn về giữa đường vẫn ghi vị trí" writer/drawio/write.go 'withLabel := e.Label != nil && !e.NoLabelPos && !e.Auto' 'withLabel := e.Label != nil && !e.Auto'
+mutate "dây tự đi vẫn ghi vị trí nhãn" writer/drawio/write.go 'withLabel := e.Label != nil && !e.NoLabelPos && !e.Auto' 'withLabel := e.Label != nil && !e.NoLabelPos'
+mutate "bỏ các cell tự vẽ" writer/drawio/write.go '	root.Children = append(root.Children, extras...)' '	_ = extras'
+mutate "bỏ các trang khác" writer/drawio/write.go '	mxfile.Children = append(mxfile.Children, pages...)' '	_ = pages'
+
+# internal/etree
+mutate "không thoát dấu nháy kép trong thuộc tính" internal/etree/etree.go '"\"", "&quot;",' ''
+mutate "không thoát tab trong thuộc tính" internal/etree/etree.go '"\t", "&#09;")' '"\t", "\t")'
+mutate "không thoát xuống dòng trong thuộc tính" internal/etree/etree.go '"\n", "&#10;",' '"\n", "\n",'
+mutate "thoát dấu nháy kép trong chữ" internal/etree/etree.go 'textEsc = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")' 'textEsc = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", "\"", "&quot;")'
+mutate "phần tử rỗng không có khoảng trắng trước gạch chéo" internal/etree/etree.go 'b.WriteString(" />")' 'b.WriteString("/>")'
+mutate "phần tử chỉ có chữ ghi thành thẻ rỗng" internal/etree/etree.go 'if e.Text != "" || len(e.Children) > 0 {' 'if len(e.Children) > 0 {'
+mutate "bỏ tail khi ghi" internal/etree/etree.go '	b.WriteString(textEsc.Replace(e.Tail))' '	_ = e.Tail'
+mutate "thụt lề bốn khoảng trắng" internal/etree/etree.go 'levels = append(levels, levels[level]+"  ")' 'levels = append(levels, levels[level]+"    ")'
+mutate "thụt lề ghi đè cả chữ thật" internal/etree/etree.go '		if pystr.Strip(e.Text) == "" {
+			e.Text = child' '		if true {
+			e.Text = child'
+mutate "thụt lề ghi đè cả tail thật" internal/etree/etree.go '			if pystr.Strip(c.Tail) == "" {' '			if true {'
+mutate "tail của con cuối không lùi về cấp cha" internal/etree/etree.go '			last.Tail = levels[level]' '			last.Tail = child'
+mutate "chữ sau phần tử con dồn vào text của cha" internal/etree/etree.go '			if len(cur.Children) == 0 {' '			if true {'
+mutate "không chuẩn hóa xuống dòng trong thuộc tính" internal/etree/etree.go '			case '"'"'\n'"'"', '"'"'\t'"'"':
+				out.WriteByte('"'"' '"'"')' '			case '"'"'\t'"'"':
+				out.WriteByte('"'"' '"'"')'
+mutate "CRLF trong thuộc tính thành hai khoảng trắng" internal/etree/etree.go '				if i < n && data[i] == '"'"'\n'"'"' {
+					i++
+				}' ''
+mutate "chuẩn hóa cả trong chú thích" internal/etree/etree.go '		if j, ok := skip(i, "<!--", "-->"); ok {' '		if j, ok := skip(i, "<!-- ", "-->"); ok {'
+mutate "Set đổi thuộc tính có sẵn ra cuối" internal/etree/etree.go '		if e.Attrs[i][0] == k {
+			e.Attrs[i][1] = v
+			return
+		}' ''
+mutate "Copy dùng chung thuộc tính" internal/etree/etree.go 'Attrs: append([][2]string(nil), e.Attrs...)}' 'Attrs: e.Attrs}'
+
 mutate "lane không trừ header của pool" writer/drawio/write.go 'geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH-float64(r.PoolHeader))' 'geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH)'
 
 # cmd/flowcast
@@ -287,7 +324,7 @@ mutate "dòng build viết kích thước có khoảng trắng" cmd/flowcast/mai
 mutate "đường ra mặc định giữ đuôi nguồn" cmd/flowcast/main.go 'out = strings.TrimSuffix(c.a.file, source.Ext(c.a.file)) + ".drawio"' 'out = c.a.file + ".drawio"'
 mutate "dấu chấm đầu tên file tính là dấu tách đuôi" source/source.go 'trimmed := strings.TrimLeft(base, ".")' 'trimmed := base'
 mutate "thông điệp lỗi hệ thống không viết hoa chữ đầu" cmd/flowcast/main.go 'r[0] = unicode.ToUpper(r[0])' '_ = r'
-mutate "force không sao lưu file cũ" cmd/flowcast/main.go 'if mode == "force" && !c.a.noBackup {' 'if false {'
+mutate "force không sao lưu file cũ" cmd/flowcast/main.go 'if mode != "new" && !c.a.noBackup {' 'if mode == "merge" && !c.a.noBackup {'
 mutate "không có terminal vẫn hỏi chế độ" cmd/flowcast/main.go 'if !isTerminal(c.stdin) {' 'if false {'
 mutate "lỗi hình học không đổi mã thoát" cmd/flowcast/main.go '		code = 2' '		code = 0'
 mutate "bỏ tiền tố cảnh báo layout" cmd/flowcast/main.go 'c.println("WARNING layout: " + w)' 'c.println(w)'
@@ -359,6 +396,144 @@ mutate "đường dẫn sheet tuyệt đối không bỏ dấu gạch đầu" so
 mutate "--sheet không lọc" source/xlsx.go '			if s.name == sheet {' '			if true {'
 mutate "cột lấy theo thứ tự ô thay vì theo địa chỉ" source/xlsx.go '				ci = colIndex(ref)' '				ci = len(cells)'
 
+# merge
+mutate "số không nhận khoảng trắng hai đầu" merge/pyparse.go '	t := strings.Trim(b.String(), " \t\n\v\f\r")' '	t := b.String()'
+mutate "số không nhận dấu gạch dưới" merge/pyparse.go "			if c == '_' && n > 0 && i+1 < len(s) && s[i+1] >= '0' && s[i+1] <= '9' {" '			if false {'
+mutate "số không nhận inf" merge/pyparse.go '	case "inf", "infinity":' '	case "infinity":'
+mutate "số nhận hai dấu" merge/pyparse.go '	if len(t)-len(body) > 1 {' '	if len(t)-len(body) > 2 {'
+mutate "base64 dừng ở mọi dấu đệm" merge/pyparse.go '			if quad >= 2 {
+				pads++' '			if true {
+				pads++'
+mutate "base64 báo lỗi ký tự lạ" merge/pyparse.go '		if v < 0 {
+			continue
+		}' '		if v < 0 {
+			return nil, errors.New("Incorrect padding")
+		}'
+mutate "unquote giải cả %XX sai" merge/pyparse.go '			if ok1 && ok2 {' '			if ok1 || ok2 {'
+mutate "bỏ giải %XX" merge/pyparse.go '		b.WriteString(decodeReplace(unquoteBytes(s[:n])))' '		b.WriteString(s[:n])'
+mutate "UTF-8 hỏng thay từng byte" merge/pyparse.go '		if need > 0 && j-i == need+1 {
+			b.Write(p[i:j])
+		} else {
+			b.WriteRune(utf8.RuneError)
+		}
+		i = j' '		if need > 0 && j-i == need+1 {
+			b.Write(p[i:j])
+			i = j
+		} else {
+			b.WriteRune(utf8.RuneError)
+			i++
+		}'
+mutate "đọc trang đầu bỏ qua phần tử object" merge/read.go '			if cell = el.Find("mxCell"); cell == nil {' '			if cell = nil; cell == nil {'
+mutate "id trùng giữ cell đầu" merge/read.go '		old.cells[cid] = &oldCell{cid, el, cell, i}' '		if old.cells[cid] == nil {
+			old.cells[cid] = &oldCell{cid, el, cell, i}
+		}'
+mutate "không giữ các trang khác" merge/read.go '		old.Pages = pages[1:]' '		_ = pages'
+mutate "style không ghi nhận khóa không có dấu bằng" merge/read.go '		st.vals[k] = styleVal{v, found}' '		st.vals[k] = styleVal{v, true}'
+mutate "số hỏng đọc thành một" merge/read.go '	v, ok := pyFloat(s)
+	if !ok {
+		return 0
+	}' '	v, ok := pyFloat(s)
+	if !ok {
+		return 1
+	}'
+mutate "id theo quy ước không nhận chữ số con" merge/merge.go '	if strings.HasPrefix(s, "E") && digitsDots(s[1:]) {' '	if strings.HasPrefix(s, "E") && digitsDots(strings.Split(s[1:], ".")[0]) && !strings.Contains(s, ".") {'
+mutate "id theo quy ước không nhận dấu gạch dưới" merge/merge.go "s[i] >= '0' && s[i] <= '9' || s[i] == '_') {" "s[i] >= '0' && s[i] <= '9') {"
+mutate "không có dấu thì mọi cell đều là của tool" merge/merge.go '		return shaped && c.style().has("flowtable")' '		return true'
+mutate "lane không nhận theo style swimlane" merge/merge.go '	laneLike := c.parent() == "pool" && strings.HasPrefix(c.styleRaw(), "swimlane")' '	laneLike := false'
+mutate "không giữ vị trí pool cũ" merge/merge.go '		r.Origin = [2]float64{b[0], b[1]}' '		_ = b'
+mutate "gốc toạ độ không cộng dồn qua cha" merge/merge.go '		cid = c.parent()
+	}
+	return x, y' '		break
+	}
+	return x, y'
+mutate "lane giữ bề rộng mới tính" merge/merge.go '			w = attrf(oc.geo(), "width")' '			_ = oc'
+mutate "lane đã xoá theo lane cuối thay vì lane kế tiếp" merge/merge.go '					target, base = t, newX[t]
+					break' '					_ = t
+					break'
+mutate "mapX trước lane đầu lấy lane cuối" merge/merge.go '		return m.spans[0].dx, m.spans[0].target' '		return m.spans[len(m.spans)-1].dx, m.spans[len(m.spans)-1].target'
+mutate "mapX nhận cả mép phải" merge/merge.go '		if s.x0 <= x && x < s.x1 {' '		if s.x0 <= x && x <= s.x1 {'
+mutate "node đổi lane vẫn giữ vị trí" merge/merge.go '		if c.parent() != laneID {' '		if false {'
+mutate "node giữ vị trí không theo lane dịch" merge/merge.go '			dx = r.LaneX[it.Lane] - attrf(oc.geo(), "x")
+		}
+		it.X, it.Y' '			_ = oc
+		}
+		it.X, it.Y'
+mutate "neo tìm cạnh ra trước cạnh vào" merge/merge.go '	for _, e := range byBackOrder(m.ins[v.ID]) {
+		if m.inFinal[e.Src] {' '	for _, e := range byBackOrder(nil) {
+		if m.inFinal[e.Src] {'
+mutate "neo không xét cạnh lặp sau cùng" merge/merge.go '			return !out[i].Back' '			return out[i].Back'
+mutate "không lan rộng tìm neo" merge/merge.go '		frontier = nxt
+	}' '		frontier = nil
+	}'
+mutate "hàng xóm không xếp cạnh lặp sau cùng" merge/merge.go '	for _, back := range []bool{false, true} {' '	for _, back := range []bool{true, false} {'
+mutate "vật cản bỏ cell tự vẽ" merge/merge.go '	return append(out, m.fhBoxes...)' '	return out'
+mutate "node mới không dịch khi chồng" merge/merge.go '		it.Y += step' '		break'
+mutate "chồng không tính lề" merge/merge.go '		b := box{it.X - pad, it.Y - pad, it.X + it.W + pad, it.Y + it.H + pad}' '		b := box{it.X, it.Y, it.X + it.W, it.Y + it.H}'
+mutate "không kéo node mới vào trong lane" merge/merge.go '	if lw >= it.W+2*pad {' '	if false {'
+mutate "node mới xếp theo thứ tự bảng thay vì topo" merge/merge.go '		if a != b {
+			return a < b
+		}
+		return flow[i].Order < flow[j].Order' '		return flow[i].Order < flow[j].Order'
+mutate "node không có neo đặt ở đầu lane" merge/merge.go '					bottom = pyMax(bottom, b[3])' '					bottom = pyMin(bottom, b[3])'
+mutate "node khác lane vẫn giữ khoảng lệch x của neo" merge/merge.go '	if an.Lane == it.Lane {
+		cx = ax + fv[0] - fa[0]' '	if true {
+		cx = ax + fv[0] - fa[0]'
+mutate "dây giữ dù đầu nối đã đổi" merge/merge.go '			keep = sok && dok && src == e.Src && dst == e.Dst && m.pinned[e.Src] && m.pinned[e.Dst]' '			keep = sok && dok && m.pinned[e.Src] && m.pinned[e.Dst]'
+mutate "dây giữ dù node đầu nối đã được đặt lại" merge/merge.go '			keep = sok && dok && src == e.Src && dst == e.Dst && m.pinned[e.Src] && m.pinned[e.Dst]' '			keep = sok && dok && src == e.Src && dst == e.Dst'
+mutate "điểm gấp không theo lane dịch" merge/merge.go '			e.Waypoints = append(e.Waypoints, [2]float64{ax + dx, ay})' '			e.Waypoints = append(e.Waypoints, [2]float64{ax, ay})'
+mutate "giữ cả khóa neo không có giá trị" merge/merge.go '			if v, ok := st.vals[k]; ok && v.set {' '			if v, ok := st.vals[k]; ok {'
+mutate "điểm gấp lệch bao nhiêu vẫn coi là chưa sửa" merge/merge.go '		if math.Abs(a[0]-b[0]) > 2 || math.Abs(a[1]-b[1]) > 2 {' '		if false {'
+mutate "điểm neo sửa vẫn coi là chưa sửa" merge/merge.go '		if !ok || math.Abs(v-w.v) > 1e-3 {' '		if !ok {'
+mutate "dây sửa tay không có nhãn vẫn báo nhãn về giữa" merge/merge.go '			if len(e.Lines) > 0 {
+				m.rep.LabelsCentered' '			if true {
+				m.rep.LabelsCentered'
+mutate "điểm gấp không theo lane nới" merge/merge.go '				e.Waypoints[k][0] += dx' '				_ = k'
+mutate "cell tự vẽ trong pool không theo lane dịch" merge/merge.go '			dx, _ := m.mapX(x + b[2]/2)
+			x += dx' '			_, _ = m.mapX(x + b[2]/2)'
+mutate "giữ cell tự vẽ có cha đã xoá" merge/merge.go '			ok = m.gen[p] || isLayer(p) || kept[p]' '			ok = true'
+mutate "bỏ cell tự vẽ trong lane đã xoá" merge/merge.go '			ok = m.oldLane(p) != nil' '			ok = false'
+mutate "cell tự vẽ trong lane đã xoá không đổi sang pool" merge/merge.go '				cell.Set("parent", "pool")' '				_ = cell'
+mutate "cell tự vẽ trong lane đã xoá không cộng gốc lane" merge/merge.go '					g.Set("x", num.Fmt(attrf(g, "x")+ax-m.ox))' '					_ = ax'
+mutate "không tháo đầu dây tự vẽ" merge/merge.go '		if c.edge() {
+			m.detach(c, cell, g, alive, kept)
+		}' ''
+mutate "tháo cả đầu nối vào cell tự vẽ còn giữ" merge/merge.go '		if ref == "" || kept[ref] || (alive[ref] && m.gen[ref]) {' '		if ref == "" || (alive[ref] && m.gen[ref]) {'
+mutate "điểm tự do không bỏ điểm cũ cùng tên" merge/merge.go '				g.Remove(pt)' '				_ = pt'
+mutate "dời cả điểm offset" merge/merge.go '		if as, _ := pt.Get("as"); as != "offset" {' '		if true {'
+mutate "geometry tương đối dời x và y" merge/merge.go '	if v, _ := g.Get("relative"); v == "1" {' '	if false {'
+mutate "cell tự vẽ theo lane không theo lane nới" merge/merge.go '		m.addMovable(lane, func(dx, dy float64) { shiftGeo(g, dx, dy) }, true)' '		_ = lane'
+mutate "cell tự vẽ tuyệt đối không trừ gốc pool" merge/merge.go '	if fr == "abs" {
+		ox = m.ox
+	}' ''
+mutate "dây tự vẽ không theo lane" merge/merge.go '		pt.Set("x", num.Fmt(attrf(pt, "x")+dx))
+		m.addMovable' '		m.addMovable'
+mutate "lane nới không dịch lane sau" merge/merge.go '			r.LaneX[j] += gl + gr' '			_ = j'
+mutate "lane nới dịch cả thứ trong lane bằng tổng" merge/merge.go '			if mv.lane == i && gl != 0 {
+				mv.shift(gl, 0)' '			if mv.lane == i && gl != 0 {
+				mv.shift(gl+gr, 0)'
+mutate "lane nới dịch cả thứ tương đối ở lane sau" merge/merge.go '			} else if mv.lane > i && !mv.rel {' '			} else if mv.lane > i {'
+mutate "lane nới không có lề" merge/merge.go '		gr := pyMax(0.0, right-(lw-pad))' '		gr := pyMax(0.0, right-lw)'
+mutate "không đẩy sơ đồ xuống khi bị kéo lên đầu" merge/merge.go '	if low < top {' '	if false {'
+mutate "đầu lane không tính lề" merge/merge.go '	top := float64(r.PoolHeader + r.LaneHeader + pad)' '	top := float64(r.PoolHeader + r.LaneHeader)'
+mutate "chiều cao pool bỏ điểm gấp" merge/merge.go '			bottoms = append(bottoms, p[1])
+		}
+	}
+	for _, b := range m.freehandBoxesNow() {' '		}
+	}
+	for _, b := range m.freehandBoxesNow() {'
+mutate "chiều cao pool bỏ cell tự vẽ" merge/merge.go '		bottoms = append(bottoms, b[3])' '		_ = b'
+mutate "chiều cao pool không chừa kênh cuối" merge/merge.go '		h = pyMax(h, b+float64(r.MinChannel))' '		h = pyMax(h, b)'
+mutate "cell tự vẽ theo lane đo không cộng header" merge/merge.go '			x, y = x+m.r.LaneX[f.lane], y+float64(m.r.PoolHeader)' '			x = x + m.r.LaneX[f.lane]'
+mutate "không báo element chồng nhau" merge/merge.go '				m.rep.Overlaps = append(m.rep.Overlaps, a.ID+"/"+b.ID)' '				_ = b'
+mutate "báo cả cell pool là bị xoá" merge/merge.go '		if !isLayer(id) && id != "pool" && !m.tableIDs[id] {' '		if !isLayer(id) && !m.tableIDs[id] {'
+mutate "pySum không bù sai số" merge/merge.go '	if lo != 0 && !math.IsInf(lo, 0) && !math.IsNaN(lo) {' '	if false {'
+mutate "merge không sao lưu file cũ" cmd/flowcast/main.go 'if mode != "new" && !c.a.noBackup {' 'if mode == "force" && !c.a.noBackup {'
+mutate "merge in báo cáo nhưng vẫn in tự kiểm" cmd/flowcast/main.go '		c.println("layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG")
+		if c.a.png' '		c.println("layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG")
+		for _, f := range r.Findings {
+			c.println(f.Msg)
+		}
+		if c.a.png'
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang
 # hỏng, và mọi kết quả phía trên đều không đáng tin.

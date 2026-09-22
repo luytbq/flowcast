@@ -1,0 +1,110 @@
+<mxfile host="flowtable2drawio">
+  <diagram id="flowtable" name="Luồng gọi lại có giới hạn">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1296.77" pageHeight="664" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pool" value="Luồng gọi lại có giới hạn" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="40" y="40" width="1216.77" height="584" as="geometry" />
+        </mxCell>
+        <mxCell id="CLI" value="Client" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="0" y="30" width="279.73" height="554" as="geometry" />
+        </mxCell>
+        <mxCell id="GW" value="Gateway" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="279.73" y="30" width="705.04" height="554" as="geometry" />
+        </mxCell>
+        <mxCell id="BANK" value="Bank" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="984.77" y="30" width="232" height="554" as="geometry" />
+        </mxCell>
+        <mxCell id="CLI-1" value="Gửi yêu cầu" vertex="1" parent="CLI" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="36" y="68" width="128" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="GW-1" value="Gọi bank" vertex="1" parent="GW" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="249.04" y="65" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="GW-2" value="DB.ATTEMPT" vertex="1" parent="GW" style="shape=cylinder3;html=1;boundedLbl=1;backgroundOutline=1;size=8;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="409.04" y="60" width="102" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="BANK-1" value="Xử lý" vertex="1" parent="BANK" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="56" y="150" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="GW-3" value="Kết quả bank" vertex="1" parent="GW" style="rhombus;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="237.04" y="230" width="144" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="GW-4" value="Tăng số lần thử" vertex="1" parent="GW" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="547.04" y="235" width="128" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="GW-5" value="Trả lỗi" vertex="1" parent="GW" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="24" y="235" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="GW-6" value="Trả kết quả" vertex="1" parent="GW" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="249.04" y="320" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="CLI-2" value="Nhận kết quả" vertex="1" parent="CLI" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="24" y="400" width="152" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="BANK-2" value="Đối soát cuối ngày" vertex="1" parent="BANK" style="ellipse;html=1;dashed=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="24" y="480" width="184" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="E1" value="POST /pay" edge="1" parent="pool" source="CLI-1" target="GW-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.77">
+            <mxPoint x="0" y="-11.5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E2" value="" edge="1" parent="pool" source="GW-1" target="BANK-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="588.77" y="162" />
+              <mxPoint x="1100.77" y="162" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E3" value="" edge="1" parent="pool" source="BANK-1" target="GW-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="588.77" y="205" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E4" value="timeout" edge="1" parent="pool" source="GW-3" target="GW-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.6">
+            <mxPoint x="0" y="-11.5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E5" value="lỗi | từ chối" edge="1" parent="pool" source="GW-3" target="GW-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.04">
+            <mxPoint x="0" y="-11.5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E6" value="thành công" edge="1" parent="pool" source="GW-3" target="GW-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.03">
+            <mxPoint x="42.77" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E7" value="" edge="1" parent="pool" source="GW-4" target="GW-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="969.77" y="290" />
+              <mxPoint x="969.77" y="72" />
+              <mxPoint x="588.77" y="72" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E8" value="" edge="1" parent="pool" source="GW-5" target="CLI-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="100" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E9" value="" edge="1" parent="pool" source="GW-6" target="CLI-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="100" y="375" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

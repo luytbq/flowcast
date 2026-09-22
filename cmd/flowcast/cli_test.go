@@ -51,17 +51,35 @@ func replay(t *testing.T, want string) string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var src []byte
-	for _, ext := range []string{".md", ".csv", ".xlsx"} {
-		if src, err = os.ReadFile(filepath.Join("../../conformance/cases", caseName+ext)); err == nil {
-			break
+	if dir, ok := strings.CutPrefix(caseName, "merge/"); ok {
+		// Kịch bản merge: chép cả thư mục, gồm bảng và file .drawio cũ.
+		src := filepath.Join("../../conformance/merge", dir)
+		entries, err := os.ReadDir(src)
+		if err != nil {
+			t.Fatal(err)
 		}
-	}
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(tmp, fname), src, 0o644); err != nil {
-		t.Fatal(err)
+		for _, e := range entries {
+			data, err := os.ReadFile(filepath.Join(src, e.Name()))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(tmp, e.Name()), data, 0o644); err != nil {
+				t.Fatal(err)
+			}
+		}
+	} else {
+		var src []byte
+		for _, ext := range []string{".md", ".csv", ".xlsx"} {
+			if src, err = os.ReadFile(filepath.Join("../../conformance/cases", caseName+ext)); err == nil {
+				break
+			}
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(tmp, fname), src, 0o644); err != nil {
+			t.Fatal(err)
+		}
 	}
 
 	var b strings.Builder

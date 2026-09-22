@@ -14,10 +14,14 @@ type Result struct {
 	PoolW, PoolH           float64
 	Origin                 [2]float64
 	PoolHeader, LaneHeader int
+	MinChannel             int
 	Lanes                  []PlacedLane
 	LaneX, LaneW           []float64
 	Items                  []PlacedItem // theo thứ tự dòng trong bảng
 	Edges                  []PlacedEdge // theo thứ tự dòng trong bảng
+	// TopoOrder là thứ tự topo của các node. Merge đặt node mới theo thứ tự này
+	// để node đứng trước trong luồng có chỗ trước.
+	TopoOrder []string
 }
 
 type PlacedLane struct {
@@ -29,6 +33,8 @@ type PlacedItem struct {
 	ID         string
 	Kind       string
 	Lane       int
+	Order      int
+	Attach     string
 	Row, Col   int
 	Lines      []string
 	Highlight  bool
@@ -40,31 +46,47 @@ func (it PlacedItem) box() box { return box{it.X, it.Y, it.X + it.W, it.Y + it.H
 type PlacedEdge struct {
 	ID, Src, Dst        string
 	Case, ExitSide      byte
+	Order               int
 	Lines               []string
 	Dashed, Highlight   bool
+	Back                bool
 	ExitFrac, EntryFrac [2]float64
 	Pts                 [][2]float64
 	Label               *[4]float64
 	LabelT              float64
 	LabelOff            [2]float64
+
+	// Các trường dưới chỉ do merge đặt.
+
+	// Auto: để draw.io tự đi dây, không ghi điểm neo, điểm gấp hay nhãn.
+	Auto bool
+	// Kept: dây giữ nguyên từ file cũ. Constraints thay cho điểm neo tính được,
+	// Waypoints thay cho các điểm gấp.
+	Kept        bool
+	Constraints [][2]string
+	Waypoints   [][2]float64
+	// NoLabelPos: nhãn về giữa đường, vì dây đã bị sửa tay và vị trí nhãn tính
+	// cho đường cũ không còn đúng.
+	NoLabelPos bool
 }
 
 // Result chụp lại kết quả hiện tại của Layout. Gọi sau Run.
 func (l *Layout) Result() Result {
 	r := Result{
 		PoolW: l.PoolW, PoolH: l.PoolH, Origin: Origin,
-		PoolHeader: l.Cfg.PoolHeader, LaneHeader: l.Cfg.LaneHeader,
-		LaneX: l.LaneX, LaneW: l.LaneW,
+		PoolHeader: l.Cfg.PoolHeader, LaneHeader: l.Cfg.LaneHeader, MinChannel: l.Cfg.MinChannel,
+		LaneX: l.LaneX, LaneW: l.LaneW, TopoOrder: l.TopoOrder,
 	}
 	for _, ln := range l.Lanes {
 		r.Lanes = append(r.Lanes, PlacedLane{ln.ID, ln.Lines})
 	}
 	for _, it := range l.ItemOrder {
-		r.Items = append(r.Items, PlacedItem{it.ID, it.Kind, it.Lane, it.Row, it.Col, it.Lines, it.Highlight, it.X, it.Y, it.W, it.H})
+		r.Items = append(r.Items, PlacedItem{ID: it.ID, Kind: it.Kind, Lane: it.Lane, Order: it.Order, Attach: it.Attach,
+			Row: it.Row, Col: it.Col, Lines: it.Lines, Highlight: it.Highlight, X: it.X, Y: it.Y, W: it.W, H: it.H})
 	}
 	for _, e := range l.Edges {
 		r.Edges = append(r.Edges, PlacedEdge{
-			ID: e.ID, Src: e.Src, Dst: e.Dst, Case: e.Case, ExitSide: e.ExitSide,
+			ID: e.ID, Src: e.Src, Dst: e.Dst, Case: e.Case, ExitSide: e.ExitSide, Order: e.Order, Back: e.Back,
 			Lines: e.Lines, Dashed: e.Dashed, Highlight: e.Highlight,
 			ExitFrac: e.ExitFrac, EntryFrac: e.EntryFrac, Pts: e.Pts,
 			Label: e.Label, LabelT: e.LabelT, LabelOff: e.LabelOff,

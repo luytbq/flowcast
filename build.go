@@ -12,6 +12,7 @@ import (
 
 	"github.com/luytbq/flowcast/data"
 	"github.com/luytbq/flowcast/layout"
+	"github.com/luytbq/flowcast/merge"
 	"github.com/luytbq/flowcast/model"
 	"github.com/luytbq/flowcast/source"
 	"github.com/luytbq/flowcast/text"
@@ -31,6 +32,10 @@ type Options struct {
 	Config *layout.Config
 	// Title thay tiêu đề lấy từ nguồn. Rỗng thì giữ tiêu đề của nguồn.
 	Title string
+	// Previous là file .drawio sinh lần trước, có thể đã được sửa tay. Khác nil
+	// thì sơ đồ mới giữ lại những chỉnh sửa đó, xem gói merge. Previous chỉ dùng
+	// được một lần: các trang của nó được chuyển sang file mới.
+	Previous *merge.Old
 }
 
 // Stats là kích thước của sơ đồ đã dựng.
@@ -52,7 +57,10 @@ type Result struct {
 	Warnings []string
 	Findings []Finding
 	Layout   *layout.Result
-	Stats    Stats
+	// Merge là báo cáo của merge khi Options.Previous khác nil. Findings khi đó
+	// là tự kiểm của layout mới tính, trước khi merge sửa nó.
+	Merge *merge.Report
+	Stats Stats
 }
 
 // HasErrors nói bảng có lỗi chặn việc dựng hay không.
@@ -116,7 +124,13 @@ func Build(src Source, opt Options) (Result, error) {
 	r.Layout = &res
 	r.Warnings = l.Warnings
 	r.Findings = layout.Check(res)
-	r.Text = drawio.Write(res, r.Title)
+	if opt.Previous != nil {
+		extras, rep := merge.Apply(&res, opt.Previous)
+		r.Merge = &rep
+		r.Text = drawio.WriteMerged(res, r.Title, extras, opt.Previous.Pages)
+	} else {
+		r.Text = drawio.Write(res, r.Title)
+	}
 	r.Stats = Stats{len(res.Lanes), len(res.Items), len(res.Edges), res.PoolW, res.PoolH}
 	return r, nil
 }

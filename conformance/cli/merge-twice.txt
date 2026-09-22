@@ -1,0 +1,54 @@
+# input: 03-condition-two -> in.md
+$ ["build", "$T/in.md"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 3 cạnh, 325.26x334px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.md", "--mode", "merge"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ merge, giữ chỉnh sửa tay
+build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 3 cạnh, 325.26x334px)
+build: bản sao file cũ $T/in.drawio.bak
+merge: giữ vị trí (4): A-1, A-2, A-3, A-4
+merge: element mới (0): -
+merge: element mới phải dịch xuống vì chồng (0): -
+merge: đổi lane trong bảng hoặc bị kéo sang lane khác, đặt lại (0): -
+merge: edge giữ waypoint (3): E1, E2, E3
+merge: edge để draw.io tự đi dây, cần chỉnh tay (0): -
+merge: edge đã sửa tay, nhãn về giữa đường (0): -
+merge: xoá vì không còn trong bảng (0): -
+merge: lane được nới (0): -
+merge: cell tự vẽ giữ lại (0): -
+merge: cell tự vẽ bỏ đi (cha đã bị xoá) (0): -
+merge: cell tự vẽ mất đầu nối (0): -
+merge: element chồng nhau (0): -
+layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG
+[exit 0]
+$ ["build", "$T/in.md", "--mode", "merge"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ merge, giữ chỉnh sửa tay
+build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 3 cạnh, 325.26x334px)
+build: bản sao file cũ $T/in.drawio.bak
+merge: giữ vị trí (4): A-1, A-2, A-3, A-4
+merge: element mới (0): -
+merge: element mới phải dịch xuống vì chồng (0): -
+merge: đổi lane trong bảng hoặc bị kéo sang lane khác, đặt lại (0): -
+merge: edge giữ waypoint (3): E1, E2, E3
+merge: edge để draw.io tự đi dây, cần chỉnh tay (0): -
+merge: edge đã sửa tay, nhãn về giữa đường (0): -
+merge: xoá vì không còn trong bảng (0): -
+merge: lane được nới (0): -
+merge: cell tự vẽ giữ lại (0): -
+merge: cell tự vẽ bỏ đi (cha đã bị xoá) (0): -
+merge: cell tự vẽ mất đầu nối (0): -
+merge: element chồng nhau (0): -
+layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG
+[exit 0]
+--- files
+d6401975adfee782  in.drawio
+d6401975adfee782  in.drawio.bak
+35ce030c1847ff7d  in.md

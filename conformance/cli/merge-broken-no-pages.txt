@@ -1,0 +1,9 @@
+# input: merge/broken-no-pages -> *
+$ ["build", "$T/flow.md", "--mode", "merge"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+ERROR   $T/flow.drawio không có trang nào; không ghi đè. Dùng --mode force nếu muốn sinh lại toàn bộ
+[exit 4]
+--- files
+5c66e290362846e8  flow.drawio
+d34be23b45c40188  flow.md

@@ -1,0 +1,26 @@
+# input: merge/freehand-edge-detached -> *
+$ ["build", "$T/flow.md", "--mode", "merge"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ merge, giữ chỉnh sửa tay
+build: đã ghi $T/flow.drawio (3 lane, 9 phần tử, 7 cạnh, 1363.13x420px)
+build: bản sao file cũ $T/flow.drawio.bak
+merge: giữ vị trí (9): USR-1, API-1, API-1.1, API-2, API-3, SVC-1, SVC-2, SVC-3, USR-2
+merge: element mới (0): -
+merge: element mới phải dịch xuống vì chồng (0): -
+merge: đổi lane trong bảng hoặc bị kéo sang lane khác, đặt lại (0): -
+merge: edge giữ waypoint (7): E1, E2, E3, E4, E5, E6, E7
+merge: edge để draw.io tự đi dây, cần chỉnh tay (0): -
+merge: edge đã sửa tay, nhãn về giữa đường (0): -
+merge: xoá vì không còn trong bảng (2): E7.1, SVC-4
+merge: lane được nới (0): -
+merge: cell tự vẽ giữ lại (1): hand-2
+merge: cell tự vẽ bỏ đi (cha đã bị xoá) (0): -
+merge: cell tự vẽ mất đầu nối (1): hand-2.target
+merge: element chồng nhau (0): -
+layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG
+[exit 0]
+--- files
+1446b648ba29e4a0  flow.drawio
+fd278a0b6b25a814  flow.drawio.bak
+7247fc80fc95c38b  flow.md

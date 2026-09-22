@@ -28,6 +28,7 @@ import (
 	"unicode"
 
 	"github.com/luytbq/flowcast"
+	"github.com/luytbq/flowcast/merge"
 	"github.com/luytbq/flowcast/model"
 	"github.com/luytbq/flowcast/num"
 )
@@ -147,18 +148,27 @@ func (c *cli) build() int {
 		c.println("build: dừng, chưa chọn chế độ ghi")
 		return 4
 	}
+	var prev *merge.Old
 	if mode == "merge" {
-		c.println("ERROR   --mode merge chưa hỗ trợ trong bản này; không ghi đè. Dùng --mode force nếu muốn sinh lại toàn bộ")
-		return 4
+		data, err := os.ReadFile(out)
+		if err == nil {
+			prev, err = merge.Read(data, out)
+		} else {
+			err = fmt.Errorf("không đọc được %s: %v", out, err)
+		}
+		if err != nil {
+			c.println("ERROR   " + err.Error() + "; không ghi đè. Dùng --mode force nếu muốn sinh lại toàn bộ")
+			return 4
+		}
 	}
 
-	r, err := flowcast.Build(src, flowcast.Options{Config: &c.a.cfg, Title: c.a.title})
+	r, err := flowcast.Build(src, flowcast.Options{Config: &c.a.cfg, Title: c.a.title, Previous: prev})
 	if err != nil {
 		c.println("ERROR   " + err.Error())
 		return 1
 	}
 	backup := ""
-	if mode == "force" && !c.a.noBackup {
+	if mode != "new" && !c.a.noBackup {
 		backup = out + ".bak"
 		if err := copyFile(out, backup); err != nil {
 			c.println("ERROR   " + err.Error())
@@ -185,6 +195,16 @@ func (c *cli) build() int {
 	}
 	for _, w := range r.Warnings {
 		c.println("WARNING layout: " + w)
+	}
+	if r.Merge != nil {
+		for _, l := range r.Merge.Lines() {
+			c.println(l)
+		}
+		c.println("layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG")
+		if c.a.png != "" || c.a.verify {
+			c.println("WARNING render: xuất ảnh và kiểm render chưa hỗ trợ trong bản này, bỏ qua")
+		}
+		return 0
 	}
 	nerr := 0
 	for _, f := range r.Findings {
