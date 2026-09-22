@@ -1,0 +1,78 @@
+{
+ "geometry": {
+  "edges": {},
+  "exact": {
+   "edges": {},
+   "items": {},
+   "lanes": [
+    [
+     "0x0.0p+0",
+     "0x1.0e63000000000p+7"
+    ]
+   ],
+   "pool": [
+    "0x1.0e63000000000p+7",
+    "0x1.6800000000000p+6"
+   ]
+  },
+  "items": {},
+  "lanes": [
+   {
+    "id": "A",
+    "w": "135.19",
+    "x": "0"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "90",
+   "w": "135.19"
+  },
+  "warnings": []
+ },
+ "issues": [],
+ "place": {
+  "cols": {
+   "0": []
+  },
+  "items": {},
+  "lanes": [
+   "A"
+  ],
+  "nrows": 0,
+  "topo": [],
+  "warnings": []
+ },
+ "route": {
+  "edges": {},
+  "segs": [],
+  "warnings": []
+ },
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A",
+     "dòng hai"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   }
+  ],
+  "source": "markdown",
+  "title": "Bề rộng lane theo tên lane nhiều dòng"
+ },
+ "text": {
+  "edges": {},
+  "items": {}
+ }
+}

@@ -69,9 +69,19 @@ EOPY
 #   trùng nguồn thì phép kiểm phía nguồn đã bắt trước.
 # - Bỏ lối tắt một cạnh mỗi mặt trong assignPorts. Với đúng một cạnh, mọi nhánh
 #   đều cho ra giữa mặt.
+# - Tâm của một cột không phải cột đích trong resolvePaths. route chỉ sinh tham
+#   chiếu tới cột của chính đích, nên nhánh đó không chạy. Giữ lại vì nó làm rx
+#   đúng với mọi tham chiếu cột, không chỉ với những gì route đang sinh.
+# - Dừng ở ứng viên nhãn chi phí không. Ứng viên được chọn bằng so sánh < nghiêm
+#   ngặt, nên một ứng viên chi phí không đứng sau không bao giờ thay được ứng
+#   viên chi phí không đứng trước; break chỉ là tối ưu.
+# - pyMax trả số sau khi hai số bằng nhau. Chỉ khác khi đó là âm không và dương
+#   không, mà âm không không sinh ra được trong pha hình học: mọi toạ độ là tổng
+#   bề rộng dương bắt đầu từ 0, x - x luôn ra dương không, và số âm duy nhất là
+#   d = -1 nhân với một lượng dương khác không.
 #
-# Hai cái sau sống sót qua 78.120 bảng sinh ngẫu nhiên trước khi được chứng
-# minh. Suy luận mà không có số liệu thì không đáng tin: hai nhánh khác cũng
+# Mỗi cái sống sót qua hàng chục nghìn bảng sinh ngẫu nhiên trước khi được
+# chứng minh. Suy luận mà không có số liệu thì không đáng tin: hai nhánh khác cũng
 # từng bị nghi là thừa rồi bị bảng ngẫu nhiên giết.
 
 # num, text, layout/size
@@ -188,7 +198,6 @@ mutate "máng tính thừa một track" layout/geometry.go 'inner = float64(2*cf
 mutate "kênh không có chiều cao tối thiểu" layout/geometry.go 'h := pyMax(float64(cfg.MinChannel), lzC[k]+inner)' 'h := lzC[k] + inner'
 mutate "db bám bên phải không cách node" layout/geometry.go 'a.X = h.u.X + h.u.W + float64(cfg.AttachGap)' 'a.X = h.u.X + h.u.W'
 mutate "trackY bỏ chỗ chừa nhãn" layout/geometry.go 'return g.chanY[s.Res.A] + g.lzC[s.Res.A] +' 'return g.chanY[s.Res.A] +'
-mutate "tâm cột khác lấy mép trái" layout/geometry.go 'return c[0] + c[1]/2' 'return c[0]'
 mutate "không bỏ điểm thẳng hàng" layout/geometry.go 'if vertical || horizontal {' 'if false {'
 mutate "không bỏ điểm trùng" layout/geometry.go 'if math.Abs(p[0]-last[0]) < 0.01 && math.Abs(p[1]-last[1]) < 0.01 {' 'if false {'
 mutate "làm tròn điểm gấp tới một chữ số" layout/geometry.go 'num.Round(out[i][0], 2)' 'num.Round(out[i][0], 1)'
@@ -198,7 +207,6 @@ mutate "bỏ lượt hình học thứ hai" layout/labels.go 'lzG, lzC = l.label
 mutate "chi phí chồng node nhẹ hơn" layout/labels.go 'cost += float64(area(c.b, nb.b) * 4)' 'cost += float64(area(c.b, nb.b) * 2)'
 mutate "không tránh nhãn đã đặt" layout/labels.go 'cost += float64(area(c.b, pb) * 4)' 'cost += 0'
 mutate "tính cả dây của chính cạnh" layout/labels.go 'if w.id != e.ID && segHits(w.a, w.b, c.b) {' 'if segHits(w.a, w.b, c.b) {'
-mutate "không dừng ở ứng viên chi phí không" layout/labels.go 'if cost == 0 {' 'if false {'
 mutate "hòa chi phí thì chọn ứng viên sau" layout/labels.go 'if best == nil || cost < bestCost {' 'if best == nil || cost <= bestCost {'
 mutate "đoạn ngắn hơn 20 không đặt nhãn" layout/labels.go 'if L >= 12 {' 'if L >= 20 {'
 mutate "nhãn ngang cách đầu đoạn 4 thay vì 6" layout/labels.go 'a[0] + float64(d*(6+w/2))' 'a[0] + float64(d*(4+w/2))'
@@ -207,7 +215,6 @@ mutate "label_t làm tròn hai chữ số" layout/labels.go 'num.Round(float64(2
 mutate "bỏ hộp header" layout/labels.go 'box{-1e6, -1e6, 1e6,' 'box{-1e6, -1e6, -1e6,'
 mutate "bỏ đường phân cách lane" layout/labels.go 'for _, x := range l.LaneX[1:] {' 'for _, x := range l.LaneX[:0] {'
 mutate "chạm mép hộp cũng tính là cắt" layout/labels.go 'return x1 < bx[2] && x2 > bx[0]' 'return x1 <= bx[2] && x2 >= bx[0]'
-mutate "pyMax trả số sau khi bằng nhau" layout/util.go 'if b > a {' 'if b >= a {'
 
 [ -n "$PREFLIGHT" ] && exit 0
 echo

@@ -1,0 +1,124 @@
+{
+ "geometry": {
+  "edges": {},
+  "exact": {
+   "edges": {},
+   "items": {
+    "A-3": [
+     "0x1.b98c000000000p+4",
+     "0x1.6800000000000p+6",
+     "0x1.4000000000000p+6",
+     "0x1.6000000000000p+5"
+    ]
+   },
+   "lanes": [
+    [
+     "0x0.0p+0",
+     "0x1.0e63000000000p+7"
+    ]
+   ],
+   "pool": [
+    "0x1.0e63000000000p+7",
+    "0x1.4800000000000p+7"
+   ]
+  },
+  "items": {
+   "A-3": {
+    "h": "44",
+    "w": "80",
+    "x": "27.6",
+    "y": "90"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "135.19",
+    "x": "0"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "164",
+   "w": "135.19"
+  },
+  "warnings": []
+ },
+ "issues": [],
+ "place": {
+  "cols": {
+   "0": [
+    0
+   ]
+  },
+  "items": {
+   "A-3": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   }
+  },
+  "lanes": [
+   "A"
+  ],
+  "nrows": 1,
+  "topo": [
+   "A-3"
+  ],
+  "warnings": []
+ },
+ "route": {
+  "edges": {},
+  "segs": [],
+  "warnings": []
+ },
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A",
+     "dòng hai"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-3",
+    "idx": 1,
+    "lines": [
+     "A-3 x"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "external"
+   }
+  ],
+  "source": "markdown",
+  "title": "Phần bù bề rộng lane chia đều cho hai máng ngoài"
+ },
+ "text": {
+  "edges": {},
+  "items": {
+   "A-3": {
+    "h": "44",
+    "kind": "external",
+    "lines": [
+     "A-3 x"
+    ],
+    "w": "80"
+   }
+  }
+ }
+}

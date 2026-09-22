@@ -198,17 +198,17 @@ tools/coverage.py đo từng nhánh thuật toán và thoát với mã 1 nếu c
 
 | nhánh | số lần chạm |
 |---|---|
-| đi dây A (thẳng đứng) | 120 |
-| đi dây B (thẳng ngang) | 56 |
-| đi dây C (chữ L) | 7 |
-| đi dây D (qua kênh và máng) | 49 |
+| đi dây A (thẳng đứng) | 127 |
+| đi dây B (thẳng ngang) | 59 |
+| đi dây C (chữ L) | 8 |
+| đi dây D (qua kênh và máng) | 62 |
 | nhánh dạt trái (drift -1) | 14 |
 | nhánh dạt phải (drift 1) | 17 |
-| nhánh không rõ hướng (drift 0) | 144 |
-| track thứ hai trở lên | 13 |
-| db hoặc text bám node | 27 |
-| cạnh back | 5 |
-| cạnh có nhãn | 94 |
+| nhánh không rõ hướng (drift 0) | 159 |
+| track thứ hai trở lên | 17 |
+| db hoặc text bám node | 34 |
+| cạnh back | 7 |
+| cạnh có nhãn | 112 |
 | phần tử tô nhấn | 4 |
 | ngắt dòng cứng giữa từ | 1 |
 | đầu vào ở dạng NFD | 1 |
@@ -232,8 +232,8 @@ tools/coverage.py đo từng nhánh thuật toán và thoát với mã 1 nếu c
 | validate: attach sai loại | 1 |
 | validate: attach khác lane | 1 |
 | validate: condition thiếu nhánh | 1 |
-| validate: node không có cạnh ra | 11 |
-| validate: start có cạnh vào | 4 |
+| validate: node không có cạnh ra | 16 |
+| validate: start có cạnh vào | 5 |
 | validate: end có cạnh ra | 2 |
 | validate: nhánh condition không nhãn | 1 |
 | validate: cạnh ra lệch chỗ | 4 |
@@ -268,6 +268,13 @@ ngang chạy qua. db rơi vào đúng khoảng đó, và pha đi dây phải chu
 kiểu B thẳng ngang sang kiểu D đi vòng. Không cắt node nào nên tự kiểm vẫn báo
 0 lỗi; cái mất là một mũi tên lẽ ra thẳng. Chốt bởi case
 `48-place-attach-overflow-span`.
+
+**Tên lane nhiều dòng làm lane rộng quá mức.** Bề rộng header được đo trên tên
+lane đã nối các dòng bằng ký tự xuống dòng, như thể đó là một dòng. Ký tự xuống
+dòng không có trong bảng số đo nên còn được tính thêm bề rộng một glyph
+`.notdef`, 12 điểm ảnh. Khi vẽ ra thì tên đó nằm trên nhiều dòng ngắn, nên lane
+rộng hơn mức cần. "Lane A" xuống dòng "dòng hai" cho lane 135 điểm ảnh thay vì
+120. Chốt bởi case `51-geom-lane-header-multiline`.
 
 ## Thêm case
 

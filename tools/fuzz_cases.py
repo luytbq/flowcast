@@ -62,16 +62,21 @@ def stage_of(pair, md, stage):
         return 'LỖI ' + type(ex).__name__
 
 
+LANE_NAMES = ['Lane {}', 'Bộ phận xử lý nghiệp vụ {} kéo dài', 'Lane {}<br>dòng hai', 'Hệ thống {}<br>thanh toán<br>nội bộ']
+LABELS = ['', '', '', 'ok', 'Có', 'Không', 'gửi yêu cầu', 'trả kết quả kèm mã lỗi chi tiết']
+
+
 def gen(rng):
     """Một bảng ngẫu nhiên đúng luật thứ tự dòng: node, rồi db và text của nó, rồi
-    các cạnh ra. Có cả cạnh song song trùng đích và cạnh quay ngược."""
+    các cạnh ra. Có cả cạnh song song trùng đích, cạnh quay ngược, tên lane dài
+    hoặc nhiều dòng, và nhãn cạnh đủ độ dài để chạm tới pha đặt nhãn."""
     nl, n = rng.randint(1, 4), rng.randint(3, 9)
     nodes = []
     for i in range(n):
         lane = LANES[rng.randrange(nl)]
         typ = 'start' if i == 0 else rng.choice(['task', 'task', 'task', 'condition', 'end', 'external'])
         nodes.append((f'{lane}-{i + 1}', typ, lane))
-    rows = [f'| {LANES[i]} | lane | | Lane {LANES[i]} | |' for i in range(nl)]
+    rows = [f'| {LANES[i]} | lane | | {rng.choice(LANE_NAMES).format(LANES[i])} | |' for i in range(nl)]
     eid = 0
     for i, (nid, typ, lane) in enumerate(nodes):
         rows.append(f'| {nid} | {typ} | {lane} | {nid} x | |')
@@ -91,7 +96,8 @@ def gen(rng):
             back = j <= 0
             dst = nodes[abs(j) - 1][0] if back else nodes[j][0]
             meta = f'from={nid}; to={dst}' + ('; back=true' if back else '')
-            rows.append(f'| E{eid} | edge | | {"n" if typ == "condition" else ""} | {meta} |')
+            label = rng.choice(LABELS[3:]) if typ == 'condition' else rng.choice(LABELS)
+            rows.append(f'| E{eid} | edge | | {label} | {meta} |')
     return HEAD + '\n'.join(rows) + '\n'
 
 

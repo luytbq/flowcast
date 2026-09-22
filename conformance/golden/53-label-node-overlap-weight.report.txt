@@ -1,0 +1,10 @@
+WARNING dòng 14 [A-5]: task không có cạnh ra
+check: 0 lỗi, 1 cảnh báo
+build: 1 lane, 5 phần tử, 4 cạnh, 338x386px
+WARNING layout: E3: nhãn "trả kết quả kèm mã lỗi chi tiết" không tìm được chỗ trống hoàn toàn
+WARNING layout: E5: nhãn "trả kết quả kèm mã lỗi chi tiết" không tìm được chỗ trống hoàn toàn
+WARNING layout: nhãn E3 đè nhãn E5
+WARNING layout: nhãn E3 đè dây E5
+WARNING layout: nhãn E5 đè dây E3
+WARNING layout: nhãn E5 đè dây E4
+layout: 0 lỗi, 4 cảnh báo
