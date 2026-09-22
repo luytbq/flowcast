@@ -46,6 +46,11 @@ SPECIAL = [
     ('unknown-extension', '03-condition-two', 'in.dat', [['check', '$T/in.dat']]),
     ('txt-is-markdown', '03-condition-two', 'in.txt', [['build', '$T/in.txt']]),
     ('default-output-strips-extension', '03-condition-two', 'so.do.md', [['build', '$T/so.do.md']]),
+    # Dấu chấm ở đầu tên file không phải dấu tách đuôi, nên ".md" không có đuôi.
+    ('dotfile-has-no-extension', '03-condition-two', '.md', [['check', '$T/.md']]),
+    # Cấu hình người dùng gõ được mà làm các track trùng nhau: nhánh duy nhất đi
+    # tới mã thoát 2, vì với cấu hình mặc định không bảng nào có lỗi hình học.
+    ('track-gap-zero', '28-tracks-fan-in', 'in.md', [['build', '$T/in.md', '--track-gap', '0']]),
 ]
 
 
