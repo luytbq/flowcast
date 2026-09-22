@@ -1,4 +1,22 @@
 {
+ "check": [
+  [
+   "warning",
+   "nhãn E3 đè nhãn E5"
+  ],
+  [
+   "warning",
+   "nhãn E3 đè dây E5"
+  ],
+  [
+   "warning",
+   "nhãn E5 đè dây E3"
+  ],
+  [
+   "warning",
+   "nhãn E5 đè dây E4"
+  ]
+ ],
  "geometry": {
   "edges": {
    "E3": {

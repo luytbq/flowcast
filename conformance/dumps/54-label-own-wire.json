@@ -1,4 +1,14 @@
 {
+ "check": [
+  [
+   "warning",
+   "nhãn E3 đè nhãn E4"
+  ],
+  [
+   "warning",
+   "nhãn E4 đè dây E3"
+  ]
+ ],
  "geometry": {
   "edges": {
    "E1": {

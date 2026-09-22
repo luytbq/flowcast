@@ -35,7 +35,7 @@ sys.path.insert(0, HERE)
 
 import flowtable2drawio as ft  # noqa: E402
 
-STAGES = ('text', 'table', 'issues', 'place', 'route', 'geometry')
+STAGES = ('text', 'table', 'issues', 'place', 'route', 'geometry', 'check')
 
 
 def f(v):
@@ -216,8 +216,18 @@ def stage_geometry(table, lay):
     }
 
 
+def stage_check(table, lay):
+    """Phát hiện của tự kiểm hình học trên sơ đồ đã xếp. Chốt module layout/check.
+
+    Trên bảng đúng thì gần như luôn rỗng, vì engine đúng không sinh ra lỗi hình
+    học. Phần lớn độ phủ của module này nằm ở conformance/check-vectors.json.
+    """
+    return [[lvl, msg] for lvl, msg in lay.check()]
+
+
 FNS = {'text': stage_text, 'table': stage_table, 'issues': stage_issues,
-       'place': stage_place, 'route': stage_route, 'geometry': stage_geometry}
+       'place': stage_place, 'route': stage_route, 'geometry': stage_geometry,
+       'check': stage_check}
 
 
 def stages(table, lay, want=STAGES, parse_issues=()):

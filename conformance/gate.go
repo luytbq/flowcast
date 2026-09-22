@@ -129,6 +129,7 @@ type Dump struct {
 	Place  *PlaceStage `json:"place"`
 	Route  *RouteStage `json:"route"`
 	Geom   *GeomStage  `json:"geometry"`
+	Check  [][2]string `json:"check"`
 }
 
 // CaseFile trả về đường dẫn bảng đầu vào của một case.
