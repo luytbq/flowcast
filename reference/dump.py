@@ -172,19 +172,47 @@ def stage_route(table, lay):
     }
 
 
+def hx(v):
+    """Giá trị chính xác của một số thực, ghi bằng float.hex() để đọc lại đúng từng bit."""
+    return float(v).hex()
+
+
 def stage_geometry(table, lay):
-    """Toạ độ cuối cùng. Chốt module layout/geometry và layout/labels."""
+    """Toạ độ cuối cùng. Chốt module layout/geometry và layout/labels.
+
+    Mỗi số có hai dạng. Dạng ngắn đi qua ft.fmt, đúng như trong file .drawio, để
+    đọc được khi xem diff. Khối exact ghi giá trị chính xác, vì pha này ra quyết
+    định bằng so sánh số thực: nhãn đặt ở ứng viên nào tùy tổng chi phí nào nhỏ
+    hơn, nên lệch một đơn vị ở bit cuối là đủ lật kết quả mà dạng ngắn không cho
+    thấy.
+
+    warnings là cảnh báo phát sinh riêng trong pha hình học và nhãn.
+    """
+    pr = ft.Layout(table.rows, lay.cfg, lay.tm)
+    pr.place()
+    pr.route()
+    items = lay.items.values()
     return {
+        'warnings': lay.warnings[len(pr.warnings):],
         'pool': {'w': f(lay.pool_w), 'h': f(lay.pool_h)},
         'origin': pair(lay.origin),
         'lanes': [{'id': l.id, 'x': f(lay.lane_x[i]), 'w': f(lay.lane_w[i])}
                   for i, l in enumerate(lay.lanes)],
-        'items': {it.id: {'x': f(it.x), 'y': f(it.y), 'w': f(it.w), 'h': f(it.h)}
-                  for it in lay.items.values()},
+        'items': {it.id: {'x': f(it.x), 'y': f(it.y), 'w': f(it.w), 'h': f(it.h)} for it in items},
         'edges': {e.id: {'points': [pair(p) for p in (e.pts or [])],
                          'label_t': f(e.label_t), 'label_off': pair(e.label_off),
-                         'label': pair(e.label) if e.label else None}
+                         'label': [f(v) for v in e.label] if e.label else None}
                   for e in lay.edges},
+        'exact': {
+            'pool': [hx(lay.pool_w), hx(lay.pool_h)],
+            'lanes': [[hx(lay.lane_x[i]), hx(lay.lane_w[i])] for i in range(len(lay.lanes))],
+            'items': {it.id: [hx(it.x), hx(it.y), hx(it.w), hx(it.h)] for it in items},
+            'edges': {e.id: {'points': [[hx(x), hx(y)] for x, y in (e.pts or [])],
+                             'label': [hx(v) for v in e.label] if e.label else None,
+                             'label_t': hx(e.label_t),
+                             'label_off': [hx(e.label_off[0]), hx(e.label_off[1])]}
+                      for e in lay.edges},
+        },
     }
 
 

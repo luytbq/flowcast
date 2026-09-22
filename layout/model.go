@@ -44,6 +44,12 @@ type Edge struct {
 	ExitFrac  [2]float64
 	EntryFrac [2]float64
 	Sym       []SymPair
+
+	// Kết quả của pha hình học và nhãn, theo toạ độ trong pool.
+	Pts      [][2]float64
+	Label    *[4]float64 // hộp nhãn; nil khi cạnh không có nhãn hoặc không đặt được
+	LabelT   float64     // vị trí nhãn dọc đường, từ -1 ở nguồn tới 1 ở đích
+	LabelOff [2]float64  // độ lệch từ điểm neo trên đường tới tâm hộp nhãn
 }
 
 // Layout là trạng thái của một lần xếp hình. Các pha chạy lần lượt và mỗi pha
@@ -78,6 +84,11 @@ type Layout struct {
 	NTracks map[Res]int
 	sideOut map[sideKey][]*Edge
 	sideIn  map[sideKey][]*Edge
+
+	// Kết quả của pha hình học.
+	LaneX, LaneW []float64
+	PoolW, PoolH float64
+	g            *geom
 }
 
 // Item trả về phần tử theo id.

@@ -30,7 +30,14 @@ type XKey struct {
 // ngang; không được thì xuống hàng dưới nguồn sâu nhất. Nhánh phụ dạt sang bên,
 // và node hợp nhánh quay về cột của node rẽ chung gần nhất. db và text đặt sát
 // cạnh node chúng bám.
+//
+// Gọi lại trên cùng một Layout thì bắt đầu từ đầu: trạng thái của lần trước bị
+// xóa, vì nếu không thì mọi phần tử đều trông như đã được đặt.
 func (l *Layout) Place() {
+	for _, it := range l.ItemOrder {
+		it.Placed, it.Row, it.Col = false, 0, 0
+	}
+	l.Warnings = nil
 	l.occ = map[cell]string{}
 	l.hside = map[string]map[byte]bool{}
 	var spans []hspan

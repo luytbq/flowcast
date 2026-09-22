@@ -101,6 +101,25 @@ type RouteStage struct {
 	Segs     []RouteSeg           `json:"segs"`
 }
 
+type GeomExactEdge struct {
+	Points   [][2]string `json:"points"`
+	Label    []string    `json:"label"`
+	LabelT   string      `json:"label_t"`
+	LabelOff [2]string   `json:"label_off"`
+}
+
+type GeomExact struct {
+	Pool  [2]string                `json:"pool"`
+	Lanes [][2]string              `json:"lanes"`
+	Items map[string][4]string     `json:"items"`
+	Edges map[string]GeomExactEdge `json:"edges"`
+}
+
+type GeomStage struct {
+	Warnings []string  `json:"warnings"`
+	Exact    GeomExact `json:"exact"`
+}
+
 // Dump là một file conformance/dumps/<case>.json.
 type Dump struct {
 	Name   string      // tên case, không có đuôi
@@ -109,6 +128,7 @@ type Dump struct {
 	Issues []DumpIssue `json:"issues"`
 	Place  *PlaceStage `json:"place"`
 	Route  *RouteStage `json:"route"`
+	Geom   *GeomStage  `json:"geometry"`
 }
 
 // CaseFile trả về đường dẫn bảng đầu vào của một case.

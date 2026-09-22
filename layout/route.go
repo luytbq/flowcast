@@ -6,7 +6,15 @@ package layout
 // thẳng đứng, B thẳng ngang, C chữ L, D qua kênh và máng. Một cạnh nhận kiểu
 // đầu tiên mà đường đi của nó còn trống. Thứ tự lượt quan trọng: cạnh đi thẳng
 // được giữ chỗ trước, rồi các kiểu phức tạp hơn mới phải tránh chúng.
+//
+// Gọi lại thì bắt đầu từ đầu, cùng lý do như Place: một cạnh đã có Case sẽ bị
+// mọi lượt bỏ qua, và đoạn dây của lần trước sẽ bị gán track chung với lần này.
 func (l *Layout) Route() {
+	for _, e := range l.Edges {
+		e.Case, e.ExitSide, e.EntrySide, e.Sym = 0, 0, 'T', nil
+		e.ExitFrac, e.EntryFrac = [2]float64{0.5, 1.0}, [2]float64{0.5, 0.0}
+	}
+	l.Segs = nil
 	l.sideOut = map[sideKey][]*Edge{}
 	l.sideIn = map[sideKey][]*Edge{}
 	cellsH := map[cell]map[string]bool{}

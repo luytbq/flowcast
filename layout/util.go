@@ -30,3 +30,21 @@ func sign(v int) int {
 	}
 	return 0
 }
+
+// pyMax và pyMin mang đúng ngữ nghĩa max và min của Python: khi hai số bằng
+// nhau thì trả về số đứng trước. math.Max và math.Min không dùng được, vì
+// math.Max(-0, 0) luôn trả +0, và dấu của số không lọt được vào toạ độ, nơi
+// num.Fmt in nó ra thành "-0".
+func pyMax(a, b float64) float64 {
+	if b > a {
+		return b
+	}
+	return a
+}
+
+func pyMin(a, b float64) float64 {
+	if b < a {
+		return b
+	}
+	return a
+}
