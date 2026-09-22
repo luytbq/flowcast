@@ -1,0 +1,6 @@
+# input: xlsx-08-two-flows -> in.xlsx
+$ ["check", "$T/in.xlsx", "--sheet", "Không có"]
+ERROR   $T/in.xlsx không có sheet tên "Không có"
+[exit 1]
+--- files
+315f31f00fae88bb  in.xlsx

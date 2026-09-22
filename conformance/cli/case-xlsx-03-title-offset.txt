@@ -1,0 +1,15 @@
+# input: xlsx-03-title-offset -> in.xlsx
+$ ["check", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Flow
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Flow
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 2 cạnh, 394.02x250px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+4a5368411890aa5e  in.drawio
+28b5f44dd8072c5c  in.xlsx

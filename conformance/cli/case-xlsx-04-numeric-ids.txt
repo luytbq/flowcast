@@ -1,0 +1,19 @@
+# input: xlsx-04-numeric-ids -> in.xlsx
+$ ["check", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Flow
+WARNING Flow!A3 [5]: ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi
+WARNING Flow!A5 [7]: ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi
+check: 0 lỗi, 2 cảnh báo
+[exit 0]
+$ ["build", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Flow
+WARNING Flow!A3 [5]: ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi
+WARNING Flow!A5 [7]: ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi
+check: 0 lỗi, 2 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 2 phần tử, 1 cạnh, 128x244px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+47cb84cbde3bf41b  in.drawio
+4aafb15e27eabc0c  in.xlsx

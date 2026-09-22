@@ -1,0 +1,9 @@
+# input: xlsx-91-invalid-not-zip -> in.xlsx
+$ ["check", "$T/in.xlsx"]
+ERROR   không đọc được $T/in.xlsx: File is not a zip file
+[exit 1]
+$ ["build", "$T/in.xlsx"]
+ERROR   không đọc được $T/in.xlsx: File is not a zip file
+[exit 1]
+--- files
+5166be99e698831a  in.xlsx

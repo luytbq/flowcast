@@ -1,0 +1,17 @@
+# input: xlsx-05-formulas -> in.xlsx
+$ ["check", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Flow
+WARNING Flow!D4: ô công thức chưa có giá trị lưu sẵn, đọc thành rỗng
+check: 0 lỗi, 1 cảnh báo
+[exit 0]
+$ ["build", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Flow
+WARNING Flow!D4: ô công thức chưa có giá trị lưu sẵn, đọc thành rỗng
+check: 0 lỗi, 1 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 2 phần tử, 1 cạnh, 139.03x244px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+4ef3ac1bdb0a3d75  in.drawio
+8161969cd2b0657a  in.xlsx

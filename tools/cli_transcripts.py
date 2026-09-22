@@ -10,8 +10,7 @@ gồm từng lệnh, những gì lệnh in ra, mã thoát, và cuối cùng là 
 thư mục kèm sha256 nội dung. Đường dẫn thư mục tạm được thay bằng $T.
 
 Không có ở đây, vì thuộc các bước sau của lộ trình port hoặc cố ý khác: merge,
---png, --verify, --font, csv và xlsx, và --layout-json, file mà CLI Go ghi số theo
-cách của Go.
+--png, --verify, --font, và --layout-json, file mà CLI Go ghi số theo cách của Go.
 """
 import hashlib
 import io
@@ -59,6 +58,8 @@ SPECIAL = [
     # Tên viết hoa đọc được mà không cảnh báo, vì bản tham chiếu so nguyên văn.
     ('csv-encoding-uppercase', 'csv-05-cp1252', 'in.csv', [['check', '$T/in.csv', '--encoding', 'CP1252']]),
     ('csv-encoding-unknown', 'csv-01-comma', 'in.csv', [['check', '$T/in.csv', '--encoding', 'klingon']]),
+    ('xlsx-sheet-explicit', 'xlsx-08-two-flows', 'in.xlsx', [['build', '$T/in.xlsx', '--sheet', 'Hai']]),
+    ('xlsx-sheet-missing', 'xlsx-08-two-flows', 'in.xlsx', [['check', '$T/in.xlsx', '--sheet', 'Không có']]),
 ]
 
 

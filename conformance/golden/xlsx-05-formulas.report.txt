@@ -1,0 +1,4 @@
+WARNING Flow!D4: ô công thức chưa có giá trị lưu sẵn, đọc thành rỗng
+check: 0 lỗi, 1 cảnh báo
+build: 1 lane, 2 phần tử, 1 cạnh, 139.03x244px
+layout: 0 lỗi, 0 cảnh báo

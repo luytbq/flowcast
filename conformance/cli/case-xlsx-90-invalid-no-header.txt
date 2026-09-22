@@ -1,0 +1,9 @@
+# input: xlsx-90-invalid-no-header -> in.xlsx
+$ ["check", "$T/in.xlsx"]
+ERROR   không tìm thấy sheet nào có hàng header: id | type | parent | content | metadata
+[exit 1]
+$ ["build", "$T/in.xlsx"]
+ERROR   không tìm thấy sheet nào có hàng header: id | type | parent | content | metadata
+[exit 1]
+--- files
+7c3701396eb7d6a2  in.xlsx

@@ -1,0 +1,15 @@
+# input: xlsx-07-second-sheet -> in.xlsx
+$ ["check", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Luồng
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Luồng
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 2 cạnh, 394.02x250px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+f58c899ec2fbf9e3  in.drawio
+1cf6242966da301c  in.xlsx

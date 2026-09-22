@@ -1,0 +1,15 @@
+# input: xlsx-08-two-flows -> in.xlsx
+$ ["check", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Một
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Một
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 2 phần tử, 1 cạnh, 396.02x170px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+62ff3b5710b48373  in.drawio
+315f31f00fae88bb  in.xlsx

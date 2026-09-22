@@ -1,0 +1,15 @@
+# input: xlsx-02-inline-strings -> in.xlsx
+$ ["check", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Flow
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.xlsx"]
+check: đọc bảng từ xlsx sheet Flow
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 2 cạnh, 394.02x250px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+f58c899ec2fbf9e3  in.drawio
+de5c4ea44cde75f6  in.xlsx
