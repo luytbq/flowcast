@@ -225,6 +225,24 @@ mutate "bỏ hộp header" layout/labels.go 'box{-1e6, -1e6, 1e6,' 'box{-1e6, -1
 mutate "bỏ đường phân cách lane" layout/labels.go 'for _, x := range l.LaneX[1:] {' 'for _, x := range l.LaneX[:0] {'
 mutate "chạm mép trên dưới của hộp cũng tính là cắt" layout/labels.go 'return x1 < bx[2] && x2 > bx[0] && y1 < bx[3] && y2 > bx[1]' 'return x1 < bx[2] && x2 > bx[0] && y1 <= bx[3] && y2 >= bx[1]'
 
+# layout/check
+mutate "không kiểm node chồng node" layout/check.go 'if area(boxes[a], boxes[b]) > 0 {' 'if false {'
+mutate "chỉ kiểm tràn lane ở mép trái" layout/check.go 'if it.X < lx || it.X+it.W > lx+lw {' 'if it.X < lx {'
+mutate "đoạn xiên chỉ cần lệch một trục" layout/check.go 'if math.Abs(a[0]-b[0]) > 0.01 && math.Abs(a[1]-b[1]) > 0.01 {' 'if math.Abs(a[0]-b[0]) > 0.01 || math.Abs(a[1]-b[1]) > 0.01 {'
+mutate "miễn mọi đoạn chạm node nguồn và đích" layout/check.go '(it.ID == e.Src || it.ID == e.Dst) && (k == 0 || k == len(pts)-2)' '(it.ID == e.Src || it.ID == e.Dst)'
+mutate "không thu hộp node trước khi kiểm cắt" layout/check.go 'segHits(a, b, shrink(boxes[it.ID], 1))' 'segHits(a, b, shrink(boxes[it.ID], 0))'
+mutate "dây cùng đích cũng bị tính chồng" layout/check.go 'if w1.edge == w2.edge || e1.Dst == e2.Dst || e1.Src == e2.Src {' 'if w1.edge == w2.edge || e1.Src == e2.Src {'
+mutate "dây cùng nguồn cũng bị tính chồng" layout/check.go 'if w1.edge == w2.edge || e1.Dst == e2.Dst || e1.Src == e2.Src {' 'if w1.edge == w2.edge || e1.Dst == e2.Dst {'
+mutate "chồng dây cần dài hơn 3 điểm ảnh" layout/check.go 'if collinearOverlap(w1.a, w1.b, w2.a, w2.b) > 1 {' 'if collinearOverlap(w1.a, w1.b, w2.a, w2.b) > 3 {'
+mutate "hai dây ngang cách dưới 0.1 mới coi là cùng đường" layout/check.go 'math.Abs(a1[1]-a2[1]) < 0.5' 'math.Abs(a1[1]-a2[1]) < 0.1'
+mutate "không kiểm dây dọc chồng nhau" layout/check.go 'if math.Abs(a1[0]-b1[0]) < 0.01 && math.Abs(a2[0]-b2[0]) < 0.01 && math.Abs(a1[0]-a2[0]) < 0.5 {' 'if false {'
+mutate "không kiểm nhãn đè node" layout/check.go 'if area(lb.b, boxes[it.ID]) > 0 {' 'if false {'
+mutate "không kiểm nhãn đè nhãn" layout/check.go 'if area(lb.b, lb2.b) > 0 {' 'if false {'
+mutate "nhãn đè dây của chính cạnh cũng báo" layout/check.go 'if w.edge != lb.edge && segHits(w.a, w.b, lb.b) {' 'if segHits(w.a, w.b, lb.b) {'
+mutate "không bỏ phát hiện trùng" layout/check.go 'if !seen[f] {' 'if true {'
+mutate "cặp node chồng không sắp theo id" layout/check.go 'sort.Strings(ids)' 'sort.Sort(sort.Reverse(sort.StringSlice(ids)))'
+mutate "số thứ tự đoạn xiên đếm từ 1" layout/check.go '"%s: đoạn %d không vuông góc", e.ID, k)' '"%s: đoạn %d không vuông góc", e.ID, k+1)'
+
 [ -n "$PREFLIGHT" ] && exit 0
 echo
 echo "bắt được $caught, bỏ lọt $missed"
