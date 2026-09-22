@@ -93,6 +93,9 @@ EOPY
 #   bề rộng dương bắt đầu từ 0, x - x luôn ra dương không, và số âm duy nhất là
 #   d = -1 nhân với một lượng dương khác không.
 #
+# - Dòng rỗng hoàn toàn trong readCSV không ra hàng rỗng. splitKeepEnds không
+#   bao giờ sinh dòng rỗng: mỗi dòng mang ít nhất ký tự xuống dòng của nó, nên
+#   máy trạng thái luôn thấy ký tự xuống dòng trước khi thấy hết dòng.
 # - Không thoát xuống dòng trong giá trị thuộc tính. Ký tự xuống dòng không lọt
 #   được vào thuộc tính: ô markdown nằm trên một dòng, nội dung chỉ tách tại thẻ
 #   br, còn id và tiêu đề cũng lấy từ một dòng. Tab thì lọt được, và có case.
@@ -306,7 +309,6 @@ mutate "chữ sau dấu nháy đóng không được nối vào ô" source/pycsv
 				return nil
 			}
 		case eatCRNL:'
-mutate "dòng trống không ra hàng rỗng" source/pycsv.go 'return nil // dòng trống: một hàng rỗng' 'state = startField'
 mutate "hết dữ liệu trong dấu nháy thì bỏ ô dở" source/pycsv.go 'if len(field) != 0 || state == inQuotedField {' 'if len(field) != 0 {'
 mutate "CR đơn không là ranh giới dòng khi đọc csv" source/pycsv.go 'i := strings.IndexAny(s, "\r\n")' 'i := strings.IndexAny(s, "\n")'
 mutate "utf-8-sig không bỏ BOM" source/encoding.go 'return strings.TrimPrefix(string(raw), "\ufeff"), true' 'return string(raw), true'

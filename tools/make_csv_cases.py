@@ -64,6 +64,10 @@ CASES = {
         ['E1', 'edge', '', '', 'from=A-1; to=A-2'],
         ['A-2', 'end', 'A', 'Xong', ''],
     ]).encode('utf-8'),
+    # Cả dấu phẩy lẫn dấu chấm phẩy đều tìm được một hàng header. Dấu phẩy được
+    # thử trước nên thắng, và bảng đọc theo dấu phẩy mới là bảng đúng.
+    'csv-10-delimiter-priority': ('id;type;parent;content;metadata\r\n' +
+                                  rows_to_csv([HEAD] + FLOW)).encode('utf-8'),
     # Không có hàng header với bất kỳ dấu phân cách nào.
     'csv-90-invalid-no-header': 'a,b,c\n1,2,3\n'.encode('utf-8'),
     # Không giải mã được theo bảng mã nào: 0x81 không có trong cp1252.
