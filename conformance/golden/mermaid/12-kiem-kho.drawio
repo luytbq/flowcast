@@ -1,0 +1,103 @@
+<mxfile host="flowtable2drawio">
+  <diagram id="flowtable" name="12-kiem-kho">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="368.26" pageHeight="934" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="s" value="Đầu ca" vertex="1" parent="1" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="112" y="70" width="84" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="scan" value="Quét mã từng kệ" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="86" y="144" width="136" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="more" value="Còn kệ?" vertex="1" parent="1" style="rhombus;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="104" y="224" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cmp" value="So với sổ sách" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="94" y="314" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="diff" value="Lệch?" vertex="1" parent="1" style="rhombus;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="104" y="394" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="recount" value="Đếm lại kệ lệch" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="91" y="484" width="126" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="still" value="Vẫn lệch?" vertex="1" parent="1" style="rhombus;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="100" y="564" width="108" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="report" value="Lập biên bản chênh lệch" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="64" y="654" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="adjust" value="Điều chỉnh tồn kho" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="81" y="734" width="146" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ok" value="Chốt kiểm kho" vertex="1" parent="1" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="73" y="814" width="162" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="s--&gt;scan" value="" edge="1" parent="1" source="s" target="scan" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="scan--&gt;more" value="" edge="1" parent="1" source="scan" target="more" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="more--&gt;scan" value="Còn" edge="1" parent="1" source="more" target="scan" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.9">
+            <Array as="points">
+              <mxPoint x="313.26" y="254" />
+              <mxPoint x="313.26" y="126" />
+              <mxPoint x="154" y="126" />
+            </Array>
+            <mxPoint x="0" y="-11.5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="more--&gt;cmp" value="Hết" edge="1" parent="1" source="more" target="cmp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.03">
+            <mxPoint x="19.45" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cmp--&gt;diff" value="" edge="1" parent="1" source="cmp" target="diff" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="diff--&gt;ok" value="Không" edge="1" parent="1" source="diff" target="ok" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.91">
+            <Array as="points">
+              <mxPoint x="313.26" y="424" />
+              <mxPoint x="313.26" y="796" />
+              <mxPoint x="154" y="796" />
+            </Array>
+            <mxPoint x="0" y="-11.5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="diff--&gt;recount" value="Có" edge="1" parent="1" source="diff" target="recount" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.03">
+            <mxPoint x="16.83" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="recount--&gt;still" value="" edge="1" parent="1" source="recount" target="still" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="still--&gt;ok" value="Không" edge="1" parent="1" source="still" target="ok" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.88">
+            <Array as="points">
+              <mxPoint x="313.26" y="594" />
+              <mxPoint x="313.26" y="796" />
+              <mxPoint x="154" y="796" />
+            </Array>
+            <mxPoint x="0" y="-11.5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="still--&gt;report" value="Có" edge="1" parent="1" source="still" target="report" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.03">
+            <mxPoint x="16.83" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="report--&gt;adjust" value="" edge="1" parent="1" source="report" target="adjust" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="adjust--&gt;ok" value="" edge="1" parent="1" source="adjust" target="ok" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

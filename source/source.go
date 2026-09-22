@@ -40,6 +40,11 @@ func Parse(s Source) (model.Table, error) {
 	switch format {
 	case "markdown":
 		t, err = ParseMarkdown(s.Data)
+		if block, ok := mermaidBlock(s.Data); ok && isCode(err, "source.no_header") {
+			t, err = ParseMermaid(block, s.Name)
+		}
+	case "mermaid":
+		t, err = ParseMermaid(s.Data, s.Name)
 	case "csv":
 		t, err = ParseCSV(s.Data, s.Name, s.Options["delimiter"], s.Options["encoding"])
 	case "xlsx":
@@ -68,6 +73,8 @@ func guessFormat(name string) string {
 		return "csv"
 	case ".xlsx", ".xlsm":
 		return "xlsx"
+	case ".mmd", ".mermaid":
+		return "mermaid"
 	}
 	return ""
 }
@@ -87,4 +94,32 @@ func Ext(path string) string {
 func stem(name string) string {
 	base := filepath.Base(name)
 	return strings.TrimSuffix(base, filepath.Ext(base))
+}
+
+func isCode(err error, code string) bool {
+	e, ok := err.(*model.Error)
+	return ok && e.Code == code
+}
+
+// mermaidBlock lấy khối ```mermaid đầu tiên của một file markdown không có Flow
+// Table, như README nhúng sơ đồ. Các dòng ngoài khối được thay bằng dòng trống
+// để số dòng trong Issue vẫn là số dòng của file gốc.
+func mermaidBlock(data []byte) ([]byte, bool) {
+	lines := strings.Split(string(data), "\n")
+	start := -1
+	for i, ln := range lines {
+		t := strings.TrimSpace(ln)
+		if start < 0 {
+			if strings.HasPrefix(t, "```") && strings.TrimSpace(strings.TrimLeft(t, "`")) == "mermaid" {
+				start = i
+			}
+			continue
+		}
+		if strings.HasPrefix(t, "```") {
+			out := make([]string, len(lines))
+			copy(out[start+1:i], lines[start+1:i])
+			return []byte(strings.Join(out[:i], "\n")), true
+		}
+	}
+	return nil, false
 }

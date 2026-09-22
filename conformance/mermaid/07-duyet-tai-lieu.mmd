@@ -1,0 +1,13 @@
+flowchart TD
+    draft([Tác giả viết nháp]) --> review[Gửi người duyệt]
+    review --> decision{Kết quả duyệt}
+    decision -->|Cần sửa| edit[Tác giả sửa]
+    edit --> review
+    decision -->|Từ chối| archive[Lưu trữ]
+    archive --> stop([Dừng])
+    decision -->|Chấp nhận| legal{Cần pháp chế?}
+    legal -->|Có| legalReview[Pháp chế xem]
+    legalReview --> publish[Xuất bản]
+    legal -->|Không| publish
+    publish --> announce[Thông báo nội bộ]
+    announce --> finish([Hoàn tất])

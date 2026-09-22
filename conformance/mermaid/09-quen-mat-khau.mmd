@@ -1,0 +1,14 @@
+flowchart TD
+    a([Bấm quên mật khẩu]) --> b[Nhập email]
+    b --> c{Email tồn tại?}
+    c -->|Không| d[Hiện thông báo chung]
+    c -->|Có| e[Gửi link đặt lại]
+    e --> d
+    d --> f([Chờ email])
+    f -.-> g[Mở link]
+    g --> h{Link còn hạn?}
+    h -->|Hết hạn| b
+    h -->|Còn| i[Đặt mật khẩu mới]
+    i --> j{Đủ mạnh?}
+    j -->|Yếu| i
+    j -->|Đủ| k([Đăng nhập lại])

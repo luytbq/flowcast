@@ -1,0 +1,19 @@
+graph TD
+    push([Push lên nhánh]) --> lint[Chạy lint]
+    lint --> unit[Test đơn vị]
+    unit --> passed{Qua hết?}
+    passed -- Không --> notify[Báo lỗi cho tác giả]
+    notify --> fin([Dừng])
+    passed -- Có --> build[Build image]
+    build --> scan[Quét bảo mật]
+    scan --> vuln{Có lỗ hổng nghiêm trọng?}
+    vuln -- Có --> notify
+    vuln -- Không --> staging[Deploy staging]
+    staging --> e2e[Test đầu cuối]
+    e2e --> e2eok{Ổn?}
+    e2eok -- Không --> rollback[Rollback staging]
+    rollback --> notify
+    e2eok -- Có --> approve{Duyệt lên production?}
+    approve -- Chưa --> wait[Chờ duyệt]
+    wait --> approve
+    approve -- Duyệt --> prod([Deploy production])

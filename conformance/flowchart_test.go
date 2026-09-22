@@ -14,16 +14,27 @@ import (
 
 var update = flag.Bool("update", false, "ghi lại golden của flowchart từ bản Go")
 
-// Flowchart là hành vi bản tham chiếu không có, nên golden của nó do bản Go
+// Flowchart và mermaid là hành vi bản tham chiếu không có, nên golden của chúng do bản Go
 // sinh và là bộ chống hồi quy chứ không phải đáp án: đổi golden thì phải xem ảnh
 // và đọc diff.
 func flowcharts(t *testing.T) []string {
 	t.Helper()
-	paths, err := filepath.Glob(filepath.Join(Dir(), "flowchart", "*.md"))
-	if err != nil || len(paths) == 0 {
-		t.Fatalf("không có case flowchart: %v", err)
+	var paths []string
+	for _, pat := range []string{"flowchart/*.md", "mermaid/*.mmd"} {
+		ps, err := filepath.Glob(filepath.Join(Dir(), pat))
+		if err != nil || len(ps) == 0 {
+			t.Fatalf("không có case %s: %v", pat, err)
+		}
+		paths = append(paths, ps...)
 	}
 	return paths
+}
+
+// goldenPath đặt golden của mỗi bộ vào thư mục con cùng tên với bộ đó.
+func goldenPath(p string) string {
+	set := filepath.Base(filepath.Dir(p))
+	name := strings.TrimSuffix(filepath.Base(p), filepath.Ext(p))
+	return filepath.Join(Dir(), "golden", set, name+".drawio")
 }
 
 func buildFile(t *testing.T, p string, opt flowcast.Options) flowcast.Result {
@@ -44,17 +55,17 @@ func buildFile(t *testing.T, p string, opt flowcast.Options) flowcast.Result {
 
 func TestFlowchartKhopGolden(t *testing.T) {
 	for _, p := range flowcharts(t) {
-		name := strings.TrimSuffix(filepath.Base(p), ".md")
+		name := filepath.Base(p)
 		r := buildFile(t, p, flowcast.Options{})
 		for _, f := range r.Findings {
 			if f.Level == "error" {
 				t.Errorf("%s: tự kiểm báo lỗi: %s", name, f.Msg)
 			}
 		}
-		if strings.Contains(r.Text, `id="pool"`) {
+		if r.Layout.NoLanes && strings.Contains(r.Text, `id="pool"`) {
 			t.Errorf("%s: sơ đồ không có lane mà vẫn vẽ pool", name)
 		}
-		golden := filepath.Join(Dir(), "golden", "flowchart", name+".drawio")
+		golden := goldenPath(p)
 		if *update {
 			if err := os.MkdirAll(filepath.Dir(golden), 0o755); err != nil {
 				t.Fatal(err)

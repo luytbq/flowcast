@@ -1,0 +1,18 @@
+---
+title: Tiếp nhận nhân viên mới
+---
+flowchart TD
+    subgraph HR [Nhân sự]
+        o([Nhận quyết định tuyển]) --> p[Chuẩn bị hợp đồng]
+        p --> q[Ký hợp đồng]
+    end
+    subgraph IT [Hạ tầng]
+        r[Cấp tài khoản] --> s[Cấp máy tính]
+    end
+    subgraph Team [Nhóm]
+        t[Giao người kèm] --> u[Kế hoạch 30 ngày]
+        u --> v([Bắt đầu làm việc])
+    end
+    q --> r
+    q --> t
+    s --> v

@@ -10,10 +10,10 @@
 <body>
 <main>
   <h1>flowcast</h1>
-  <p class="lead">Tải lên bảng luồng dạng markdown, csv hoặc xlsx, nhận về file draw.io có bố cục tất định.</p>
+  <p class="lead">Tải lên bảng luồng dạng markdown, csv, xlsx, hoặc flowchart mermaid, nhận về file draw.io có bố cục tất định.</p>
   <form id="form">
     <label class="drop" id="drop">
-      <input type="file" name="file" id="file" accept=".md,.markdown,.txt,.csv,.xlsx" required>
+      <input type="file" name="file" id="file" accept=".md,.markdown,.txt,.csv,.xlsx,.mmd,.mermaid" required>
       <span id="drop-text">Chọn hoặc kéo thả file vào đây</span>
     </label>
     <label>Tiêu đề <input type="text" name="title" placeholder="lấy từ file nếu để trống"></label>
@@ -33,7 +33,7 @@
     <a id="download" class="button" hidden>Tải lại file</a>
     <ul id="issues"></ul>
   </section>
-  <p class="foot">Định dạng bảng: năm cột id, type, parent, content, metadata. File không được lưu lại trên máy chủ.</p>
+  <p class="foot">Định dạng bảng: năm cột id, type, parent, content, metadata. Mermaid: file .mmd, hoặc khối ```mermaid trong file .md. File không được lưu lại trên máy chủ.</p>
 </main>
 </body>
 </html>

@@ -1,0 +1,18 @@
+flowchart TD
+    A([Lập lệnh chuyển]) --> B[Kiểm tra số dư]
+    B --> C{Đủ tiền?}
+    C -->|Không| X([Từ chối])
+    C -->|Có| D{Số tiền trên 500 triệu?}
+    D -->|Có| E[Gửi cấp trên duyệt]
+    E --> F{Được duyệt?}
+    F -->|Không| X
+    F -->|Có| G[Xác thực OTP]
+    D -->|Không| G
+    G --> H{OTP đúng?}
+    H -->|Sai| I[Nhập lại OTP]
+    I --> H
+    H -->|Đúng| J[Ghi sổ giao dịch]
+    J --> K[(Sổ cái)]
+    J --> L([Thành công])
+    classDef ok fill:#dae8fc,stroke:#6c8ebf
+    class L ok

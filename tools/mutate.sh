@@ -142,7 +142,7 @@ mutate "đảo thứ tự kiểm from và to" schema/schema.go '{Key: "from", Re
 			{Key: "to", Required: true, Note: edgeNote},' '{Key: "to", Required: true, Note: edgeNote},
 			{Key: "from", Required: true, Note: edgeNote},'
 mutate "attach của text thành bắt buộc" schema/schema.go '{Key: "attach", Note: attachNote, SameLane: true}' '{Key: "attach", Required: true, Note: attachNote, SameLane: true}'
-mutate "edge không nhận style dashed" schema/schema.go 'StyleValues: []string{"highlight", "dashed"}' 'StyleValues: []string{"highlight"}'
+mutate "edge không nhận style dashed" schema/schema.go 'StyleValues: []string{"highlight", "dashed", "bold", "noarrow"}' 'StyleValues: []string{"highlight", "bold", "noarrow"}'
 mutate "id trùng thì dòng sau đè dòng trước" validate/validate.go 'if j, dup := v.byID[r.ID]; dup {' 'if j, dup := v.byID[r.ID]; false {'
 mutate "dòng đánh dấu phần còn lại cũng cần parent" validate/validate.go 'case !isMarker(r):' 'case true:'
 mutate "styleList không bỏ giá trị trùng" validate/validate.go 'if !dup {' 'if true {'
@@ -602,6 +602,35 @@ mutate "flowchart không cộng gốc vào điểm gấp" writer/drawio/write.go
 mutate "merge flowchart so parent với lane ẩn" merge/merge.go '	if m.r.NoLanes {
 		return "1"
 	}' ''
+
+# source/mermaid
+mutate "mermaid không nhận hình start/end" source/mermaid.go '	{"([", "])", "stadium"},' ''
+mutate "mermaid đọc (( thành (" source/mermaid.go '	{"((", "))", "circle"},' ''
+mutate "mermaid bỏ nét đứt" source/mermaid.go '		lk.edge.dashed = true' '		_ = lk'
+mutate "mermaid bỏ nét đậm" source/mermaid.go "		lk.edge.bold = ch == '='" '		_ = ch'
+mutate "mermaid mũi tên mở vẫn có đầu" source/mermaid.go '		lk.edge.noarrow = true' '		_ = lk'
+mutate "mermaid bỏ nhãn |...|" source/mermaid.go '	lk.edge.text = strings.TrimSpace(c.rest()[1 : end+1])' '	_ = end'
+mutate "mermaid không nhận nhãn giữa mũi tên" source/mermaid.go '		if n >= 3 || h != "" {' '		if true {'
+mutate "mermaid id không nhận gạch giữa" source/mermaid.go "		if r == '-' && c.i > start && c.i+1 < len(c.s) {" '		if false {'
+mutate "mermaid không đọc &" source/mermaid.go "		if c.i < len(c.s) && c.s[c.i] == '&' {" '		if false {'
+mutate "mermaid không đánh back" source/mermaid.go '			if pos[e.to] <= pos[e.from] {' '			if false {'
+mutate "mermaid hợp nhánh không chờ nguồn" source/mermaid.go '			if !back[e] && e.from != id && !written[e.from] {' '			if false {'
+mutate "mermaid db không đứng cạnh node" source/mermaid.go '		attach[n.id] = peer' '		_ = peer'
+mutate "mermaid condition một nhánh vẫn là condition" source/mermaid.go '		if types[id] == "condition" && len(outs[id]) < 2 {' '		if false {'
+mutate "mermaid node ngoài subgraph không có lane" source/mermaid.go '		out[id] = loose' '		_ = id'
+mutate "mermaid subgraph lồng thành lane riêng" source/mermaid.go '	if len(m.stack) > 0 {
+		m.warn(ln, "mermaid.nested_subgraph",' '	if false {
+		m.warn(ln, "mermaid.nested_subgraph",'
+mutate "mermaid không đổi id dành riêng" source/mermaid.go '		if id == "0" || id == "1" || id == "pool" {' '		if false {'
+mutate "mermaid cạnh trùng không có hậu tố" source/mermaid.go '		if seen[base] > 1 {' '		if false {'
+mutate "mermaid không giải mã #quot;" source/mermaid.go '				if v, ok := entities[code]; ok {' '				if v, ok := entities[""]; ok {'
+mutate "mermaid không tách dòng br" source/mermaid.go '	parts := splitBR(text)' '	parts := []string{text}'
+mutate "mermaid bỏ màu nhấn" source/mermaid.go '	if props["fill"] == highlightFill {' '	if false {'
+mutate "mermaid không đọc tiêu đề" source/mermaid.go '			m.title = normalize(unquote(strings.TrimSpace(v)))' '			_ = v'
+mutate "mermaid không đọc khối trong markdown" source/source.go '		if block, ok := mermaidBlock(s.Data); ok && isCode(err, "source.no_header") {' '		if block, ok := mermaidBlock(s.Data); false && ok {'
+mutate "mermaid cảnh báo không theo số dòng" source/mermaid.go '	sort.SliceStable(m.issues, func(i, j int) bool { return m.issues[i].Loc.Line < m.issues[j].Loc.Line })' ''
+mutate "cạnh không nhận nét đậm" layout/model.go '			Bold: hasStyle(r, "bold"), NoArrow: hasStyle(r, "noarrow"),' '			NoArrow: hasStyle(r, "noarrow"),'
+mutate "nét đậm viết trước màu nhấn" writer/drawio/write.go '			style += "strokeWidth=3;"' '			style += ""'
 
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang

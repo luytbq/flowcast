@@ -1,0 +1,15 @@
+flowchart TD
+    alert([Cảnh báo giám sát]) --> ack[Trực ca xác nhận]
+    ack --> sev{Mức độ?}
+    sev -->|Thấp| ticket[Tạo ticket thường]
+    ticket --> close([Đóng])
+    sev -->|Cao| war[Mở phòng xử lý sự cố]
+    war --> diag[Chẩn đoán]
+    diag --> known{Lỗi đã biết?}
+    known -->|Có| runbook[Chạy runbook]
+    known -->|Không| mitigate[Giảm thiểu tạm thời]
+    runbook --> fixed{Hết lỗi?}
+    mitigate --> fixed
+    fixed -->|Chưa| diag
+    fixed -->|Rồi| postmortem[Viết postmortem]
+    postmortem --> close

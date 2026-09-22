@@ -34,6 +34,8 @@ type Edge struct {
 	Order     int
 	Dashed    bool
 	Highlight bool
+	Bold      bool // nét đậm
+	NoArrow   bool // không có đầu mũi tên
 	// Back đánh dấu cạnh tạo vòng lặp. Nó không tham gia xếp hàng.
 	Back bool
 
@@ -154,6 +156,7 @@ func New(rows []model.Row, cfg Config, tm *text.Measure) *Layout {
 		e := &Edge{
 			ID: r.ID, Src: r.Meta["from"], Dst: r.Meta["to"], Lines: lines, LW: lw, LH: lh,
 			Order: r.Idx, Dashed: hasStyle(r, "dashed"), Highlight: hasStyle(r, "highlight"),
+			Bold: hasStyle(r, "bold"), NoArrow: hasStyle(r, "noarrow"),
 			Back:      r.Meta["back"] == "true",
 			EntrySide: 'T',
 			ExitFrac:  [2]float64{0.5, 1.0},

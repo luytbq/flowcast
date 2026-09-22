@@ -52,6 +52,7 @@ type PlacedEdge struct {
 	Order               int
 	Lines               []string
 	Dashed, Highlight   bool
+	Bold, NoArrow       bool
 	Back                bool
 	ExitFrac, EntryFrac [2]float64
 	Pts                 [][2]float64
@@ -91,7 +92,7 @@ func (l *Layout) Result() Result {
 	for _, e := range l.Edges {
 		r.Edges = append(r.Edges, PlacedEdge{
 			ID: e.ID, Src: e.Src, Dst: e.Dst, Case: e.Case, ExitSide: e.ExitSide, Order: e.Order, Back: e.Back,
-			Lines: e.Lines, Dashed: e.Dashed, Highlight: e.Highlight,
+			Lines: e.Lines, Dashed: e.Dashed, Highlight: e.Highlight, Bold: e.Bold, NoArrow: e.NoArrow,
 			ExitFrac: e.ExitFrac, EntryFrac: e.EntryFrac, Pts: e.Pts,
 			Label: e.Label, LabelT: e.LabelT, LabelOff: e.LabelOff,
 		})

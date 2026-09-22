@@ -65,13 +65,13 @@ func (c *cli) println(s ...any) { fmt.Fprintln(c.out, s...) }
 // supported là các đuôi file đọc được, xét trước khi mở file, đúng như bản
 // tham chiếu: đuôi lạ bị từ chối kể cả khi file không tồn tại.
 var supported = map[string]bool{".md": true, ".markdown": true, ".txt": true,
-	".csv": true, ".tsv": true, ".xlsx": true, ".xlsm": true}
+	".csv": true, ".tsv": true, ".xlsx": true, ".xlsm": true, ".mmd": true, ".mermaid": true}
 
 // read đọc file đầu vào thành Source. Lỗi trả về đã ở dạng thông điệp in ra.
 func (c *cli) read() (flowcast.Source, error) {
 	ext := pystr.Lower(source.Ext(c.a.file))
 	if !supported[ext] {
-		return flowcast.Source{}, fmt.Errorf("đuôi file \"%s\" không hỗ trợ; dùng .md, .csv hoặc .xlsx", ext)
+		return flowcast.Source{}, fmt.Errorf("đuôi file \"%s\" không hỗ trợ; dùng .md, .csv, .xlsx hoặc .mmd", ext)
 	}
 	data, err := os.ReadFile(c.a.file)
 	if err != nil {

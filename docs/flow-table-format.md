@@ -34,7 +34,7 @@ Loại phần tử quyết định luôn hình vẽ, nên không có metadata ri
 
 - **from, to:** id phần tử ở đầu và cuối mũi tên. Một cạnh nối được hai lane khác nhau, nên edge không thuộc lane nào.
 - **attach:** id của node mà bảng dữ liệu hoặc ghi chú đứng cạnh.
-- **style:** highlight nếu phần tử được tô màu nhấn trong sơ đồ. Riêng edge còn nhận thêm dashed, nghĩa là nét đứt.
+- **style:** highlight nếu phần tử được tô màu nhấn trong sơ đồ. Riêng edge còn nhận thêm dashed là nét đứt, bold là nét đậm, và noarrow là không có đầu mũi tên. Nhiều giá trị cách nhau bằng dấu phẩy, ví dụ style=dashed,noarrow.
 - **back:** ghi back=true cho cạnh quay ngược về một phần tử đã đi qua, tức cạnh tạo vòng lặp.
 
 ## Đặt id thế nào?

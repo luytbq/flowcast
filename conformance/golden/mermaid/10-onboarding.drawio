@@ -1,0 +1,81 @@
+<mxfile host="flowtable2drawio">
+  <diagram id="flowtable" name="Tiếp nhận nhân viên mới">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="752" pageHeight="644" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pool" value="Tiếp nhận nhân viên mới" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="40" y="40" width="672" height="564" as="geometry" />
+        </mxCell>
+        <mxCell id="HR" value="Nhân sự" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="0" y="30" width="270" height="534" as="geometry" />
+        </mxCell>
+        <mxCell id="IT" value="Hạ tầng" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="270" y="30" width="174" height="534" as="geometry" />
+        </mxCell>
+        <mxCell id="Team" value="Nhóm" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="444" y="30" width="228" height="534" as="geometry" />
+        </mxCell>
+        <mxCell id="o" value="Nhận quyết định tuyển" vertex="1" parent="HR" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="24" y="60" width="222" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="p" value="Chuẩn bị hợp đồng" vertex="1" parent="HR" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="62" y="134" width="146" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="q" value="Ký hợp đồng" vertex="1" parent="HR" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="75" y="214" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="r" value="Cấp tài khoản" vertex="1" parent="IT" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="24" y="214" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="s" value="Cấp máy tính" vertex="1" parent="IT" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="24" y="294" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="t" value="Giao người kèm" vertex="1" parent="Team" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="50" y="294" width="128" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="u" value="Kế hoạch 30 ngày" vertex="1" parent="Team" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="43" y="374" width="142" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v" value="Bắt đầu làm việc" vertex="1" parent="Team" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="24" y="454" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="o--&gt;p" value="" edge="1" parent="pool" source="o" target="p" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p--&gt;q" value="" edge="1" parent="pool" source="p" target="q" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q--&gt;r" value="" edge="1" parent="pool" source="q" target="r" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="q--&gt;t" value="" edge="1" parent="pool" source="q" target="t" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="135" y="306" />
+              <mxPoint x="558" y="306" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r--&gt;s" value="" edge="1" parent="pool" source="r" target="s" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s--&gt;v" value="" edge="1" parent="pool" source="s" target="v" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="429" y="349" />
+              <mxPoint x="429" y="466" />
+              <mxPoint x="558" y="466" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t--&gt;u" value="" edge="1" parent="pool" source="t" target="u" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u--&gt;v" value="" edge="1" parent="pool" source="u" target="v" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

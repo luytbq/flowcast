@@ -1,0 +1,14 @@
+flowchart TD
+    A([Yêu cầu hoàn tiền]) --> B{Trong 7 ngày?}
+    B -- Quá hạn --> C[Từ chối kèm lý do]
+    C --> Z([Đóng yêu cầu])
+    B -- Trong hạn --> D{Hàng đã mở?}
+    D -- Đã mở --> E[Kiểm tra tình trạng]
+    E --> F{Còn bán được?}
+    F -- Không --> G[Hoàn 50%]
+    F -- Được --> H[Hoàn 100%]
+    D -- Chưa mở --> H
+    G --> I[Chuyển khoản]
+    H --> I
+    I --> J[Gửi biên nhận]
+    J --> Z

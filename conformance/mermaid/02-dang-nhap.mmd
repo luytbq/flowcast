@@ -1,0 +1,17 @@
+flowchart TD
+    start([Mở ứng dụng]) --> token{Có token?}
+    token -->|Có| verify[Xác thực token]
+    token -->|Không| login[Màn hình đăng nhập]
+    verify --> valid{Token còn hạn?}
+    valid -->|Có| home([Trang chủ])
+    valid -->|Không| refresh[Làm mới token]
+    refresh --> ok{Làm mới được?}
+    ok -->|Có| home
+    ok -->|Không| login
+    login --> submit[Gửi tài khoản]
+    submit --> check{Đúng mật khẩu?}
+    check -->|Sai| count[Tăng số lần sai]
+    count --> locked{Quá 5 lần?}
+    locked -->|Có| lock([Khóa tài khoản])
+    locked -->|Chưa| login
+    check -->|Đúng| home

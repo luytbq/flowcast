@@ -1,0 +1,13 @@
+flowchart TD
+    A([Khách mở giỏ hàng]) --> B[Kiểm tra tồn kho]
+    B --> C{Còn hàng?}
+    C -->|Không| D[Báo hết hàng]
+    D --> Z([Kết thúc])
+    C -->|Có| E[Tính phí vận chuyển]
+    E --> F[Chọn phương thức thanh toán]
+    F --> G{Thanh toán thành công?}
+    G -->|Không| H[Hiện lỗi thanh toán]
+    H --> F
+    G -->|Có| I[Tạo đơn hàng]
+    I --> J[Gửi email xác nhận]
+    J --> K([Hoàn tất])

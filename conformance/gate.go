@@ -177,7 +177,7 @@ func Diverged(dir string) (map[string]string, error) {
 		if ln = strings.TrimSpace(ln); ln == "" || strings.HasPrefix(ln, "#") {
 			continue
 		}
-		name, why, ok := strings.Cut(ln, ":")
+		name, why, ok := strings.Cut(ln, ": ")
 		if !ok {
 			return nil, fmt.Errorf("diverge.txt: dòng %q thiếu lý do", ln)
 		}

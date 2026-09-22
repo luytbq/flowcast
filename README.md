@@ -39,6 +39,7 @@ do nằm trong `docs/adr/`; đừng mở lại chúng mà chưa đọc.
 ```
 go build -o flowcast ./cmd/flowcast
 ./flowcast check bang.md
+./flowcast build so-do.mmd                   # flowchart mermaid, hoặc khối ```mermaid trong file .md
 ./flowcast build bang.md [-o ra.drawio] [--title "..."] [--mode merge|force] [--task-max-w 280 ...]
 ```
 
@@ -63,6 +64,10 @@ Những chỗ khác có chủ đích:
 - `--encoding` nhận utf-8, utf-8-sig, cp1252 và latin-1 cùng các tên gọi khác của
   chúng. Python nhận hàng trăm bảng mã; tên lạ được xử lý như Python xử lý một
   tên nó không biết.
+- Đọc được flowchart mermaid, thứ bản Python không có: subgraph thành lane,
+  hình node thành type, nét đứt, nét đậm và không mũi tên thành style. Những gì
+  không có chỗ chứa được báo bằng cảnh báo mã mermaid.*, kèm số dòng. Hướng
+  khác TD tạm vẽ từ trên xuống.
 - Bảng không có dòng lane nào được dựng thành flowchart: mọi phần tử nằm chung
   một vùng, không vẽ pool hay lane, và phần tử để trống parent. Bản Python báo
   lỗi "bảng không có lane nào". Case lệch có chủ đích được liệt kê trong

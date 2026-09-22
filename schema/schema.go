@@ -50,7 +50,7 @@ var swimlane = map[string]TypeSpec{
 	"lane": {Keys: nil, StyleValues: []string{"highlight"}},
 	"edge": {
 		Keys:        []string{"from", "to", "style", "back"},
-		StyleValues: []string{"highlight", "dashed"},
+		StyleValues: []string{"highlight", "dashed", "bold", "noarrow"},
 		Refs: []Ref{
 			{Key: "from", Required: true, Note: edgeNote},
 			{Key: "to", Required: true, Note: edgeNote},

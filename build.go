@@ -144,6 +144,10 @@ func Build(src Source, opt Options) (Result, error) {
 	} else {
 		r.Text = drawio.Write(res, r.Title)
 	}
-	r.Stats = Stats{len(res.Lanes), len(res.Items), len(res.Edges), res.PoolW, res.PoolH}
+	lanes := len(res.Lanes)
+	if res.NoLanes {
+		lanes = 0
+	}
+	r.Stats = Stats{lanes, len(res.Items), len(res.Edges), res.PoolW, res.PoolH}
 	return r, nil
 }

@@ -41,6 +41,9 @@ func TestCLIKhopBanThamChieu(t *testing.T) {
 		if _, ok := skip[input]; ok {
 			continue
 		}
+		if _, ok := skip["cli:"+strings.TrimSuffix(filepath.Base(p), ".txt")]; ok {
+			continue
+		}
 		t.Run(strings.TrimSuffix(filepath.Base(p), ".txt"), func(t *testing.T) {
 			got := replay(t, string(want))
 			if got != string(want) {

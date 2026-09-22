@@ -1,0 +1,13 @@
+flowchart TD
+    s([Đầu ca]) --> scan[Quét mã từng kệ]
+    scan --> more{Còn kệ?}
+    more -->|Còn| scan
+    more -->|Hết| cmp[So với sổ sách]
+    cmp --> diff{Lệch?}
+    diff -->|Không| ok([Chốt kiểm kho])
+    diff -->|Có| recount[Đếm lại kệ lệch]
+    recount --> still{Vẫn lệch?}
+    still -->|Không| ok
+    still -->|Có| report[Lập biên bản chênh lệch]
+    report --> adjust[Điều chỉnh tồn kho]
+    adjust --> ok

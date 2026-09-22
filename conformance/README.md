@@ -27,6 +27,7 @@ merge-vectors.json  vector cho float(), b64decode và unquote kiểu Python
 verify-vectors.json SVG thật do drawio xuất, cho kiểm render
 drawio-fakes/       drawio CLI giả cho bản ghi có --png và --verify
 flowchart/          bảng không có lane; golden của chúng nằm ở golden/flowchart
+mermaid/            flowchart mermaid kiểu thực tế, golden ở golden/mermaid; cũng là bộ đo cho heuristic nhánh chính
 diverge.txt         case mà bản Go cố ý khác bản tham chiếu, kèm lý do
 ```
 

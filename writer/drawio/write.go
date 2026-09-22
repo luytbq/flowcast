@@ -118,8 +118,16 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 		if e.Dashed {
 			style += "dashed=1;"
 		}
+		if e.NoArrow {
+			style += "endArrow=none;"
+		}
 		if e.Highlight {
 			style += highlightEdge
+		}
+		// Sau highlight: draw.io lấy giá trị viết sau cùng, và nét đậm phải đậm
+		// hơn nét tô nhấn.
+		if e.Bold {
+			style += "strokeWidth=3;"
 		}
 		c := root.Add("mxCell", "id", e.ID, "value", htmlLines(e.Lines), "edge", "1", "parent", edgeParent,
 			"source", e.Src, "target", e.Dst, "style", style+font+mark)

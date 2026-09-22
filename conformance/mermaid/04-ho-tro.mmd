@@ -1,0 +1,23 @@
+flowchart TD
+    subgraph KH [Khách hàng]
+        a([Gửi yêu cầu hỗ trợ])
+        r([Nhận phản hồi])
+    end
+    subgraph L1 [Hỗ trợ cấp 1]
+        b[Phân loại yêu cầu]
+        c{Giải quyết được ngay?}
+        d[Trả lời khách]
+    end
+    subgraph L2 [Kỹ sư cấp 2]
+        e[Điều tra sâu]
+        f{Là lỗi sản phẩm?}
+        g[Tạo ticket lỗi]
+        h[Hướng dẫn cấu hình]
+    end
+    a --> b --> c
+    c -->|Được| d
+    c -->|Không| e
+    e --> f
+    f -->|Có| g --> d
+    f -->|Không| h --> d
+    d --> r

@@ -1,0 +1,13 @@
+flowchart TD
+    cron([Lịch chạy 2 giờ sáng]) --> extract[Rút dữ liệu nguồn]
+    extract --> src[(CSDL bán hàng)]
+    extract --> clean[Làm sạch dữ liệu]
+    clean --> dup{Có bản ghi trùng?}
+    dup -->|Có| dedup[Loại trùng]
+    dedup --> transform[Biến đổi theo lược đồ kho]
+    dup -->|Không| transform
+    transform --> load[Nạp vào kho]
+    load --> dwh[(Kho dữ liệu)]
+    load --> report[Cập nhật báo cáo]
+    report --> done([Xong])
+    clean -.-> log[Ghi log bất thường]
