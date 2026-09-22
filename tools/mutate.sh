@@ -173,6 +173,42 @@ mutate "hai đoạn chạm đầu không tính là chồng" layout/tracks.go 're
 mutate "track mới luôn chèn cuối" layout/tracks.go 'chosen = max(lo, min(hi, len(tracks)))' 'chosen = len(tracks)'
 mutate "orderOK bỏ qua ràng buộc chiều xuôi" layout/tracks.go 'if mustPrecede(s, t) && !(ti < tj) {' 'if false {'
 
+# layout/geometry
+mutate "chừa ít chỗ cho nhãn của cạnh ra đáy" layout/geometry.go 'e.LH+8)' 'e.LH+4)'
+mutate "không chừa chỗ cho nhãn của cạnh D" layout/geometry.go "case e.Case == 'D' || (crosses && spans != nil):" 'case (crosses && spans != nil):'
+mutate "thiếu hụt nhãn tính với lề 8 thay vì 16" layout/geometry.go 'e.LW + 16 - spans[e.ID]' 'e.LW + 8 - spans[e.ID]'
+mutate "chỗ chừa nhãn luôn vào nửa trái máng" layout/geometry.go "key := gzKey{u.Lane, l.gutter(u.Lane, u.Col, e.ExitSide), 'r'}" "key := gzKey{u.Lane, l.gutter(u.Lane, u.Col, e.ExitSide), 'l'}"
+mutate "bám sát cả db cách hai cột" layout/geometry.go 'abs(a.Col-u.Col) == 1' 'abs(a.Col-u.Col) <= 2'
+mutate "bám sát cả mặt đang có dây" layout/geometry.go 'if len(near) != 1 || l.sideUsed(u, side) {' 'if len(near) != 1 {'
+mutate "db bám sát vẫn chiếm bề rộng cột" layout/geometry.go 'if _, hugged := g.hugs[it.ID]; !hugged {' 'if true {'
+mutate "lề header lane 20 thay vì 30" layout/geometry.go '"\n"))) + 30' '"\n"))) + 20'
+mutate "tên lane nối bằng khoảng trắng thay vì xuống dòng" layout/geometry.go 'strings.Join(lrow.Lines, "\n")' 'strings.Join(lrow.Lines, " ")'
+mutate "phần bù bề rộng lane dồn hết vào máng đầu" layout/geometry.go 'widths[0] += need / 2' 'widths[0] += need'
+mutate "máng tính thừa một track" layout/geometry.go 'inner = float64(2*cfg.GutterMargin + (n-1)*cfg.TrackGap)' 'inner = float64(2*cfg.GutterMargin + n*cfg.TrackGap)'
+mutate "kênh không có chiều cao tối thiểu" layout/geometry.go 'h := pyMax(float64(cfg.MinChannel), lzC[k]+inner)' 'h := lzC[k] + inner'
+mutate "db bám bên phải không cách node" layout/geometry.go 'a.X = h.u.X + h.u.W + float64(cfg.AttachGap)' 'a.X = h.u.X + h.u.W'
+mutate "trackY bỏ chỗ chừa nhãn" layout/geometry.go 'return g.chanY[s.Res.A] + g.lzC[s.Res.A] +' 'return g.chanY[s.Res.A] +'
+mutate "tâm cột khác lấy mép trái" layout/geometry.go 'return c[0] + c[1]/2' 'return c[0]'
+mutate "không bỏ điểm thẳng hàng" layout/geometry.go 'if vertical || horizontal {' 'if false {'
+mutate "không bỏ điểm trùng" layout/geometry.go 'if math.Abs(p[0]-last[0]) < 0.01 && math.Abs(p[1]-last[1]) < 0.01 {' 'if false {'
+mutate "làm tròn điểm gấp tới một chữ số" layout/geometry.go 'num.Round(out[i][0], 2)' 'num.Round(out[i][0], 1)'
+mutate "bỏ lượt hình học thứ hai" layout/labels.go 'lzG, lzC = l.labelReservations(l.horizontalSpans())' 'lzG, lzC = l.labelReservations(nil)'
+
+# layout/labels
+mutate "chi phí chồng node nhẹ hơn" layout/labels.go 'cost += float64(area(c.b, nb.b) * 4)' 'cost += float64(area(c.b, nb.b) * 2)'
+mutate "không tránh nhãn đã đặt" layout/labels.go 'cost += float64(area(c.b, pb) * 4)' 'cost += 0'
+mutate "tính cả dây của chính cạnh" layout/labels.go 'if w.id != e.ID && segHits(w.a, w.b, c.b) {' 'if segHits(w.a, w.b, c.b) {'
+mutate "không dừng ở ứng viên chi phí không" layout/labels.go 'if cost == 0 {' 'if false {'
+mutate "hòa chi phí thì chọn ứng viên sau" layout/labels.go 'if best == nil || cost < bestCost {' 'if best == nil || cost <= bestCost {'
+mutate "đoạn ngắn hơn 20 không đặt nhãn" layout/labels.go 'if L >= 12 {' 'if L >= 20 {'
+mutate "nhãn ngang cách đầu đoạn 4 thay vì 6" layout/labels.go 'a[0] + float64(d*(6+w/2))' 'a[0] + float64(d*(4+w/2))'
+mutate "nhãn dọc thử bên trái trước" layout/labels.go '[]float64{a[0] + 5 + w/2, a[0] - 5 - w/2}' '[]float64{a[0] - 5 - w/2, a[0] + 5 + w/2}'
+mutate "label_t làm tròn hai chữ số" layout/labels.go 'num.Round(float64(2*best.dist)/total-1, 4)' 'num.Round(float64(2*best.dist)/total-1, 2)'
+mutate "bỏ hộp header" layout/labels.go 'box{-1e6, -1e6, 1e6,' 'box{-1e6, -1e6, -1e6,'
+mutate "bỏ đường phân cách lane" layout/labels.go 'for _, x := range l.LaneX[1:] {' 'for _, x := range l.LaneX[:0] {'
+mutate "chạm mép hộp cũng tính là cắt" layout/labels.go 'return x1 < bx[2] && x2 > bx[0]' 'return x1 <= bx[2] && x2 >= bx[0]'
+mutate "pyMax trả số sau khi bằng nhau" layout/util.go 'if b > a {' 'if b >= a {'
+
 [ -n "$PREFLIGHT" ] && exit 0
 echo
 echo "bắt được $caught, bỏ lọt $missed"
