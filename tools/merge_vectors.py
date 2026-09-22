@@ -3,7 +3,8 @@
     python3 tools/merge_vectors.py conformance/merge-vectors.json
 
 Merge đọc số trong file .drawio bằng float(), giải trang nén bằng
-base64.b64decode và urllib.parse.unquote. Cả ba chấp nhận nhiều thứ hơn hàm
+base64.b64decode và urllib.parse.unquote, và cộng bề rộng lane bằng sum(), thứ
+từ Python 3.12 cộng có bù sai số. Cả ba chấp nhận nhiều thứ hơn hàm
 tương ứng của Go, nên bản Go port lại chúng, và vector ở đây chốt bản port trên
 chuỗi sinh ngẫu nhiên.
 """
@@ -26,7 +27,7 @@ def pieces(rng, ps, n=6):
 
 def main(argv):
     rng = random.Random(29)
-    floats, b64s, uqs = [], [], []
+    floats, b64s, uqs, sums = [], [], [], []
     for _ in range(4000):
         s = pieces(rng, FLOAT_PIECES, 4)
         try:
@@ -43,9 +44,13 @@ def main(argv):
     for _ in range(3000):
         s = pieces(rng, UQ_PIECES)
         uqs.append([s, urllib.parse.unquote(s)])
+    for _ in range(2000):
+        xs = [rng.choice([rng.uniform(0, 400), round(rng.uniform(0, 400), 2), 1e16, -1e16, 0.1, 1e-9])
+              for _ in range(rng.randint(0, 8))]
+        sums.append({'xs': [x.hex() for x in xs], 'want': float(sum(xs)).hex()})
     with open(argv[0], 'w', encoding='utf-8') as f:
-        json.dump({'float': floats, 'b64': b64s, 'unquote': uqs}, f, ensure_ascii=False, separators=(',', ':'))
-    print(len(floats) + len(b64s) + len(uqs), 'vector')
+        json.dump({'float': floats, 'b64': b64s, 'unquote': uqs, 'sum': sums}, f, ensure_ascii=False, separators=(',', ':'))
+    print(len(floats) + len(b64s) + len(uqs) + len(sums), 'vector')
 
 
 if __name__ == '__main__':

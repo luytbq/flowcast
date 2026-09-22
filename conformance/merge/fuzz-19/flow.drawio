@@ -1,0 +1,43 @@
+<mxfile host="flowtable2drawio">
+  <diagram id="flowtable" name="C&#7841;nh quay ng&#432;&#7907;c t&#7841;o v&#242;ng l&#7863;p">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="319.1" pageHeight="494" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pool" value="C&#7841;nh quay ng&#432;&#7907;c t&#7841;o v&#242;ng l&#7863;p" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;">
+          <mxGeometry x="40" y="40" width="239.1" height="414" as="geometry" />
+        </mxCell>
+        <mxCell id="A" value="Lane A" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;">
+          <mxGeometry x="0" y="30" width="239.1" height="384" as="geometry" />
+        </mxCell>
+        <mxCell id="A-1" value="V&#224;o" vertex="1" parent="A" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;">
+          <mxGeometry x="53" y="60" width="80" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="A-3" value="Th&#224;nh c&#244;ng?" vertex="1" parent="A" style="rhombus;html=1;fontFamily=Verdana;fontSize=12;">
+          <mxGeometry x="24" y="214" width="138" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="E1" value="" edge="1" parent="pool" source="A-1" target="A-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E2" value="" edge="1" parent="pool" source="A-2" target="A-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E3" value="Ch&#432;a" edge="1" parent="pool" source="A-3" target="A-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;">
+          <mxGeometry relative="1" as="geometry" x="-0.85">
+            <Array as="points">
+              <mxPoint x="224.1" y="274" />
+              <mxPoint x="224.1" y="146" />
+              <mxPoint x="93" y="146" />
+            </Array>
+            <mxPoint x="0" y="-11.5" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="E4" value="R&#7891;i" edge="1" parent="pool" source="A-3" target="A-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;">
+          <mxGeometry relative="1" as="geometry" x="-0.03">
+            <mxPoint x="18.46" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+      <mxCell id="hand-g2" value="" style="group;" vertex="1" parent="1"><mxGeometry x="231.5" y="43.06713122259733" width="200" height="80" as="geometry" /></mxCell><mxCell id="hand-g2c" value="trong" style="text;" vertex="1" parent="hand-g2"><mxGeometry x="10" y="10" width="100" height="30" as="geometry" /></mxCell><mxCell style="text;html=1;" vertex="1" parent="khong-co" id="hand-3" value="Ghi ch&#250;"><mxGeometry x="-28.3" y="460" width="90" height="45" as="geometry" /></mxCell><mxCell style="text;html=1;" vertex="1" parent="A-1" id="Q-6.1" value="Ghi ch&#250;"><mxGeometry x="856.2" y="288" width="90.3" height="49.59816847949111" as="geometry" /></mxCell></root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

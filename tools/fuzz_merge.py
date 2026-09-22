@@ -39,7 +39,21 @@ def bases():
     return out
 
 
+def delta(rng, lo, hi):
+    v = rng.uniform(lo, hi)
+    return float(rng.choice([str(round(v)), str(round(v, 1)), str(round(v * 2) / 2), repr(v)]))
+
+
+def fnum(s):
+    try:
+        return float(s)
+    except (TypeError, ValueError):
+        return 0.0
+
+
 def num_str(rng, lo, hi):
+    if rng.random() < 0.03:
+        return rng.choice(['abc', '', ' 12 ', '1_0'])
     v = rng.uniform(lo, hi)
     return rng.choice([str(round(v)), str(round(v, 1)), str(round(v * 2) / 2), repr(v)])
 
@@ -67,7 +81,7 @@ def edit_table(rng, md):
         return md
     extra = []
     for k in range(rng.randint(0, 3)):
-        op = rng.choice(['grow', 'add', 'add', 'lane', 'drop', 'newlane'])
+        op = rng.choice(['grow', 'add', 'add', 'lane', 'drop', 'newlane', 'droplane'])
         i, c = rng.choice(nodes)
         if op == 'grow':
             c[3] = (c[3] + ' kèm thêm chữ cho dài ra') if c[3] else 'Chữ mới'
@@ -85,6 +99,15 @@ def edit_table(rng, md):
             for j, e in rows:
                 if e[1] == 'edge' and (f'from={c[0]};' in e[4] + ';' or f'to={c[0]};' in e[4] + ';'):
                     lines[j] = None
+            continue
+        elif op == 'droplane' and len(lanes) > 1:
+            lid = rng.choice(lanes)
+            gone = {lid} | {n[0] for _, n in nodes if n[2] == lid}
+            for j, e in rows:
+                refs = {x.split('=', 1)[1].strip() for x in e[4].split(';') if '=' in x}
+                if e[0] in gone or (e[1] != 'lane' and e[2] in gone) or refs & gone:
+                    lines[j] = None
+            lanes.remove(lid)
             continue
         elif op == 'newlane':
             lid = f'N{k}'
@@ -118,8 +141,8 @@ def edit_drawio(rng, tree):
         return c.find('mxGeometry')
 
     def add_note(k):
-        parent = rng.choice(['pool', '1', 'khong-co'] + [c.get('id') for c in lanes + items[:2]])
-        cid = f'hand-{k}'
+        parent = rng.choice(['pool', '1', 'khong-co'] + [c.get('id') for c in lanes + items[:2]] + notes)
+        cid = rng.choice([f'hand-{k}', f'hand-{k}', f'X_Y-{k}', f'E9{k}', f'Q-{k}.1', f'hand-{k}\n'])
         wrap = rng.random() < 0.3
         holder = ET.SubElement(root, 'object', id=cid, label='x') if wrap else None
         n = ET.SubElement(holder if wrap else root, 'mxCell', style='text;html=1;', vertex='1', parent=parent)
@@ -132,16 +155,16 @@ def edit_drawio(rng, tree):
 
     for k in range(rng.randint(1, 7)):
         op = rng.choice(['move', 'move', 'move', 'reparent', 'lanew', 'lanex', 'wp', 'wp', 'constraint',
-                         'note', 'note', 'arrow', 'group', 'unmark', 'pool', 'delete'])
+                         'note', 'note', 'arrow', 'group', 'unmark', 'unmark-all', 'pool', 'delete', 'dup'])
         if op == 'move' and items:
             g = geo(rng.choice(items))
-            g.set('x', str(float(g.get('x')) + float(num_str(rng, -300, 300))))
-            g.set('y', str(float(g.get('y')) + float(num_str(rng, -150, 150))))
+            g.set('x', str(fnum(g.get('x')) + delta(rng, -300, 300)))
+            g.set('y', str(fnum(g.get('y')) + delta(rng, -150, 150)))
         elif op == 'reparent' and items and len(lanes) > 1:
             rng.choice(items).set('parent', rng.choice(lanes).get('id'))
         elif op == 'lanew' and lanes:
             g = geo(rng.choice(lanes))
-            g.set('width', str(max(10.0, float(g.get('width')) + float(num_str(rng, -80, 200)))))
+            g.set('width', str(max(10.0, fnum(g.get('width')) + delta(rng, -80, 200))))
         elif op == 'lanex' and lanes:
             geo(rng.choice(lanes)).set('x', num_str(rng, 0, 900))
         elif op == 'wp' and edges:
@@ -156,7 +179,7 @@ def edit_drawio(rng, tree):
             key = rng.choice(['exitX', 'exitY', 'entryX', 'entryY', 'exitPerimeter', 'exitDx'])
             parts = [p for p in c.get('style', '').split(';') if p and not p.startswith(key + '=')]
             if rng.random() < 0.7:
-                parts.append(f'{key}={rng.choice(["0", "0.25", "1", "0.5", "abc", ""])}')
+                parts.append(rng.choice([f'{key}={rng.choice(["0", "0.25", "1", "0.5", "abc", ""])}', key]))
             c.set('style', ';'.join(parts) + ';')
         elif op == 'note':
             add_note(k)
@@ -173,6 +196,8 @@ def edit_drawio(rng, tree):
                 ET.SubElement(arr, 'mxPoint', x=num_str(rng, 0, 900), y=num_str(rng, 0, 500))
             if rng.random() < 0.3:
                 ET.SubElement(g, 'mxPoint', x='3', y='4', **{'as': 'offset'})
+            if rng.random() < 0.3:
+                ET.SubElement(g, 'mxPoint', x=num_str(rng, 0, 900), y='5', **{'as': 'sourcePoint'})
         elif op == 'group':
             parent = rng.choice(['pool', '1'] + list(lane_ids))
             g = ET.SubElement(root, 'mxCell', id=f'hand-g{k}', value='', style='group;', vertex='1', parent=parent)
@@ -185,6 +210,17 @@ def edit_drawio(rng, tree):
             c = rng.choice(cells)
             if c.get('style'):
                 c.set('style', c.get('style').replace('flowtable=1;', ''))
+        elif op == 'unmark-all':
+            for c in root.iter('mxCell'):
+                if c.get('style'):
+                    c.set('style', c.get('style').replace('flowtable=1;', ''))
+        elif op == 'dup' and items:
+            # Hai cell cùng id: cell sau thắng nhưng giữ chỗ của cell trước.
+            src = rng.choice(items)
+            d = ET.SubElement(root, 'mxCell', id=src.get('id'), value='bản sao', style='text;', vertex='1',
+                              parent=rng.choice(['pool', '1'] + list(lane_ids)))
+            ET.SubElement(d, 'mxGeometry', x=num_str(rng, 0, 400), y=num_str(rng, 0, 300), width='60',
+                          height='30', **{'as': 'geometry'})
         elif op == 'pool':
             g = geo(next(c for c in cells if c.get('id') == 'pool'))
             g.set('x', num_str(rng, 0, 200))

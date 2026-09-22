@@ -15,9 +15,9 @@ import xml.etree.ElementTree as ET
 TAGS = ['mxCell', 'mxGeometry', 'mxPoint', 'Array', 'object', 'diagram']
 KEYS = ['id', 'value', 'style', 'parent', 'x', 'y', 'as', 'label']
 PIECES = ['a', 'b', 'Ghi chú', ' ', '  ', '\n', '\n  ', '\t', '&amp;', '&lt;', '&gt;', '&quot;', '&#10;',
-          '&#13;', '&#x41;', '"', "'", '>', 'ử']
+          '&#13;', '&#x41;', '"', "'", '>', 'ử', '\r', '\r\n']
 ATTR_PIECES = ['a', 'b', ' ', 'ử', '&amp;', '&lt;', '&gt;', '&quot;', '&#10;', '&#9;', '&#13;', '\n', '\t',
-               "'", '>', '=', ';']
+               "'", '>', '=', ';', '\r', '\r\n', '\r\r']
 
 
 def text(rng, pieces, n=4):
@@ -38,12 +38,14 @@ def element(rng, depth):
     body = text(rng, PIECES)
     for _ in range(rng.randint(0, 3)):
         r = rng.random()
+        # Dấu nháy lẻ trong chú thích, CDATA và chỉ thị xử lý: bộ chuẩn hóa thuộc
+        # tính phải bỏ qua chúng, nếu không nó tưởng một chuỗi trong nháy đã mở.
         if r < 0.1:
-            body += '<!-- chú thích -->'
+            body += rng.choice(['<!-- chú thích -->', '<!--"-->', "<!--'\n-->"])
         elif r < 0.15:
-            body += '<?pi dữ liệu?>'
+            body += rng.choice(['<?pi dữ liệu?>', '<?pi "?>'])
         elif r < 0.22:
-            body += '<![CDATA[a < b & c]]>'
+            body += rng.choice(['<![CDATA[a < b & c]]>', '<![CDATA["\n\t]]>'])
         body += element(rng, depth + 1) + text(rng, PIECES)
     return f'<{tag}{attrs}>{body}</{tag}>'
 

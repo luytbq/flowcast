@@ -50,6 +50,15 @@ def waypoints(eid, pts):
     return fn
 
 
+def waypoint_on_lane_edge(eid, lane):
+    """Một điểm gấp nằm đúng mép trái của lane: điểm thuộc về lane đó chứ không
+    thuộc lane bên trái, nên dịch theo lane đó khi hai lane dịch khác nhau."""
+    def fn(root):
+        x = cell(root, lane).find('mxGeometry').get('x')
+        waypoints(eid, [(x, 230)])(root)
+    return fn
+
+
 def set_style(cid, key, value):
     def fn(root):
         c = cell(root, cid)
@@ -166,6 +175,8 @@ SCENARIOS = {
     'second-page': ('order.md', [], [('| Trả lỗi 400 |', '| Trả lỗi 400 kèm chi tiết |')], add_page),
     'retry-moved': ('retry.md', [], [], None),
     'freehand-object': ('order.md', [object_note('hand-o', 'API', 20, 200)], [], None),
+    'waypoint-on-lane-edge': ('order.md', [waypoint_on_lane_edge('E3', 'API')],
+                              [('| API | lane | | API | |', '| MID | lane | | Lane giữa | |\n| API | lane | | API | |')], None),
     'bare-model': ('order.md', [move('USR-1', 30, 0)], [], bare_model),
 }
 

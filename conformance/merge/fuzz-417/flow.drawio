@@ -1,0 +1,22 @@
+<mxfile host="flowtable2drawio">
+  <diagram id="flowtable" name="Nhi&#7873;u key metadata l&#7841; tr&#234;n m&#7897;t d&#242;ng">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="208" pageHeight="324" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pool" value="Nhi&#7873;u key metadata l&#7841; tr&#234;n m&#7897;t d&#242;ng" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="40" y="40" width="128" height="244" as="geometry" />
+        </mxCell>
+        <mxCell id="A-1" value="V&#224;o" vertex="1" parent="A" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="170.5" y="109.0" width="80" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="A-2" value="Xong" vertex="1" parent="A" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="24" y="134" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="E1" value="" edge="1" parent="pool" source="A-1" target="A-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#6c8ebf;strokeWidth=2;fontFamily=Verdana;fontSize=12;flowtable=1;exitY;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      <mxCell id="hand-a1" style="endArrow=classic;html=1;" edge="1" parent="1" source="A-1" target="A-1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="236.5" y="166" /></Array><mxPoint x="632" y="5" as="sourcePoint" /></mxGeometry></mxCell><object id="X_Y-5" label="x"><mxCell style="text;html=1;" vertex="1" parent="1"><mxGeometry x="-21" y="133" width="148.8" height="36.2" as="geometry" /></mxCell></object><object id="hand-6" label="x"><mxCell style="text;html=1;" vertex="1" parent="pool"><mxGeometry x="171.9619496040144" y="25" width="178" height="24.825019242179305" as="geometry" /></mxCell></object></root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,31 @@
+<mxfile host="flowtable2drawio">
+  <diagram id="flowtable" name="Lu&#7891;ng th&#7859;ng m&#7897;t lane">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="248" pageHeight="404" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pool" value="Lu&#7891;ng th&#7859;ng m&#7897;t lane" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="40" y="40" width="168" height="324" as="geometry" />
+        </mxCell>
+        <mxCell id="A" value="Lane A" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="0" y="30" width="230.3" height="294" as="geometry" />
+        </mxCell>
+        <mxCell id="A-1" value="B&#7855;t &#273;&#7847;u" vertex="1" parent="A" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="38" y="60" width="92" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="A-2" value="X&#7917; l&#253;" vertex="1" parent="A" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="24" y="134" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="A-3" value="Xong" vertex="1" parent="A" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;">
+          <mxGeometry x="44" y="214" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="E1" value="" edge="1" parent="pool" source="A-1" target="A-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="E2" value="" edge="1" parent="pool" source="A-2" target="A-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      <mxCell id="A-3" value="b&#7843;n sao" style="text;" vertex="1" parent="A"><mxGeometry x="360" y="266.5" width="60" height="30" as="geometry" /></mxCell><mxCell id="hand-a1" style="endArrow=classic;html=1;" edge="1" parent="A" target="A-3"><mxGeometry relative="1" as="geometry" /></mxCell><object id="X_Y-3" label="x"><mxCell style="text;html=1;" vertex="1" parent="A-1"><mxGeometry x="192" y="1_0" width="116.7" height="24" as="geometry" /></mxCell></object><mxCell id="hand-g5" value="" style="group;" vertex="1" parent="A"><mxGeometry x="471.0" y="278.0" width="200" height="80" as="geometry" /></mxCell><mxCell id="hand-g5c" value="trong" style="text;" vertex="1" parent="hand-g5"><mxGeometry x="10" y="10" width="100" height="30" as="geometry" /></mxCell></root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

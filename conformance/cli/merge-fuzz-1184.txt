@@ -1,0 +1,29 @@
+# input: merge/fuzz-1184 -> *
+$ ["build", "$T/flow.md", "--mode", "merge"]
+check: đọc bảng từ markdown
+WARNING dòng 11 [C-2.0]: nằm ở lane C nhưng gắn vào C-2 thuộc lane N0; sẽ vẽ trong lane N0
+WARNING dòng 9 [A-1]: start có cạnh đi vào: E3
+WARNING dòng 16 [E92]: C-2 đứng trước nguồn C-92 nhưng cạnh không ghi back=true
+check: 0 lỗi, 3 cảnh báo
+build: chế độ merge, giữ chỉnh sửa tay
+build: đã ghi $T/flow.drawio (4 lane, 5 phần tử, 3 cạnh, 998x249px)
+build: bản sao file cũ $T/flow.drawio.bak
+merge: giữ vị trí (2): A-1, B-3
+merge: element mới (3): C-92, C-2, C-2.0
+merge: element mới phải dịch xuống vì chồng (0): -
+merge: đổi lane trong bảng hoặc bị kéo sang lane khác, đặt lại (2): C-2, C-2.0
+merge: edge giữ waypoint (0): -
+merge: edge để draw.io tự đi dây, cần chỉnh tay (3): E2, E3, E92
+merge: edge đã sửa tay, nhãn về giữa đường (0): -
+merge: xoá vì không còn trong bảng (0): -
+merge: lane được nới (0): -
+merge: cell tự vẽ giữ lại (0): -
+merge: cell tự vẽ bỏ đi (cha đã bị xoá) (0): -
+merge: cell tự vẽ mất đầu nối (0): -
+merge: element chồng nhau (0): -
+layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG
+[exit 0]
+--- files
+1a827205341b3877  flow.drawio
+99f1713d7c62a13d  flow.drawio.bak
+495f5cdf1f413ce3  flow.md

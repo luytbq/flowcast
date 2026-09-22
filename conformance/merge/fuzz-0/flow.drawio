@@ -1,0 +1,16 @@
+<mxfile host="flowtable2drawio">
+  <diagram id="flowtable" name="Ph&#7847;n b&#249; b&#7873; r&#7897;ng lane chia &#273;&#7873;u cho hai m&#225;ng ngo&#224;i">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="215.19" pageHeight="244" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pool" value="Ph&#7847;n b&#249; b&#7873; r&#7897;ng lane chia &#273;&#7873;u cho hai m&#225;ng ngo&#224;i" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="40" y="40" width="135.19" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="A-3" value="A-3 x" vertex="1" parent="A" style="ellipse;html=1;dashed=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="27.6" y="60" width="80" height="44" as="geometry" />
+        </mxCell>
+      <mxCell id="hand-g3" value="" style="group;" vertex="1" parent="1"><mxGeometry x="286.4" y="113" width="200" height="80" as="geometry" /></mxCell><mxCell id="hand-g3c" value="trong" style="text;" vertex="1" parent="hand-g3"><mxGeometry x="10" y="10" width="100" height="30" as="geometry" /></mxCell><mxCell id="A-3" value="b&#7843;n sao" style="text;" vertex="1" parent="1"><mxGeometry x="29.5" y="30.21036242050974" width="60" height="30" as="geometry" /></mxCell><mxCell style="text;html=1;" vertex="1" parent="A-3" id="hand-6&#10;" value="Ghi ch&#250;"><mxGeometry x="403.0" y="459" width="171" height="69.5" as="geometry" /></mxCell></root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -13,6 +13,10 @@ func loadVectors(t *testing.T) (v struct {
 	Float   [][2]*string
 	B64     [][3]*string
 	Unquote [][2]string
+	Sum     []struct {
+		Xs   []string
+		Want string
+	}
 }) {
 	data, err := os.ReadFile("../conformance/merge-vectors.json")
 	if err != nil {
@@ -70,6 +74,26 @@ func TestUnquoteKhopUrllibCuaPython(t *testing.T) {
 	for _, c := range loadVectors(t).Unquote {
 		if got := unquote(c[0]); got != c[1] {
 			t.Errorf("unquote(%q): Go ra %q, Python ra %q", c[0], got, c[1])
+		}
+	}
+}
+
+func TestPySumKhopSumCuaPython(t *testing.T) {
+	for _, c := range loadVectors(t).Sum {
+		var xs []float64
+		for _, h := range c.Xs {
+			x, err := strconv.ParseFloat(h, 64)
+			if err != nil {
+				t.Fatal(err)
+			}
+			xs = append(xs, x)
+		}
+		want, err := strconv.ParseFloat(c.Want, 64)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := pySum(xs); math.Float64bits(got) != math.Float64bits(want) {
+			t.Errorf("sum(%v): Go ra %v, Python ra %v", xs, got, want)
 		}
 	}
 }
