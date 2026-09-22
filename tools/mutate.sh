@@ -343,6 +343,21 @@ mutate "dòng phân cách cắt cả khoảng trắng cuối" source/markdown.go
 	if !strings.HasPrefix(s, "|") || len(s) == 1 {' '	s := pystr.Strip(ln)
 	if !strings.HasPrefix(s, "|") || len(s) == 1 {'
 
+# source/xlsx
+mutate "chuỗi dùng chung đọc thành rỗng" source/xlsx.go '						val = shared[i]' '						_ = i'
+mutate "chuỗi nội tuyến đọc thành rỗng" source/xlsx.go '					val = is.textOf("t")' '					_ = is'
+mutate "số nguyên không bỏ phần .0" source/xlsx.go "					val = val[:strings.IndexByte(val, '.')]" '					_ = val'
+mutate "chỉ cảnh báo ô số ở cột id" source/xlsx.go '(ci == 0 || ci == 2)' '(ci == 0)'
+mutate "không cảnh báo ô công thức rỗng" source/xlsx.go 'if c.find("f") != nil {' 'if false {'
+mutate "không cảnh báo hàng ẩn" source/xlsx.go 'if h, _ := rowEl.get("hidden"); h == "1" {' 'if false {'
+mutate "ô gộp không mang số hàng" source/xlsx.go '		r, _ := strconv.Atoi(digits)' '		r := 0 * len(digits)'
+mutate "cảnh báo cả ngoài vùng bảng" source/xlsx.go 'if hr <= n.row && n.row <= hr+len(rows) {' 'if true {'
+mutate "sheet không có header thì dừng thay vì thử sheet sau" source/xlsx.go 'if _, _, found := findHeader(grid); !found {' 'if false {'
+mutate "đường dẫn sheet tuyệt đối không bỏ dấu gạch đầu" source/xlsx.go 'if strings.HasPrefix(target, "/xl/") {' 'if false {'
+mutate "--sheet không lọc" source/xlsx.go '			if s.name == sheet {' '			if true {'
+mutate "cột lấy theo thứ tự ô thay vì theo địa chỉ" source/xlsx.go '				ci = colIndex(ref)' '				ci = len(cells)'
+mutate "text của phần tử gom cả chữ sau phần tử con" source/xlsx.go 'if len(stack) > 0 && len(stack[len(stack)-1].children) == 0 {' 'if len(stack) > 0 {'
+
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang
 # hỏng, và mọi kết quả phía trên đều không đáng tin.
