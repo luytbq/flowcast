@@ -12,13 +12,16 @@ tất định, đã qua nhiều vòng sửa theo sơ đồ thật.
 
 Đang port từ Python sang Go. Bản Go đọc được bảng markdown, csv và xlsx, cho ra
 đúng từng byte file .drawio như bản Python, in ra đúng từng dòng, và trả đúng mã
-thoát. Chưa có: merge khi sinh lại, xuất ảnh và kiểm render. Những lệnh đó được
-báo rõ là chưa hỗ trợ khi gọi tới.
+thoát, kể cả khi sinh lại bằng --mode merge để giữ những gì đã sửa tay trong
+draw.io. Chưa có: xuất ảnh và kiểm render. Hai cờ đó được báo rõ là chưa hỗ trợ
+khi gọi tới.
 
 | thư mục | nội dung |
 |---|---|
 | `cmd/flowcast/` | CLI |
 | gốc, `model/`, `source/`, `schema/`, `validate/`, `text/`, `layout/`, `writer/` | core |
+| `merge/` | sinh lại mà giữ chỉnh sửa tay; chỉ CLI dùng |
+| `internal/` | đọc ghi XML kiểu ElementTree, chuỗi kiểu Python, kiểm tĩnh |
 | `reference/` | bản Python đầy đủ, đồng thời là máy sinh đáp án cho bản port |
 | `conformance/` | bộ đối chiếu: bảng đầu vào và đầu ra chuẩn |
 | `data/` | bảng độ rộng glyph, nhúng vào binary |
@@ -34,7 +37,7 @@ do nằm trong `docs/adr/`; đừng mở lại chúng mà chưa đọc.
 ```
 go build -o flowcast ./cmd/flowcast
 ./flowcast check bang.md
-./flowcast build bang.md [-o ra.drawio] [--title "..."] [--mode force] [--task-max-w 280 ...]
+./flowcast build bang.md [-o ra.drawio] [--title "..."] [--mode merge|force] [--task-max-w 280 ...]
 ```
 
 Tên cờ, các dòng in ra và mã thoát giống hệt bản Python, xem `reference/README.md`.
@@ -45,6 +48,9 @@ Những chỗ khác có chủ đích:
 - `--encoding` nhận utf-8, utf-8-sig, cp1252 và latin-1 cùng các tên gọi khác của
   chúng. Python nhận hàng trăm bảng mã; tên lạ được xử lý như Python xử lý một
   tên nó không biết.
+- File .drawio cũ không đọc được khi merge: mã thoát và câu hướng dẫn giống,
+  nhưng phần mô tả lỗi của bộ đọc XML và của zlib là của Go. File khai báo một
+  bảng mã khác UTF-8 không đọc được; draw.io luôn ghi UTF-8.
 - Python 3.14 dùng Unicode 16, còn Go 1.25 dùng Unicode 15. Ký tự mới có ở
   Unicode 16 có thể được đổi chữ thường hoặc chuẩn hóa khác nhau.
 

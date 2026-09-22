@@ -20,6 +20,10 @@ csv-vectors.json    vector cho bộ đọc csv, so với csv.reader của Python
 decode-vectors.json vector cho việc giải mã bảng mã của file csv
 round-vectors.json  vector cho num.Round, so từng bit với round() của Python
 check-vectors.json  hình học hỏng, cho tự kiểm
+merge/              kịch bản merge: bảng đã sửa cùng file .drawio cũ đã sửa tay
+cli/                bản ghi phiên làm việc của CLI, kể cả merge
+etree-vectors.json  XML ngẫu nhiên, so việc đọc ghi với ElementTree
+merge-vectors.json  vector cho float(), b64decode và unquote kiểu Python
 ```
 
 Mỗi case cho ra hai file trong golden/:
@@ -266,11 +270,24 @@ tools/coverage.py đo từng nhánh thuật toán và thoát với mã 1 nếu c
 | validate: cạnh ra lệch chỗ | 4 |
 | validate: quay ngược mà thiếu back=true | 3 |
 
-### Lỗ hổng đã biết
+## Merge
 
-**Chưa có case nào cho merge.** Ngữ nghĩa merge là 490 dòng cộng 255 dòng test
-trong reference/tests/test_merge.py, và nó chưa nằm trong bộ đối chiếu. Phải bổ
-sung trước khi port phần merge sang Go.
+Merge không có dump trung gian: đầu vào là cả một file .drawio đã sửa tay, và
+đầu ra so được trọn vẹn qua CLI. Mỗi kịch bản trong merge/ là một thư mục gồm
+flow.md và flow.drawio, và cli/ có một bản ghi chạy build --mode merge trên nó.
+
+- Kịch bản đặt tên theo hành vi do `tools/make_merge_cases.py` sinh: file do bản
+  tham chiếu dựng lần đầu, rồi sửa như người dùng sửa trong draw.io.
+- Kịch bản `fuzz-<seed>` do `tools/fuzz_merge.py --emit` sinh. Chúng là những
+  seed đã giết một đột biến mà kịch bản viết tay bỏ lọt.
+
+`tools/fuzz_merge.py --go <binary>` so hai bản trên hàng nghìn seed. Mỗi seed
+lấy một case, sửa ngẫu nhiên cả file .drawio lẫn bảng, rồi so từng byte những
+gì in ra và mọi file trong thư mục.
+
+Cell tự vẽ được chép nguyên sang file mới rồi ghi lại qua ElementTree, nên bản
+Go có `internal/etree` đọc ghi XML đúng quy tắc của ElementTree, chốt bằng
+`etree-vectors.json`.
 
 
 ## Hành vi kỳ quặc được port nguyên

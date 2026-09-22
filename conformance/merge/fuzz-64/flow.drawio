@@ -47,7 +47,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-      <mxCell id="hand-g0" value="" style="group;" vertex="1" parent="B"><mxGeometry x="13.5" y="321.6" width="200" height="80" as="geometry" /></mxCell><mxCell id="hand-g0c" value="trong" style="text;" vertex="1" parent="hand-g0"><mxGeometry x="10" y="10" width="100" height="30" as="geometry" /></mxCell></root>
+      <mxCell id="hand-g0" value="" style="group;" vertex="1" parent="D"><mxGeometry x="13.5" y="321.6" width="200" height="80" as="geometry" /></mxCell><mxCell id="hand-g0c" value="trong" style="text;" vertex="1" parent="hand-g0"><mxGeometry x="10" y="10" width="100" height="30" as="geometry" /></mxCell></root>
     </mxGraphModel>
   </diagram>
 </mxfile>

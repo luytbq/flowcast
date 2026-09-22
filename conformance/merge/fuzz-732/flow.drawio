@@ -45,7 +45,7 @@
             <mxPoint x="0" y="-11.5" as="offset" />
           </mxGeometry>
         </mxCell>
-      <mxCell id="hand-g0" value="" style="group;" vertex="1" parent="1"><mxGeometry x="579.8084562668444" y="267" width="200" height="80" as="geometry" /></mxCell><mxCell id="hand-g0c" value="trong" style="text;" vertex="1" parent="hand-g0"><mxGeometry x="10" y="10" width="100" height="30" as="geometry" /></mxCell><mxCell id="hand-a4" style="endArrow=classic;html=1;" edge="1" parent="C" source="B-1" target="C-2"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="404" y="241.7359204640251" /></Array></mxGeometry></mxCell></root>
+      <mxCell id="hand-g0" value="" style="group;" vertex="1" parent="1"><mxGeometry x="579.8084562668444" y="267" width="200" height="80" as="geometry" /></mxCell><mxCell id="hand-g0c" value="trong" style="text;" vertex="1" parent="hand-g0"><mxGeometry x="10" y="10" width="100" height="30" as="geometry" /></mxCell><mxCell id="hand-a4" style="endArrow=classic;html=1;" edge="1" parent="A" source="B-1" target="C-2"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="404" y="241.7359204640251" /></Array></mxGeometry></mxCell></root>
     </mxGraphModel>
   </diagram>
 </mxfile>

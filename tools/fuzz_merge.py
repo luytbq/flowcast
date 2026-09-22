@@ -132,7 +132,9 @@ def edit_drawio(rng, tree):
     root = mxfile.find('.//root')
     cells = [c for c in root if c.tag == 'mxCell']
     lanes = [c for c in cells if c.get('parent') == 'pool' and c.get('vertex') == '1']
-    lane_ids = {c.get('id') for c in lanes}
+    # Danh sách chứ không phải set: thứ tự duyệt set đổi theo PYTHONHASHSEED, và
+    # seed phải cho ra cùng một kịch bản ở mọi tiến trình.
+    lane_ids = [c.get('id') for c in lanes]
     items = [c for c in cells if c.get('parent') in lane_ids]
     edges = [c for c in cells if c.get('edge') == '1']
     notes = []

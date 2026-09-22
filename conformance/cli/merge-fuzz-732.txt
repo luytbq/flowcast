@@ -21,6 +21,6 @@ merge: element chồng nhau (0): -
 layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG
 [exit 0]
 --- files
-2979ea5c4bad5bf4  flow.drawio
-1abd86457130ffeb  flow.drawio.bak
+2ac5dac4883a8dfa  flow.drawio
+3ec928f787852ddd  flow.drawio.bak
 f851ef794b7c3fcd  flow.md
