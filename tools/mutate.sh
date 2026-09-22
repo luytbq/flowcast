@@ -276,6 +276,28 @@ mutate "bỏ thuộc tính x của nhãn" writer/drawio/write.go 'g.set("x", f(e
 mutate "ghi cả điểm đầu và điểm cuối vào points" writer/drawio/write.go 'for _, p := range e.Pts[1 : len(e.Pts)-1] {' 'for _, p := range e.Pts {'
 mutate "lane không trừ header của pool" writer/drawio/write.go 'geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH-float64(r.PoolHeader))' 'geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH)'
 
+# cmd/flowcast
+mutate "không đưa lỗi lên trước cảnh báo" cmd/flowcast/main.go 'return sorted[i].Level == model.LevelError && sorted[j].Level != model.LevelError' 'return false'
+mutate "dòng build viết kích thước có khoảng trắng" cmd/flowcast/main.go '(%d lane, %d phần tử, %d cạnh, %sx%spx)' '(%d lane, %d phần tử, %d cạnh, %s x %spx)'
+mutate "đường ra mặc định giữ đuôi nguồn" cmd/flowcast/main.go 'out = strings.TrimSuffix(c.a.file, pyExt(c.a.file)) + ".drawio"' 'out = c.a.file + ".drawio"'
+mutate "dấu chấm đầu tên file tính là dấu tách đuôi" cmd/flowcast/main.go 'trimmed := strings.TrimLeft(base, ".")' 'trimmed := base'
+mutate "thông điệp lỗi hệ thống không viết hoa chữ đầu" cmd/flowcast/main.go 'r[0] = unicode.ToUpper(r[0])' '_ = r'
+mutate "force không sao lưu file cũ" cmd/flowcast/main.go 'if mode == "force" && !c.a.noBackup {' 'if false {'
+mutate "không có terminal vẫn hỏi chế độ" cmd/flowcast/main.go 'if !isTerminal(c.stdin) {' 'if false {'
+mutate "lỗi hình học không đổi mã thoát" cmd/flowcast/main.go '		code = 2' '		code = 0'
+mutate "bỏ tiền tố cảnh báo layout" cmd/flowcast/main.go 'c.println("WARNING layout: " + w)' 'c.println(w)'
+mutate "không nhận .txt là markdown" cmd/flowcast/main.go '".txt": true,' ''
+mutate "check không trả mã 1 khi bảng lỗi" cmd/flowcast/main.go '	if c.printIssues(r.Issues) > 0 {
+		return 1
+	}
+	return 0
+}' '	c.printIssues(r.Issues)
+	return 0
+}'
+mutate "--no-backup không có tác dụng" cmd/flowcast/args.go 'a.noBackup = true' 'a.noBackup = false'
+mutate "cờ cấu hình đứng trước tên file bị bỏ qua" cmd/flowcast/args.go '			*ints[name] = n' '			_ = n'
+mutate "cú pháp --cờ=giá trị không tách giá trị" cmd/flowcast/args.go 'name, val, hasVal := strings.Cut(tok[2:], "=")' 'name, val, hasVal := tok[2:], "", false'
+
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang
 # hỏng, và mọi kết quả phía trên đều không đáng tin.
