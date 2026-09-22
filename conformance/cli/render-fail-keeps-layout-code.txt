@@ -1,0 +1,19 @@
+# input: 28-tracks-fan-in -> in.md
+# drawio: fail
+$ ["build", "$T/in.md", "--track-gap", "0", "--png"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 11 phần tử, 14 cạnh, 373.66x924px)
+ERROR   layout: E2 và E4 chồng dây
+ERROR   layout: E2 và E6 chồng dây
+ERROR   layout: E2 và E8 chồng dây
+ERROR   layout: E4 và E6 chồng dây
+ERROR   layout: E4 và E8 chồng dây
+ERROR   layout: E6 và E8 chồng dây
+layout: 6 lỗi, 0 cảnh báo
+ERROR   drawio export lỗi: drawio giả: không mở được file
+[exit 2]
+--- files
+6c12db8b216dd516  in.drawio
+229c0013e87e8e72  in.md

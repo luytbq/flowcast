@@ -1,0 +1,14 @@
+# input: 03-condition-two -> in.md
+# drawio: ok
+$ ["build", "$T/in.md", "--png", "$T/anh.png"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 3 cạnh, 325.26x334px)
+layout: 0 lỗi, 0 cảnh báo
+png: $T/anh.png
+[exit 0]
+--- files
+df59b7a1ed54a4fc  anh.png
+d6401975adfee782  in.drawio
+35ce030c1847ff7d  in.md

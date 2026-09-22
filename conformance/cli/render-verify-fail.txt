@@ -1,0 +1,13 @@
+# input: 03-condition-two -> in.md
+# drawio: fail
+$ ["build", "$T/in.md", "--verify"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 3 cạnh, 325.26x334px)
+layout: 0 lỗi, 0 cảnh báo
+ERROR   drawio export lỗi: drawio giả: không mở được file
+[exit 3]
+--- files
+d6401975adfee782  in.drawio
+35ce030c1847ff7d  in.md

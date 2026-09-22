@@ -1,0 +1,28 @@
+# input: merge/moved-node -> *
+# drawio: none
+$ ["build", "$T/flow.md", "--mode", "merge", "--verify"]
+check: đọc bảng từ markdown
+check: 0 lỗi, 0 cảnh báo
+build: chế độ merge, giữ chỉnh sửa tay
+build: đã ghi $T/flow.drawio (3 lane, 10 phần tử, 8 cạnh, 1363.13x420px)
+build: bản sao file cũ $T/flow.drawio.bak
+merge: giữ vị trí (10): USR-1, API-1, API-1.1, API-2, API-3, SVC-1, SVC-2, SVC-3, USR-2, SVC-4
+merge: element mới (0): -
+merge: element mới phải dịch xuống vì chồng (0): -
+merge: đổi lane trong bảng hoặc bị kéo sang lane khác, đặt lại (0): -
+merge: edge giữ waypoint (8): E1, E2, E3, E4, E5, E6, E7, E7.1
+merge: edge để draw.io tự đi dây, cần chỉnh tay (0): -
+merge: edge đã sửa tay, nhãn về giữa đường (0): -
+merge: xoá vì không còn trong bảng (0): -
+merge: lane được nới (0): -
+merge: cell tự vẽ giữ lại (0): -
+merge: cell tự vẽ bỏ đi (cha đã bị xoá) (0): -
+merge: cell tự vẽ mất đầu nối (0): -
+merge: element chồng nhau (1): API-1/API-1.1
+layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG
+WARNING không có drawio CLI, bỏ qua xuất ảnh và kiểm render
+[exit 0]
+--- files
+dc1cd605cec5427a  flow.drawio
+e4fc8dfd202292ea  flow.drawio.bak
+6ade948319eff0ba  flow.md

@@ -12,8 +12,12 @@ thư mục kèm sha256 nội dung. Đường dẫn thư mục tạm được tha
 Đầu vào "merge/<kịch bản>" là cả thư mục conformance/merge/<kịch bản>: bảng đã
 sửa cùng file .drawio cũ đã sửa tay.
 
-Không có ở đây, vì thuộc các bước sau của lộ trình port hoặc cố ý khác: --png,
---verify, --font, và --layout-json, file mà CLI Go ghi số theo cách của Go.
+Bản ghi có --png hoặc --verify chạy với một drawio giả trong
+conformance/drawio-fakes, ghi ở dòng "# drawio: <tên>", vì drawio thật cho ra
+ảnh khác nhau giữa các phiên bản và không có trên máy CI.
+
+Không có ở đây vì cố ý khác: --font, và --layout-json, file mà CLI Go ghi số
+theo cách của Go.
 """
 import hashlib
 import io
@@ -28,6 +32,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOOL = os.path.join(ROOT, 'reference', 'flowtable2drawio.py')
 CASES = os.path.join(ROOT, 'conformance', 'cases')
 MERGE = os.path.join(ROOT, 'conformance', 'merge')
+FAKES = os.path.join(ROOT, 'conformance', 'drawio-fakes')
 
 # Kịch bản đặc biệt: (tên, case đầu vào, tên file đầu vào, các lệnh).
 SPECIAL = [
@@ -78,10 +83,37 @@ SPECIAL = [
 ]
 
 
-def run(cmd, tmp):
+# Kịch bản xuất ảnh: (tên, case đầu vào, tên file đầu vào, các lệnh, drawio giả).
+RENDER = [
+    ('render-no-drawio', '03-condition-two', 'in.md', [['build', '$T/in.md', '--png', '--verify']], 'none'),
+    ('render-png-default', '03-condition-two', 'in.md', [['build', '$T/in.md', '--png']], 'ok'),
+    ('render-png-path', '03-condition-two', 'in.md', [['build', '$T/in.md', '--png', '$T/anh.png']], 'ok'),
+    ('render-png-equals', '03-condition-two', 'so.do.md', [['build', '$T/so.do.md', '--png=$T/b.png']], 'ok'),
+    ('render-verify', '05-merge-node', 'in.md', [['build', '$T/in.md', '--verify']], 'ok'),
+    ('render-png-and-verify', '05-merge-node', 'in.md', [['build', '$T/in.md', '--verify', '--png']], 'ok'),
+    ('render-fail', '03-condition-two', 'in.md', [['build', '$T/in.md', '--png']], 'fail'),
+    ('render-verify-fail', '03-condition-two', 'in.md', [['build', '$T/in.md', '--verify']], 'fail'),
+    ('render-silent', '03-condition-two', 'in.md', [['build', '$T/in.md', '--png', '--verify']], 'silent'),
+    # Mã 2 của tự kiểm được giữ, không bị kiểm render đổi thành 3.
+    ('render-keeps-layout-code', '28-tracks-fan-in', 'in.md',
+     [['build', '$T/in.md', '--track-gap', '0', '--verify']], 'ok'),
+    ('render-fail-keeps-layout-code', '28-tracks-fan-in', 'in.md',
+     [['build', '$T/in.md', '--track-gap', '0', '--png']], 'fail'),
+    ('render-merge-skips-verify', 'merge/moved-node', '*',
+     [['build', '$T/flow.md', '--mode', 'merge', '--verify', '--png']], 'ok'),
+    ('render-merge-no-drawio', 'merge/moved-node', '*', [['build', '$T/flow.md', '--mode', 'merge', '--verify']],
+     'none'),
+    ('render-check-ignores-flags', '03-condition-two', 'in.md', [['check', '$T/in.md']], 'fail'),
+]
+
+
+def run(cmd, tmp, fake=None):
     argv = [a.replace('$T', tmp) for a in cmd]
+    env = None
+    if fake:
+        env = dict(os.environ, PATH=os.path.join(FAKES, fake) + ':/usr/bin:/bin')
     p = subprocess.run([sys.executable, TOOL] + argv, capture_output=True, text=True,
-                       stdin=subprocess.DEVNULL, cwd=tmp)
+                       stdin=subprocess.DEVNULL, cwd=tmp, env=env)
     if p.stderr.strip():
         raise SystemExit(f'ERROR bản tham chiếu ghi ra stderr với {cmd}: {p.stderr}')
     return p.stdout.replace(tmp, '$T'), p.returncode
@@ -95,7 +127,7 @@ def case_file(case):
     raise SystemExit(f'ERROR không có case {case}')
 
 
-def transcript(case, fname, cmds):
+def transcript(case, fname, cmds, fake=None):
     tmp = tempfile.mkdtemp()
     try:
         tmp = os.path.realpath(tmp)
@@ -107,8 +139,10 @@ def transcript(case, fname, cmds):
             shutil.copy(case_file(case), os.path.join(tmp, fname))
         # Lệnh ghi bằng mảng JSON, vì đối số có thể chứa khoảng trắng.
         out = [f'# input: {case} -> {fname}\n']
+        if fake:
+            out.append(f'# drawio: {fake}\n')
         for cmd in cmds:
-            text, code = run(cmd, tmp)
+            text, code = run(cmd, tmp, fake)
             out.append('$ ' + json.dumps(cmd, ensure_ascii=False) + '\n' + text + f'[exit {code}]\n')
         out.append('--- files\n')
         for n in sorted(os.listdir(tmp)):
@@ -142,6 +176,9 @@ def main(argv):
         n += 1
     for name, case, fname, cmds in SPECIAL:
         io.open(os.path.join(dst, f'{name}.txt'), 'w', encoding='utf-8').write(transcript(case, fname, cmds))
+        n += 1
+    for name, case, fname, cmds, fake in RENDER:
+        io.open(os.path.join(dst, f'{name}.txt'), 'w', encoding='utf-8').write(transcript(case, fname, cmds, fake))
         n += 1
     print(f'{dst}: {n} bản ghi')
     return 0

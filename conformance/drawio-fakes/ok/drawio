@@ -1,0 +1,15 @@
+#!/bin/sh
+fmt=''
+out=''
+while [ $# -gt 0 ]; do
+	case "$1" in
+	-f) fmt="$2"; shift ;;
+	-o) out="$2"; shift ;;
+	esac
+	shift
+done
+if [ "$fmt" = svg ]; then
+	printf '<svg xmlns="http://www.w3.org/2000/svg"><g /></svg>' > "$out"
+else
+	printf 'PNG giả' > "$out"
+fi

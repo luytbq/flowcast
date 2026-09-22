@@ -15,22 +15,25 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/luytbq/flowcast/internal/pystr"
-	"github.com/luytbq/flowcast/source"
 	"io"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"syscall"
 	"unicode"
 
 	"github.com/luytbq/flowcast"
+	"github.com/luytbq/flowcast/internal/pystr"
 	"github.com/luytbq/flowcast/merge"
 	"github.com/luytbq/flowcast/model"
 	"github.com/luytbq/flowcast/num"
+	"github.com/luytbq/flowcast/render"
+	"github.com/luytbq/flowcast/source"
 )
 
 func main() {
@@ -201,10 +204,7 @@ func (c *cli) build() int {
 			c.println(l)
 		}
 		c.println("layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG")
-		if c.a.png != "" || c.a.verify {
-			c.println("WARNING render: xuất ảnh và kiểm render chưa hỗ trợ trong bản này, bỏ qua")
-		}
-		return 0
+		return c.exportAndVerify(out, r, 0)
 	}
 	nerr := 0
 	for _, f := range r.Findings {
@@ -218,8 +218,68 @@ func (c *cli) build() int {
 	if nerr > 0 {
 		code = 2
 	}
-	if c.a.png != "" || c.a.verify {
-		c.println("WARNING render: xuất ảnh và kiểm render chưa hỗ trợ trong bản này, bỏ qua")
+	return c.exportAndVerify(out, r, code)
+}
+
+// exportAndVerify xuất PNG và kiểm render khi được yêu cầu. Lỗi xuất ảnh không
+// làm hỏng file .drawio đã ghi, chỉ đổi mã thoát thành 3 nếu chưa có mã khác.
+func (c *cli) exportAndVerify(out string, r flowcast.Result, code int) int {
+	if c.a.png == "" && !c.a.verify {
+		return code
+	}
+	exe := render.Bin()
+	if exe == "" {
+		c.println("WARNING không có drawio CLI, bỏ qua xuất ảnh và kiểm render")
+		return code
+	}
+	verify := c.a.verify
+	if r.Merge != nil && verify {
+		c.println("render: bỏ qua kiểm render ở chế độ merge (đường dây giữ từ file hoặc do draw.io tự đi)")
+		verify = false
+	}
+	fail := func(err error) int {
+		c.println("ERROR   " + err.Error())
+		if code != 0 {
+			return code
+		}
+		return 3
+	}
+	ctx := context.Background()
+	if c.a.png != "" {
+		png := c.a.png
+		if png == "-" {
+			png = strings.TrimSuffix(out, source.Ext(out)) + ".png"
+		}
+		if err := render.Export(ctx, exe, out, png, "png", 2); err != nil {
+			return fail(err)
+		}
+		c.println("png: " + png)
+	}
+	if verify {
+		dir, err := os.MkdirTemp("", "flowcast-verify")
+		if err != nil {
+			return fail(err)
+		}
+		defer os.RemoveAll(dir)
+		svg := filepath.Join(dir, "render.svg")
+		if err := render.Export(ctx, exe, out, svg, "svg", 0); err != nil {
+			return fail(err)
+		}
+		data, err := os.ReadFile(svg)
+		if err != nil {
+			return fail(err)
+		}
+		probs, err := render.Verify(*r.Layout, data)
+		if err != nil {
+			return fail(fmt.Errorf("không đọc được SVG do drawio xuất: %v", err))
+		}
+		for _, p := range probs {
+			c.println("ERROR   render: " + p)
+		}
+		c.println(fmt.Sprintf("render: %d điểm lệch", len(probs)))
+		if len(probs) > 0 && code == 0 {
+			code = 3
+		}
 	}
 	return code
 }

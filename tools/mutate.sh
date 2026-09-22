@@ -529,11 +529,38 @@ mutate "báo cả cell pool là bị xoá" merge/merge.go '		if !isLayer(id) && 
 mutate "pySum không bù sai số" merge/merge.go '	if lo != 0 && !math.IsInf(lo, 0) && !math.IsNaN(lo) {' '	if false {'
 mutate "merge không sao lưu file cũ" cmd/flowcast/main.go 'if mode != "new" && !c.a.noBackup {' 'if mode == "force" && !c.a.noBackup {'
 mutate "merge in báo cáo nhưng vẫn in tự kiểm" cmd/flowcast/main.go '		c.println("layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG")
-		if c.a.png' '		c.println("layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG")
+		return c.exportAndVerify(out, r, 0)' '		c.println("layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG")
 		for _, f := range r.Findings {
 			c.println(f.Msg)
 		}
-		if c.a.png'
+		return c.exportAndVerify(out, r, 0)'
+# render
+mutate "kiểm render không bỏ qua khi SVG không có id" render/render.go '	if len(cells) == 0 {' '	if false {'
+mutate "hình neo lấy cả rect không có width" render/render.go 'case n.tag == "rect" && n.attrs["width"] != "":' 'case n.tag == "rect":'
+mutate "hình neo ellipse không trừ bán kính" render/render.go 'rect = &[2]float64{attrFloat(n, "cx") - attrFloat(n, "rx"), attrFloat(n, "cy") - attrFloat(n, "ry")}' 'rect = &[2]float64{attrFloat(n, "cx"), attrFloat(n, "cy")}'
+mutate "hình neo path lấy điểm đầu thay vì góc" render/render.go '				rect = &[2]float64{mx, my}' '				rect = &[2]float64{nums[0], nums[1]}'
+mutate "neo là phần tử cuối" render/render.go '		if it.Order < anchor.Order {' '		if it.Order > anchor.Order {'
+mutate "path của dây nhận cả path tô màu" render/render.go 'if n.tag == "path" && n.attrs["d"] != "" && n.attrs["fill"] == "none" {' 'if n.tag == "path" && n.attrs["d"] != "" {'
+mutate "sai lệch cho phép 5 điểm ảnh" render/render.go '	const tol = 2.0' '	const tol = 5.0'
+mutate "so cả điểm cuối như điểm thường" render/render.go '		for k := 0; k < len(got)-1; k++ {' '		for k := 0; k < len(got); k++ {'
+mutate "báo hết điểm lệch của một dây" render/render.go '					e.ID, k, a[0], a[1], b[0], b[1]))
+				break' '					e.ID, k, a[0], a[1], b[0], b[1]))'
+mutate "đoạn cuối so sai trục" render/render.go '			bad = math.Abs(lastG[0]-lastW[0]) > tol
+		} else {' '			bad = math.Abs(lastG[1]-lastW[1]) > tol
+		} else {'
+mutate "id trùng giữ g đầu" render/render.go '		if id := n.attrs["data-cell-id"]; n.tag == "g" && id != "" {' '		if id := n.attrs["data-cell-id"]; n.tag == "g" && id != "" && cells[id] == nil {'
+mutate "đọc cả phần tử ngoài namespace svg" render/render.go '			if t.Name.Space == svgNS {' '			if true {'
+mutate "export không đặt tỉ lệ" render/render.go '	if scale != 0 {' '	if false {'
+mutate "export lỗi không lấy stdout khi stderr rỗng" render/render.go '				msg = strings.TrimSpace(stdout.String())' '				_ = stdout'
+mutate "export coi thiếu file ra là thành công" render/render.go 'if _, statErr := os.Stat(out); err != nil || statErr != nil {' 'if err != nil {'
+mutate "lỗi xuất ảnh ghi đè mã tự kiểm" cmd/flowcast/main.go '		if code != 0 {
+			return code
+		}
+		return 3' '		return 3'
+mutate "kiểm render ghi đè mã tự kiểm" cmd/flowcast/main.go '		if len(probs) > 0 && code == 0 {' '		if len(probs) > 0 {'
+mutate "merge vẫn kiểm render" cmd/flowcast/main.go '	if r.Merge != nil && verify {' '	if false {'
+mutate "png mặc định giữ đuôi .drawio" cmd/flowcast/main.go 'png = strings.TrimSuffix(out, source.Ext(out)) + ".png"' 'png = out + ".png"'
+
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang
 # hỏng, và mọi kết quả phía trên đều không đáng tin.

@@ -84,6 +84,15 @@ func replay(t *testing.T, want string) string {
 
 	var b strings.Builder
 	b.WriteString(lines[0] + "\n")
+	if fake, ok := strings.CutPrefix(lines[1], "# drawio: "); ok {
+		// Chỉ drawio giả nằm trong PATH, như lúc bản tham chiếu sinh bản ghi.
+		dir, err := filepath.Abs(filepath.Join("../../conformance/drawio-fakes", fake))
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Setenv("PATH", dir+":/usr/bin:/bin")
+		b.WriteString(lines[1] + "\n")
+	}
 	for _, ln := range lines[1:] {
 		if !strings.HasPrefix(ln, "$ ") {
 			continue
