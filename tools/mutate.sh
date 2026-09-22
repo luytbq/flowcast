@@ -128,11 +128,11 @@ mutate "bỏ chuẩn hóa NFC" source/text.go 'return norm.NFC.String(b.String()
 mutate "gạch đứng có escape vẫn ngăn cột" source/text.go "if c == '|' && !prevEscape {" "if c == '|' {"
 mutate "không gỡ escape markdown" source/text.go 'if r[i] == 0x5c && i+1 < len(r) && strings.ContainsRune(mdEscapable, r[i+1]) {' 'if false {'
 mutate "không coi CR là ranh giới dòng" source/text.go "case 0x0d:" "case 0x2400:"
-mutate "không hạ chữ thường cột type" source/markdown.go 'strings.ToLower(cells[1])' 'cells[1]'
+mutate "không hạ chữ thường cột type" source/markdown.go 'pystr.Lower(cells[1])' 'cells[1]'
 mutate "Idx dùng số dòng thay vì thứ tự đọc được" source/markdown.go 'len(rows),' 'i,'
-mutate "khóa metadata cũng bị gỡ escape" source/markdown.go 'key := strings.TrimSpace(k)' 'key := unesc(strings.TrimSpace(k))'
-mutate "thẻ br phân biệt hoa thường" source/text.go 'low := strings.ToLower(s)' 'low := s'
-mutate "heading cấp hai cũng tính là tiêu đề" source/markdown.go 'if len(trimmed) == len(rest) {' 'if false {'
+mutate "khóa metadata cũng bị gỡ escape" source/markdown.go 'key := pystr.Strip(k)' 'key := unesc(pystr.Strip(k))'
+mutate "thẻ br phân biệt hoa thường" source/text.go "(r[1] != 'b' && r[1] != 'B')" "r[1] != 'b'"
+mutate "heading cấp hai cũng tính là tiêu đề" source/markdown.go 'if len(rest) < 2 || !pystr.IsSpace(rest[0]) {' 'if len(rest) < 2 {'
 mutate "thứ tự key metadata theo map thay vì theo ô" source/markdown.go 'if _, seen := meta[key]; !seen {' 'if _, seen := meta[key]; seen {'
 
 # schema và validate
@@ -279,8 +279,8 @@ mutate "lane không trừ header của pool" writer/drawio/write.go 'geo(c, r.La
 # cmd/flowcast
 mutate "không đưa lỗi lên trước cảnh báo" cmd/flowcast/main.go 'return sorted[i].Level == model.LevelError && sorted[j].Level != model.LevelError' 'return false'
 mutate "dòng build viết kích thước có khoảng trắng" cmd/flowcast/main.go '(%d lane, %d phần tử, %d cạnh, %sx%spx)' '(%d lane, %d phần tử, %d cạnh, %s x %spx)'
-mutate "đường ra mặc định giữ đuôi nguồn" cmd/flowcast/main.go 'out = strings.TrimSuffix(c.a.file, pyExt(c.a.file)) + ".drawio"' 'out = c.a.file + ".drawio"'
-mutate "dấu chấm đầu tên file tính là dấu tách đuôi" cmd/flowcast/main.go 'trimmed := strings.TrimLeft(base, ".")' 'trimmed := base'
+mutate "đường ra mặc định giữ đuôi nguồn" cmd/flowcast/main.go 'out = strings.TrimSuffix(c.a.file, source.Ext(c.a.file)) + ".drawio"' 'out = c.a.file + ".drawio"'
+mutate "dấu chấm đầu tên file tính là dấu tách đuôi" source/source.go 'trimmed := strings.TrimLeft(base, ".")' 'trimmed := base'
 mutate "thông điệp lỗi hệ thống không viết hoa chữ đầu" cmd/flowcast/main.go 'r[0] = unicode.ToUpper(r[0])' '_ = r'
 mutate "force không sao lưu file cũ" cmd/flowcast/main.go 'if mode == "force" && !c.a.noBackup {' 'if false {'
 mutate "không có terminal vẫn hỏi chế độ" cmd/flowcast/main.go 'if !isTerminal(c.stdin) {' 'if false {'
@@ -297,6 +297,49 @@ mutate "check không trả mã 1 khi bảng lỗi" cmd/flowcast/main.go '	if c.p
 mutate "--no-backup không có tác dụng" cmd/flowcast/args.go 'a.noBackup = true' 'a.noBackup = false'
 mutate "cờ cấu hình đứng trước tên file bị bỏ qua" cmd/flowcast/args.go '			*ints[name] = n' '			_ = n'
 mutate "cú pháp --cờ=giá trị không tách giá trị" cmd/flowcast/args.go 'name, val, hasVal := strings.Cut(tok[2:], "=")' 'name, val, hasVal := tok[2:], "", false'
+
+# source/csv
+mutate "chữ sau dấu nháy đóng không được nối vào ô" source/pycsv.go '				state = inField
+				return add(c)
+			}
+		case eatCRNL:' '				state = inField
+				return nil
+			}
+		case eatCRNL:'
+mutate "dòng trống không ra hàng rỗng" source/pycsv.go 'return nil // dòng trống: một hàng rỗng' 'state = startField'
+mutate "hết dữ liệu trong dấu nháy thì bỏ ô dở" source/pycsv.go 'if len(field) != 0 || state == inQuotedField {' 'if len(field) != 0 {'
+mutate "CR đơn không là ranh giới dòng khi đọc csv" source/pycsv.go 'i := strings.IndexAny(s, "\r\n")' 'i := strings.IndexAny(s, "\n")'
+mutate "utf-8-sig không bỏ BOM" source/encoding.go 'return strings.TrimPrefix(string(raw), "\ufeff"), true' 'return string(raw), true'
+mutate "cp1252 nhận cả byte không được định nghĩa" source/encoding.go '			if !ok {
+				return "", false
+			}
+			b.WriteRune(r)' '			_ = ok
+			b.WriteRune(r)'
+mutate "thử cp1252 trước utf-8" source/encoding.go 'var csvEncodings = []string{"utf-8-sig", "utf-8", "cp1252"}' 'var csvEncodings = []string{"cp1252", "utf-8-sig", "utf-8"}'
+mutate "đoán dấu chấm phẩy trước dấu phẩy" source/grid.go 'delims := []string{",", ";", "\t"}' 'delims := []string{";", ",", "\t"}'
+mutate "header phải bắt đầu ở cột đầu" source/grid.go 'for c0 := 0; c0 < max(1, len(low)-4); c0++ {' 'for c0 := 0; c0 < 1; c0++ {'
+mutate "tiêu đề không lấy từ phía trên header" source/grid.go 'for r := 0; r < hr && title == ""; r++ {' 'for r := 0; r < 0 && title == ""; r++ {'
+mutate "bảng không dừng ở hàng trống" source/grid.go '		if empty {
+			break
+		}' '		if empty {
+			continue
+		}'
+mutate "không cảnh báo escape markdown trong csv" source/grid.go 'if strings.Contains(cells[3], `\|`) || strings.Contains(cells[4], `\|`) {' 'if false {'
+mutate "ô csv không tách dòng tại xuống dòng thật" source/grid.go 'parts = append(parts, strings.Split(chunk, "\n")...)' 'parts = append(parts, chunk)'
+mutate "cảnh báo cp1252 so tên đã chuẩn hóa" source/grid.go 'if used == "cp1252" {' 'if c, _ := normalizeEncoding(used); c == "cp1252" {'
+mutate "khoảng trắng Python bỏ U+001C tới U+001F" internal/pystr/pystr.go 'return unicode.IsSpace(r) || (r >= 0x1c && r <= 0x1f)' 'return unicode.IsSpace(r)'
+mutate "Lower không tách İ thành hai ký tự" internal/pystr/pystr.go 'if r == 0x130 {' 'if false {'
+mutate "thẻ br không nhận khoảng trắng Unicode" source/text.go 'for i < len(r) && pystr.IsSpace(r[i]) {
+		i++
+	}
+	if i < len(r) && r[i] == '"'"'/'"'"' {' 'for i < len(r) && r[i] == '"'"' '"'"' {
+		i++
+	}
+	if i < len(r) && r[i] == '"'"'/'"'"' {'
+mutate "tiêu đề toàn khoảng trắng không khớp" source/markdown.go '		return unescape(string(rest[len(rest)-1:])), true' '		return "", false'
+mutate "dòng phân cách cắt cả khoảng trắng cuối" source/markdown.go '	s := pystr.LStrip(ln)
+	if !strings.HasPrefix(s, "|") || len(s) == 1 {' '	s := pystr.Strip(ln)
+	if !strings.HasPrefix(s, "|") || len(s) == 1 {'
 
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang
