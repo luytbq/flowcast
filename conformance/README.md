@@ -12,10 +12,12 @@ thành máy sinh đáp án chứ không phải tài liệu tham khảo.
 ## Cấu trúc
 
 ```
-cases/             bảng đầu vào, viết tay, mỗi file chốt một nhánh thuật toán
-golden/            đầu ra cuối cùng do bản tham chiếu sinh
-dumps/             trạng thái trung gian, cổng chặn cho từng module Go
-text-vectors.json  vector riêng cho việc đo chữ và ngắt dòng
+cases/              bảng đầu vào, viết tay, mỗi file chốt một nhánh thuật toán
+golden/             đầu ra cuối cùng do bản tham chiếu sinh
+dumps/              trạng thái trung gian, cổng chặn cho từng module Go
+text-vectors.json   vector riêng cho việc đo chữ và ngắt dòng
+round-vectors.json  vector cho num.Round, so từng bit với round() của Python
+check-vectors.json  hình học hỏng, cho tự kiểm
 ```
 
 Mỗi case cho ra hai file trong golden/:
@@ -166,6 +168,19 @@ Các case sinh ra từ đây mang số 60 trở lên và có nội dung kiểu `
 Chúng là case hồi quy do máy tìm, không phải ví dụ để đọc: tên file và tiêu đề
 nói chúng chốt nhánh nào, còn nội dung giữ nguyên vì đổi chữ là đổi bề rộng
 hộp, và có thể làm case thôi giết được đột biến.
+
+## Vector cho tự kiểm
+
+Engine đúng không sinh ra lỗi hình học: trên cả bộ case chỉ 2 bảng có phát
+hiện, và không bảng nào chạm tới một lỗi nào. Nên không kiểm được tự kiểm bằng
+đầu ra của engine.
+
+Tự kiểm nhận vào `layout.Result`, dữ liệu thuần, nên nó chạy được trên hình học
+bất kỳ. `tools/check_vectors.py` lấy hình học hỏng từ hai nguồn: các bản tham
+chiếu đã bị đột biến, gồm đột biến ở `tools/mutants/` và năm đột biến phá hỏng
+có chủ đích; và bốn hình học dựng tay nằm đúng trên các ngưỡng của tự kiểm,
+như hai dây cách nhau 0.3 điểm ảnh, vì engine hỏng không tình cờ rơi đúng ngưỡng.
+Phát hiện mong đợi luôn do bản Python tính.
 
 ## Lệnh
 

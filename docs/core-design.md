@@ -520,7 +520,7 @@ trung gian vào bản tham chiếu**, và bản Go dump đúng cùng định d�
 | 5 | layout/place | xong |
 | 6 | layout/route, layout/tracks | xong |
 | 7 | layout/geometry, layout/labels | xong, khớp từng bit |
-| 8 | layout/check | |
+| 8 | layout/check | xong |
 | 9 | writer/drawio | **cổng thật**: 29 file .drawio khớp từng byte |
 | 10 | build, cmd/flowcast | từ đây bản Go dùng được |
 | 11 | source/csv, source/xlsx | cần bổ sung case đối chiếu trước |
