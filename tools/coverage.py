@@ -39,6 +39,7 @@ THRESHOLDS = {
     'phần tử tô nhấn': 1,
     'ngắt dòng cứng giữa từ': 1,
     'đầu vào ở dạng NFD': 1,
+    'db hoặc text tràn ra ngoài bốn ô cạnh node': 1,
 }
 
 # Luật trong validate, nhận diện bằng mẫu trên thông điệp.
@@ -111,6 +112,8 @@ def measure():
             if it.highlight:
                 hits['phần tử tô nhấn'] += 1
         hits['track thứ hai trở lên'] += sum(1 for s in lay.segs if s.track > 0)
+        hits['db hoặc text tràn ra ngoài bốn ô cạnh node'] += sum(
+            1 for w in lay.warnings if 'không còn ô trống cạnh' in w)
         # TextMeasure.hard chỉ nói về dòng vừa ngắt xong, nên phải đọc ngay sau
         # từng lần đo chứ không đọc một lần ở cuối.
         for r in table.rows:

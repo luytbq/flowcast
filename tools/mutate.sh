@@ -122,6 +122,7 @@ mutate "mũi tên ngang không tránh ô đã chiếm ở giữa" layout/place.g
 mutate "nguồn tham chiếu là nguồn nông nhất" layout/place.go 'if a.Row > b.Row ||' 'if a.Row < b.Row ||'
 mutate "đảo phía hside" layout/place.go 'toRight := (gk{u.Lane, u.Col}).less(gk{v.Lane, col})' 'toRight := !(gk{u.Lane, u.Col}).less(gk{v.Lane, col})'
 mutate "đếm cả nhánh chính là nhánh phụ" layout/branch.go 'return n - 1' 'return n'
+mutate "đường lùi ra xa bắt đầu từ cột thứ hai" layout/place.go 'for d := 3; d < 50; d++ {' 'for d := 2; d < 50; d++ {'
 
 [ -n "$PREFLIGHT" ] && exit 0
 echo

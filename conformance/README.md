@@ -122,6 +122,27 @@ từng ghi đè nhầm một mệnh đề canh và để lại code hỏng vẫn
 thay chỗ đầu khi có nhiều chỗ thì để lại bản sao nguyên vẹn và khiến đột biến
 vô hại trông như cổng bỏ lọt.
 
+### Thiết kế case cho một đột biến bỏ lọt
+
+```
+python3 tools/py_mutant.py --from 'chuỗi gốc' --to 'chuỗi thay' --stage place cases/*.md
+```
+
+Áp cùng đột biến lên chính bản Python rồi xem case nào đổi kết quả ở chặng đó.
+Case nào làm bản Python đổi thì chắc chắn làm bản Go đỏ, vì bản Go phải khớp bản
+Python. Nhanh hơn hẳn đoán một bảng rồi chạy vòng qua Go, và cho biết ngay một
+ứng viên có trúng hay không.
+
+Có ba heuristic của place mà nguyên nhân bỏ lọt không hiển nhiên, đáng nhớ khi
+thiết kế case cho các pha sau:
+
+- hside chỉ ảnh hưởng tới cột của nhánh phụ khi mũi tên ngang được đặt **trước**
+  nhánh phụ, tức đích khác lane phải đứng trước trong bảng.
+- Việc chọn nguồn nào làm chuẩn cho node hợp nhánh chỉ lộ ra khi các nguồn nằm
+  ở cột khác nhau và không có node rẽ chung.
+- Muốn ép nhánh phụ dạt qua nhiều ô bị chặn, dùng mũi tên ngang sang lane khác:
+  nó chặn mọi cột dương của lane nguồn trên cùng hàng.
+
 ## Lệnh
 
 ```
@@ -153,20 +174,21 @@ tools/coverage.py đo từng nhánh thuật toán và thoát với mã 1 nếu c
 
 | nhánh | số lần chạm |
 |---|---|
-| đi dây A (thẳng đứng) | 88 |
-| đi dây B (thẳng ngang) | 40 |
-| đi dây C (chữ L) | 1 |
-| đi dây D (qua kênh và máng) | 19 |
-| nhánh dạt trái (drift -1) | 11 |
-| nhánh dạt phải (drift 1) | 14 |
-| nhánh không rõ hướng (drift 0) | 88 |
+| đi dây A (thẳng đứng) | 111 |
+| đi dây B (thẳng ngang) | 52 |
+| đi dây C (chữ L) | 3 |
+| đi dây D (qua kênh và máng) | 22 |
+| nhánh dạt trái (drift -1) | 13 |
+| nhánh dạt phải (drift 1) | 17 |
+| nhánh không rõ hướng (drift 0) | 119 |
 | track thứ hai trở lên | 4 |
-| db hoặc text bám node | 8 |
+| db hoặc text bám node | 13 |
 | cạnh back | 2 |
-| cạnh có nhãn | 75 |
+| cạnh có nhãn | 94 |
 | phần tử tô nhấn | 4 |
 | ngắt dòng cứng giữa từ | 1 |
 | đầu vào ở dạng NFD | 1 |
+| db hoặc text tràn ra ngoài bốn ô cạnh node | 1 |
 | validate: id trống | 1 |
 | validate: id dành riêng của draw.io | 1 |
 | validate: id trùng | 2 |

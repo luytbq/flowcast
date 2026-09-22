@@ -494,7 +494,7 @@ trung gian vào bản tham chiếu**, và bản Go dump đúng cùng định d�
 | 2 | text | xong, cùng `num` và `layout.SizeItem` |
 | 3 | model, source/markdown | xong |
 | 4 | schema, validate | xong |
-| 5 | layout/place | phần nhiều luật nhất, đi chậm |
+| 5 | layout/place | xong |
 | 6 | layout/route, layout/tracks | 4 kiểu đi dây, tô màu khoảng |
 | 7 | layout/geometry, layout/labels | |
 | 8 | layout/check | |
