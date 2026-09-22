@@ -43,7 +43,7 @@ func (t *Measure) Box(lines []string) (w, h float64) {
 			w = x
 		}
 	}
-	return w, float64(len(lines)) * t.LineH
+	return w, float64(float64(len(lines)) * t.LineH)
 }
 
 // breakAfter nói có được ngắt ngay trước vị trí i hay không. Gọi với 1 <= i <= len(r).

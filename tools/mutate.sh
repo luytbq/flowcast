@@ -118,6 +118,9 @@ mutate "không cảnh báo cạnh condition thiếu nhãn" validate/validate.go 
 mutate "quên bỏ qua dòng trùng id khi xét đồ thị" validate/validate.go 'if j, ok := v.byID[r.ID]; !ok || j != i {' 'if j, ok := v.byID[r.ID]; false || j == -1 && !ok {'
 mutate "thông điệp dùng %q thay vì nháy thẳng" validate/validate.go 'fmt.Sprintf("metadata \"%s\" không dùng cho type %s, bị bỏ qua", k, r.Type)' 'fmt.Sprintf("metadata %q không dùng cho type %s, bị bỏ qua", k, r.Type)'
 
+# Phép kiểm tĩnh FMA
+mutate "gỡ bọc float64() khỏi phép nhân trước phép cộng" layout/size.go 'float64(tw*1.42)+24+pad' 'tw*1.42+24+pad'
+
 # layout/place
 mutate "topo ưu tiên dòng đứng sau thay vì đứng trước" layout/topo.go 'return h[i].Order < h[j].Order' 'return h[i].Order > h[j].Order'
 mutate "topo không bỏ qua cạnh back" layout/topo.go 'if _, ok := indeg[e.Dst]; ok && !e.Back {' 'if _, ok := indeg[e.Dst]; ok {'

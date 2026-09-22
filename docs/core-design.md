@@ -401,6 +401,29 @@ một font tự do và sinh bảng đo từ font đó.
 Độc lập với chuyện giấy phép: ở chế độ strict, thiếu bảng đo là lỗi cứng chứ
 không phải cảnh báo.
 
+### Số thực phải khớp tới từng bit, và FMA là kẻ thù
+
+Pha hình học so sánh số thực để ra quyết định: nhãn đặt ở ứng viên nào tùy tổng
+chi phí nào nhỏ hơn, và điểm gấp nào bị bỏ tùy hai toạ độ có cách nhau dưới
+0.01 hay không. Lệch một đơn vị ở bit cuối là đủ lật một quyết định. Nên bản Go
+phải cho ra đúng từng bit như bản Python, không chỉ đúng tới hai chữ số thập
+phân.
+
+Hai chỗ dễ lệch, cả hai đã có phép kiểm canh:
+
+**Làm tròn.** `round(x, 2)` của Python làm tròn giá trị nhị phân thật về số
+chẵn gần nhất. `math.Round` của Go làm tròn nửa ra xa số không trên giá trị đã
+nhân lên, nên lệch ở những số như 2.675. `num.Round` đi qua chuỗi thập phân,
+khớp Python trên 120.000 phép làm tròn so từng bit.
+
+**Nhân rồi cộng.** Đặc tả Go cho phép gộp `a*b + c` thành một lệnh FMA, chỉ
+làm tròn một lần, và được gộp cả qua nhiều câu lệnh. Trên arm64 điều đó xảy ra
+ở khoảng một phần tư số phép `a*1.42 + c`, lệch Python một đơn vị ở bit cuối.
+Chỉ phép chuyển kiểu tường minh chặn được việc gộp, nên quy tắc là **mọi phép
+nhân số thực phải bọc trong `float64()`**, trừ khi kết quả đi thẳng vào một
+phép nhân hay chia khác, hoặc vào một phép chuyển kiểu. `internal/lint` kiểm
+tĩnh quy tắc này trên toàn module ở mỗi lần `go test`.
+
 ## 12. Đầu vào mermaid
 
 mermaid là source adapter thứ tư, quy về cùng một Table như ba cái kia. Ánh xạ:

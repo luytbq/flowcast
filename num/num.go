@@ -26,3 +26,18 @@ func Fmt(v float64) string {
 func Rnd(v float64) int {
 	return int(math.Ceil(v/2.0) * 2)
 }
+
+// Round làm tròn tới d chữ số thập phân, đúng như round(x, d) của Python.
+//
+// Không dùng math.Round: nó làm tròn nửa ra xa số không trên giá trị đã nhân
+// lên, còn Python làm tròn giá trị nhị phân thật về số chẵn gần nhất, nên hai
+// cách cho kết quả khác nhau ở đúng những số như 2.675. Đi qua chuỗi thập phân
+// thì khớp, vì cả hai phía đều dùng cùng một cách chuyển số thực sang chuỗi được
+// làm tròn đúng. Đã kiểm trên conformance/round-vectors.json.
+func Round(x float64, d int) float64 {
+	v, err := strconv.ParseFloat(strconv.FormatFloat(x, 'f', d, 64), 64)
+	if err != nil {
+		panic(err)
+	}
+	return v
+}

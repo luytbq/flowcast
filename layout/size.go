@@ -55,7 +55,7 @@ func SizeItem(tm *text.Measure, cfg Config, kind string, lines []string) (wrappe
 		if kind == "end" {
 			pad = 12
 		}
-		return wl, float64(num.Rnd(max(80, tw*1.42+24+pad))), float64(num.Rnd(max(44, th*1.42+16+pad)))
+		return wl, float64(num.Rnd(max(80, float64(tw*1.42)+24+pad))), float64(num.Rnd(max(44, float64(th*1.42)+16+pad)))
 
 	case "db":
 		wl := tm.Wrap(lines, WrapBudget(cfg, kind))
@@ -82,7 +82,7 @@ func SizeLabel(tm *text.Measure, cfg Config, lines []string) (wrapped []string, 
 	if len(wl) > 0 {
 		lw, lh = tm.Box(wl)
 	}
-	return wl, lw + 2*float64(cfg.LabelPad), lh + 2
+	return wl, lw + float64(2*cfg.LabelPad), lh + 2
 }
 
 // HasText cho biết nội dung một dòng bảng có chữ thật hay không, theo đúng cách
