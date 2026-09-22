@@ -1,0 +1,401 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "106",
+      "112"
+     ],
+     [
+      "123",
+      "112"
+     ],
+     [
+      "123",
+      "226"
+     ],
+     [
+      "66",
+      "226"
+     ],
+     [
+      "66",
+      "244"
+     ]
+    ]
+   },
+   "E2": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "66",
+      "134"
+     ],
+     [
+      "66",
+      "146"
+     ],
+     [
+      "123",
+      "146"
+     ],
+     [
+      "123",
+      "226"
+     ],
+     [
+      "66",
+      "226"
+     ],
+     [
+      "66",
+      "244"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "80",
+    "x": "26",
+    "y": "90"
+   },
+   "A-2": {
+    "h": "50",
+    "w": "84",
+    "x": "24",
+    "y": "164"
+   },
+   "A-3": {
+    "h": "44",
+    "w": "80",
+    "x": "26",
+    "y": "244"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "138",
+    "x": "0"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "318",
+   "w": "138"
+  }
+ },
+ "issues": [],
+ "place": {
+  "cols": {
+   "0": [
+    0
+   ]
+  },
+  "items": {
+   "A-1": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-2": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "A-3": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 2
+   }
+  },
+  "lanes": [
+   "A"
+  ],
+  "nrows": 3,
+  "topo": [
+   "A-1",
+   "A-2",
+   "A-3"
+  ],
+  "warnings": []
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ],
+    "sym": [
+     [
+      "seg:0",
+      "src"
+     ],
+     [
+      "seg:0",
+      "seg:1"
+     ],
+     [
+      "col:0:0",
+      "seg:1"
+     ]
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ],
+    "sym": [
+     [
+      "src",
+      "seg:2"
+     ],
+     [
+      "seg:3",
+      "seg:2"
+     ],
+     [
+      "seg:3",
+      "seg:4"
+     ],
+     [
+      "col:0:0",
+      "seg:4"
+     ]
+    ]
+   }
+  },
+  "segs": [
+   {
+    "hi": 4,
+    "key": "A-3",
+    "lo": 1,
+    "res": "G:0:1",
+    "stubs": [
+     [
+      1,
+      -1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 2,
+    "key": "A-3",
+    "lo": 1,
+    "res": "C:2",
+    "stubs": [
+     [
+      1,
+      1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 2,
+    "key": null,
+    "lo": 1,
+    "res": "C:1",
+    "stubs": [
+     [
+      1,
+      -1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 4,
+    "key": "A-3",
+    "lo": 2,
+    "res": "G:0:1",
+    "stubs": [],
+    "track": 0
+   },
+   {
+    "hi": 2,
+    "key": "A-3",
+    "lo": 1,
+    "res": "C:2",
+    "stubs": [
+     [
+      1,
+      1
+     ]
+    ],
+    "track": 0
+   }
+  ],
+  "warnings": []
+ },
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "A-1 x"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 2,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "from": "A-1",
+     "to": "A-3"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E2",
+    "idx": 3,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "from": "A-1",
+     "to": "A-3"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 4,
+    "lines": [
+     "A-2 x"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "end"
+   },
+   {
+    "id": "A-3",
+    "idx": 5,
+    "lines": [
+     "A-3 x"
+    ],
+    "loc": "dòng 10",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "external"
+   }
+  ],
+  "source": "markdown",
+  "title": "Hình thoi và elip chỉ một cạnh mỗi mặt"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "A-1 x"
+    ],
+    "w": "80"
+   },
+   "A-2": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "A-2 x"
+    ],
+    "w": "84"
+   },
+   "A-3": {
+    "h": "44",
+    "kind": "external",
+    "lines": [
+     "A-3 x"
+    ],
+    "w": "80"
+   }
+  }
+ }
+}

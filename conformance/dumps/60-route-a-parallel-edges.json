@@ -1,0 +1,301 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "64",
+      "134"
+     ],
+     [
+      "64",
+      "164"
+     ]
+    ]
+   },
+   "E2": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "104",
+      "112"
+     ],
+     [
+      "119",
+      "112"
+     ],
+     [
+      "119",
+      "146"
+     ],
+     [
+      "64",
+      "146"
+     ],
+     [
+      "64",
+      "164"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "80",
+    "x": "24",
+    "y": "90"
+   },
+   "A-2": {
+    "h": "44",
+    "w": "80",
+    "x": "24",
+    "y": "164"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "134",
+    "x": "0"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "238",
+   "w": "134"
+  }
+ },
+ "issues": [],
+ "place": {
+  "cols": {
+   "0": [
+    0
+   ]
+  },
+  "items": {
+   "A-1": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-2": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   }
+  },
+  "lanes": [
+   "A"
+  ],
+  "nrows": 2,
+  "topo": [
+   "A-1",
+   "A-2"
+  ],
+  "warnings": []
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ],
+    "sym": []
+   },
+   "E2": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ],
+    "sym": [
+     [
+      "seg:0",
+      "src"
+     ],
+     [
+      "seg:0",
+      "seg:1"
+     ],
+     [
+      "col:0:0",
+      "seg:1"
+     ]
+    ]
+   }
+  },
+  "segs": [
+   {
+    "hi": 2,
+    "key": "A-2",
+    "lo": 1,
+    "res": "G:0:1",
+    "stubs": [
+     [
+      1,
+      -1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 2,
+    "key": "A-2",
+    "lo": 1,
+    "res": "C:1",
+    "stubs": [
+     [
+      1,
+      1
+     ]
+    ],
+    "track": 0
+   }
+  ],
+  "warnings": []
+ },
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "A-1 x"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 2,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E2",
+    "idx": 3,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "from": "A-1",
+     "to": "A-2"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 4,
+    "lines": [
+     "A-2 x"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "external"
+   }
+  ],
+  "source": "markdown",
+  "title": "Hai cạnh song song cùng đích, chỉ một cạnh đi thẳng đứng"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "A-1 x"
+    ],
+    "w": "80"
+   },
+   "A-2": {
+    "h": "44",
+    "kind": "external",
+    "lines": [
+     "A-2 x"
+    ],
+    "w": "80"
+   }
+  }
+ }
+}

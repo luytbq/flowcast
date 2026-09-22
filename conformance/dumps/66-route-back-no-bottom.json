@@ -1,0 +1,291 @@
+{
+ "geometry": {
+  "edges": {
+   "E2": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "30",
+      "194"
+     ],
+     [
+      "15",
+      "194"
+     ],
+     [
+      "15",
+      "72"
+     ],
+     [
+      "90",
+      "72"
+     ],
+     [
+      "90",
+      "90"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "80",
+    "x": "50",
+    "y": "90"
+   },
+   "A-3": {
+    "h": "50",
+    "w": "120",
+    "x": "30",
+    "y": "169"
+   },
+   "A-3.0": {
+    "h": "60",
+    "w": "100",
+    "x": "190",
+    "y": "164"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "338",
+    "x": "0"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "254",
+   "w": "338"
+  }
+ },
+ "issues": [
+  {
+   "id": "A-1",
+   "level": "warning",
+   "loc": "dòng 6",
+   "msg": "start có cạnh đi vào: E2"
+  }
+ ],
+ "place": {
+  "cols": {
+   "0": [
+    0,
+    1
+   ]
+  },
+  "items": {
+   "A-1": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-3": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "A-3.0": {
+    "attach": "A-3",
+    "col": 1,
+    "lane": 0,
+    "row": 1
+   }
+  },
+  "lanes": [
+   "A"
+  ],
+  "nrows": 2,
+  "topo": [
+   "A-1",
+   "A-3"
+  ],
+  "warnings": []
+ },
+ "route": {
+  "edges": {
+   "E2": {
+    "back": true,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.5"
+    ],
+    "sym": [
+     [
+      "seg:0",
+      "src"
+     ],
+     [
+      "seg:0",
+      "seg:1"
+     ],
+     [
+      "col:0:0",
+      "seg:1"
+     ]
+    ]
+   }
+  },
+  "segs": [
+   {
+    "hi": 3,
+    "key": "A-1",
+    "lo": 0,
+    "res": "G:0:0",
+    "stubs": [
+     [
+      3,
+      1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 1,
+    "key": "A-1",
+    "lo": 0,
+    "res": "C:0",
+    "stubs": [
+     [
+      1,
+      1
+     ]
+    ],
+    "track": 0
+   }
+  ],
+  "warnings": []
+ },
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "A-1 x"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "A-3",
+    "idx": 2,
+    "lines": [
+     "A-3 x"
+    ],
+    "loc": "dòng 7",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "A-3.0",
+    "idx": 3,
+    "lines": [
+     "d0"
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "attach": "A-3"
+    },
+    "meta_order": [
+     "attach"
+    ],
+    "parent": "A",
+    "type": "db"
+   },
+   {
+    "id": "E2",
+    "idx": 4,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 9",
+    "meta": {
+     "back": "true",
+     "from": "A-3",
+     "to": "A-1"
+    },
+    "meta_order": [
+     "from",
+     "to",
+     "back"
+    ],
+    "parent": "",
+    "type": "edge"
+   }
+  ],
+  "source": "markdown",
+  "title": "Cạnh back không ra mặt đáy"
+ },
+ "text": {
+  "edges": {
+   "E2": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "A-1 x"
+    ],
+    "w": "80"
+   },
+   "A-3": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "A-3 x"
+    ],
+    "w": "120"
+   },
+   "A-3.0": {
+    "h": "60",
+    "kind": "db",
+    "lines": [
+     "d0"
+    ],
+    "w": "100"
+   }
+  }
+ }
+}

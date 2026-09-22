@@ -1,0 +1,401 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "192",
+      "115"
+     ],
+     [
+      "144",
+      "115"
+     ]
+    ]
+   },
+   "E2": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "84",
+      "140"
+     ],
+     [
+      "84",
+      "170"
+     ]
+    ]
+   },
+   "E3": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "54",
+      "140"
+     ],
+     [
+      "54",
+      "152"
+     ],
+     [
+      "84",
+      "152"
+     ],
+     [
+      "84",
+      "170"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-2": {
+    "h": "50",
+    "w": "120",
+    "x": "24",
+    "y": "90"
+   },
+   "A-3": {
+    "h": "50",
+    "w": "120",
+    "x": "24",
+    "y": "170"
+   },
+   "B-1": {
+    "h": "44",
+    "w": "80",
+    "x": "192",
+    "y": "93"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "168",
+    "x": "0"
+   },
+   {
+    "id": "B",
+    "w": "128",
+    "x": "168"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "250",
+   "w": "296"
+  }
+ },
+ "issues": [
+  {
+   "id": "A-3",
+   "level": "warning",
+   "loc": "dòng 12",
+   "msg": "task không có cạnh ra"
+  }
+ ],
+ "place": {
+  "cols": {
+   "0": [
+    0
+   ],
+   "1": [
+    0
+   ]
+  },
+  "items": {
+   "A-2": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-3": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "B-1": {
+    "attach": "",
+    "col": 0,
+    "lane": 1,
+    "row": 0
+   }
+  },
+  "lanes": [
+   "A",
+   "B"
+  ],
+  "nrows": 2,
+  "topo": [
+   "B-1",
+   "A-2",
+   "A-3"
+  ],
+  "warnings": []
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "B",
+    "entry": "R",
+    "entry_frac": [
+     "1",
+     "0.5"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.5"
+    ],
+    "sym": []
+   },
+   "E2": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ],
+    "sym": []
+   },
+   "E3": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.25",
+     "1"
+    ],
+    "sym": [
+     [
+      "src",
+      "seg:0"
+     ],
+     [
+      "col:0:0",
+      "seg:0"
+     ]
+    ]
+   }
+  },
+  "segs": [
+   {
+    "hi": 1,
+    "key": "A-3",
+    "lo": 1,
+    "res": "C:1",
+    "stubs": [
+     [
+      1,
+      -1
+     ],
+     [
+      1,
+      1
+     ]
+    ],
+    "track": 0
+   }
+  ],
+  "warnings": []
+ },
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B",
+    "idx": 1,
+    "lines": [
+     "Lane B"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B-1",
+    "idx": 2,
+    "lines": [
+     "B-1 x"
+    ],
+    "loc": "dòng 7",
+    "meta": {},
+    "meta_order": [],
+    "parent": "B",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 3,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "from": "B-1",
+     "to": "A-2"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 4,
+    "lines": [
+     "A-2 x"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "E2",
+    "idx": 5,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 10",
+    "meta": {
+     "from": "A-2",
+     "to": "A-3"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E3",
+    "idx": 6,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 11",
+    "meta": {
+     "from": "A-2",
+     "to": "A-3"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-3",
+    "idx": 7,
+    "lines": [
+     "A-3 x"
+    ],
+    "loc": "dòng 12",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "task"
+   }
+  ],
+  "source": "markdown",
+  "title": "Cổng né giữa mặt khi mặt đã có cạnh cố định"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E3": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   }
+  },
+  "items": {
+   "A-2": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "A-2 x"
+    ],
+    "w": "120"
+   },
+   "A-3": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "A-3 x"
+    ],
+    "w": "120"
+   },
+   "B-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "B-1 x"
+    ],
+    "w": "80"
+   }
+  }
+ }
+}

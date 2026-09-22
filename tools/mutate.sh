@@ -58,6 +58,22 @@ EOPY
 	git checkout -- "$file"
 }
 
+# Đột biến tương đương đã chứng minh, không thêm lại vì chúng luôn bỏ lọt:
+#
+# - Đảo hướng branchOffset. Nó chỉ dùng để đếm cạnh có offset dương, mà offset
+#   là hoán vị của 0 tới n-1, nên số đếm luôn là n-1. Đã bỏ hàm đó.
+# - Bỏ phép kiểm mặt đón của đích trong kiểu B. Lúc pha B chạy, mặt trái hoặc
+#   phải của đích chỉ có thể bị chiếm bởi một cạnh B trước đó nối đích với một
+#   node x. x cùng phía với nguồn trên cùng hàng thì hoặc x nằm giữa, chặn
+#   đường của nguồn, hoặc nguồn nằm giữa, khiến cạnh của x không thể là B. x
+#   trùng nguồn thì phép kiểm phía nguồn đã bắt trước.
+# - Bỏ lối tắt một cạnh mỗi mặt trong assignPorts. Với đúng một cạnh, mọi nhánh
+#   đều cho ra giữa mặt.
+#
+# Hai cái sau sống sót qua 78.120 bảng sinh ngẫu nhiên trước khi được chứng
+# minh. Suy luận mà không có số liệu thì không đáng tin: hai nhánh khác cũng
+# từng bị nghi là thừa rồi bị bảng ngẫu nhiên giết.
+
 # num, text, layout/size
 mutate "bỏ ký tự - khỏi chỗ được ngắt" text/measure.go '=&?-"' '=&?"'
 mutate "bỏ nhánh :: khỏi chỗ được ngắt" text/measure.go "return i >= 2 && r[i-1] == ':' && r[i-2] == ':'" 'return false'
@@ -127,7 +143,6 @@ mutate "đường lùi ra xa bắt đầu từ cột thứ hai" layout/place.go 
 # layout/route
 mutate "A không kiểm mặt đáy đã có cạnh ra" layout/route.go "if len(l.sideOut[sideKey{u.ID, 'B'}]) > 0 {" 'if false {'
 mutate "ô dọc cho dây khác đích chồng lên" layout/route.go 'if id != dst {' 'if false {'
-mutate "B không kiểm mặt đón của đích" layout/route.go 'if l.sideUsed(u, s) || l.sideUsed(v, opp(s)) {' 'if l.sideUsed(u, s) {'
 mutate "B không tránh mặt có db" layout/route.go 'if l.attachSides(u)[s] || l.attachSides(v)[opp(s)] {' 'if false {'
 mutate "C không tránh mặt có db" layout/route.go 'if l.sideUsed(u, s) || l.attachSides(u)[s] {' 'if l.sideUsed(u, s) {'
 mutate "C không kiểm ô rẽ góc" layout/route.go 'hcells := append(l.cellsBetween(gkOf(u), gkOf(v), u.Row), turn)' 'hcells := l.cellsBetween(gkOf(u), gkOf(v), u.Row)'
@@ -144,7 +159,6 @@ mutate "hộp chữ nhật chia sẻ mặt đã có cạnh B hoặc C" layout/ro
 mutate "cùng cột thì hướng sang trái" layout/route.go 'if gkOf(u) == gkOf(v) || gkOf(u).less(gkOf(v)) {' 'if gkOf(u).less(gkOf(v)) {'
 
 # gán cổng và track
-mutate "mặt một cạnh của hộp vẫn chia cổng" layout/tracks.go 'if nonRect[u.Kind] || len(es) == 1 {' 'if nonRect[u.Kind] {'
 mutate "bỏ bộ cổng né giữa mặt" layout/tracks.go 'if len(fixed) > 0 && n <= 6 {' 'if false {'
 mutate "mặt bên sắp cổng theo cột thay vì theo hàng" layout/tracks.go "if side == 'L' || side == 'R' {" 'if false {'
 mutate "cổng mặt trái đặt ở mép phải" layout/tracks.go 'e.ExitFrac = [2]float64{0.0, fr[i]}' 'e.ExitFrac = [2]float64{1.0, fr[i]}'

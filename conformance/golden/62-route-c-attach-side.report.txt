@@ -1,0 +1,5 @@
+WARNING dòng 18 [A-8]: task không có cạnh ra
+check: 0 lỗi, 1 cảnh báo
+build: 2 lane, 8 phần tử, 4 cạnh, 630x330px
+WARNING layout: A-4.2: không còn ô trống cạnh A-4, đặt xa hơn
+layout: 0 lỗi, 0 cảnh báo

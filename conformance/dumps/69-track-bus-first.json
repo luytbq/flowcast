@@ -1,0 +1,660 @@
+{
+ "geometry": {
+  "edges": {
+   "E1": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "124",
+      "112"
+     ],
+     [
+      "159",
+      "112"
+     ],
+     [
+      "159",
+      "226"
+     ],
+     [
+      "84",
+      "226"
+     ],
+     [
+      "84",
+      "244"
+     ]
+    ]
+   },
+   "E2": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "84",
+      "134"
+     ],
+     [
+      "84",
+      "146"
+     ],
+     [
+      "171",
+      "146"
+     ],
+     [
+      "171",
+      "306"
+     ],
+     [
+      "84",
+      "306"
+     ],
+     [
+      "84",
+      "324"
+     ]
+    ]
+   },
+   "E3": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "84",
+      "214"
+     ],
+     [
+      "84",
+      "244"
+     ]
+    ]
+   },
+   "E4": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "84",
+      "294"
+     ],
+     [
+      "84",
+      "324"
+     ]
+    ]
+   },
+   "E5": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "144",
+      "269"
+     ],
+     [
+      "171",
+      "269"
+     ],
+     [
+      "171",
+      "306"
+     ],
+     [
+      "84",
+      "306"
+     ],
+     [
+      "84",
+      "324"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "80",
+    "x": "44",
+    "y": "90"
+   },
+   "A-2": {
+    "h": "50",
+    "w": "120",
+    "x": "24",
+    "y": "164"
+   },
+   "A-3": {
+    "h": "50",
+    "w": "120",
+    "x": "24",
+    "y": "244"
+   },
+   "A-4": {
+    "h": "50",
+    "w": "120",
+    "x": "24",
+    "y": "324"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "186",
+    "x": "0"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "404",
+   "w": "186"
+  }
+ },
+ "issues": [
+  {
+   "id": "A-4",
+   "level": "warning",
+   "loc": "dòng 14",
+   "msg": "task không có cạnh ra"
+  }
+ ],
+ "place": {
+  "cols": {
+   "0": [
+    0
+   ]
+  },
+  "items": {
+   "A-1": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "A-2": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 1
+   },
+   "A-3": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 2
+   },
+   "A-4": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 3
+   }
+  },
+  "lanes": [
+   "A"
+  ],
+  "nrows": 4,
+  "topo": [
+   "A-1",
+   "A-2",
+   "A-3",
+   "A-4"
+  ],
+  "warnings": []
+ },
+ "route": {
+  "edges": {
+   "E1": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ],
+    "sym": [
+     [
+      "seg:0",
+      "src"
+     ],
+     [
+      "seg:0",
+      "seg:1"
+     ],
+     [
+      "col:0:0",
+      "seg:1"
+     ]
+    ]
+   },
+   "E2": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ],
+    "sym": [
+     [
+      "src",
+      "seg:2"
+     ],
+     [
+      "seg:3",
+      "seg:2"
+     ],
+     [
+      "seg:3",
+      "seg:4"
+     ],
+     [
+      "col:0:0",
+      "seg:4"
+     ]
+    ]
+   },
+   "E3": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ],
+    "sym": []
+   },
+   "E4": {
+    "back": false,
+    "case": "A",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "B",
+    "exit_frac": [
+     "0.5",
+     "1"
+    ],
+    "sym": []
+   },
+   "E5": {
+    "back": false,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "R",
+    "exit_frac": [
+     "1",
+     "0.5"
+    ],
+    "sym": [
+     [
+      "seg:5",
+      "src"
+     ],
+     [
+      "seg:5",
+      "seg:6"
+     ],
+     [
+      "col:0:0",
+      "seg:6"
+     ]
+    ]
+   }
+  },
+  "segs": [
+   {
+    "hi": 4,
+    "key": "A-3",
+    "lo": 1,
+    "res": "G:0:1",
+    "stubs": [
+     [
+      1,
+      -1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 2,
+    "key": "A-3",
+    "lo": 1,
+    "res": "C:2",
+    "stubs": [
+     [
+      1,
+      1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 2,
+    "key": null,
+    "lo": 1,
+    "res": "C:1",
+    "stubs": [
+     [
+      1,
+      -1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 6,
+    "key": "A-4",
+    "lo": 2,
+    "res": "G:0:1",
+    "stubs": [],
+    "track": 1
+   },
+   {
+    "hi": 2,
+    "key": "A-4",
+    "lo": 1,
+    "res": "C:3",
+    "stubs": [
+     [
+      1,
+      1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 6,
+    "key": "A-4",
+    "lo": 5,
+    "res": "G:0:1",
+    "stubs": [
+     [
+      5,
+      -1
+     ]
+    ],
+    "track": 1
+   },
+   {
+    "hi": 2,
+    "key": "A-4",
+    "lo": 1,
+    "res": "C:3",
+    "stubs": [
+     [
+      1,
+      1
+     ]
+    ],
+    "track": 0
+   }
+  ],
+  "warnings": []
+ },
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 1,
+    "lines": [
+     "A-1 x"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "E1",
+    "idx": 2,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 7",
+    "meta": {
+     "from": "A-1",
+     "to": "A-3"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E2",
+    "idx": 3,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 8",
+    "meta": {
+     "from": "A-1",
+     "to": "A-4"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-2",
+    "idx": 4,
+    "lines": [
+     "A-2 x"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "E3",
+    "idx": 5,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 10",
+    "meta": {
+     "from": "A-2",
+     "to": "A-3"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-3",
+    "idx": 6,
+    "lines": [
+     "A-3 x"
+    ],
+    "loc": "dòng 11",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "task"
+   },
+   {
+    "id": "E4",
+    "idx": 7,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 12",
+    "meta": {
+     "from": "A-3",
+     "to": "A-4"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E5",
+    "idx": 8,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 13",
+    "meta": {
+     "from": "A-3",
+     "to": "A-4"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "A-4",
+    "idx": 9,
+    "lines": [
+     "A-4 x"
+    ],
+    "loc": "dòng 14",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "task"
+   }
+  ],
+  "source": "markdown",
+  "title": "Đoạn cùng đích ưu tiên track đã có đoạn cùng đích"
+ },
+ "text": {
+  "edges": {
+   "E1": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E2": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E3": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E4": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E5": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "A-1 x"
+    ],
+    "w": "80"
+   },
+   "A-2": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "A-2 x"
+    ],
+    "w": "120"
+   },
+   "A-3": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "A-3 x"
+    ],
+    "w": "120"
+   },
+   "A-4": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "A-4 x"
+    ],
+    "w": "120"
+   }
+  }
+ }
+}

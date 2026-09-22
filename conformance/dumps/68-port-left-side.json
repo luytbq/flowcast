@@ -1,0 +1,422 @@
+{
+ "geometry": {
+  "edges": {
+   "E2": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "290",
+      "194"
+     ],
+     [
+      "236",
+      "194"
+     ]
+    ]
+   },
+   "E3": {
+    "label": null,
+    "label_off": [
+     "0",
+     "0"
+    ],
+    "label_t": "0",
+    "points": [
+     [
+      "290",
+      "181.5"
+     ],
+     [
+      "275",
+      "181.5"
+     ],
+     [
+      "275",
+      "72"
+     ],
+     [
+      "64",
+      "72"
+     ],
+     [
+      "64",
+      "90"
+     ]
+    ]
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "w": "80",
+    "x": "24",
+    "y": "90"
+   },
+   "B-3": {
+    "h": "50",
+    "w": "84",
+    "x": "152",
+    "y": "169"
+   },
+   "C-2": {
+    "h": "50",
+    "w": "120",
+    "x": "290",
+    "y": "169"
+   },
+   "C-2.0": {
+    "h": "60",
+    "w": "100",
+    "x": "450",
+    "y": "164"
+   }
+  },
+  "lanes": [
+   {
+    "id": "A",
+    "w": "128",
+    "x": "0"
+   },
+   {
+    "id": "B",
+    "w": "132",
+    "x": "128"
+   },
+   {
+    "id": "C",
+    "w": "338",
+    "x": "260"
+   }
+  ],
+  "origin": [
+   "40",
+   "40"
+  ],
+  "pool": {
+   "h": "254",
+   "w": "598"
+  }
+ },
+ "issues": [
+  {
+   "id": "A-1",
+   "level": "warning",
+   "loc": "dòng 8",
+   "msg": "start có cạnh đi vào: E3"
+  }
+ ],
+ "place": {
+  "cols": {
+   "0": [
+    0
+   ],
+   "1": [
+    0
+   ],
+   "2": [
+    0,
+    1
+   ]
+  },
+  "items": {
+   "A-1": {
+    "attach": "",
+    "col": 0,
+    "lane": 0,
+    "row": 0
+   },
+   "B-3": {
+    "attach": "",
+    "col": 0,
+    "lane": 1,
+    "row": 1
+   },
+   "C-2": {
+    "attach": "",
+    "col": 0,
+    "lane": 2,
+    "row": 1
+   },
+   "C-2.0": {
+    "attach": "C-2",
+    "col": 1,
+    "lane": 2,
+    "row": 1
+   }
+  },
+  "lanes": [
+   "A",
+   "B",
+   "C"
+  ],
+  "nrows": 2,
+  "topo": [
+   "A-1",
+   "C-2",
+   "B-3"
+  ],
+  "warnings": []
+ },
+ "route": {
+  "edges": {
+   "E2": {
+    "back": false,
+    "case": "B",
+    "entry": "R",
+    "entry_frac": [
+     "1",
+     "0.5"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.5"
+    ],
+    "sym": []
+   },
+   "E3": {
+    "back": true,
+    "case": "D",
+    "entry": "T",
+    "entry_frac": [
+     "0.5",
+     "0"
+    ],
+    "exit": "L",
+    "exit_frac": [
+     "0",
+     "0.25"
+    ],
+    "sym": [
+     [
+      "seg:0",
+      "src"
+     ],
+     [
+      "seg:0",
+      "seg:1"
+     ],
+     [
+      "col:0:0",
+      "seg:1"
+     ]
+    ]
+   }
+  },
+  "segs": [
+   {
+    "hi": 3,
+    "key": "A-1",
+    "lo": 0,
+    "res": "G:2:0",
+    "stubs": [
+     [
+      3,
+      1
+     ]
+    ],
+    "track": 0
+   },
+   {
+    "hi": 6,
+    "key": "A-1",
+    "lo": 1,
+    "res": "C:0",
+    "stubs": [
+     [
+      1,
+      1
+     ]
+    ],
+    "track": 0
+   }
+  ],
+  "warnings": []
+ },
+ "table": {
+  "issues": [],
+  "rows": [
+   {
+    "id": "A",
+    "idx": 0,
+    "lines": [
+     "Lane A"
+    ],
+    "loc": "dòng 5",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "B",
+    "idx": 1,
+    "lines": [
+     "Lane B"
+    ],
+    "loc": "dòng 6",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "C",
+    "idx": 2,
+    "lines": [
+     "Lane C"
+    ],
+    "loc": "dòng 7",
+    "meta": {},
+    "meta_order": [],
+    "parent": "",
+    "type": "lane"
+   },
+   {
+    "id": "A-1",
+    "idx": 3,
+    "lines": [
+     "A-1 x"
+    ],
+    "loc": "dòng 8",
+    "meta": {},
+    "meta_order": [],
+    "parent": "A",
+    "type": "start"
+   },
+   {
+    "id": "C-2",
+    "idx": 4,
+    "lines": [
+     "C-2 x"
+    ],
+    "loc": "dòng 9",
+    "meta": {},
+    "meta_order": [],
+    "parent": "C",
+    "type": "task"
+   },
+   {
+    "id": "C-2.0",
+    "idx": 5,
+    "lines": [
+     "d0"
+    ],
+    "loc": "dòng 10",
+    "meta": {
+     "attach": "C-2"
+    },
+    "meta_order": [
+     "attach"
+    ],
+    "parent": "C",
+    "type": "db"
+   },
+   {
+    "id": "E2",
+    "idx": 6,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 11",
+    "meta": {
+     "from": "C-2",
+     "to": "B-3"
+    },
+    "meta_order": [
+     "from",
+     "to"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "E3",
+    "idx": 7,
+    "lines": [
+     ""
+    ],
+    "loc": "dòng 12",
+    "meta": {
+     "back": "true",
+     "from": "C-2",
+     "to": "A-1"
+    },
+    "meta_order": [
+     "from",
+     "to",
+     "back"
+    ],
+    "parent": "",
+    "type": "edge"
+   },
+   {
+    "id": "B-3",
+    "idx": 8,
+    "lines": [
+     "B-3 x"
+    ],
+    "loc": "dòng 13",
+    "meta": {},
+    "meta_order": [],
+    "parent": "B",
+    "type": "end"
+   }
+  ],
+  "source": "markdown",
+  "title": "Cổng trên mặt trái nằm ở mép trái"
+ },
+ "text": {
+  "edges": {
+   "E2": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   },
+   "E3": {
+    "lh": "2",
+    "lines": [],
+    "lw": "8"
+   }
+  },
+  "items": {
+   "A-1": {
+    "h": "44",
+    "kind": "start",
+    "lines": [
+     "A-1 x"
+    ],
+    "w": "80"
+   },
+   "B-3": {
+    "h": "50",
+    "kind": "end",
+    "lines": [
+     "B-3 x"
+    ],
+    "w": "84"
+   },
+   "C-2": {
+    "h": "50",
+    "kind": "task",
+    "lines": [
+     "C-2 x"
+    ],
+    "w": "120"
+   },
+   "C-2.0": {
+    "h": "60",
+    "kind": "db",
+    "lines": [
+     "d0"
+    ],
+    "w": "100"
+   }
+  }
+ }
+}
