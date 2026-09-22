@@ -242,6 +242,13 @@ không thấy, rồi báo lỗi cho dòng đầu dù cạnh ra của nó nằm �
 vẫn thấy lỗi id trùng thật, nhưng kèm một lỗi thừa gây nhiễu. Chốt bởi case
 `992-invalid-refs-order`.
 
+**db tràn ô có thể đè lên đường của mũi tên ngang.** Khi bốn ô sát node đã kín,
+đường lùi ra xa chỉ tránh ô đã có phần tử, không tránh khoảng mà một mũi tên
+ngang chạy qua. db rơi vào đúng khoảng đó, và pha đi dây phải chuyển mũi tên từ
+kiểu B thẳng ngang sang kiểu D đi vòng. Không cắt node nào nên tự kiểm vẫn báo
+0 lỗi; cái mất là một mũi tên lẽ ra thẳng. Chốt bởi case
+`48-place-attach-overflow-span`.
+
 ## Thêm case
 
 1. Viết bảng vào cases/, đặt tên theo nhánh nó chốt, không theo nội dung nghiệp
