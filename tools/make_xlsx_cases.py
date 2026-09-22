@@ -80,13 +80,13 @@ CASES = {
     'xlsx-03-title-offset': [('Flow', [(1, ['Luồng trong Excel']), (2, [])] +
                               at(3, [[''] + r for r in [HEAD] + FLOW]) +
                               [(11, []), (12, ['', 'ghi chú dưới bảng'])], (), ())],
-    # id kiểu số: cảnh báo, và 7.0 đọc thành 7. Tránh 0 và 1, hai id dành riêng
-    # của draw.io.
+    # id và parent kiểu số: cảnh báo ở cả hai cột, và 7.0 đọc thành 7. Tránh 0 và
+    # 1, hai id dành riêng của draw.io.
     'xlsx-04-numeric-ids': [('Flow', at(1, [HEAD] + [
-        ['A', 'lane', '', 'Lane A', ''],
-        [('5', 'num'), 'start', 'A', 'Vào', ''],
+        [('3', 'num'), 'lane', '', 'Lane số', ''],
+        [('5', 'num'), 'start', ('3', 'num'), 'Vào', ''],
         ['E1', 'edge', '', '', 'from=5; to=7'],
-        [('7.0', 'num'), 'end', 'A', 'Xong', ''],
+        [('7.0', 'num'), 'end', ('3', 'num'), 'Xong', ''],
     ]), (), ())],
     # Ô công thức có giá trị lưu sẵn và ô công thức chưa có giá trị.
     'xlsx-05-formulas': [('Flow', at(1, [HEAD] + [

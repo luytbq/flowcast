@@ -83,7 +83,7 @@
   },
   "lanes": [
    {
-    "id": "A",
+    "id": "3",
     "w": "128",
     "x": "0"
    }
@@ -100,15 +100,33 @@
  },
  "issues": [
   {
+   "id": "3",
+   "level": "warning",
+   "loc": "Flow!A2",
+   "msg": "ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi"
+  },
+  {
    "id": "5",
    "level": "warning",
    "loc": "Flow!A3",
    "msg": "ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi"
   },
   {
+   "id": "3",
+   "level": "warning",
+   "loc": "Flow!C3",
+   "msg": "ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi"
+  },
+  {
    "id": "7",
    "level": "warning",
    "loc": "Flow!A5",
+   "msg": "ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi"
+  },
+  {
+   "id": "3",
+   "level": "warning",
+   "loc": "Flow!C5",
    "msg": "ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi"
   }
  ],
@@ -133,7 +151,7 @@
    }
   },
   "lanes": [
-   "A"
+   "3"
   ],
   "nrows": 2,
   "topo": [
@@ -166,9 +184,21 @@
  "table": {
   "issues": [
    {
+    "id": "3",
+    "level": "warning",
+    "loc": "Flow!A2",
+    "msg": "ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi"
+   },
+   {
     "id": "5",
     "level": "warning",
     "loc": "Flow!A3",
+    "msg": "ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi"
+   },
+   {
+    "id": "3",
+    "level": "warning",
+    "loc": "Flow!C3",
     "msg": "ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi"
    },
    {
@@ -176,14 +206,20 @@
     "level": "warning",
     "loc": "Flow!A5",
     "msg": "ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi"
+   },
+   {
+    "id": "3",
+    "level": "warning",
+    "loc": "Flow!C5",
+    "msg": "ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi"
    }
   ],
   "rows": [
    {
-    "id": "A",
+    "id": "3",
     "idx": 0,
     "lines": [
-     "Lane A"
+     "Lane số"
     ],
     "loc": "Flow dòng 2",
     "meta": {},
@@ -200,7 +236,7 @@
     "loc": "Flow dòng 3",
     "meta": {},
     "meta_order": [],
-    "parent": "A",
+    "parent": "3",
     "type": "start"
    },
    {
@@ -230,7 +266,7 @@
     "loc": "Flow dòng 5",
     "meta": {},
     "meta_order": [],
-    "parent": "A",
+    "parent": "3",
     "type": "end"
    }
   ],

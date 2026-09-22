@@ -96,6 +96,8 @@ EOPY
 # - Dòng rỗng hoàn toàn trong readCSV không ra hàng rỗng. splitKeepEnds không
 #   bao giờ sinh dòng rỗng: mỗi dòng mang ít nhất ký tự xuống dòng của nó, nên
 #   máy trạng thái luôn thấy ký tự xuống dòng trước khi thấy hết dòng.
+# - .text của phần tử xlsx gom cả chữ nằm sau phần tử con. Bộ đọc chỉ đọc text
+#   của t và v, hai phần tử không bao giờ có con trong SpreadsheetML hợp lệ.
 # - Không thoát xuống dòng trong giá trị thuộc tính. Ký tự xuống dòng không lọt
 #   được vào thuộc tính: ô markdown nằm trên một dòng, nội dung chỉ tách tại thẻ
 #   br, còn id và tiêu đề cũng lấy từ một dòng. Tab thì lọt được, và có case.
@@ -356,7 +358,6 @@ mutate "sheet không có header thì dừng thay vì thử sheet sau" source/xls
 mutate "đường dẫn sheet tuyệt đối không bỏ dấu gạch đầu" source/xlsx.go 'if strings.HasPrefix(target, "/xl/") {' 'if false {'
 mutate "--sheet không lọc" source/xlsx.go '			if s.name == sheet {' '			if true {'
 mutate "cột lấy theo thứ tự ô thay vì theo địa chỉ" source/xlsx.go '				ci = colIndex(ref)' '				ci = len(cells)'
-mutate "text của phần tử gom cả chữ sau phần tử con" source/xlsx.go 'if len(stack) > 0 && len(stack[len(stack)-1].children) == 0 {' 'if len(stack) > 0 {'
 
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang
