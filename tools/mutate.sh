@@ -41,6 +41,12 @@ trap '[ -n "$current" ] && git checkout -- "$current"' EXIT INT TERM
 
 mutate() {
 	label="$1" file="$2" from="$3" to="$4"
+	# Lọc trước khi chạm vào file. Đột biến bị lọc ra mà vẫn được áp thì hàm
+	# thoát sớm để lại file hỏng, và trap không biết để khôi phục.
+	if [ -z "$PREFLIGHT" ]; then
+		case "$file" in "${ONLY:-}"*) ;; *) return 0 ;; esac
+		current="$file"
+	fi
 	python3 - "$file" "$from" "$to" "${PREFLIGHT:-}" <<'EOPY'
 import io, sys
 p, a, b, preflight = sys.argv[1:5]
@@ -54,8 +60,6 @@ if not preflight:
     io.open(p, 'w', encoding='utf-8').write(s.replace(a, b))
 EOPY
 	[ -n "$PREFLIGHT" ] && return 0
-	case "$file" in "${ONLY:-}"*) ;; *) return 0 ;; esac
-	current="$file"
 	if go test -count=1 ./... >/dev/null 2>&1; then
 		echo "BỎ LỌT     $label"
 		missed=$((missed + 1))
@@ -268,6 +272,13 @@ mutate "ghi cả điểm đầu và điểm cuối vào points" writer/drawio/wr
 mutate "lane không trừ header của pool" writer/drawio/write.go 'geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH-float64(r.PoolHeader))' 'geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH)'
 
 [ -n "$PREFLIGHT" ] && exit 0
+# Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang
+# hỏng, và mọi kết quả phía trên đều không đáng tin.
+if ! git diff --quiet; then
+	echo 'ERROR cây làm việc còn bẩn sau khi chạy:'
+	git status --short
+	exit 1
+fi
 echo
 echo "bắt được $caught, bỏ lọt $missed"
 [ "$missed" -eq 0 ]
