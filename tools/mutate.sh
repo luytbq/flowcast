@@ -124,6 +124,38 @@ mutate "đảo phía hside" layout/place.go 'toRight := (gk{u.Lane, u.Col}).less
 mutate "đếm cả nhánh chính là nhánh phụ" layout/branch.go 'return n - 1' 'return n'
 mutate "đường lùi ra xa bắt đầu từ cột thứ hai" layout/place.go 'for d := 3; d < 50; d++ {' 'for d := 2; d < 50; d++ {'
 
+# layout/route
+mutate "A không kiểm mặt đáy đã có cạnh ra" layout/route.go "if len(l.sideOut[sideKey{u.ID, 'B'}]) > 0 {" 'if false {'
+mutate "ô dọc cho dây khác đích chồng lên" layout/route.go 'if id != dst {' 'if false {'
+mutate "B không kiểm mặt đón của đích" layout/route.go 'if l.sideUsed(u, s) || l.sideUsed(v, opp(s)) {' 'if l.sideUsed(u, s) {'
+mutate "B không tránh mặt có db" layout/route.go 'if l.attachSides(u)[s] || l.attachSides(v)[opp(s)] {' 'if false {'
+mutate "C không tránh mặt có db" layout/route.go 'if l.sideUsed(u, s) || l.attachSides(u)[s] {' 'if l.sideUsed(u, s) {'
+mutate "C không kiểm ô rẽ góc" layout/route.go 'hcells := append(l.cellsBetween(gkOf(u), gkOf(v), u.Row), turn)' 'hcells := l.cellsBetween(gkOf(u), gkOf(v), u.Row)'
+mutate "cạnh back được ra đáy" layout/route.go 'if e.Back || v.Row <= u.Row {' 'if false {'
+mutate "D ưu tiên ra đáy trước mặt bên" layout/route.go "choices := []byte{s, 'B', opp(s)}" "choices := []byte{'B', s, opp(s)}"
+mutate "tắt lối tắt hàng liền kề của D" layout/route.go 'if v.Row == u.Row+1 {' 'if false {'
+mutate "tắt lối tắt cột trống của D" layout/route.go 'if all(vcells, func(c cell) bool { return vOK(c, v.ID) }) && gkOf(u) != gkOf(v) {' 'if false {'
+mutate "đảo phía máng khi ra đáy" layout/route.go 'if !gkOf(u).less(gkOf(v)) {' 'if gkOf(u).less(gkOf(v)) {'
+mutate "máng bên bắt đầu từ giữa hàng thay vì dưới node" layout/route.go 'l.seg(gs, 2*u.Row+1,' 'l.seg(gs, 2*u.Row,'
+mutate "đảo phía chân nối của máng bên" layout/route.go 'dir = -1' 'dir = 1'
+mutate "đoạn máng khi ra đáy thành đoạn riêng" layout/route.go 's2 := l.seg(gt, 2*(u.Row+1), 2*v.Row, v.ID)' 's2 := l.seg(gt, 2*(u.Row+1), 2*v.Row, "")'
+mutate "hình thoi chia sẻ một mặt cho nhiều cạnh" layout/route.go 'return len(used) == 0' 'return true'
+mutate "hộp chữ nhật chia sẻ mặt đã có cạnh B hoặc C" layout/route.go "if x.Case == 'B' || x.Case == 'C' {" 'if false {'
+mutate "cùng cột thì hướng sang trái" layout/route.go 'if gkOf(u) == gkOf(v) || gkOf(u).less(gkOf(v)) {' 'if gkOf(u).less(gkOf(v)) {'
+
+# gán cổng và track
+mutate "mặt một cạnh của hộp vẫn chia cổng" layout/tracks.go 'if nonRect[u.Kind] || len(es) == 1 {' 'if nonRect[u.Kind] {'
+mutate "bỏ bộ cổng né giữa mặt" layout/tracks.go 'if len(fixed) > 0 && n <= 6 {' 'if false {'
+mutate "mặt bên sắp cổng theo cột thay vì theo hàng" layout/tracks.go "if side == 'L' || side == 'R' {" 'if false {'
+mutate "cổng mặt trái đặt ở mép phải" layout/tracks.go 'e.ExitFrac = [2]float64{0.0, fr[i]}' 'e.ExitFrac = [2]float64{1.0, fr[i]}'
+mutate "không ưu tiên track dùng chung cùng đích" layout/tracks.go 'if fits(s, ti, true) {' 'if false {'
+mutate "đoạn cùng đích không được chồng" layout/tracks.go 'if !(s.Key != "" && t.Key == s.Key) && overlap(t, s) {' 'if overlap(t, s) {'
+mutate "bỏ ràng buộc thứ tự chân nối" layout/tracks.go 'if pa.Pos == pb.Pos && pa.Dir < pb.Dir {' 'if false {'
+mutate "đoạn cùng đích vẫn chịu ràng buộc thứ tự" layout/tracks.go 'if a.Key != "" && a.Key == b.Key {' 'if false {'
+mutate "hai đoạn chạm đầu không tính là chồng" layout/tracks.go 'return a.Lo <= b.Hi && b.Lo <= a.Hi' 'return a.Lo < b.Hi && b.Lo < a.Hi'
+mutate "track mới luôn chèn cuối" layout/tracks.go 'chosen = max(lo, min(hi, len(tracks)))' 'chosen = len(tracks)'
+mutate "orderOK bỏ qua ràng buộc chiều xuôi" layout/tracks.go 'if mustPrecede(s, t) && !(ti < tj) {' 'if false {'
+
 [ -n "$PREFLIGHT" ] && exit 0
 echo
 echo "bắt được $caught, bỏ lọt $missed"
