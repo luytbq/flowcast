@@ -1,0 +1,15 @@
+# input: csv-08-quoted-cells -> in.csv
+$ ["check", "$T/in.csv"]
+check: đọc bảng từ csv (dấu phẩy, utf-8-sig)
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.csv"]
+check: đọc bảng từ csv (dấu phẩy, utf-8-sig)
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 3 phần tử, 2 cạnh, 168x340px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+ef684b60cbbdb9af  in.csv
+a23aa594f0456bde  in.drawio

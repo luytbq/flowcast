@@ -1,0 +1,9 @@
+# input: csv-90-invalid-no-header -> in.csv
+$ ["check", "$T/in.csv"]
+ERROR   không tìm thấy hàng header trong csv; kiểm tra dấu phân cách, hoặc dùng --delimiter
+[exit 1]
+$ ["build", "$T/in.csv"]
+ERROR   không tìm thấy hàng header trong csv; kiểm tra dấu phân cách, hoặc dùng --delimiter
+[exit 1]
+--- files
+9284ed4fd7fe1346  in.csv

@@ -1,0 +1,15 @@
+# input: csv-06-title-and-notes -> in.csv
+$ ["check", "$T/in.csv"]
+check: đọc bảng từ csv (dấu phẩy, utf-8-sig)
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.csv"]
+check: đọc bảng từ csv (dấu phẩy, utf-8-sig)
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 2 cạnh, 394.02x250px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+70ae9ae6675aaae4  in.csv
+180e8457c7fe7150  in.drawio

@@ -7,8 +7,11 @@ package conformance
 
 import (
 	"encoding/json"
+
 	"fmt"
 	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/model"
+	"github.com/luytbq/flowcast/source"
 	"os"
 	"path/filepath"
 	"sort"
@@ -123,7 +126,10 @@ type GeomStage struct {
 
 // Dump là một file conformance/dumps/<case>.json.
 type Dump struct {
-	Name   string      // tên case, không có đuôi
+	Name string // tên case, không có đuôi
+	// Fatal là thông điệp của lỗi chặn ở tầng đọc. Khi có nó thì không có chặng
+	// nào khác, vì không có bảng nào được đọc ra.
+	Fatal  string      `json:"fatal"`
 	Table  TableStage  `json:"table"`
 	Text   *TextStage  `json:"text"`
 	Issues []DumpIssue `json:"issues"`
@@ -133,8 +139,28 @@ type Dump struct {
 	Check  [][2]string `json:"check"`
 }
 
-// CaseFile trả về đường dẫn bảng đầu vào của một case.
-func CaseFile(dir, name string) string { return filepath.Join(dir, "cases", name+".md") }
+// CaseFile trả về đường dẫn bảng đầu vào của một case, với đuôi nào mà file
+// của nó mang.
+func CaseFile(dir, name string) string {
+	for _, ext := range []string{".md", ".csv", ".xlsx"} {
+		p := filepath.Join(dir, "cases", name+ext)
+		if _, err := os.Stat(p); err == nil {
+			return p
+		}
+	}
+	return filepath.Join(dir, "cases", name+".md")
+}
+
+// ParseCase đọc bảng của một case, với tên nguồn là tên file như bản tham chiếu
+// dùng trong thông điệp lỗi.
+func ParseCase(dir, name string) (model.Table, error) {
+	p := CaseFile(dir, name)
+	data, err := os.ReadFile(p)
+	if err != nil {
+		return model.Table{}, err
+	}
+	return source.Parse(source.Source{Data: data, Name: filepath.Base(p)})
+}
 
 // Dir trả về thư mục bộ đối chiếu, tính từ vị trí gói này.
 func Dir() string { return "." }

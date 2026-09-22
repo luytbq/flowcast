@@ -1,0 +1,15 @@
+# input: csv-02-semicolon -> in.csv
+$ ["check", "$T/in.csv"]
+check: đọc bảng từ csv (dấu chấm phẩy, utf-8-sig)
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+$ ["build", "$T/in.csv"]
+check: đọc bảng từ csv (dấu chấm phẩy, utf-8-sig)
+check: 0 lỗi, 0 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 2 cạnh, 394.02x250px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+cd77c89a27b9e9a9  in.csv
+f58c899ec2fbf9e3  in.drawio

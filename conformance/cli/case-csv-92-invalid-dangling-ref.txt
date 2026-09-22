@@ -1,0 +1,14 @@
+# input: csv-92-invalid-dangling-ref -> in.csv
+$ ["check", "$T/in.csv"]
+check: đọc bảng từ csv (dấu phẩy, utf-8-sig)
+ERROR   dòng 5 [E1]: to=B-1 trỏ tới id không tồn tại
+check: 1 lỗi, 0 cảnh báo
+[exit 1]
+$ ["build", "$T/in.csv"]
+check: đọc bảng từ csv (dấu phẩy, utf-8-sig)
+ERROR   dòng 5 [E1]: to=B-1 trỏ tới id không tồn tại
+check: 1 lỗi, 0 cảnh báo
+build: dừng vì bảng có lỗi
+[exit 1]
+--- files
+ae972af5803fd400  in.csv

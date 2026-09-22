@@ -1,0 +1,14 @@
+Luồng có tiêu đề
+ghi chú không thuộc bảng
+
+id,type,parent,content,metadata,cột thừa
+A,lane,,Lane A,,cột thừa
+B,lane,,Lane B,,cột thừa
+A-1,start,A,Bắt đầu,,cột thừa
+E1,edge,,gửi yêu cầu,from=A-1; to=B-1,cột thừa
+B-1,task,B,Xử lý,,cột thừa
+E2,edge,,,from=B-1; to=B-2,cột thừa
+B-2,end,B,Xong,,cột thừa
+
+ghi chú sau bảng
+A-9,task,A,không đọc,

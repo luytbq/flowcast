@@ -1,0 +1,17 @@
+# input: csv-05-cp1252 -> in.csv
+$ ["check", "$T/in.csv"]
+check: đọc bảng từ csv (dấu phẩy, cp1252)
+WARNING -: file không phải utf-8, đã đọc theo cp1252; chữ tiếng Việt có thể đã hỏng từ trước
+check: 0 lỗi, 1 cảnh báo
+[exit 0]
+$ ["build", "$T/in.csv"]
+check: đọc bảng từ csv (dấu phẩy, cp1252)
+WARNING -: file không phải utf-8, đã đọc theo cp1252; chữ tiếng Việt có thể đã hỏng từ trước
+check: 0 lỗi, 1 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 2 cạnh, 383.38x250px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+c9042bbd16d47d65  in.csv
+5c1657900edf4835  in.drawio

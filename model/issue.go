@@ -20,6 +20,7 @@ type Location struct {
 	Kind   string // "table" hoặc "text"
 	Row    int    // table: số dòng trong file, 0 nghĩa là không xác định
 	Sheet  string // xlsx
+	Cell   string // xlsx: địa chỉ ô, ví dụ B7, hoặc vùng ô gộp như A1:B2
 	Column string // table: tên cột, khi phát hiện quy được về một ô
 	Line   int    // text: số dòng trong nguồn, dùng cho mermaid
 }
@@ -29,6 +30,8 @@ func LineLoc(row int) Location { return Location{Kind: "table", Row: row} }
 
 func (l Location) String() string {
 	switch {
+	case l.Sheet != "" && l.Cell != "":
+		return l.Sheet + "!" + l.Cell
 	case l.Sheet != "" && l.Row > 0:
 		return fmt.Sprintf("%s dòng %d", l.Sheet, l.Row)
 	case l.Sheet != "":

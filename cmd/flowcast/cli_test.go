@@ -51,7 +51,12 @@ func replay(t *testing.T, want string) string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	src, err := os.ReadFile(filepath.Join("../../conformance/cases", caseName+".md"))
+	var src []byte
+	for _, ext := range []string{".md", ".csv", ".xlsx"} {
+		if src, err = os.ReadFile(filepath.Join("../../conformance/cases", caseName+ext)); err == nil {
+			break
+		}
+	}
 	if err != nil {
 		t.Fatal(err)
 	}

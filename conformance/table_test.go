@@ -1,10 +1,7 @@
 package conformance
 
 import (
-	"os"
 	"testing"
-
-	"github.com/luytbq/flowcast/source"
 )
 
 // TestChangTable chốt gói model và source/markdown: bảng sau khi parse phải
@@ -17,11 +14,13 @@ func TestChangTable(t *testing.T) {
 	rows := 0
 	for _, d := range dumps {
 		t.Run(d.Name, func(t *testing.T) {
-			data, err := os.ReadFile(CaseFile(Dir(), d.Name))
-			if err != nil {
-				t.Fatal(err)
+			got, err := ParseCase(Dir(), d.Name)
+			if d.Fatal != "" {
+				if err == nil || err.Error() != d.Fatal {
+					t.Fatalf("cần lỗi chặn %q, Go ra %v", d.Fatal, err)
+				}
+				return
 			}
-			got, err := source.Parse(source.Source{Data: data, Name: d.Name + ".md"})
 			if err != nil {
 				t.Fatalf("parse lỗi: %v", err)
 			}

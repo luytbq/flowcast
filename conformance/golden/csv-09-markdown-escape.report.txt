@@ -1,0 +1,4 @@
+WARNING dòng 3 [A-1]: nội dung còn escape kiểu markdown (\|); csv/xlsx không cần escape
+check: 0 lỗi, 1 cảnh báo
+build: 1 lane, 2 phần tử, 1 cạnh, 128x244px
+layout: 0 lỗi, 0 cảnh báo

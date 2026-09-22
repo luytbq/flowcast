@@ -1,12 +1,10 @@
 package conformance
 
 import (
-	"os"
 	"strconv"
 	"testing"
 
 	"github.com/luytbq/flowcast/layout"
-	"github.com/luytbq/flowcast/source"
 )
 
 // TestChangPlace chốt gói layout ở pha xếp chỗ: thứ tự topo, lane, hàng, cột
@@ -23,11 +21,7 @@ func TestChangPlace(t *testing.T) {
 			continue // bảng có lỗi, không có layout nào được dựng
 		}
 		t.Run(d.Name, func(t *testing.T) {
-			data, err := os.ReadFile(CaseFile(Dir(), d.Name))
-			if err != nil {
-				t.Fatal(err)
-			}
-			tbl, err := source.Parse(source.Source{Data: data, Name: d.Name + ".md"})
+			tbl, err := ParseCase(Dir(), d.Name)
 			if err != nil {
 				t.Fatal(err)
 			}

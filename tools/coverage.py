@@ -80,11 +80,17 @@ for _pat, _name in VALIDATE_RULES:
 
 def measure():
     hits = collections.Counter()
-    for name in sorted(f for f in os.listdir(CASES) if f.endswith('.md')):
-        raw = open(os.path.join(CASES, name), encoding='utf-8').read()
-        if unicodedata.normalize('NFC', raw) != raw:
-            hits['đầu vào ở dạng NFD'] += 1
-        table = ft.load(os.path.join(CASES, name))
+    for name in sorted(f for f in os.listdir(CASES) if f.endswith(('.md', '.csv', '.xlsx'))):
+        try:
+            raw = open(os.path.join(CASES, name), 'rb').read().decode('utf-8')
+            if unicodedata.normalize('NFC', raw) != raw:
+                hits['đầu vào ở dạng NFD'] += 1
+        except UnicodeDecodeError:
+            pass
+        try:
+            table = ft.load(os.path.join(CASES, name))
+        except ft.FlowTableError:
+            continue
         for issue in table.issues:
             for pat, label in VALIDATE_RULES:
                 if re.search(pat, issue.msg):

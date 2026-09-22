@@ -2,21 +2,15 @@ package conformance
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/luytbq/flowcast/layout"
 	"github.com/luytbq/flowcast/num"
-	"github.com/luytbq/flowcast/source"
 )
 
 func buildLayout(t *testing.T, name string) *layout.Layout {
 	t.Helper()
-	data, err := os.ReadFile(CaseFile(Dir(), name))
-	if err != nil {
-		t.Fatal(err)
-	}
-	tbl, err := source.Parse(source.Source{Data: data, Name: name + ".md"})
+	tbl, err := ParseCase(Dir(), name)
 	if err != nil {
 		t.Fatal(err)
 	}

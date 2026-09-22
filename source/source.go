@@ -37,6 +37,8 @@ func Parse(s Source) (model.Table, error) {
 	switch format {
 	case "markdown":
 		t, err = ParseMarkdown(s.Data)
+	case "csv":
+		t, err = ParseCSV(s.Data, s.Name, s.Options["delimiter"], s.Options["encoding"])
 	case "":
 		return model.Table{}, model.Errf("source.unknown_format",
 			"không đoán được định dạng của %q; truyền Format", s.Name)

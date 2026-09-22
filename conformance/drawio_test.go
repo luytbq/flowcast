@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/luytbq/flowcast/layout"
-	"github.com/luytbq/flowcast/source"
 	"github.com/luytbq/flowcast/validate"
 	"github.com/luytbq/flowcast/writer/drawio"
 )
@@ -26,11 +25,7 @@ func TestFileDrawioKhopTungByte(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			data, err := os.ReadFile(CaseFile(Dir(), name))
-			if err != nil {
-				t.Fatal(err)
-			}
-			tbl, err := source.Parse(source.Source{Data: data, Name: name + ".md"})
+			tbl, err := ParseCase(Dir(), name)
 			if err != nil {
 				t.Fatal(err)
 			}

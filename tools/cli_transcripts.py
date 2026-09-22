@@ -51,6 +51,14 @@ SPECIAL = [
     # Cấu hình người dùng gõ được mà làm các track trùng nhau: nhánh duy nhất đi
     # tới mã thoát 2, vì với cấu hình mặc định không bảng nào có lỗi hình học.
     ('track-gap-zero', '28-tracks-fan-in', 'in.md', [['build', '$T/in.md', '--track-gap', '0']]),
+    ('csv-delimiter-explicit', 'csv-02-semicolon', 'in.csv', [['build', '$T/in.csv', '--delimiter', ';']]),
+    ('csv-delimiter-wrong', 'csv-01-comma', 'in.csv', [['check', '$T/in.csv', '--delimiter', ';']]),
+    ('csv-encoding-alias', 'csv-01-comma', 'in.csv', [['check', '$T/in.csv', '--encoding', 'UTF8']]),
+    # Buộc đọc một file utf-8 theo cp1252: chữ hỏng nhưng vẫn dựng được.
+    ('csv-encoding-forced-cp1252', 'csv-01-comma', 'in.csv', [['build', '$T/in.csv', '--encoding', 'cp1252']]),
+    # Tên viết hoa đọc được mà không cảnh báo, vì bản tham chiếu so nguyên văn.
+    ('csv-encoding-uppercase', 'csv-05-cp1252', 'in.csv', [['check', '$T/in.csv', '--encoding', 'CP1252']]),
+    ('csv-encoding-unknown', 'csv-01-comma', 'in.csv', [['check', '$T/in.csv', '--encoding', 'klingon']]),
 ]
 
 
@@ -63,11 +71,19 @@ def run(cmd, tmp):
     return p.stdout.replace(tmp, '$T'), p.returncode
 
 
+def case_file(case):
+    for ext in ('.md', '.csv', '.xlsx'):
+        p = os.path.join(CASES, case + ext)
+        if os.path.exists(p):
+            return p
+    raise SystemExit(f'ERROR không có case {case}')
+
+
 def transcript(case, fname, cmds):
     tmp = tempfile.mkdtemp()
     try:
         tmp = os.path.realpath(tmp)
-        shutil.copy(os.path.join(CASES, case + '.md'), os.path.join(tmp, fname))
+        shutil.copy(case_file(case), os.path.join(tmp, fname))
         # Lệnh ghi bằng mảng JSON, vì đối số có thể chứa khoảng trắng.
         out = [f'# input: {case} -> {fname}\n']
         for cmd in cmds:
@@ -92,10 +108,11 @@ def main(argv):
     os.makedirs(dst)
     n = 0
     for f in sorted(os.listdir(CASES)):
-        if not f.endswith('.md'):
+        case, ext = os.path.splitext(f)
+        if ext not in ('.md', '.csv', '.xlsx'):
             continue
-        case = f[:-3]
-        text = transcript(case, 'in.md', [['check', '$T/in.md'], ['build', '$T/in.md']])
+        fn = 'in' + ext
+        text = transcript(case, fn, [['check', '$T/' + fn], ['build', '$T/' + fn]])
         io.open(os.path.join(dst, f'case-{case}.txt'), 'w', encoding='utf-8').write(text)
         n += 1
     for name, case, fname, cmds in SPECIAL:

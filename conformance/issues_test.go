@@ -1,11 +1,9 @@
 package conformance
 
 import (
-	"os"
 	"testing"
 
 	"github.com/luytbq/flowcast/model"
-	"github.com/luytbq/flowcast/source"
 	"github.com/luytbq/flowcast/validate"
 )
 
@@ -21,11 +19,10 @@ func TestChangIssues(t *testing.T) {
 	total := 0
 	for _, d := range dumps {
 		t.Run(d.Name, func(t *testing.T) {
-			data, err := os.ReadFile(CaseFile(Dir(), d.Name))
-			if err != nil {
-				t.Fatal(err)
+			if d.Fatal != "" {
+				return
 			}
-			tbl, err := source.Parse(source.Source{Data: data, Name: d.Name + ".md"})
+			tbl, err := ParseCase(Dir(), d.Name)
 			if err != nil {
 				t.Fatalf("parse lỗi: %v", err)
 			}

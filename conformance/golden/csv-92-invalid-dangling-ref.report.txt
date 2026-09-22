@@ -1,0 +1,3 @@
+ERROR   dòng 5 [E1]: to=B-1 trỏ tới id không tồn tại
+check: 1 lỗi, 0 cảnh báo
+build: dừng vì bảng có lỗi

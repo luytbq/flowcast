@@ -30,10 +30,22 @@ GOLDEN = os.path.join(HERE, 'golden')
 DUMPS = os.path.join(HERE, 'dumps')
 
 
+EXTS = ('.md', '.csv', '.xlsx')
+
+
 def render(path):
-    """Trả về (xml hoặc None, report, dump). xml là None khi bảng có lỗi."""
+    """Trả về (xml hoặc None, report, dump). xml là None khi bảng có lỗi.
+
+    Lỗi chặn ở tầng đọc, như không giải mã được hay không có header, không có
+    bảng nào để dump; report chỉ có dòng lỗi, và dump chỉ ghi thông điệp. Đường
+    dẫn trong thông điệp rút về tên file, để golden không phụ thuộc máy.
+    """
     out = []
-    table, parse_issues = dmp.load_split(path)
+    try:
+        table, parse_issues = dmp.load_split(path)
+    except ft.FlowTableError as ex:
+        msg = str(ex).replace(path, os.path.basename(path))
+        return None, f'ERROR   {msg}\n', dmp.encode({'fatal': msg})
     for issue in sorted(table.issues, key=lambda i: i.level != 'error'):
         out.append(str(issue))
     nerr = sum(1 for i in table.issues if i.level == 'error')
@@ -61,7 +73,7 @@ def render(path):
 
 
 def cases():
-    return sorted(f for f in os.listdir(CASES) if f.endswith('.md'))
+    return sorted(f for f in os.listdir(CASES) if f.endswith(EXTS))
 
 
 def read(path):
@@ -86,7 +98,7 @@ def main(argv):
     os.makedirs(DUMPS, exist_ok=True)
     bad = []
     for name in cases():
-        stem = name[:-3]
+        stem = os.path.splitext(name)[0]
         xml, report, dump_json = render(os.path.join(CASES, name))
         want = {
             os.path.join(GOLDEN, f'{stem}.drawio'): xml,

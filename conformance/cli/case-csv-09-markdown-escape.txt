@@ -1,0 +1,17 @@
+# input: csv-09-markdown-escape -> in.csv
+$ ["check", "$T/in.csv"]
+check: đọc bảng từ csv (dấu phẩy, utf-8-sig)
+WARNING dòng 3 [A-1]: nội dung còn escape kiểu markdown (\|); csv/xlsx không cần escape
+check: 0 lỗi, 1 cảnh báo
+[exit 0]
+$ ["build", "$T/in.csv"]
+check: đọc bảng từ csv (dấu phẩy, utf-8-sig)
+WARNING dòng 3 [A-1]: nội dung còn escape kiểu markdown (\|); csv/xlsx không cần escape
+check: 0 lỗi, 1 cảnh báo
+build: chế độ tạo mới
+build: đã ghi $T/in.drawio (1 lane, 2 phần tử, 1 cạnh, 128x244px)
+layout: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+50cc3d633ca3ba7e  in.csv
+beba0d04e37162ff  in.drawio

@@ -1,0 +1,7 @@
+# input: csv-05-cp1252 -> in.csv
+$ ["check", "$T/in.csv", "--encoding", "CP1252"]
+check: đọc bảng từ csv (dấu phẩy, CP1252)
+check: 0 lỗi, 0 cảnh báo
+[exit 0]
+--- files
+c9042bbd16d47d65  in.csv

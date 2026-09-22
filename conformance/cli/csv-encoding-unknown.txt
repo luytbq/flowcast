@@ -1,0 +1,6 @@
+# input: csv-01-comma -> in.csv
+$ ["check", "$T/in.csv", "--encoding", "klingon"]
+ERROR   không giải mã được $T/in.csv; thử --encoding
+[exit 1]
+--- files
+96a08709c8ded76c  in.csv
