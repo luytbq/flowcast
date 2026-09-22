@@ -76,7 +76,6 @@ SYNTHETIC = {
 
 
 def synthetic():
-    import types
     out = []
     ft = fuzz_cases.load_module('flowtable2drawio', io.open(REF, encoding='utf-8').read(), REF)
     for name, g in SYNTHETIC.items():
@@ -104,7 +103,7 @@ def kind_of(msg):
 def geometry(lay):
     hx = lambda v: float(v).hex()  # noqa: E731
     return {
-        'lanes': [[hx(lay.lane_x[i]), hx(lay.lane_w[i])] for i in range(len(lay.lanes))],
+        'lanes': [[hx(x), hx(w)] for x, w in zip(lay.lane_x, lay.lane_w)],
         'items': [{'id': it.id, 'lane': it.lane, 'box': [hx(it.x), hx(it.y), hx(it.w), hx(it.h)]}
                   for it in lay.items.values()],
         'edges': [{'id': e.id, 'src': e.src, 'dst': e.dst,

@@ -33,6 +33,11 @@ fi
 caught=0
 missed=0
 
+# Bị ngắt giữa lúc một file đang mang đột biến thì khôi phục nó, nếu không cây
+# làm việc sẽ còn lại code hỏng mà test vẫn có thể qua.
+current=''
+trap '[ -n "$current" ] && git checkout -- "$current"' EXIT INT TERM
+
 mutate() {
 	label="$1" file="$2" from="$3" to="$4"
 	python3 - "$file" "$from" "$to" "${PREFLIGHT:-}" <<'EOPY'
@@ -48,6 +53,7 @@ if not preflight:
     io.open(p, 'w', encoding='utf-8').write(s.replace(a, b))
 EOPY
 	[ -n "$PREFLIGHT" ] && return 0
+	current="$file"
 	if go test -count=1 ./... >/dev/null 2>&1; then
 		echo "BỎ LỌT     $label"
 		missed=$((missed + 1))
@@ -56,6 +62,7 @@ EOPY
 		caught=$((caught + 1))
 	fi
 	git checkout -- "$file"
+	current=''
 }
 
 # Đột biến tương đương đã chứng minh, không thêm lại vì chúng luôn bỏ lọt:
