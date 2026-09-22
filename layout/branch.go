@@ -53,6 +53,69 @@ func (l *Layout) branchDrift(e *Edge) int {
 	return 0
 }
 
+// mainEdge trả về chỉ số của nhánh chính trong các cạnh ra cùng lane.
+//
+// Sơ đồ có lane theo quy ước của Flow Table: nhánh chính là cạnh viết sau cùng,
+// vì người viết bảng được dặn đặt nhánh đi tiếp dài nhất ở cuối. Sơ đồ không
+// có lane thường đến từ mermaid, nơi không có quy ước đó, nên nhánh chính là
+// nhánh sâu nhất; hòa thì vẫn lấy cạnh viết sau.
+func (l *Layout) mainEdge(same []*Edge) int {
+	last := len(same) - 1
+	if !l.NoLanes {
+		return last
+	}
+	best, bd := last, l.branchDepth(same[last].Dst)
+	for i := last - 1; i >= 0; i-- {
+		if d := l.branchDepth(same[i].Dst); d > bd {
+			best, bd = i, d
+		}
+	}
+	return best
+}
+
+// branchDepth là số node trên đường dài nhất đi từ id, không qua cạnh vòng
+// lặp. Dừng trước node hợp nhánh: từ đó trở đi là luồng chung của nhiều nhánh,
+// không nói gì về độ dài của riêng một nhánh.
+func (l *Layout) branchDepth(id string) int {
+	if d, ok := l.depth[id]; ok {
+		return d
+	}
+	d := 0
+	if l.nonBackIn(id) <= 1 {
+		d = 1
+		for _, x := range l.outs[id] {
+			if !x.Back {
+				if k := 1 + l.branchDepth(x.Dst); k > d {
+					d = k
+				}
+			}
+		}
+	}
+	l.depth[id] = d
+	return d
+}
+
+// spineOf trả về các node của xương sống: đi từ mỗi điểm đầu theo nhánh chính
+// cho tới hết. Node hợp nhánh nằm ngoài xương sống là nơi các nhánh phụ đổ về,
+// như một bước báo lỗi chung, và không được kéo về cột chính.
+func (l *Layout) spineOf(order []string) map[string]bool {
+	spine := map[string]bool{}
+	for _, id := range order {
+		if l.nonBackIn(id) > 0 || l.items[id].Attach != "" {
+			continue
+		}
+		for !spine[id] {
+			spine[id] = true
+			same := l.sameLaneOuts(id)
+			if len(same) == 0 {
+				break
+			}
+			id = same[l.mainEdge(same)].Dst
+		}
+	}
+	return spine
+}
+
 func (l *Layout) nonBackIn(id string) int {
 	n := 0
 	for _, y := range l.ins[id] {
@@ -77,12 +140,16 @@ func (l *Layout) branchSlots(nid string) map[string]int {
 	if len(same) == 0 {
 		return res
 	}
-	res[same[len(same)-1].ID] = 0
+	mi := l.mainEdge(same)
+	res[same[mi].ID] = 0
 	busy := l.hside[nid]
 	onlyLeft := busy['R'] && !busy['L']
 	onlyRight := busy['L'] && !busy['R']
 	next := map[int]int{1: 1, -1: 1}
-	for i := len(same) - 2; i >= 0; i-- {
+	for i := len(same) - 1; i >= 0; i-- {
+		if i == mi {
+			continue
+		}
 		e := same[i]
 		var side int
 		switch {

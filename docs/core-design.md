@@ -485,6 +485,26 @@ hơn. Độ sâu chỉ thay vào chỗ branch_drift trả về 0.
 chứ không được cảm nhận: dựng một bộ sơ đồ mermaid thật trước khi viết heuristic,
 và giữ số liệu check trên bộ đó qua từng thay đổi.
 
+Đo trên bộ `conformance/mermaid` và `conformance/flowchart` cho thấy độ sâu một
+mình chưa đủ. Chỗ hỏng lớn nhất là node hợp nhánh chỉ nhận các nhánh lỗi, như
+bước "báo lỗi cho tác giả" trong một pipeline CI: luật hợp nhánh kéo nó về cột
+chính, và luồng chính phải đi vòng qua nó. Nên có thêm luật thứ hai: xương sống
+là chuỗi nhánh chính đi từ mỗi điểm đầu; node hợp nhánh nằm ngoài xương sống
+giữ cột của nguồn sâu nhất thay vì quay về cột của node rẽ.
+
+Hai luật chỉ áp cho sơ đồ không có lane. Sơ đồ có lane giữ quy ước của Flow
+Table, và golden của chúng vẫn khớp bản tham chiếu.
+
+Số liệu, đo bằng `go run ./tools/metrics` trên 28 sơ đồ:
+
+| chỉ số | trước | sau |
+|---|---|---|
+| dây đi vòng qua kênh (kiểu D) | 38 | 33 |
+| điểm gấp | 126 | 112 |
+| tổng chiều dài dây | 31874 | 29362 |
+| cạnh của đường dài nhất vẽ thẳng đứng | 117/152 | 135/152 |
+| phát hiện tự kiểm | 0 | 0 |
+
 ## 14. Lộ trình port
 
 Lộ trình bóc tách tại chỗ trước đây không còn dùng được: đây là một bản port,
@@ -535,7 +555,7 @@ còn là đáp án nữa:
 | bước | việc |
 |---|---|
 | 14 | lane thành tùy chọn. Xong: bảng không có lane dựng trên một lane ẩn, header bằng 0, không vẽ pool; merge chạy được |
-| 15 | bộ sơ đồ đo, rồi heuristic độ sâu đường đi |
+| 15 | bộ sơ đồ đo, rồi heuristic độ sâu đường đi. Xong, kèm luật xương sống cho node hợp nhánh, xem mục 13 |
 | 16 | source/mermaid, hướng khác TD quy về TD kèm cảnh báo. Xong, làm trước bước 15 vì bộ sơ đồ đo cần đọc được mermaid |
 | 17 | axis, LR và BT và RL |
 

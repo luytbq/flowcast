@@ -1,6 +1,6 @@
 <mxfile host="flowtable2drawio">
   <diagram id="flowtable" name="05-chuyen-tien">
-    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="756.26" pageHeight="1004" math="0" shadow="0">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="718.26" pageHeight="973" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -17,31 +17,31 @@
           <mxGeometry x="64" y="314" width="240" height="60" as="geometry" />
         </mxCell>
         <mxCell id="E" value="Gửi cấp trên duyệt" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="540.26" y="319" width="146" height="50" as="geometry" />
+          <mxGeometry x="111" y="404" width="146" height="50" as="geometry" />
         </mxCell>
         <mxCell id="F" value="Được duyệt?" vertex="1" parent="1" style="rhombus;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="545.26" y="423" width="136" height="60" as="geometry" />
+          <mxGeometry x="116" y="484" width="136" height="60" as="geometry" />
         </mxCell>
         <mxCell id="X" value="Từ chối" vertex="1" parent="1" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="134" y="544" width="100" height="50" as="geometry" />
+          <mxGeometry x="538.26" y="593" width="100" height="50" as="geometry" />
         </mxCell>
         <mxCell id="G" value="Xác thực OTP" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="124" y="624" width="120" height="50" as="geometry" />
+          <mxGeometry x="124" y="593" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="H" value="OTP đúng?" vertex="1" parent="1" style="rhombus;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="124" y="704" width="120" height="60" as="geometry" />
+          <mxGeometry x="124" y="673" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="I" value="Nhập lại OTP" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="553.26" y="709" width="120" height="50" as="geometry" />
+          <mxGeometry x="528.26" y="678" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="J" value="Ghi sổ giao dịch" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="119" y="799" width="130" height="50" as="geometry" />
+          <mxGeometry x="119" y="768" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="K" value="Sổ cái" vertex="1" parent="1" style="shape=cylinder3;html=1;boundedLbl=1;backgroundOutline=1;size=8;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="289" y="794" width="100" height="60" as="geometry" />
+          <mxGeometry x="289" y="763" width="100" height="60" as="geometry" />
         </mxCell>
         <mxCell id="L" value="Thành công" vertex="1" parent="1" style="shape=doubleEllipse;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="116" y="884" width="136" height="50" as="geometry" />
+          <mxGeometry x="116" y="853" width="136" height="50" as="geometry" />
         </mxCell>
         <mxCell id="A--&gt;B" value="" edge="1" parent="1" source="A" target="B" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry" />
@@ -50,11 +50,9 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="C--&gt;X" value="Không" edge="1" parent="1" source="C" target="X" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.94">
+          <mxGeometry relative="1" as="geometry" x="-0.92">
             <Array as="points">
-              <mxPoint x="513.26" y="254" />
-              <mxPoint x="513.26" y="520" />
-              <mxPoint x="184" y="520" />
+              <mxPoint x="588.26" y="254" />
             </Array>
             <mxPoint x="0" y="-11.5" as="offset" />
           </mxGeometry>
@@ -64,41 +62,34 @@
             <mxPoint x="16.83" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="D--&gt;E" value="Có" edge="1" parent="1" source="D" target="E" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.85">
-            <mxPoint x="0" y="-11.5" as="offset" />
+        <mxCell id="D--&gt;E" value="Có" edge="1" parent="1" source="D" target="E" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.03">
+            <mxPoint x="16.83" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="D--&gt;G" value="Không" edge="1" parent="1" source="D" target="G" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.97">
+        <mxCell id="D--&gt;G" value="Không" edge="1" parent="1" source="D" target="G" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.93">
             <Array as="points">
-              <mxPoint x="184" y="411" />
-              <mxPoint x="525.26" y="411" />
-              <mxPoint x="525.26" y="606" />
-              <mxPoint x="184" y="606" />
+              <mxPoint x="513.26" y="344" />
+              <mxPoint x="513.26" y="581" />
+              <mxPoint x="184" y="581" />
             </Array>
-            <mxPoint x="28.13" y="0" as="offset" />
+            <mxPoint x="0" y="-11.5" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="E--&gt;F" value="" edge="1" parent="1" source="E" target="F" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="F--&gt;X" value="Không" edge="1" parent="1" source="F" target="X" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.2">
+        <mxCell id="F--&gt;X" value="Không" edge="1" parent="1" source="F" target="X" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.86">
             <Array as="points">
-              <mxPoint x="184" y="453" />
+              <mxPoint x="588.26" y="514" />
             </Array>
             <mxPoint x="0" y="-11.5" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="F--&gt;G" value="Có" edge="1" parent="1" source="F" target="G" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.95">
-            <Array as="points">
-              <mxPoint x="613.26" y="532" />
-              <mxPoint x="525.26" y="532" />
-              <mxPoint x="525.26" y="606" />
-              <mxPoint x="184" y="606" />
-            </Array>
+          <mxGeometry relative="1" as="geometry" x="-0.41">
             <mxPoint x="16.83" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
@@ -106,7 +97,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="H--&gt;I" value="Sai" edge="1" parent="1" source="H" target="I" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.87">
+          <mxGeometry relative="1" as="geometry" x="-0.86">
             <mxPoint x="0" y="-11.5" as="offset" />
           </mxGeometry>
         </mxCell>
@@ -118,9 +109,9 @@
         <mxCell id="I--&gt;H" value="" edge="1" parent="1" source="I" target="H" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="701.26" y="734" />
-              <mxPoint x="701.26" y="686" />
-              <mxPoint x="184" y="686" />
+              <mxPoint x="663.26" y="703" />
+              <mxPoint x="663.26" y="655" />
+              <mxPoint x="184" y="655" />
             </Array>
           </mxGeometry>
         </mxCell>

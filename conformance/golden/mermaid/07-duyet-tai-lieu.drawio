@@ -1,6 +1,6 @@
 <mxfile host="flowtable2drawio">
   <diagram id="flowtable" name="07-duyet-tai-lieu">
-    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="670.44" pageHeight="783" math="0" shadow="0">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="693.04" pageHeight="764" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -17,25 +17,25 @@
           <mxGeometry x="70" y="229" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="archive" value="Lưu trữ" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="486.44" y="229" width="120" height="50" as="geometry" />
+          <mxGeometry x="509.04" y="229" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="stop" value="Dừng" vertex="1" parent="1" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="505.44" y="319" width="82" height="50" as="geometry" />
+          <mxGeometry x="528.04" y="319" width="82" height="50" as="geometry" />
         </mxCell>
         <mxCell id="legal" value="Cần pháp chế?" vertex="1" parent="1" style="rhombus;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="258.77" y="314" width="160" height="60" as="geometry" />
         </mxCell>
         <mxCell id="legalReview" value="Pháp chế xem" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="486.44" y="423" width="120" height="50" as="geometry" />
+          <mxGeometry x="278.77" y="404" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="publish" value="Xuất bản" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="278.77" y="503" width="120" height="50" as="geometry" />
+          <mxGeometry x="278.77" y="484" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="announce" value="Thông báo nội bộ" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="269.77" y="583" width="138" height="50" as="geometry" />
+          <mxGeometry x="269.77" y="564" width="138" height="50" as="geometry" />
         </mxCell>
         <mxCell id="finish" value="Hoàn tất" vertex="1" parent="1" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="283.77" y="663" width="110" height="50" as="geometry" />
+          <mxGeometry x="283.77" y="644" width="110" height="50" as="geometry" />
         </mxCell>
         <mxCell id="draft--&gt;review" value="" edge="1" parent="1" source="draft" target="review" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry" />
@@ -49,7 +49,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="decision--&gt;archive" value="Từ chối" edge="1" parent="1" source="decision" target="archive" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.11">
+          <mxGeometry relative="1" as="geometry" x="-0.32">
             <mxPoint x="0" y="-11.5" as="offset" />
           </mxGeometry>
         </mxCell>
@@ -70,27 +70,23 @@
         <mxCell id="archive--&gt;stop" value="" edge="1" parent="1" source="archive" target="stop" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="legal--&gt;legalReview" value="Có" edge="1" parent="1" source="legal" target="legalReview" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.83">
+        <mxCell id="legal--&gt;legalReview" value="Có" edge="1" parent="1" source="legal" target="legalReview" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.03">
+            <mxPoint x="16.83" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legal--&gt;publish" value="Không" edge="1" parent="1" source="legal" target="publish" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" x="-0.84">
             <Array as="points">
-              <mxPoint x="471.44" y="344" />
-              <mxPoint x="471.44" y="411" />
-              <mxPoint x="546.44" y="411" />
+              <mxPoint x="494.04" y="344" />
+              <mxPoint x="494.04" y="466" />
+              <mxPoint x="338.77" y="466" />
             </Array>
             <mxPoint x="0" y="-11.5" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="legal--&gt;publish" value="Không" edge="1" parent="1" source="legal" target="publish" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.78">
-            <mxPoint x="28.13" y="0" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="legalReview--&gt;publish" value="" edge="1" parent="1" source="legalReview" target="publish" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="338.77" y="448" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="legalReview--&gt;publish" value="" edge="1" parent="1" source="legalReview" target="publish" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="publish--&gt;announce" value="" edge="1" parent="1" source="publish" target="announce" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry" />

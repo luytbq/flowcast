@@ -168,7 +168,7 @@ mutate "branchDrift không dừng ở node hợp nhánh" layout/branch.go 'if l.
 mutate "nhánh không rõ hướng ưu tiên trái" layout/branch.go 'if next[1] <= next[-1] {' 'if next[1] < next[-1] {'
 mutate "bỏ qua mặt đã có mũi tên ngang" layout/branch.go "onlyLeft := busy['R'] && !busy['L']" 'onlyLeft := false'
 mutate "mergeCol chọn node rẽ xa nhất" layout/branch.go 'if best == nil || it.Row > best.Row' 'if best == nil || it.Row < best.Row'
-mutate "tắt mergeCol" layout/place.go 'if mc, ok := l.mergeCol(same, v); ok {' 'if mc, ok := l.mergeCol(same, v); false && ok {'
+mutate "tắt mergeCol" layout/place.go 'if mc, ok := l.mergeCol(same, v); ok && (' 'if mc, ok := l.mergeCol(same, v); false && ok && ('
 mutate "attachSide mặc định sang trái" layout/branch.go 'if !right {' 'if right {'
 mutate "condition cần ba nhánh phụ mới giữ hai mặt" layout/place.go 'l.sideBranches(v) >= 2' 'l.sideBranches(v) >= 3'
 mutate "tắt mũi tên ngang" layout/place.go 'if len(preds) == 1 && l.nonBackIn(vid) == 1' 'if false && len(preds) == 1 && l.nonBackIn(vid) == 1'
@@ -631,6 +631,21 @@ mutate "mermaid không đọc khối trong markdown" source/source.go '		if bloc
 mutate "mermaid cảnh báo không theo số dòng" source/mermaid.go '	sort.SliceStable(m.issues, func(i, j int) bool { return m.issues[i].Loc.Line < m.issues[j].Loc.Line })' ''
 mutate "cạnh không nhận nét đậm" layout/model.go '			Bold: hasStyle(r, "bold"), NoArrow: hasStyle(r, "noarrow"),' '			NoArrow: hasStyle(r, "noarrow"),'
 mutate "nét đậm viết trước màu nhấn" writer/drawio/write.go '			style += "strokeWidth=3;"' '			style += ""'
+
+# heuristic nhánh chính cho sơ đồ không có lane
+mutate "nhánh chính luôn là cạnh sau cùng" layout/branch.go '	last := len(same) - 1
+	if !l.NoLanes {' '	last := len(same) - 1
+	if true {'
+mutate "hòa độ sâu lấy cạnh viết trước" layout/branch.go '		if d := l.branchDepth(same[i].Dst); d > bd {' '		if d := l.branchDepth(same[i].Dst); d >= bd {'
+mutate "độ sâu tính cả luồng chung sau hợp nhánh" layout/branch.go '	if l.nonBackIn(id) <= 1 {' '	if true {'
+mutate "độ sâu đi cả cạnh vòng lặp" layout/branch.go '			if !x.Back {
+				if k := 1 + l.branchDepth(x.Dst); k > d {' '			if !x.Back || len(l.depth) < 0 {
+				if k := 1 + l.branchDepth(x.Dst); k > d {'
+mutate "hợp nhánh ngoài xương sống vẫn về cột chính" layout/place.go 'ok && (!l.NoLanes || spine[vid]) {' 'ok {'
+mutate "xương sống chỉ đi một bước" layout/branch.go '			id = same[l.mainEdge(same)].Dst
+		}' '			_ = same
+			break
+		}'
 
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang

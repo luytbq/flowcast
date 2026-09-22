@@ -66,6 +66,11 @@ func (l *Layout) Place() {
 
 	maxRow := -1
 	l.TopoOrder = l.topo()
+	l.depth = map[string]int{}
+	var spine map[string]bool
+	if l.NoLanes {
+		spine = l.spineOf(l.TopoOrder)
+	}
 	for _, vid := range l.TopoOrder {
 		v := l.items[vid]
 		var preds, same []*Edge
@@ -91,7 +96,7 @@ func (l *Layout) Place() {
 			col = l.items[e0.Src].Col + slot
 			sideBranch = sign(slot)
 			if len(same) > 1 {
-				if mc, ok := l.mergeCol(same, v); ok {
+				if mc, ok := l.mergeCol(same, v); ok && (!l.NoLanes || spine[vid]) {
 					col, sideBranch = mc, 0
 				}
 			}
