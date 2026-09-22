@@ -3,6 +3,7 @@
 # làm sai từng chỗ rồi xem test có đỏ không.
 #
 #     sh tools/mutate.sh
+#     ONLY=writer/ sh tools/mutate.sh    # chỉ đột biến trên file bắt đầu bằng writer/
 #
 # Một bộ đối chiếu trông đồ sộ mà không bắt được đột biến nào thì không chốt gì,
 # và điều đó im lặng cho tới lúc bản port sai thật. Chạy lại sau mỗi lần thêm
@@ -53,6 +54,7 @@ if not preflight:
     io.open(p, 'w', encoding='utf-8').write(s.replace(a, b))
 EOPY
 	[ -n "$PREFLIGHT" ] && return 0
+	case "$file" in "${ONLY:-}"*) ;; *) return 0 ;; esac
 	current="$file"
 	if go test -count=1 ./... >/dev/null 2>&1; then
 		echo "BỎ LỌT     $label"
