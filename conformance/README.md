@@ -16,6 +16,8 @@ cases/              bảng đầu vào, viết tay, mỗi file chốt một nhá
 golden/             đầu ra cuối cùng do bản tham chiếu sinh
 dumps/              trạng thái trung gian, cổng chặn cho từng module Go
 text-vectors.json   vector riêng cho việc đo chữ và ngắt dòng
+csv-vectors.json    vector cho bộ đọc csv, so với csv.reader của Python
+decode-vectors.json vector cho việc giải mã bảng mã của file csv
 round-vectors.json  vector cho num.Round, so từng bit với round() của Python
 check-vectors.json  hình học hỏng, cho tự kiểm
 ```
@@ -169,6 +171,16 @@ Chúng là case hồi quy do máy tìm, không phải ví dụ để đọc: tê
 nói chúng chốt nhánh nào, còn nội dung giữ nguyên vì đổi chữ là đổi bề rộng
 hộp, và có thể làm case thôi giết được đột biến.
 
+## Case csv và xlsx
+
+Sinh bằng `tools/make_csv_cases.py` và `tools/make_xlsx_cases.py`, không viết tay:
+vài case cần điều khiển từng byte, như file mã cp1252 hay byte không giải mã
+được, và file xlsx cần thời điểm zip cố định để sinh lại ra đúng từng byte.
+
+Bộ đọc csv của Go không dùng `encoding/csv`, vì hai bên hiểu dấu nháy khác nhau:
+`"a"b` ra `ab` trong Python nhưng ra `a"b` trong Go. Nó port máy trạng thái của
+`csv.reader`, và `csv-vectors.json` chốt nó trên hàng nghìn chuỗi ngẫu nhiên.
+
 ## Vector cho tự kiểm
 
 Engine đúng không sinh ra lỗi hình học: trên cả bộ case chỉ 2 bảng có phát
@@ -260,9 +272,6 @@ tools/coverage.py đo từng nhánh thuật toán và thoát với mã 1 nếu c
 trong reference/tests/test_merge.py, và nó chưa nằm trong bộ đối chiếu. Phải bổ
 sung trước khi port phần merge sang Go.
 
-**Chưa có case csv và xlsx.** reference/tests/test_inputs.py đã khẳng định ba
-định dạng cho ra cùng một file, nên rủi ro thấp, nhưng bản port cần bộ riêng cho
-việc đoán dấu phân cách, bảng mã, ô gộp và hàng ẩn.
 
 ## Hành vi kỳ quặc được port nguyên
 

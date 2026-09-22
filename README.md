@@ -10,10 +10,10 @@ tất định, đã qua nhiều vòng sửa theo sơ đồ thật.
 
 ## Trạng thái
 
-Đang port từ Python sang Go. Bản Go dùng được với bảng markdown: nó cho ra đúng
-từng byte file .drawio như bản Python, in ra đúng từng dòng, và trả đúng mã
-thoát. Chưa có: đọc csv và xlsx, merge khi sinh lại, xuất ảnh và kiểm render.
-Những lệnh đó được báo rõ là chưa hỗ trợ khi gọi tới.
+Đang port từ Python sang Go. Bản Go đọc được bảng markdown, csv và xlsx, cho ra
+đúng từng byte file .drawio như bản Python, in ra đúng từng dòng, và trả đúng mã
+thoát. Chưa có: merge khi sinh lại, xuất ảnh và kiểm render. Những lệnh đó được
+báo rõ là chưa hỗ trợ khi gọi tới.
 
 | thư mục | nội dung |
 |---|---|
@@ -38,8 +38,15 @@ go build -o flowcast ./cmd/flowcast
 ```
 
 Tên cờ, các dòng in ra và mã thoát giống hệt bản Python, xem `reference/README.md`.
-Hai chỗ khác có chủ đích: `--font` bị bỏ qua vì flowcast đo chữ bằng bảng số đo
-nhúng sẵn, và `--layout-json` cùng cấu trúc khóa nhưng viết số theo cách của Go.
+Những chỗ khác có chủ đích:
+
+- `--font` bị bỏ qua, vì flowcast đo chữ bằng bảng số đo nhúng sẵn.
+- `--layout-json` cùng cấu trúc khóa nhưng viết số theo cách của Go.
+- `--encoding` nhận utf-8, utf-8-sig, cp1252 và latin-1 cùng các tên gọi khác của
+  chúng. Python nhận hàng trăm bảng mã; tên lạ được xử lý như Python xử lý một
+  tên nó không biết.
+- Python 3.14 dùng Unicode 16, còn Go 1.25 dùng Unicode 15. Ký tự mới có ở
+  Unicode 16 có thể được đổi chữ thường hoặc chuẩn hóa khác nhau.
 
 ## Kiểm tra
 

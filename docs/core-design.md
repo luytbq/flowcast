@@ -523,7 +523,7 @@ trung gian vào bản tham chiếu**, và bản Go dump đúng cùng định d�
 | 8 | layout/check | xong |
 | 9 | writer/drawio | xong: 76 file .drawio khớp từng byte |
 | 10 | build, cmd/flowcast | xong: CLI khớp bản tham chiếu từng dòng trên 103 bản ghi |
-| 11 | source/csv, source/xlsx | cần bổ sung case đối chiếu trước |
+| 11 | source/csv, source/xlsx | xong |
 | 12 | merge, Overrides | cần bổ sung case đối chiếu trước, xem lỗ hổng đã biết |
 | 13 | render, giới hạn tài nguyên, cmd/flowcastd | đủ điều kiện chạy dịch vụ |
 
