@@ -19,8 +19,8 @@ ra cuối cùng chuẩn hóa số giống hệt nhau. Bản Go phải tái tạo
 quặc của nó: fmt(-0.001) ra "-0", không phải "0" hay "-0.00".
 
 **Thứ tự.** Phần tử và cạnh xếp theo order, tức thứ tự dòng trong bảng. Đoạn dây
-xếp theo khóa chuẩn hóa, vì hai bản có thể sinh ra cùng tập đoạn dây theo thứ tự
-append khác nhau. Khóa JSON luôn sắp xếp.
+giữ thứ tự được thêm vào, vì việc gán track phụ thuộc vào đúng thứ tự đó. Khóa
+JSON luôn sắp xếp.
 
 **Mã lỗi.** Chặng issues chốt level, loc, id và msg, không chốt mã máy. Mã máy
 là thứ mới do docs/core-design.md quy định, không phải hành vi được port, nên
@@ -126,24 +126,49 @@ def stage_place(table, lay):
     }
 
 
-def seg_key(s):
-    return (str(s.res), s.lo, s.hi, str(s.key), s.track if s.track is not None else -1)
+def res_str(res):
+    """('C', 3) thành "C:3", ('G', 0, 1) thành "G:0:1"."""
+    return ':'.join([res[0]] + [str(x) for x in res[1:]])
 
 
 def stage_route(table, lay):
-    """Kiểu đi dây, cổng ra vào, và các đoạn dây kèm track.
+    """Kiểu đi dây, cổng ra vào, các đoạn dây kèm track, và cách dựng toạ độ.
 
     Chốt module layout/route và layout/tracks.
+
+    Đoạn dây giữ nguyên thứ tự được thêm vào. Việc gán track là tham lam theo
+    đúng thứ tự đó, nên bản port phải thêm theo cùng thứ tự mới ra cùng track;
+    sắp lại trước khi so sẽ che mất chính sự phụ thuộc ấy.
+
+    sym là cách pha hình học dựng toạ độ cho từng điểm gấp: mỗi cặp là nguồn của
+    x và nguồn của y. Tham chiếu tới đoạn dây ghi bằng chỉ số trong danh sách
+    segs, không bằng repr của Python.
     """
+    alone = ft.Layout(table.rows, lay.cfg, lay.tm)
+    alone.place()
+    before = len(alone.warnings)
+    alone.route()
+    index = {id(sg): i for i, sg in enumerate(alone.segs)}
+
+    def ref(r):
+        if r[0] == 'src':
+            return 'src'
+        if r[0] == 'col':
+            return f'col:{r[1]}:{r[2]}'
+        if r[0] == 'seg':
+            return f'seg:{index[id(r[1])]}'
+        raise ValueError(f'tham chiếu sym lạ: {r!r}')
+
     return {
+        'warnings': alone.warnings[before:],
         'edges': {e.id: {'case': e.case, 'exit': e.exit_side, 'entry': e.entry_side,
                          'exit_frac': pair(e.exit_frac), 'entry_frac': pair(e.entry_frac),
-                         'back': e.back}
-                  for e in lay.edges},
-        'segs': [{'res': [str(x) for x in s.res], 'lo': s.lo, 'hi': s.hi,
-                  'key': str(s.key), 'track': s.track,
-                  'stubs': [[p, side] for p, side in s.stubs]}
-                 for s in sorted(lay.segs, key=seg_key)],
+                         'back': e.back, 'sym': [[ref(a), ref(b)] for a, b in e.sym]}
+                  for e in alone.edges},
+        'segs': [{'res': res_str(sg.res), 'lo': sg.lo, 'hi': sg.hi,
+                  'key': sg.key[1] if sg.key else None, 'track': sg.track,
+                  'stubs': [[p, side] for p, side in sg.stubs]}
+                 for sg in alone.segs],
     }
 
 

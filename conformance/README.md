@@ -59,9 +59,9 @@ python3 reference/dump.py <file> [--stage place]
 dump và đầu ra cuối cùng chuẩn hóa số giống hệt nhau. Bản Go phải tái tạo cả
 những góc kỳ quặc: `fmt(-0.001)` ra `"-0"`, không phải `"0"` hay `"-0.00"`.
 
-**Thứ tự.** Phần tử và cạnh xếp theo thứ tự dòng trong bảng. Đoạn dây xếp theo
-khóa chuẩn hóa, vì hai bản có thể sinh cùng tập đoạn dây theo thứ tự append khác
-nhau. Khóa JSON luôn sắp xếp.
+**Thứ tự.** Phần tử và cạnh xếp theo thứ tự dòng trong bảng. Đoạn dây giữ đúng
+thứ tự được thêm vào: gán track là tham lam theo thứ tự đó, nên cùng tập đoạn
+dây thêm theo thứ tự khác sẽ ra track khác. Khóa JSON luôn sắp xếp.
 
 **Mã lỗi không nằm trong dump.** Chặng `issues` chốt level, loc, id và msg. Mã
 máy là thứ mới do `docs/core-design.md` quy định, không phải hành vi được port,

@@ -76,6 +76,31 @@ type PlaceStage struct {
 	Items    map[string]PlaceItem `json:"items"`
 }
 
+type RouteEdge struct {
+	Case      string     `json:"case"`
+	Exit      string     `json:"exit"`
+	Entry     string     `json:"entry"`
+	ExitFrac  []string   `json:"exit_frac"`
+	EntryFrac []string   `json:"entry_frac"`
+	Back      bool       `json:"back"`
+	Sym       [][]string `json:"sym"`
+}
+
+type RouteSeg struct {
+	Res   string  `json:"res"`
+	Lo    int     `json:"lo"`
+	Hi    int     `json:"hi"`
+	Key   *string `json:"key"`
+	Track int     `json:"track"`
+	Stubs [][]int `json:"stubs"`
+}
+
+type RouteStage struct {
+	Warnings []string             `json:"warnings"`
+	Edges    map[string]RouteEdge `json:"edges"`
+	Segs     []RouteSeg           `json:"segs"`
+}
+
 // Dump là một file conformance/dumps/<case>.json.
 type Dump struct {
 	Name   string      // tên case, không có đuôi
@@ -83,6 +108,7 @@ type Dump struct {
 	Text   *TextStage  `json:"text"`
 	Issues []DumpIssue `json:"issues"`
 	Place  *PlaceStage `json:"place"`
+	Route  *RouteStage `json:"route"`
 }
 
 // CaseFile trả về đường dẫn bảng đầu vào của một case.

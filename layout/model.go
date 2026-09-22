@@ -36,6 +36,14 @@ type Edge struct {
 	Highlight bool
 	// Back đánh dấu cạnh tạo vòng lặp. Nó không tham gia xếp hàng.
 	Back bool
+
+	// Kết quả của route. Case là một trong A, B, C, D.
+	Case      byte
+	ExitSide  byte
+	EntrySide byte
+	ExitFrac  [2]float64
+	EntryFrac [2]float64
+	Sym       []SymPair
 }
 
 // Layout là trạng thái của một lần xếp hình. Các pha chạy lần lượt và mỗi pha
@@ -64,6 +72,12 @@ type Layout struct {
 	XOrd        map[XKey]int
 	occ         map[cell]string
 	hside       map[string]map[byte]bool
+
+	// Kết quả của route.
+	Segs    []*Seg
+	NTracks map[Res]int
+	sideOut map[sideKey][]*Edge
+	sideIn  map[sideKey][]*Edge
 }
 
 // Item trả về phần tử theo id.
@@ -119,7 +133,10 @@ func New(rows []model.Row, cfg Config, tm *text.Measure) *Layout {
 		e := &Edge{
 			ID: r.ID, Src: r.Meta["from"], Dst: r.Meta["to"], Lines: lines, LW: lw, LH: lh,
 			Order: r.Idx, Dashed: hasStyle(r, "dashed"), Highlight: hasStyle(r, "highlight"),
-			Back: r.Meta["back"] == "true",
+			Back:      r.Meta["back"] == "true",
+			EntrySide: 'T',
+			ExitFrac:  [2]float64{0.5, 1.0},
+			EntryFrac: [2]float64{0.5, 0.0},
 		}
 		l.Edges = append(l.Edges, e)
 		l.outs[e.Src] = append(l.outs[e.Src], e)

@@ -126,7 +126,8 @@
     "exit_frac": [
      "0.5",
      "1"
-    ]
+    ],
+    "sym": []
    },
    "E2": {
     "back": false,
@@ -140,10 +141,12 @@
     "exit_frac": [
      "0.5",
      "1"
-    ]
+    ],
+    "sym": []
    }
   },
-  "segs": []
+  "segs": [],
+  "warnings": []
  },
  "table": {
   "issues": [],
