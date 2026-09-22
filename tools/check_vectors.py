@@ -42,6 +42,57 @@ BREAKERS = {
 PER_KIND = 12
 
 
+# Hình học dựng tay, nằm đúng trên các ngưỡng của tự kiểm. Engine hỏng không
+# tình cờ rơi vào đúng ngưỡng, nên chúng được dựng thẳng; phát hiện mong đợi vẫn
+# do bản Python tính. Node ở xa các dây trừ khi dây được dựng để cắt qua chúng.
+FAR = [('X', 0, (500, 500, 40, 40)), ('Y', 0, (600, 500, 40, 40))]
+SYNTHETIC = {
+    # Đoạn giữa của cạnh cắt qua chính node nguồn. Chỉ đoạn đầu và đoạn cuối
+    # được chạm node nguồn và đích.
+    'tay: đoạn giữa cắt qua node nguồn': {
+        'lanes': [(-50, 800)],
+        'items': [('S', 0, (0, 0, 100, 50)), ('T', 0, (0, 200, 100, 50))],
+        'edges': [('E1', 'S', 'T', [(100, 25), (120, 25), (120, 40), (-10, 40), (-10, 200), (50, 200)], None)],
+    },
+    # Hai dây khác nguồn khác đích chồng đúng 2 điểm ảnh.
+    'tay: dây chồng 2 điểm ảnh': {
+        'lanes': [(-50, 800)],
+        'items': FAR,
+        'edges': [('E1', 'A', 'B', [(0, 100), (52, 100)], None), ('E2', 'C', 'D', [(50, 100), (200, 100)], None)],
+    },
+    # Hai dây ngang cách nhau 0.3, dưới ngưỡng 0.5 nên coi là cùng đường.
+    'tay: hai dây ngang cách 0.3': {
+        'lanes': [(-50, 800)],
+        'items': FAR,
+        'edges': [('E1', 'A', 'B', [(0, 100), (100, 100)], None), ('E2', 'C', 'D', [(20, 100.3), (80, 100.3)], None)],
+    },
+    # Hai dây dọc cách nhau 0.3.
+    'tay: hai dây dọc cách 0.3': {
+        'lanes': [(-50, 800)],
+        'items': FAR,
+        'edges': [('E1', 'A', 'B', [(100, 0), (100, 100)], None), ('E2', 'C', 'D', [(100.3, 20), (100.3, 80)], None)],
+    },
+}
+
+
+def synthetic():
+    import types
+    out = []
+    ft = fuzz_cases.load_module('flowtable2drawio', io.open(REF, encoding='utf-8').read(), REF)
+    for name, g in SYNTHETIC.items():
+        items = {}
+        for iid, lane, (x, y, w, h) in g['items']:
+            items[iid] = types.SimpleNamespace(id=iid, lane=lane, x=float(x), y=float(y), w=float(w), h=float(h),
+                                               box=lambda x=x, y=y, w=w, h=h: (x, y, x + w, y + h))
+        edges = [types.SimpleNamespace(id=eid, src=a, dst=b, pts=[(float(px), float(py)) for px, py in pts],
+                                       label=label) for eid, a, b, pts, label in g['edges']]
+        fake = types.SimpleNamespace(items=items, edges=edges,
+                                     lane_x=[float(x) for x, _ in g['lanes']], lane_w=[float(w) for _, w in g['lanes']])
+        out.append({'from': name, 'geometry': geometry(fake),
+                    'findings': [[lvl, msg] for lvl, msg in ft.Layout.check(fake)]})
+    return out
+
+
 def kind_of(msg):
     for key in ('chồng lên nhau', 'tràn ra ngoài lane', 'không vuông góc', 'dây cắt qua',
                 'chồng dây', 'đè lên', 'đè nhãn', 'đè dây'):
@@ -109,6 +160,8 @@ def main(argv):
                 per_kind[k] = per_kind.get(k, 0) + 1
             kept.append({'from': name, 'geometry': geometry(lay),
                          'findings': [[lvl, msg] for lvl, msg in findings]})
+
+    kept += synthetic()
 
     import json
     with open(argv[0], 'w', encoding='utf-8') as fh:
