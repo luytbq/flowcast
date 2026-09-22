@@ -81,7 +81,16 @@ EOPY
 #   d = -1 nhân với một lượng dương khác không.
 #
 # Mỗi cái sống sót qua hàng chục nghìn bảng sinh ngẫu nhiên trước khi được
-# chứng minh. Suy luận mà không có số liệu thì không đáng tin: hai nhánh khác cũng
+# chứng minh.
+#
+# Đột biến sống sót mà CHƯA chứng minh được là tương đương. Khác danh sách trên:
+# đây là chỗ bộ đối chiếu có thể đang hở, chỉ là chưa ai tìm ra case.
+#
+# - Dây chỉ chạm mép trái hoặc phải của hộp nhãn cũng tính là cắt. Sống qua
+#   133.141 bảng hợp lệ. Theo cấu trúc thì không xảy ra: hộp nhãn dọc cách dây
+#   của nó đúng 5 điểm ảnh, hộp nhãn ngang cách đầu đoạn 6, còn dây dọc song
+#   song cách nhau 12 và cách mép cột ít nhất 15. Ngoài ra chỉ còn trùng hợp
+#   ngẫu nhiên, mà bề rộng chữ là số lẻ. Chiều trên dưới thì có case chốt. Suy luận mà không có số liệu thì không đáng tin: hai nhánh khác cũng
 # từng bị nghi là thừa rồi bị bảng ngẫu nhiên giết.
 
 # num, text, layout/size
@@ -214,7 +223,7 @@ mutate "nhãn dọc thử bên trái trước" layout/labels.go '[]float64{a[0] 
 mutate "label_t làm tròn hai chữ số" layout/labels.go 'num.Round(float64(2*best.dist)/total-1, 4)' 'num.Round(float64(2*best.dist)/total-1, 2)'
 mutate "bỏ hộp header" layout/labels.go 'box{-1e6, -1e6, 1e6,' 'box{-1e6, -1e6, -1e6,'
 mutate "bỏ đường phân cách lane" layout/labels.go 'for _, x := range l.LaneX[1:] {' 'for _, x := range l.LaneX[:0] {'
-mutate "chạm mép hộp cũng tính là cắt" layout/labels.go 'return x1 < bx[2] && x2 > bx[0]' 'return x1 <= bx[2] && x2 >= bx[0]'
+mutate "chạm mép trên dưới của hộp cũng tính là cắt" layout/labels.go 'return x1 < bx[2] && x2 > bx[0] && y1 < bx[3] && y2 > bx[1]' 'return x1 < bx[2] && x2 > bx[0] && y1 <= bx[3] && y2 >= bx[1]'
 
 [ -n "$PREFLIGHT" ] && exit 0
 echo

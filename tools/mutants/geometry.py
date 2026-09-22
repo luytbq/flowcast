@@ -18,6 +18,8 @@ M = {
  'short20':      ("            if L >= 12:", "            if L >= 20:"),
  'no_header':    ("boxes.append(('header', (-1e6, -1e6, 1e6,", "boxes.append(('header', (-1e6, -1e6, -1e6,"),
  'no_lane_sep':  ("for x in self.lane_x[1:]]", "for x in self.lane_x[:0]]"),
- 'seg_touch':    ("return x1 < box[2] and x2 > box[0] and y1 < box[3] and y2 > box[1]",
-                  "return x1 <= box[2] and x2 >= box[0] and y1 <= box[3] and y2 >= box[1]"),
+ 'seg_touch_x':  ("return x1 < box[2] and x2 > box[0] and y1 < box[3] and y2 > box[1]",
+                  "return x1 <= box[2] and x2 >= box[0] and y1 < box[3] and y2 > box[1]"),
+ 'seg_touch_y':  ("return x1 < box[2] and x2 > box[0] and y1 < box[3] and y2 > box[1]",
+                  "return x1 < box[2] and x2 > box[0] and y1 <= box[3] and y2 >= box[1]"),
 }
