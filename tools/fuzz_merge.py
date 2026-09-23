@@ -265,6 +265,11 @@ def compare(seed, go):
         base = make(seed, src)
         if base is None:
             return None, None
+        # Bảng không còn lane nào là chỗ bản Go cố ý khác: bản tham chiếu báo
+        # lỗi, bản Go dựng thành flowchart. Xem conformance/diverge.txt.
+        md = io.open(os.path.join(src, 'flow.md'), encoding='utf-8').read()
+        if not any(c[1] == 'lane' for _, c in rows_of(md)):
+            return None, None
         out = {}
         for side, argv in (('py', [sys.executable, TOOL]), ('go', [go])):
             d = os.path.join(tmp, side)
