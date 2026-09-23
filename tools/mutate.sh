@@ -647,6 +647,27 @@ mutate "xương sống chỉ đi một bước" layout/branch.go '			id = same[l
 			break
 		}'
 
+# hướng
+mutate "hướng LR không hoán đổi kích thước node" layout/axis.go '		it.W, it.H = it.H, it.W' '		_ = it'
+mutate "hướng LR không hoán đổi kích thước nhãn" layout/axis.go '		e.LW, e.LH = e.LH, e.LW' '		_ = e'
+mutate "lật BT lật cả phần header" layout/axis.go '		return [2]float64{x, o.hdr + o.end - y}' '		return [2]float64{x, o.end - y}'
+mutate "RL không lật sau khi đổi trục" layout/axis.go '		return [2]float64{o.hdr + o.end - y, x}' '		return [2]float64{y, x}'
+mutate "đổi trục không đổi điểm neo" layout/axis.go '	case DirLR:
+		return [2]float64{f[1], f[0]}' '	case DirLR:
+		return f'
+mutate "lật BT không lật điểm neo" layout/axis.go '		return [2]float64{f[0], 1 - f[1]}' '		return f'
+mutate "đổi trục không đổi độ lệch nhãn" layout/axis.go '	case DirLR:
+		return [2]float64{v[1], v[0]}' '	case DirLR:
+		return v'
+mutate "đổi trục không đổi kích thước pool" layout/axis.go '		out.PoolW, out.PoolH = r.PoolH, r.PoolW' '		_ = out'
+mutate "đổi trục quên hộp nhãn" layout/axis.go '			b := o.box(*e.Label)
+			e.Label = &b' ''
+mutate "lane ngang vẽ như lane dọc" writer/drawio/write.go 'func horizontalLanes(r layout.Result) bool { return r.Dir == layout.DirLR || r.Dir == layout.DirRL }' 'func horizontalLanes(r layout.Result) bool { return false }'
+mutate "phần tử trong lane ngang lấy toạ độ của lane dọc" writer/drawio/write.go '			geo(c, it.X-float64(r.PoolHeader), it.Y-r.LaneX[it.Lane], it.W, it.H)' '			geo(c, it.X-r.LaneX[it.Lane], it.Y-float64(r.PoolHeader), it.W, it.H)'
+mutate "merge nhận cả hướng khác TD" build.go '	if opt.Previous != nil && dir != layout.DirTD {' '	if false {'
+mutate "hướng lạ không bị từ chối" build.go '	if !layout.ValidDirection(dir) {' '	if false {'
+mutate "hướng của nguồn bị bỏ qua" build.go '		dir = t.Direction' '		_ = t.Direction'
+
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang
 # hỏng, và mọi kết quả phía trên đều không đáng tin.

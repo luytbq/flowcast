@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "drawio giả: lỗi chỉ in ra stdout"
+exit 1

@@ -16,7 +16,11 @@ type Result struct {
 	PoolHeader, LaneHeader int
 	// NoLanes: sơ đồ không có lane. Lanes khi đó là một lane ẩn không được vẽ,
 	// và không có pool.
-	NoLanes      bool
+	NoLanes bool
+	// Dir là hướng của sơ đồ. Result do Layout.Result trả về luôn ở không gian
+	// TD ảo; Orient đưa nó về hướng thật. Writer cần biết hướng để vẽ lane
+	// thành băng dọc hay băng ngang.
+	Dir          string
 	MinChannel   int
 	Lanes        []PlacedLane
 	LaneX, LaneW []float64
@@ -79,8 +83,8 @@ func (l *Layout) Result() Result {
 	r := Result{
 		PoolW: l.PoolW, PoolH: l.PoolH, Origin: Origin,
 		PoolHeader: l.Cfg.PoolHeader, LaneHeader: l.Cfg.LaneHeader, MinChannel: l.Cfg.MinChannel,
-		NoLanes: l.NoLanes,
-		LaneX:   l.LaneX, LaneW: l.LaneW, TopoOrder: l.TopoOrder,
+		NoLanes: l.NoLanes, Dir: l.Dir,
+		LaneX: l.LaneX, LaneW: l.LaneW, TopoOrder: l.TopoOrder,
 	}
 	for _, ln := range l.Lanes {
 		r.Lanes = append(r.Lanes, PlacedLane{ln.ID, ln.Lines})

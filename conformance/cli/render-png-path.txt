@@ -9,6 +9,6 @@ layout: 0 lỗi, 0 cảnh báo
 png: $T/anh.png
 [exit 0]
 --- files
-df59b7a1ed54a4fc  anh.png
+0f1a050d0935b5de  anh.png
 d6401975adfee782  in.drawio
 35ce030c1847ff7d  in.md

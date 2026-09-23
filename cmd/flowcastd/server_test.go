@@ -161,6 +161,46 @@ func TestVuotGioiHanTra413(t *testing.T) {
 	}
 }
 
+// countReader đếm số byte máy chủ thật sự đọc từ thân yêu cầu.
+type countReader struct {
+	r io.Reader
+	n int64
+}
+
+func (c *countReader) Read(p []byte) (int, error) {
+	n, err := c.r.Read(p)
+	c.n += int64(n)
+	return n, err
+}
+
+// Thân yêu cầu phải bị chặn ngay lúc đọc, không phải đọc hết rồi mới so với
+// giới hạn: file 8 MB gửi tới máy chủ giới hạn 1 KB không được nằm trọn trong
+// bộ nhớ.
+func TestThanYeuCauBiChanNgayLucDoc(t *testing.T) {
+	lim := flowcast.WebLimits
+	lim.MaxBytes = 1000
+	h := testServer(lim, 2)
+	var body bytes.Buffer
+	mw := multipart.NewWriter(&body)
+	fw, err := mw.CreateFormFile("file", "to.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fw.Write(bytes.Repeat([]byte("x"), 8<<20))
+	mw.Close()
+	counted := &countReader{r: bytes.NewReader(body.Bytes())}
+	req := httptest.NewRequest(http.MethodPost, "/api/build", counted)
+	req.Header.Set("Content-Type", mw.FormDataContentType())
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+	if r := decode(t, rec); rec.Code != http.StatusRequestEntityTooLarge || r.Error == nil {
+		t.Fatalf("mã %d, %s", rec.Code, rec.Body.String())
+	}
+	if max := int64(lim.MaxBytes) + multipartSlack + 64<<10; counted.n > max {
+		t.Errorf("máy chủ đọc %d byte, quá mức cần để biết là vượt giới hạn (%d)", counted.n, max)
+	}
+}
+
 func TestThieuFileTra400(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
 	rec := upload(t, h, "/api/build", "", nil, map[string]string{"title": "x"})

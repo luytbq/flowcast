@@ -65,7 +65,8 @@ def variants(rng, root, lay):
     edges = [e for e in lay.edges]
     anchor = min(lay.items.values(), key=lambda i: i.order).id
     for name in ('lệch điểm giữa', 'lệch điểm cuối', 'lệch dưới ngưỡng', 'thêm điểm', 'bỏ cạnh', 'bỏ path',
-                 'lệch hình neo', 'bỏ hình neo', 'không có id', 'id trùng'):
+                 'lệch hình neo', 'bỏ hình neo', 'không có id', 'id trùng',
+                 'neo có rect thiếu width', 'neo có rect ngoài namespace', 'neo vẽ bằng path'):
         r = copy.deepcopy(root)
         cs = cells(r)
         e = rng.choice(edges)
@@ -106,6 +107,19 @@ def variants(rng, root, lay):
                 for c in list(el):
                     if c.tag in (NS + 'rect', NS + 'ellipse', NS + 'path'):
                         el.remove(c)
+        elif name == 'neo có rect thiếu width':
+            # rect không có width là hình nền hay vùng bắt chuột, không phải hình node.
+            cs[anchor].insert(0, ET.Element(NS + 'rect', x='999', y='999'))
+        elif name == 'neo có rect ngoài namespace':
+            cs[anchor].insert(0, ET.Element('{urn:x-khac}rect', x='999', y='999', width='10'))
+        elif name == 'neo vẽ bằng path':
+            a = cs[anchor]
+            for el in list(a.iter()):
+                for c in list(el):
+                    if c.tag in (NS + 'rect', NS + 'ellipse', NS + 'path'):
+                        el.remove(c)
+            # Điểm đầu của path không phải góc trên trái: hình neo là góc nhỏ nhất.
+            ET.SubElement(a, NS + 'path', d='M 200 300 L 100 300 L 100 200 L 200 200 Z')
         elif name == 'không có id':
             for x in r.iter(NS + 'g'):
                 x.attrib.pop('data-cell-id', None)

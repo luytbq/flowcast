@@ -253,12 +253,19 @@ func TestMermaidCanhTrungIDThemHauTo(t *testing.T) {
 
 func TestMermaidHuongVaTieuDe(t *testing.T) {
 	tb := parseMM(t, "---\ntitle: Tiêu đề\n---\nflowchart LR\n  a --> b")
-	if tb.Title != "Tiêu đề" {
-		t.Errorf("tiêu đề %q", tb.Title)
+	if tb.Title != "Tiêu đề" || tb.Direction != "LR" {
+		t.Errorf("tiêu đề %q, hướng %q", tb.Title, tb.Direction)
 	}
-	expectCodes(t, tb, "mermaid.direction")
-	if tb.Issues[0].Loc.Line != 4 {
-		t.Errorf("cảnh báo hướng ở dòng %d, mong dòng 4", tb.Issues[0].Loc.Line)
+	expectCodes(t, tb)
+	for src, want := range map[string]string{"graph TB\n a-->b": "TD", "graph\n a-->b": "", "flowchart BT\n a-->b": "BT"} {
+		if d := parseMM(t, src).Direction; d != want {
+			t.Errorf("%q: hướng %q, mong %q", src, d, want)
+		}
+	}
+	bad := parseMM(t, "flowchart XY\n  a --> b")
+	expectCodes(t, bad, "mermaid.direction")
+	if bad.Issues[0].Loc.Line != 1 {
+		t.Errorf("cảnh báo hướng ở dòng %d, mong dòng 1", bad.Issues[0].Loc.Line)
 	}
 }
 

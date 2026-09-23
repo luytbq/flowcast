@@ -92,6 +92,7 @@ RENDER = [
     ('render-verify', '05-merge-node', 'in.md', [['build', '$T/in.md', '--verify']], 'ok'),
     ('render-png-and-verify', '05-merge-node', 'in.md', [['build', '$T/in.md', '--verify', '--png']], 'ok'),
     ('render-fail', '03-condition-two', 'in.md', [['build', '$T/in.md', '--png']], 'fail'),
+    ('render-fail-stdout', '03-condition-two', 'in.md', [['build', '$T/in.md', '--png']], 'stdout-fail'),
     ('render-verify-fail', '03-condition-two', 'in.md', [['build', '$T/in.md', '--verify']], 'fail'),
     ('render-silent', '03-condition-two', 'in.md', [['build', '$T/in.md', '--png', '--verify']], 'silent'),
     # Mã 2 của tự kiểm được giữ, không bị kiểm render đổi thành 3.

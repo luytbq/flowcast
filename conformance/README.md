@@ -29,6 +29,7 @@ drawio-fakes/       drawio CLI giả cho bản ghi có --png và --verify
 flowchart/          bảng không có lane; golden của chúng nằm ở golden/flowchart
 mermaid/            flowchart mermaid kiểu thực tế, golden ở golden/mermaid; cũng là bộ đo cho heuristic nhánh chính
 diverge.txt         case mà bản Go cố ý khác bản tham chiếu, kèm lý do
+golden/direction/   golden của ba hướng BT, LR, RL, cũng là bộ chống hồi quy
 ```
 
 Từ bước 14, bản Go có hành vi mà bản tham chiếu không có. Case của hành vi cũ

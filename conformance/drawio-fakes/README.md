@@ -4,7 +4,8 @@ mục <tên> ở đây cùng /usr/bin và /bin, nên không ai thấy drawio th�
 
 | tên | hành vi |
 |---|---|
-| ok | ghi ảnh PNG giả, hoặc SVG không có data-cell-id |
+| ok | ghi dòng lệnh nhận được vào file PNG, hoặc SVG không có data-cell-id |
+| stdout-fail | in lỗi ra stdout, mã thoát 1 |
 | fail | in lỗi ra stderr, mã thoát 1 |
 | silent | mã thoát 0 nhưng không ghi file nào |
 | none | không có drawio |

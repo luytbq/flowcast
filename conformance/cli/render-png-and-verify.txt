@@ -13,4 +13,4 @@ render: 1 điểm lệch
 --- files
 5fe65cdc898e212c  in.drawio
 cfec3086adb5d4eb  in.md
-df59b7a1ed54a4fc  in.png
+0f1a050d0935b5de  in.png

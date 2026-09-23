@@ -1,15 +1,27 @@
 #!/bin/sh
+# Ghi lại các đối số không phải đường dẫn vào file kết quả: nhờ vậy bản ghi CLI
+# chốt luôn những gì tool truyền cho drawio, như tỉ lệ của ảnh PNG. Đường dẫn
+# thì không ghi, vì thư mục tạm khác nhau giữa hai lần chạy.
 fmt=''
 out=''
-while [ $# -gt 0 ]; do
-	case "$1" in
-	-f) fmt="$2"; shift ;;
-	-o) out="$2"; shift ;;
+scale=''
+flags=''
+prev=''
+for arg in "$@"; do
+	case "$prev" in
+	-f) fmt="$arg" ;;
+	-o) out="$arg" ;;
+	-s) scale="$arg" ;;
+	*)
+		case "$arg" in
+		-*) flags="$flags $arg" ;;
+		esac
+		;;
 	esac
-	shift
+	prev="$arg"
 done
 if [ "$fmt" = svg ]; then
 	printf '<svg xmlns="http://www.w3.org/2000/svg"><g /></svg>' > "$out"
 else
-	printf 'PNG giả' > "$out"
+	printf 'PNG giả: định dạng %s, tỉ lệ "%s", cờ%s\n' "$fmt" "$scale" "$flags" > "$out"
 fi

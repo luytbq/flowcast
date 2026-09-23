@@ -32,4 +32,7 @@ type Table struct {
 	// nằm ở tầng validate.
 	Issues []Issue
 	Source string
+	// Direction là hướng nguồn tự khai báo, như dòng flowchart LR của mermaid.
+	// Rỗng nghĩa là nguồn không nói gì.
+	Direction string
 }

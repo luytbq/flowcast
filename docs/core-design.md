@@ -557,7 +557,7 @@ còn là đáp án nữa:
 | 14 | lane thành tùy chọn. Xong: bảng không có lane dựng trên một lane ẩn, header bằng 0, không vẽ pool; merge chạy được |
 | 15 | bộ sơ đồ đo, rồi heuristic độ sâu đường đi. Xong, kèm luật xương sống cho node hợp nhánh, xem mục 13 |
 | 16 | source/mermaid, hướng khác TD quy về TD kèm cảnh báo. Xong, làm trước bước 15 vì bộ sơ đồ đo cần đọc được mermaid |
-| 17 | axis, LR và BT và RL |
+| 17 | axis, LR và BT và RL. Xong: engine vẫn xếp theo TD, layout/axis.go hoán đổi kích thước trước khi xếp rồi đổi trục kết quả |
 
 Bước 16 ra trước bước 17 có chủ ý: mermaid quy về TD đã dùng được ngay, còn lật
 trục là khối lớn nhất. Quyết định hỗ trợ LR thật không đổi, chỉ xếp sau bản dùng

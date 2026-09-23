@@ -44,7 +44,7 @@ func run(argv []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	a, err := parseArgs(argv)
 	if err != nil {
 		fmt.Fprintln(stderr, "flowcast:", err)
-		fmt.Fprintln(stderr, "dùng: flowcast check <file> | flowcast build <file> [-o out.drawio] [--mode merge|force] ...")
+		fmt.Fprintln(stderr, "dùng: flowcast check <file> | flowcast build <file> [-o out.drawio] [--mode merge|force] [--direction LR] ...")
 		return 2
 	}
 	c := &cli{a: a, stdin: stdin, out: stdout}
@@ -166,7 +166,7 @@ func (c *cli) build() int {
 	}
 
 	r, err := flowcast.Build(src, flowcast.Options{Config: &c.a.cfg, Title: c.a.title, Previous: prev,
-		Limits: &flowcast.CLILimits})
+		Direction: c.a.direction, Limits: &flowcast.CLILimits})
 	if err != nil {
 		c.println("ERROR   " + err.Error())
 		return 1

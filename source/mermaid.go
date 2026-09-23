@@ -66,6 +66,7 @@ type mermaid struct {
 	linkAll   map[string]string
 	issues    []model.Issue
 	title     string
+	dir       string
 	seq       int // thứ tự xuất hiện chung của node và lane
 }
 
@@ -152,8 +153,9 @@ func (m *mermaid) header(st string, ln int, name string) error {
 	if len(f) > 1 {
 		switch f[1] {
 		case "TD", "TB":
+			m.dir = "TD"
 		case "LR", "RL", "BT":
-			m.warn(ln, "mermaid.direction", "hướng "+f[1]+" chưa hỗ trợ, sơ đồ vẽ từ trên xuống")
+			m.dir = f[1]
 		default:
 			m.warn(ln, "mermaid.direction", "hướng "+f[1]+" không hợp lệ, sơ đồ vẽ từ trên xuống")
 		}
@@ -823,7 +825,7 @@ func (m *mermaid) table() model.Table {
 	// Cảnh báo sinh ra theo thứ tự xử lý, không theo thứ tự dòng; người đọc cần
 	// thứ tự dòng.
 	sort.SliceStable(m.issues, func(i, j int) bool { return m.issues[i].Loc.Line < m.issues[j].Loc.Line })
-	return model.Table{Title: m.title, Rows: rows, Issues: m.issues, Source: "mermaid"}
+	return model.Table{Title: m.title, Rows: rows, Issues: m.issues, Source: "mermaid", Direction: m.dir}
 }
 
 // nodeType suy type từ hình của node. db chỉ nối với đúng một node thì đứng cạnh

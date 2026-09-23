@@ -36,6 +36,9 @@ type Options struct {
 	// thì sơ đồ mới giữ lại những chỉnh sửa đó, xem gói merge. Previous chỉ dùng
 	// được một lần: các trang của nó được chuyển sang file mới.
 	Previous *merge.Old
+	// Direction là hướng của sơ đồ: TD, BT, LR hoặc RL. Rỗng thì theo hướng nguồn
+	// khai báo, nguồn không khai báo thì TD.
+	Direction string
 	// Limits chặn tài nguyên, xem CLILimits và WebLimits. nil là không chặn.
 	// Vượt giới hạn là lỗi trả về, mã model.Error bắt đầu bằng "limit.".
 	Limits *Limits
@@ -129,14 +132,31 @@ func Build(src Source, opt Options) (Result, error) {
 	if err := b.check(); err != nil {
 		return Result{}, err
 	}
-	l := layout.New(t.Rows, cfg, text.NewMeasure(m)).Run()
+	dir := opt.Direction
+	if dir == "" {
+		dir = t.Direction
+	}
+	if dir == "" {
+		dir = layout.DirTD
+	}
+	if !layout.ValidDirection(dir) {
+		return Result{}, model.Errf("config.direction", "hướng %q không hợp lệ; dùng TD, BT, LR hoặc RL", dir)
+	}
+	if opt.Previous != nil && dir != layout.DirTD {
+		return Result{}, model.Errf("merge.direction",
+			"merge chưa hỗ trợ sơ đồ hướng %s; dùng --mode force để sinh lại toàn bộ", dir)
+	}
+	lay := layout.New(t.Rows, cfg, text.NewMeasure(m))
+	lay.SetDirection(dir)
+	l := lay.Run()
 	if err := b.check(); err != nil {
 		return Result{}, err
 	}
 	res := l.Result()
-	r.Layout = &res
 	r.Warnings = l.Warnings
 	r.Findings = layout.Check(res)
+	res = layout.Orient(res)
+	r.Layout = &res
 	if opt.Previous != nil {
 		extras, rep := merge.Apply(&res, opt.Previous)
 		r.Merge = &rep

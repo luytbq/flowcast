@@ -65,6 +65,8 @@ type Layout struct {
 	// NoLanes: bảng không có lane nào, Lanes chỉ chứa một lane ẩn.
 	NoLanes bool
 	depth   map[string]int // bộ nhớ của branchDepth, làm mới mỗi lần Place
+	// Dir là hướng của sơ đồ, xem axis.go. Rỗng nghĩa là TD.
+	Dir string
 
 	// items và Edges giữ thứ tự dòng trong bảng. Map của Go duyệt ngẫu nhiên,
 	// nên mọi vòng duyệt cần thứ tự đều đi qua ItemOrder.

@@ -9,6 +9,6 @@ layout: 0 lỗi, 0 cảnh báo
 png: $T/b.png
 [exit 0]
 --- files
-df59b7a1ed54a4fc  b.png
+0f1a050d0935b5de  b.png
 d6401975adfee782  so.do.drawio
 35ce030c1847ff7d  so.do.md

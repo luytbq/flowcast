@@ -96,9 +96,12 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 		}
 		c := root.Add("mxCell", "id", it.ID, "value", htmlLines(it.Lines), "vertex", "1",
 			"parent", parentOf(it), "style", style+font+mark)
-		if r.NoLanes {
+		switch {
+		case r.NoLanes:
 			geo(c, it.X+ox, it.Y+oy, it.W, it.H)
-		} else {
+		case horizontalLanes(r):
+			geo(c, it.X-float64(r.PoolHeader), it.Y-r.LaneX[it.Lane], it.W, it.H)
+		default:
 			geo(c, it.X-r.LaneX[it.Lane], it.Y-float64(r.PoolHeader), it.W, it.H)
 		}
 	}
@@ -160,7 +163,23 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 	return mxfile.String()
 }
 
+// horizontalLanes: sơ đồ đi ngang, lane là băng ngang với header ở bên trái.
+// LaneX và LaneW khi đó là vị trí và bề dày của băng theo trục dọc.
+func horizontalLanes(r layout.Result) bool { return r.Dir == layout.DirLR || r.Dir == layout.DirRL }
+
 func writePool(root *etree.Element, r layout.Result, title string, ox, oy float64) {
+	if horizontalLanes(r) {
+		pool := root.Add("mxCell", "id", "pool", "value", htmlLines([]string{title}), "vertex", "1", "parent", "1",
+			"style", "swimlane;html=1;horizontal=0;childLayout=stackLayout;horizontalStack=0;resizeParent=1;"+
+				"resizeParentMax=0;startSize="+itoa(r.PoolHeader)+";collapsible=0;fontStyle=1;"+font+mark)
+		geo(pool, ox, oy, r.PoolW, r.PoolH)
+		for i, lane := range r.Lanes {
+			c := root.Add("mxCell", "id", lane.ID, "value", htmlLines(lane.Lines), "vertex", "1", "parent", "pool",
+				"style", "swimlane;html=1;horizontal=0;startSize="+itoa(r.LaneHeader)+";collapsible=0;"+font+mark)
+			geo(c, float64(r.PoolHeader), r.LaneX[i], r.PoolW-float64(r.PoolHeader), r.LaneW[i])
+		}
+		return
+	}
 	pool := root.Add("mxCell", "id", "pool", "value", htmlLines([]string{title}), "vertex", "1", "parent", "1",
 		"style", "swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;"+
 			"resizeParentMax=0;startSize="+itoa(r.PoolHeader)+";collapsible=0;fontStyle=1;"+font+mark)

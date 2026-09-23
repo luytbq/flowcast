@@ -40,6 +40,7 @@ do nằm trong `docs/adr/`; đừng mở lại chúng mà chưa đọc.
 go build -o flowcast ./cmd/flowcast
 ./flowcast check bang.md
 ./flowcast build so-do.mmd                   # flowchart mermaid, hoặc khối ```mermaid trong file .md
+./flowcast build bang.md --direction LR      # TD, BT, LR hoặc RL
 ./flowcast build bang.md [-o ra.drawio] [--title "..."] [--mode merge|force] [--task-max-w 280 ...]
 ```
 
@@ -64,6 +65,9 @@ Những chỗ khác có chủ đích:
 - `--encoding` nhận utf-8, utf-8-sig, cp1252 và latin-1 cùng các tên gọi khác của
   chúng. Python nhận hàng trăm bảng mã; tên lạ được xử lý như Python xử lý một
   tên nó không biết.
+- Vẽ được bốn hướng: TD, BT, LR và RL, chọn bằng `--direction` hoặc lấy từ dòng
+  `flowchart LR` của mermaid. Lane của sơ đồ đi ngang là băng ngang, tiêu đề
+  xoay dọc. Merge chỉ hỗ trợ hướng TD.
 - Đọc được flowchart mermaid, thứ bản Python không có: subgraph thành lane,
   hình node thành type, nét đứt, nét đậm và không mũi tên thành style. Những gì
   không có chỗ chứa được báo bằng cảnh báo mã mermaid.*, kèm số dòng. Hướng

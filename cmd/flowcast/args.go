@@ -17,6 +17,7 @@ type args struct {
 	file       string
 	output     string
 	title      string
+	direction  string
 	layoutJSON string
 	mode       string
 	font       string
@@ -55,6 +56,7 @@ func parseArgs(argv []string) (*args, error) {
 	if a.cmd == "build" {
 		strs["output"], strs["title"], strs["layout-json"] = &a.output, &a.title, &a.layoutJSON
 		strs["mode"], strs["font"] = &a.mode, &a.font
+		strs["direction"] = &a.direction
 	}
 	rest := argv[1:]
 	for i := 0; i < len(rest); i++ {
@@ -120,6 +122,9 @@ func parseArgs(argv []string) (*args, error) {
 	}
 	if a.mode != "" && a.mode != "merge" && a.mode != "force" {
 		return nil, fmt.Errorf("--mode chỉ nhận merge hoặc force, nhận %q", a.mode)
+	}
+	if a.direction != "" && !layout.ValidDirection(a.direction) {
+		return nil, fmt.Errorf("--direction chỉ nhận TD, BT, LR hoặc RL, nhận %q", a.direction)
 	}
 	return a, nil
 }
