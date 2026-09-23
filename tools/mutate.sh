@@ -611,7 +611,8 @@ mutate "mermaid bỏ nét đậm" source/mermaid.go "		lk.edge.bold = ch == '='"
 mutate "mermaid mũi tên mở vẫn có đầu" source/mermaid.go '		lk.edge.noarrow = true' '		_ = lk'
 mutate "mermaid bỏ nhãn |...|" source/mermaid.go '	lk.edge.text = strings.TrimSpace(c.rest()[1 : end+1])' '	_ = end'
 mutate "mermaid không nhận nhãn giữa mũi tên" source/mermaid.go '		if n >= 3 || h != "" {' '		if true {'
-mutate "mermaid id không nhận gạch giữa" source/mermaid.go "		if r == '-' && c.i > start && c.i+1 < len(c.s) {" '		if false {'
+mutate "mermaid id không nhận gạch giữa và dấu chấm" source/mermaid.go "		if (r == '-' || r == '.') && c.i > start && c.i+1 < len(c.s) {" '		if false {'
+mutate "mermaid id không nhận dấu chấm" source/mermaid.go "if (r == '-' || r == '.') &&" "if (r == '-') &&"
 mutate "mermaid không đọc &" source/mermaid.go "		if c.i < len(c.s) && c.s[c.i] == '&' {" '		if false {'
 mutate "mermaid không đánh back" source/mermaid.go '			if pos[e.to] <= pos[e.from] {' '			if false {'
 mutate "mermaid hợp nhánh không chờ nguồn" source/mermaid.go '			if !back[e] && e.from != id && !written[e.from] {' '			if false {'
