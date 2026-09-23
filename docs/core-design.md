@@ -517,11 +517,26 @@ Số liệu, đo bằng `go run ./tools/metrics` trên 28 sơ đồ:
 | phát hiện tự kiểm | 0 | 0 |
 
 Mốc tiếp theo, đã đo nhưng chưa chạm vào: **33 chỗ hai dây cắt nhau** trên cả
-bộ, tệ nhất là sơ đồ CI với 7 chỗ. Phần lớn là một dây dọc chạy trong máng bên
-phải cắt qua các dây ngang. Hai hướng đáng thử, cả hai đều phải đo trước khi
-giữ: chọn phía dạt của nhánh phụ theo cột mà nhánh đó rốt cuộc đổ về, thay vì
-lần lượt phải rồi trái; và xếp thứ tự track trong một máng theo thứ tự các đầu
-dây, thay vì theo thứ tự cạnh.
+bộ, tệ nhất là sơ đồ CI với 7 chỗ. Nguyên nhân đã soi ra: dây đi vòng chạy dọc
+trong máng ngay cạnh cột nguồn, mà máng đó là chỗ mọi mũi tên ngang xuất phát
+từ cột ấy đi qua.
+
+Hai phép thử nhanh đã làm và đã bỏ, có số liệu:
+
+| thử | chỗ cắt | dài | tự kiểm |
+|---|---|---|---|
+| hiện tại | 33 | 29362 | 0 |
+| nhánh không rõ hướng luôn dạt phải | 33 | 29379 | 0 |
+| dây đi vòng luôn dùng máng ngoài cùng | 27 | 32530 | 5 |
+| như trên, nhưng lùi về khi hai đoạn ngang đâm vào node | 31 | 32066 | 2 |
+
+Hai phép sau làm dây dài thêm gần 10% và, tệ hơn, sinh ra lỗi hình học thật:
+đoạn ngang ở hai đầu cắt qua node. Phép kiểm ô trống theo lưới không đủ để
+tránh, vì thứ tự đặt track mới quyết định đường đi cuối cùng.
+
+Làm tử tế nghĩa là chọn máng và chọn track cùng lúc, với hàm chi phí gồm cả số
+chỗ cắt, chứ không phải chọn máng trước rồi xếp track sau như hiện nay. Đó là
+một khối riêng, và bộ đo cùng bộ golden đã sẵn sàng để đánh giá nó.
 
 ## 14. Lộ trình port
 
