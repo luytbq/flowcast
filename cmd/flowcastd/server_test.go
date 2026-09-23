@@ -263,7 +263,10 @@ func TestThamSoXepHinhVaHuongQuaWeb(t *testing.T) {
 	if !lr.OK || lr.Stats.W <= lr.Stats.H || !strings.Contains(lr.Drawio, "horizontal=0") {
 		t.Errorf("hướng LR phải cho sơ đồ nằm ngang với lane ngang: %v", lr.Stats)
 	}
-	for _, bad := range []map[string]string{{"task-min-w": "x"}, {"task-min-w": "-5"}, {"direction": "XY"}} {
+	// track-gap nhận cả số 0, nên "x" chỉ bị bắt nếu máy chủ thật sự kiểm chữ
+	// thành số chứ không lẳng lặng lấy 0.
+	for _, bad := range []map[string]string{{"task-min-w": "x"}, {"track-gap": "x"}, {"task-min-w": "-5"},
+		{"task-min-w": "999999"}, {"direction": "XY"}} {
 		rec := upload(t, h, "/api/build", "a.md", data, bad)
 		if r := decode(t, rec); rec.Code != http.StatusBadRequest || r.Error == nil {
 			t.Errorf("%v: mã %d, %s", bad, rec.Code, rec.Body.String())

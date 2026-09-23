@@ -126,6 +126,32 @@ func TestHuongLRVeLaneThanhBangNgang(t *testing.T) {
 	}
 }
 
+// Hướng do nguồn khai báo, như dòng flowchart LR của mermaid, phải được dùng
+// khi người gọi không ép hướng khác.
+func TestHuongLayTuNguon(t *testing.T) {
+	src := dirSource(t, "mermaid/01-dat-hang.mmd")
+	lr := flowcast.Source{Name: "lr.mmd", Data: []byte(strings.Replace(string(src.Data), "flowchart TD", "flowchart LR", 1))}
+	td, err := flowcast.Build(src, flowcast.Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := flowcast.Build(lr, flowcast.Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Stats.W <= got.Stats.H || got.Stats == td.Stats {
+		t.Errorf("nguồn khai LR mà vẫn vẽ như TD: %v rồi %v", td.Stats, got.Stats)
+	}
+	// Người gọi ép hướng thì hướng của nguồn nhường chỗ.
+	forced, err := flowcast.Build(lr, flowcast.Options{Direction: layout.DirTD})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if forced.Stats != td.Stats {
+		t.Errorf("ép TD: %v, mong %v", forced.Stats, td.Stats)
+	}
+}
+
 func TestHuongLaKhongHopLeThiBaoLoi(t *testing.T) {
 	src := flowcast.Source{Name: "a.md", Data: []byte("| id | type | parent | content | metadata |\n|-|-|-|-|-|\n")}
 	if _, err := flowcast.Build(src, flowcast.Options{Direction: "XY"}); err == nil {

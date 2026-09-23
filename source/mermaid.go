@@ -400,8 +400,9 @@ func (m *mermaid) parseNode(c *cursor, ln int) (string, bool) {
 			c.i += w
 			continue
 		}
-		// Gạch ngang nằm giữa hai ký tự của id, như API-1, không phải mũi tên.
-		if r == '-' && c.i > start && c.i+1 < len(c.s) {
+		// Gạch ngang và dấu chấm nằm giữa hai ký tự của id, như API-1 hay E4.1,
+		// không phải mũi tên và không phải dấu kết thúc.
+		if (r == '-' || r == '.') && c.i > start && c.i+1 < len(c.s) {
 			if r2, _ := utf8.DecodeRuneInString(c.s[c.i+1:]); isIDRune(r2) {
 				c.i++
 				continue

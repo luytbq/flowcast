@@ -116,6 +116,60 @@ func TestMermaidKieuMuiTen(t *testing.T) {
 	expectCodes(t, tb, "mermaid.arrow_head", "mermaid.bidirectional", "mermaid.invisible_link")
 }
 
+// Id của Flow Table có dạng LANE-1, và mermaid cũng nhận id như vậy, nên gạch
+// giữa hai ký tự của id không được đọc thành mũi tên.
+func TestMermaidIDCoGachNgang(t *testing.T) {
+	tb := parseMM(t, "flowchart TD\n  API-1[Nhận] --> API-2.x[Xử lý]\n  API-2.x --- SVC-3")
+	expectRows(t, tb,
+		"API-1 | task |  | Nhận | ",
+		"API-1-->API-2.x | edge |  |  | from=API-1;to=API-2.x",
+		"API-2.x | task |  | Xử lý | ",
+		"API-2.x-->SVC-3 | edge |  |  | from=API-2.x;to=SVC-3;style=noarrow",
+		"SVC-3 | task |  | SVC-3 | ")
+}
+
+// Hình thoi chỉ có một cạnh ra không phải là chỗ rẽ nhánh, mà Flow Table lại
+// bắt condition có ít nhất hai nhánh, nên nó được vẽ thành task.
+func TestMermaidHinhThoiMotNhanhThanhTask(t *testing.T) {
+	tb := parseMM(t, "flowchart TD\n  a{Chỉ một?} --> b[Tiếp]\n  c{Hai?} -->|có| b\n  c -->|không| d[Khác]")
+	rows := rowsOf(tb)
+	if rows[0] != "a | task |  | Chỉ một? | " {
+		t.Errorf("dòng đầu %q", rows[0])
+	}
+	found := false
+	for _, r := range rows {
+		if r == "c | condition |  | Hai? | " {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("hình thoi hai nhánh phải giữ condition:\n  %s", strings.Join(rows, "\n  "))
+	}
+	expectCodes(t, tb, "mermaid.condition_one_branch")
+}
+
+// Cảnh báo phải đi theo số dòng, vì người đọc dò chúng trên file nguồn.
+func TestMermaidCanhBaoTheoSoDong(t *testing.T) {
+	tb := parseMM(t, `flowchart TD
+  a --> b
+  click a "x"
+  c{Một} --> d
+  e[(Kho)] --> f
+  click f "y"`)
+	var lines []int
+	for _, i := range tb.Issues {
+		lines = append(lines, i.Loc.Line)
+	}
+	for k := 1; k < len(lines); k++ {
+		if lines[k] < lines[k-1] {
+			t.Fatalf("cảnh báo không theo số dòng: %v", lines)
+		}
+	}
+	if len(lines) < 4 {
+		t.Errorf("chỉ có %d cảnh báo: %v", len(lines), lines)
+	}
+}
+
 func TestMermaidChuoiVaVaNhieuNguon(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
   a & b --> c & d; c --> e`)
