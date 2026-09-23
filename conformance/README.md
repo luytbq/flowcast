@@ -136,6 +136,11 @@ Cố tình làm sai từng chỗ rồi xem test có đỏ không. Một bộ đ�
 mà không bắt được đột biến nào thì không chốt gì, và điều đó im lặng cho tới lúc
 bản port sai thật. Chạy lại sau mỗi lần thêm module Go.
 
+Con số hiện tại: **372 đột biến, bắt được 372, bỏ lọt 0.** Lượt trước đó bỏ lọt
+12, và vá chúng lòi ra hai thiếu sót thật của sản phẩm chứ không chỉ thiếu test.
+Bộ đối chiếu hiện có 115 case bảng, 51 kịch bản merge, 16 case flowchart, 12 sơ
+đồ mermaid và 209 bản ghi CLI.
+
 Công cụ khôi phục bằng `git checkout` chứ không bằng sed ngược, và bắt buộc
 chuỗi đích xuất hiện đúng một lần. Cả hai luật đó đến từ việc làm sai: sed ngược
 từng ghi đè nhầm một mệnh đề canh và để lại code hỏng vẫn qua được test, còn

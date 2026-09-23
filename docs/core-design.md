@@ -575,7 +575,7 @@ trung gian vào bản tham chiếu**, và bản Go dump đúng cùng định d�
 | 7 | layout/geometry, layout/labels | xong, khớp từng bit |
 | 8 | layout/check | xong |
 | 9 | writer/drawio | xong: 76 file .drawio khớp từng byte |
-| 10 | build, cmd/flowcast | xong: CLI khớp bản tham chiếu từng dòng trên 103 bản ghi |
+| 10 | build, cmd/flowcast | xong: CLI khớp bản tham chiếu từng dòng, nay là 209 bản ghi |
 | 11 | source/csv, source/xlsx | xong |
 | 12 | merge | xong phần port nguyên. Overrides và tự kiểm sau merge ở mục 9 là thay đổi hành vi, làm sau khi port xong |
 | 13 | render, giới hạn tài nguyên, cmd/flowcastd | xong |
