@@ -1,4 +1,13 @@
-# flowtable2drawio
+# flowtable2drawio, bản tham chiếu của flowcast
+
+**Đây không phải bản để dùng.** Bản dùng là flowcast, viết bằng Go, ở thư mục
+gốc của repo. File này giữ vai trò bản tham chiếu: nó sinh đáp án cho bộ đối
+chiếu, và bản Go phải cho ra đúng từng byte, đúng từng dòng in ra và đúng mã
+thoát như nó. Sửa file này mà không sinh lại golden là cách im lặng nhất để bộ
+đối chiếu thành vô nghĩa; `tools/check.sh` canh đúng điều đó.
+
+Những gì bản Go làm thêm, như đọc mermaid hay vẽ hướng khác TD, không có ở đây.
+Danh sách chỗ hai bản cố ý khác nhau nằm trong `conformance/diverge.txt`.
 
 Chuyển một Flow Table (định dạng mô tả ở flow-table-format.md cạnh file này) thành file draw.io kiểu activity-swimlane: mỗi lane là một cột dọc, luồng đi từ trên xuống. Bảng viết trong .md, .csv hoặc .xlsx đều được.
 
