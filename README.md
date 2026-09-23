@@ -96,6 +96,7 @@ Những chỗ khác có chủ đích:
 
 ```
 sh tools/check.sh
+DIRS="TD BT LR RL" sh tools/accept.sh   # cần drawio: dựng mọi case rồi so dây draw.io vẽ
 ```
 
 Chạy test của bản tham chiếu, kiểm golden và bản ghi CLI có còn khớp bản tham
