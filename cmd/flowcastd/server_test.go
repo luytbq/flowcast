@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/luytbq/flowcast"
+	"github.com/luytbq/flowcast/layout"
 )
 
 func testServer(lim flowcast.Limits, concurrent int) *server {
@@ -226,6 +227,47 @@ func TestBanThiTra503(t *testing.T) {
 	rec := upload(t, s, "/api/build", "a.md", readCase(t, "05-merge-node.md"), nil)
 	if r := decode(t, rec); rec.Code != http.StatusServiceUnavailable || r.Error == nil || r.Error.Code != "server.busy" {
 		t.Errorf("mã %d, %s", rec.Code, rec.Body.String())
+	}
+}
+
+func TestFieldsKhaiBaoDuThamSo(t *testing.T) {
+	h := testServer(flowcast.WebLimits, 1)
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/fields", nil))
+	var got struct {
+		Directions []string
+		Fields     []apiField
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil {
+		t.Fatal(err)
+	}
+	if len(got.Fields) != len(layout.Fields()) || len(got.Directions) != 4 {
+		t.Fatalf("%d trường, %d hướng", len(got.Fields), len(got.Directions))
+	}
+	for _, f := range got.Fields {
+		if f.Name == "" || f.Help == "" || f.Lo > f.Default || f.Default > f.Hi {
+			t.Errorf("trường hỏng: %+v", f)
+		}
+	}
+}
+
+func TestThamSoXepHinhVaHuongQuaWeb(t *testing.T) {
+	h := testServer(flowcast.WebLimits, 2)
+	data := readCase(t, "05-merge-node.md")
+	base := decode(t, upload(t, h, "/api/build", "a.md", data, nil))
+	wide := decode(t, upload(t, h, "/api/build", "a.md", data, map[string]string{"task-min-w": "400"}))
+	if !wide.OK || wide.Stats.W <= base.Stats.W {
+		t.Errorf("task-min-w không đổi bố cục: %v rồi %v", base.Stats, wide.Stats)
+	}
+	lr := decode(t, upload(t, h, "/api/build", "a.md", data, map[string]string{"direction": "LR"}))
+	if !lr.OK || lr.Stats.W <= lr.Stats.H || !strings.Contains(lr.Drawio, "horizontal=0") {
+		t.Errorf("hướng LR phải cho sơ đồ nằm ngang với lane ngang: %v", lr.Stats)
+	}
+	for _, bad := range []map[string]string{{"task-min-w": "x"}, {"task-min-w": "-5"}, {"direction": "XY"}} {
+		rec := upload(t, h, "/api/build", "a.md", data, bad)
+		if r := decode(t, rec); rec.Code != http.StatusBadRequest || r.Error == nil {
+			t.Errorf("%v: mã %d, %s", bad, rec.Code, rec.Body.String())
+		}
 	}
 }
 

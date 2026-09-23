@@ -11,10 +11,12 @@ import (
 	"mime"
 	"net/http"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/luytbq/flowcast"
+	"github.com/luytbq/flowcast/layout"
 	"github.com/luytbq/flowcast/model"
 	"github.com/luytbq/flowcast/source"
 )
@@ -44,6 +46,7 @@ func newServer(lim flowcast.Limits, concurrent int, log *slog.Logger) *server {
 		mux.Handle(p, fileServer)
 	}
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) { io.WriteString(w, "ok\n") })
+	mux.HandleFunc("GET /api/fields", s.fields)
 	mux.HandleFunc("POST /api/build", func(w http.ResponseWriter, r *http.Request) { s.handle(w, r, true) })
 	mux.HandleFunc("POST /api/check", func(w http.ResponseWriter, r *http.Request) { s.handle(w, r, false) })
 	s.h = s.logged(secure(mux))
@@ -80,6 +83,27 @@ func (s *server) logged(h http.Handler) http.Handler {
 		h.ServeHTTP(sw, r)
 		s.log.Info("request", "method", r.Method, "path", r.URL.Path, "status", sw.status,
 			"ms", time.Since(start).Milliseconds())
+	})
+}
+
+// apiField là một trường cấu hình ở dạng JSON. Trang web dựng form từ danh
+// sách này, nên thêm một trường trong layout là đủ để nó hiện ra ở web.
+type apiField struct {
+	Name    string `json:"name"`
+	Help    string `json:"help"`
+	Default int    `json:"default"`
+	Lo      int    `json:"lo"`
+	Hi      int    `json:"hi"`
+}
+
+func (s *server) fields(w http.ResponseWriter, _ *http.Request) {
+	var out []apiField
+	for _, f := range layout.Fields() {
+		out = append(out, apiField{f.Name, f.Help, f.Default, f.Lo, f.Hi})
+	}
+	writeJSON(w, http.StatusOK, map[string]any{
+		"directions": []string{layout.DirTD, layout.DirBT, layout.DirLR, layout.DirRL},
+		"fields":     out,
 	})
 }
 
@@ -134,6 +158,8 @@ func statusOf(code string) int {
 		return http.StatusServiceUnavailable
 	case strings.HasPrefix(code, "limit."):
 		return http.StatusRequestEntityTooLarge
+	case code == "schema.out_of_range" || code == "config.direction" || code == "merge.direction":
+		return http.StatusBadRequest
 	}
 	return http.StatusUnprocessableEntity
 }
@@ -182,7 +208,21 @@ func (s *server) handle(w http.ResponseWriter, r *http.Request, build bool) {
 	}
 	defer func() { <-s.slot }()
 
-	opt := flowcast.Options{Title: strings.TrimSpace(r.FormValue("title")), Limits: &s.lim}
+	cfg := layout.DefaultConfig()
+	for _, f := range layout.Fields() {
+		v := strings.TrimSpace(r.FormValue(f.Name))
+		if v == "" {
+			continue
+		}
+		n, err := strconv.Atoi(v)
+		if err != nil {
+			fail(w, http.StatusBadRequest, "schema.bad_value", f.Name+" cần một số nguyên, nhận "+v)
+			return
+		}
+		*f.Get(&cfg) = n
+	}
+	opt := flowcast.Options{Title: strings.TrimSpace(r.FormValue("title")), Config: &cfg, Limits: &s.lim,
+		Direction: strings.TrimSpace(r.FormValue("direction"))}
 	var res flowcast.Result
 	if build {
 		res, err = flowcast.Build(src, opt)

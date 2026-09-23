@@ -24,6 +24,35 @@ drop.addEventListener('drop', (e) => {
   }
 });
 
+// Form của tham số xếp hình và danh sách hướng do máy chủ khai báo, nên thêm
+// một tham số trong core là nó hiện ra ở đây, không phải sửa trang.
+async function loadFields() {
+  const res = await fetch('/api/fields');
+  const data = await res.json();
+  const dir = document.getElementById('direction');
+  for (const d of data.directions) {
+    const o = document.createElement('option');
+    o.value = d;
+    o.textContent = d;
+    dir.appendChild(o);
+  }
+  const box = document.getElementById('fields');
+  for (const f of data.fields) {
+    const label = document.createElement('label');
+    label.textContent = f.name;
+    label.title = f.help;
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.name = f.name;
+    input.min = f.lo;
+    input.max = f.hi;
+    input.placeholder = f.default;
+    label.appendChild(input);
+    box.appendChild(label);
+  }
+}
+loadFields();
+
 function item(level, loc, text) {
   const li = document.createElement('li');
   li.className = 'lv-' + level;

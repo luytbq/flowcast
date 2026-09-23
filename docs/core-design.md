@@ -233,8 +233,15 @@ type Field struct {
 ```
 
 CLI sinh cờ từ danh sách Field, web sinh form và validate từ cùng danh sách đó.
-Hai bên không thể lệch nhau, vì chỉ có một nguồn sự thật. Giá trị ngoài miền
-lo..hi là một Issue mã schema.out_of_range, không phải một exception.
+Hai bên không thể lệch nhau, vì chỉ có một nguồn sự thật.
+
+Đã làm, trong `layout/config.go` và `GET /api/fields`. Một chỗ khác với bản
+thiết kế: giá trị ngoài miền lo..hi là một lỗi dừng việc dựng, mã
+schema.out_of_range, chứ không phải Issue. Lý do: Issue nói về nội dung bảng
+người dùng viết, còn đây là tham số người gọi truyền vào, và không có kết quả
+bộ phận nào đáng trả về. Miền để rộng, vì cấu hình cho ra bố cục xấu vẫn là
+quyền của người dùng và tự kiểm sẽ báo; chỉ giá trị làm engine chạy sai mới bị
+chặn.
 
 Tên trường phải trung lập theo trục. min_lane_w trong sơ đồ LR là độ dày của
 một băng ngang, nên tên hiện tại sẽ sai nghĩa và cần đổi khi tách.

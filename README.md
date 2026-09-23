@@ -53,8 +53,10 @@ curl -F file=@bang.md 'localhost:8080/api/build?download=1' -o bang.drawio
 ```
 
 POST /api/build và /api/check nhận multipart với trường file, cùng các trường
-tùy chọn title, sheet, delimiter, encoding, và trả JSON gồm issue có mã máy và
-vị trí. Bảng có lỗi trả 422, vượt giới hạn trả 413, máy chủ bận trả 503. Dịch vụ
+tùy chọn title, direction, sheet, delimiter, encoding và mọi tham số xếp hình,
+rồi trả JSON gồm issue có mã máy và vị trí. GET /api/fields khai báo các tham
+số đó kèm miền giá trị; trang upload dựng form từ chính khai báo này, nên thêm
+một tham số trong core là nó có mặt ở cả CLI lẫn web. Bảng có lỗi trả 422, vượt giới hạn trả 413, máy chủ bận trả 503. Dịch vụ
 dùng hồ sơ giới hạn WebLimits trong limits.go, không merge và không gọi drawio.
 
 Tên cờ, các dòng in ra và mã thoát giống hệt bản Python, xem `reference/README.md`.

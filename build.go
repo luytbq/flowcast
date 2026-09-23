@@ -129,6 +129,9 @@ func Build(src Source, opt Options) (Result, error) {
 	if opt.Config != nil {
 		cfg = *opt.Config
 	}
+	if err := layout.ValidateConfig(cfg); err != nil {
+		return Result{}, err
+	}
 	if err := b.check(); err != nil {
 		return Result{}, err
 	}

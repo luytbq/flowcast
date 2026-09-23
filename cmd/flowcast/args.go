@@ -33,14 +33,11 @@ type args struct {
 // configFlags ánh xạ cờ dòng lệnh tới trường của layout.Config. Tên cờ giữ đúng
 // như bản tham chiếu, vì subagent flowtable-drawio gọi bằng chính các tên này.
 func configFlags(c *layout.Config) map[string]*int {
-	return map[string]*int{
-		"task-min-w": &c.TaskMinW, "task-max-w": &c.TaskMaxW, "cond-wrap": &c.CondWrap,
-		"term-wrap": &c.TermWrap, "db-wrap": &c.DBWrap, "text-wrap": &c.TextWrap,
-		"label-wrap": &c.LabelWrap, "track-gap": &c.TrackGap, "gutter-margin": &c.GutterMargin,
-		"channel-margin": &c.ChannelMargin, "min-gutter": &c.MinGutter, "min-channel": &c.MinChannel,
-		"attach-gap": &c.AttachGap, "lane-header": &c.LaneHeader, "pool-header": &c.PoolHeader,
-		"min-lane-w": &c.MinLaneW, "label-pad": &c.LabelPad,
+	out := map[string]*int{}
+	for _, f := range layout.Fields() {
+		out[f.Name] = f.Get(c)
 	}
+	return out
 }
 
 func parseArgs(argv []string) (*args, error) {

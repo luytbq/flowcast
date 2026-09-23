@@ -589,7 +589,7 @@ mutate "web vượt giới hạn trả 422" cmd/flowcastd/server.go '	case strin
 		return http.StatusRequestEntityTooLarge'
 mutate "web bỏ header nosniff" cmd/flowcastd/server.go '		w.Header().Set("X-Content-Type-Options", "nosniff")' ''
 mutate "web không truyền tùy chọn đọc" cmd/flowcastd/server.go '			src.Options[k] = v' '			_ = v'
-mutate "web không dùng giới hạn" cmd/flowcastd/server.go '	opt := flowcast.Options{Title: strings.TrimSpace(r.FormValue("title")), Limits: &s.lim}' '	opt := flowcast.Options{Title: strings.TrimSpace(r.FormValue("title"))}'
+mutate "web không dùng giới hạn" cmd/flowcastd/server.go 'Config: &cfg, Limits: &s.lim,' 'Config: &cfg,'
 
 # flowchart: bảng không có lane
 mutate "bảng không có lane vẫn đòi parent" validate/validate.go '			if r.Parent == "" && len(v.lanes) == 0 {' '			if false {'
@@ -667,6 +667,20 @@ mutate "phần tử trong lane ngang lấy toạ độ của lane dọc" writer/
 mutate "merge nhận cả hướng khác TD" build.go '	if opt.Previous != nil && dir != layout.DirTD {' '	if false {'
 mutate "hướng lạ không bị từ chối" build.go '	if !layout.ValidDirection(dir) {' '	if false {'
 mutate "hướng của nguồn bị bỏ qua" build.go '		dir = t.Direction' '		_ = t.Direction'
+
+# khai báo trường cấu hình
+mutate "mặc định không lấy từ khai báo trường" layout/config.go '		*f.Get(&c) = f.Default' '		_ = f'
+mutate "không kiểm miền giá trị" layout/config.go '		if v := *f.Get(&c); v < f.Lo || v > f.Hi {' '		if false {'
+mutate "miền giá trị bỏ chặn trên" layout/config.go '		if v := *f.Get(&c); v < f.Lo || v > f.Hi {' '		if v := *f.Get(&c); v < f.Lo {'
+mutate "Fields trả về chính slice bên trong" layout/config.go '{ return append([]Field(nil), fields...) }' '{ return fields }'
+mutate "web bỏ qua tham số xếp hình" cmd/flowcastd/server.go '		*f.Get(&cfg) = n' '		_ = n'
+mutate "web bỏ qua hướng" cmd/flowcastd/server.go '		Direction: strings.TrimSpace(r.FormValue("direction"))}' '	}'
+mutate "web nhận tham số không phải số" cmd/flowcastd/server.go '		n, err := strconv.Atoi(v)
+		if err != nil {' '		n, _ := strconv.Atoi(v)
+		if false {'
+mutate "web trả 422 cho cấu hình sai" cmd/flowcastd/server.go '	case code == "schema.out_of_range" || code == "config.direction" || code == "merge.direction":' '	case false:'
+mutate "web không khai báo hướng" cmd/flowcastd/server.go '		"directions": []string{layout.DirTD, layout.DirBT, layout.DirLR, layout.DirRL},' '		"directions": []string{},'
+mutate "web khai báo thiếu miền giá trị" cmd/flowcastd/server.go '		out = append(out, apiField{f.Name, f.Help, f.Default, f.Lo, f.Hi})' '		out = append(out, apiField{f.Name, f.Help, f.Default, 0, 0})'
 
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang

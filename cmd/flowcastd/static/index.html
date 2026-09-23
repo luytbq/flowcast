@@ -17,11 +17,16 @@
       <span id="drop-text">Chọn hoặc kéo thả file vào đây</span>
     </label>
     <label>Tiêu đề <input type="text" name="title" placeholder="lấy từ file nếu để trống"></label>
+    <label>Hướng <select name="direction" id="direction"></select></label>
     <details>
       <summary>Tùy chọn đọc file</summary>
       <label>Sheet (xlsx) <input type="text" name="sheet"></label>
       <label>Dấu phân cách (csv) <input type="text" name="delimiter" maxlength="1" placeholder="tự đoán"></label>
       <label>Bảng mã (csv) <input type="text" name="encoding" placeholder="tự đoán"></label>
+    </details>
+    <details>
+      <summary>Tham số xếp hình</summary>
+      <div id="fields" class="fields"></div>
     </details>
     <div class="actions">
       <button type="submit" id="build">Tạo file .drawio</button>
