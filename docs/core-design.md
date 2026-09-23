@@ -251,6 +251,10 @@ phải nhánh if trong core.
 
 ## 7. Trục flow và cross
 
+Đã làm, nhưng không theo cách mục này đề xuất: hướng khác TD được dựng bằng
+cách đổi trục kết quả ở cuối, không viết lại bốn pha theo trục. Lý do và hệ quả
+nằm trong ADR-0006. Phần còn lại của mục này giữ nguyên làm bối cảnh.
+
 place và route hôm nay đã trung lập về trục: chúng chỉ làm việc trên lưới lane,
 col, row, và hàm face chỉ trả về L hoặc R, tức dấu trên trục rẽ nhánh. Pixel chỉ
 xuất hiện ở compute_geometry, track_x, track_y, resolve_paths và to_drawio.
