@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/luytbq/flowcast/conformance"
+	"github.com/luytbq/flowcast/layout"
 	"os"
 	"path/filepath"
 	"sort"
@@ -52,6 +53,24 @@ func TestCLIKhopBanThamChieu(t *testing.T) {
 		})
 	}
 	t.Logf("đã phát lại %d bản ghi", len(paths))
+}
+
+// --help liệt kê mọi tham số xếp hình, lấy từ khai báo trong layout.Fields.
+func TestHelpLietKeMoiThamSo(t *testing.T) {
+	for _, argv := range [][]string{{"--help"}, {"-h"}, {"build", "--help"}, {"check", "--help"}} {
+		var out, errOut bytes.Buffer
+		if code := run(argv, strings.NewReader(""), &out, &errOut); code != 0 || errOut.Len() > 0 {
+			t.Fatalf("%v: mã %d, stderr %q", argv, code, errOut.String())
+		}
+		for _, f := range layout.Fields() {
+			if !strings.Contains(out.String(), "--"+f.Name+" ") {
+				t.Errorf("%v: hướng dẫn thiếu --%s", argv, f.Name)
+			}
+		}
+		if !strings.Contains(out.String(), "--direction") || !strings.Contains(out.String(), "--mode") {
+			t.Errorf("%v: hướng dẫn thiếu cờ cơ bản", argv)
+		}
+	}
 }
 
 func replay(t *testing.T, want string) string {

@@ -682,6 +682,13 @@ mutate "web trả 422 cho cấu hình sai" cmd/flowcastd/server.go '	case code =
 mutate "web không khai báo hướng" cmd/flowcastd/server.go '		"directions": []string{layout.DirTD, layout.DirBT, layout.DirLR, layout.DirRL},' '		"directions": []string{},'
 mutate "web khai báo thiếu miền giá trị" cmd/flowcastd/server.go '		out = append(out, apiField{f.Name, f.Help, f.Default, f.Lo, f.Hi})' '		out = append(out, apiField{f.Name, f.Help, f.Default, 0, 0})'
 
+mutate "help không liệt kê tham số xếp hình" cmd/flowcast/args.go '	for _, f := range layout.Fields() {
+		fmt.Fprintf(&b,' '	for _, f := range nil {
+		fmt.Fprintf(&b,'
+mutate "help chỉ nhận ở vị trí đầu" cmd/flowcast/args.go '		case name == "help":
+			return nil, errHelp' '		case false:
+			return nil, errHelp'
+
 [ -n "$PREFLIGHT" ] && exit 0
 # Mọi đột biến phải được khôi phục. Cây còn bẩn nghĩa là chính công cụ này đang
 # hỏng, và mọi kết quả phía trên đều không đáng tin.

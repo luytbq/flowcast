@@ -1,4 +1,4 @@
-# Từ vựng của flowtable-drawio
+# Từ vựng của flowcast
 
 Tài liệu này định nghĩa các từ dùng xuyên suốt code, test và tài liệu thiết kế.
 Một khái niệm chỉ có một tên. Thấy tên khác trong code nghĩa là code cần sửa,

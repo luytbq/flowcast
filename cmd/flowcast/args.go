@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -40,9 +41,44 @@ func configFlags(c *layout.Config) map[string]*int {
 	return out
 }
 
+// errHelp báo rằng người dùng hỏi --help; caller in hướng dẫn rồi thoát 0.
+var errHelp = errors.New("help")
+
+// helpText dựng hướng dẫn. Phần tham số xếp hình sinh từ khai báo trong
+// layout.Fields, nên thêm một tham số là nó có mặt ở đây.
+func helpText() string {
+	var b strings.Builder
+	b.WriteString(`flowcast: bảng luồng hoặc flowchart mermaid thành file draw.io
+
+dùng:
+  flowcast check <file> [--sheet S] [--delimiter D] [--encoding E]
+  flowcast build <file> [cờ]
+
+cờ của build:
+  -o, --output FILE    file .drawio ghi ra; mặc định cạnh file đầu vào
+  --title T            tiêu đề, mặc định lấy từ nguồn
+  --direction D        TD, BT, LR hoặc RL; mặc định theo nguồn, nguồn không nói thì TD
+  --mode merge|force   khi file đích đã có: merge giữ chỉnh sửa tay, force sinh lại
+  --no-backup          không ghi file .bak khi merge hoặc force
+  --png [FILE]         xuất ảnh PNG bằng drawio CLI
+  --verify             xuất SVG rồi so đường dây draw.io vẽ với toạ độ đã tính
+  --layout-json FILE   ghi toạ độ đã tính ra JSON
+  --font FILE          bị bỏ qua: flowcast đo chữ bằng bảng số đo nhúng sẵn
+
+tham số xếp hình, tính bằng điểm ảnh:
+`)
+	for _, f := range layout.Fields() {
+		fmt.Fprintf(&b, "  --%-15s %s; mặc định %d, miền %d..%d\n", f.Name, f.Help, f.Default, f.Lo, f.Hi)
+	}
+	return b.String()
+}
+
 func parseArgs(argv []string) (*args, error) {
 	if len(argv) == 0 {
 		return nil, fmt.Errorf("thiếu lệnh; dùng check hoặc build")
+	}
+	if argv[0] == "--help" || argv[0] == "-h" {
+		return nil, errHelp
 	}
 	a := &args{cmd: argv[0], cfg: layout.DefaultConfig()}
 	if a.cmd != "check" && a.cmd != "build" {
@@ -80,6 +116,8 @@ func parseArgs(argv []string) (*args, error) {
 			return rest[i], nil
 		}
 		switch {
+		case name == "help":
+			return nil, errHelp
 		case a.cmd == "build" && name == "png":
 			// Như nargs='?' của argparse: lấy đối số kế tiếp làm đường ra nếu
 			// nó không phải một cờ, ngược lại dùng đường mặc định.

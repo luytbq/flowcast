@@ -573,3 +573,38 @@ trục là khối lớn nhất. Quyết định hỗ trợ LR thật không đ�
 Từ bước 14 trở đi, `conformance/golden/` thôi là đáp án và thành bộ chống hồi
 quy: nó phải đổi khi và chỉ khi một trong các bước đó cố ý đổi bố cục, và mỗi
 lần sinh lại đều phải đọc diff.
+
+## 15. Việc còn lại
+
+Lộ trình trên đã xong. Những thứ dưới đây đã cân nhắc và để lại, kèm lý do, để
+lần sau không phải nghĩ lại từ đầu.
+
+**Tự kiểm sau merge, và tách Merge thành Overrides.** Mục 9 đề xuất chạy lại
+tự kiểm sau merge và hạ phát hiện xuống mức cảnh báo. Sau khi port xong merge
+thì thấy giá trị của nó thấp hơn tưởng: dây do người dùng giữ lại thì đúng theo
+định nghĩa, dây để draw.io tự đi thì không có toạ độ để kiểm, và nhãn không
+được tính lại sau khi node dịch chỗ. Phần duy nhất còn ý nghĩa là phần tử chồng
+nhau, mà MergeReport đã liệt kê sẵn. Làm đúng việc này nghĩa là tính lại dây và
+nhãn cho sơ đồ đã merge, tức một pha đi dây thứ hai chạy trên hình học do người
+dùng đặt; đó là một khối riêng, không phải một phép đổi mã trả về.
+
+**merge cho hướng khác TD.** Merger đọc file cũ trong hệ toạ độ của chính nó.
+Cách rẻ nhất là đổi trục file cũ lúc đọc rồi đổi ngược lúc ghi, nhưng cell tự vẽ
+được chép nguyên văn nên cũng phải đổi trục theo, và đó là chỗ dễ sai. Hiện tại
+merge báo rõ là chưa hỗ trợ.
+
+**Lane lồng lane.** Mô hình chịu được vì parent đã là cây, nhưng engine chưa xếp
+được. subgraph lồng nhau của mermaid đang bị dẹp về subgraph ngoài cùng kèm
+cảnh báo.
+
+**Bề dày lane trong sơ đồ đi ngang.** Tên lane được xoay dọc, nhưng engine vẫn
+lấy bề rộng chữ làm bề dày tối thiểu của băng, nên tên dài làm băng dày quá
+mức. Sửa đúng là tách hai số: bề dày theo chiều cao chữ, bề dài theo bề rộng
+chữ.
+
+**Hình nguyên thủy trong Result.** Writer vẫn đọc Kind để chọn hình. Lớp trừu
+tượng hình nguyên thủy chỉ có giá trị khi có kind thứ hai, xem mục 8.
+
+**WASM.** Core không chạm filesystem và không gọi tiến trình ngoài, nên dịch
+sang WASM để chạy thẳng trong trình duyệt là chuyện đóng gói, không phải chuyện
+kiến trúc. Chưa làm vì dịch vụ web đã đủ dùng.

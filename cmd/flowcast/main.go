@@ -42,6 +42,10 @@ func main() {
 
 func run(argv []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	a, err := parseArgs(argv)
+	if errors.Is(err, errHelp) {
+		fmt.Fprint(stdout, helpText())
+		return 0
+	}
 	if err != nil {
 		fmt.Fprintln(stderr, "flowcast:", err)
 		fmt.Fprintln(stderr, "dùng: flowcast check <file> | flowcast build <file> [-o out.drawio] [--mode merge|force] [--direction LR] ...")
