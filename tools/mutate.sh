@@ -640,7 +640,7 @@ mutate "nhánh chính luôn là cạnh sau cùng" layout/branch.go '	last := len
 mutate "hòa độ sâu lấy cạnh viết trước" layout/branch.go '		if d := l.branchDepth(same[i].Dst); d > bd {' '		if d := l.branchDepth(same[i].Dst); d >= bd {'
 mutate "độ sâu tính cả luồng chung sau hợp nhánh" layout/branch.go '	if l.nonBackIn(id) <= 1 {' '	if true {'
 mutate "độ sâu đi cả cạnh vòng lặp" layout/branch.go '			if !x.Back {
-				if k := 1 + l.branchDepth(x.Dst); k > d {' '			if !x.Back || len(l.depth) < 0 {
+				if k := 1 + l.branchDepth(x.Dst); k > d {' '			if true {
 				if k := 1 + l.branchDepth(x.Dst); k > d {'
 mutate "hợp nhánh ngoài xương sống vẫn về cột chính" layout/place.go 'ok && (!l.NoLanes || spine[vid]) {' 'ok {'
 mutate "xương sống chỉ đi một bước" layout/branch.go '			id = same[l.mainEdge(same)].Dst
