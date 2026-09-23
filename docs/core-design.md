@@ -516,6 +516,13 @@ Số liệu, đo bằng `go run ./tools/metrics` trên 28 sơ đồ:
 | cạnh của đường dài nhất vẽ thẳng đứng | 117/152 | 135/152 |
 | phát hiện tự kiểm | 0 | 0 |
 
+Mốc tiếp theo, đã đo nhưng chưa chạm vào: **33 chỗ hai dây cắt nhau** trên cả
+bộ, tệ nhất là sơ đồ CI với 7 chỗ. Phần lớn là một dây dọc chạy trong máng bên
+phải cắt qua các dây ngang. Hai hướng đáng thử, cả hai đều phải đo trước khi
+giữ: chọn phía dạt của nhánh phụ theo cột mà nhánh đó rốt cuộc đổ về, thay vì
+lần lượt phải rồi trái; và xếp thứ tự track trong một máng theo thứ tự các đầu
+dây, thay vì theo thứ tự cạnh.
+
 ## 14. Lộ trình port
 
 Lộ trình bóc tách tại chỗ trước đây không còn dùng được: đây là một bản port,
