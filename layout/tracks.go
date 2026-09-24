@@ -1,12 +1,22 @@
 package layout
 
-import "sort"
+import (
+	"math"
+	"sort"
+
+	"github.com/luytbq/flowcast/num"
+)
 
 // assignPorts đặt vị trí cổng ra trên mặt của node nguồn.
 //
-// Hình thoi và elip, hoặc mặt chỉ có một cạnh, luôn ra đúng giữa mặt. Hộp chữ
-// nhật có nhiều cạnh ra cùng một mặt thì chia mặt đó thành nhiều cổng; cạnh A,
-// B, C vẫn giữ giữa mặt, các cạnh D chia nhau phần còn lại.
+// Dây vào luôn nối giữa mặt. Các cạnh ra cùng một mặt có chung nguồn nên được
+// phép gộp; chúng chỉ phải tách cổng khi mặt đó còn có dây vào, vì dây vào khác
+// cả nguồn lẫn đích nên chồng lên nó là sai.
+//
+// Hình thoi và elip ra đúng giữa mặt, trừ khi phải tách: khi đó cổng nằm trên
+// đường viền, lệch khỏi đỉnh. Hộp chữ nhật chỉ có một cạnh ra thì ra giữa mặt;
+// nhiều cạnh ra thì cạnh A, B, C giữ giữa mặt, các cạnh D chia nhau phần còn
+// lại.
 func (l *Layout) assignPorts() {
 	for key, es := range l.sideOut {
 		u := l.items[key.id]
@@ -14,7 +24,8 @@ func (l *Layout) assignPorts() {
 		if len(es) == 0 {
 			continue
 		}
-		if nonRect[u.Kind] || len(es) == 1 {
+		entries := len(l.sideIn[key]) > 0
+		if !entries && (nonRect[u.Kind] || len(es) == 1) {
 			for _, e := range es {
 				e.ExitFrac = sideFrac[side]
 			}
@@ -22,7 +33,7 @@ func (l *Layout) assignPorts() {
 		}
 		var fixed, loose []*Edge
 		for _, e := range es {
-			if e.Case == 'A' || e.Case == 'B' || e.Case == 'C' {
+			if !entries && (e.Case == 'A' || e.Case == 'B' || e.Case == 'C') {
 				fixed = append(fixed, e)
 			} else {
 				loose = append(loose, e)
@@ -33,7 +44,13 @@ func (l *Layout) assignPorts() {
 		}
 		n := len(loose)
 		var fr []float64
-		if len(fixed) > 0 && n <= 6 {
+		if n == 1 && entries {
+			// Né giữa mặt về phía dây sẽ rẽ, để đoạn đầu không cắt dây vào.
+			fr = []float64{0.25}
+			if d := l.items[loose[0].Dst]; (side == 'B' && gkOf(u).less(gkOf(d))) || (side != 'B' && d.Row > u.Row) {
+				fr = []float64{0.75}
+			}
+		} else if (len(fixed) > 0 || entries) && n <= 6 {
 			// Giữa mặt đã có cạnh cố định, nên các cổng còn lại né khỏi 0.5.
 			fr = append(fr, []float64{0.25, 0.75, 0.125, 0.875, 0.375, 0.625}[:n]...)
 			sort.Float64s(fr)
@@ -61,19 +78,37 @@ func (l *Layout) assignPorts() {
 			return loose[i].Order < loose[j].Order
 		})
 		for i, e := range loose {
-			switch side {
-			case 'B':
-				e.ExitFrac = [2]float64{fr[i], 1.0}
-			case 'R':
-				e.ExitFrac = [2]float64{1.0, fr[i]}
-			default:
-				e.ExitFrac = [2]float64{0.0, fr[i]}
-			}
+			e.ExitFrac = outline(u.Kind, side, fr[i])
 		}
 	}
 	for _, e := range l.Edges {
 		e.EntryFrac = sideFrac[e.EntrySide]
 	}
+}
+
+// outline là điểm trên đường viền của node, trên mặt side, ở vị trí t dọc theo
+// mặt đó. Hộp chữ nhật thì điểm nằm ngay trên cạnh; hình thoi và elip thì điểm
+// lùi vào trong khung bao cho tới khi chạm đường viền, để draw.io vẽ đầu dây
+// đúng chỗ đã tính. Làm tròn tới hai chữ số như writer ghi ra, để merge đọc lại
+// file thấy cổng khớp với cổng tính được.
+func outline(kind string, side byte, t float64) [2]float64 {
+	inset := 0.0
+	switch {
+	case kind == "condition":
+		inset = math.Abs(t - 0.5)
+	case nonRect[kind]:
+		d := float64(2*t) - 1
+		inset = num.Round(0.5-float64(0.5*math.Sqrt(1-float64(d*d))), 2)
+	}
+	switch side {
+	case 'B':
+		return [2]float64{t, 1 - inset}
+	case 'T':
+		return [2]float64{t, inset}
+	case 'R':
+		return [2]float64{1 - inset, t}
+	}
+	return [2]float64{inset, t}
 }
 
 // assignTracks tô màu khoảng cho từng kênh và máng.

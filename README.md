@@ -82,6 +82,12 @@ Những chỗ khác có chủ đích:
   mermaid, vẽ hướng khác TD qua `--direction`, và dựng bảng không có lane nào
   thành flowchart. Riêng cái cuối đổi hành vi cũ: bản Python báo lỗi "bảng
   không có lane nào". Merge chỉ hỗ trợ hướng TD.
+- Dây vào một condition luôn nối vào đỉnh, dây ra chỉ đi ở mặt trái, phải hoặc
+  đáy. Bản Python cho dây từ node cùng hàng đi ngang vào mặt bên của condition;
+  bản Go đặt condition xuống hàng dưới nguồn để dây đi vào đỉnh.
+- Dây ra phải chung mặt với dây vào thì bản Go tách cổng ra khỏi giữa mặt, trên
+  đường viền của hình, thay vì để hai dây chồng lên nhau. Dây ra cùng nguồn vẫn
+  được gộp chung một cổng như trước.
 - Case mà bản Go cố ý khác bản tham chiếu được liệt kê trong
   `conformance/diverge.txt`, kèm lý do.
 - CLI chặn bảng quá 50000 dòng hoặc file quá 64 MB, theo hồ sơ CLILimits.

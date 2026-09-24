@@ -119,7 +119,9 @@ func (l *Layout) Place() {
 
 		placed := false
 		needsSides := nonRect[v.Kind] && l.sideBranches(v) >= 2
-		if len(preds) == 1 && l.nonBackIn(vid) == 1 && !needsSides && (len(same) == 0 || sideBranch != 0) {
+		// condition chỉ nhận dây vào từ đỉnh, nên không bao giờ đứng cùng hàng
+		// với nguồn của nó.
+		if len(preds) == 1 && l.nonBackIn(vid) == 1 && !needsSides && v.Kind != "condition" && (len(same) == 0 || sideBranch != 0) {
 			u := l.items[preds[0].Src]
 			r := u.Row
 			a, b := gk{u.Lane, u.Col}, gk{v.Lane, col}

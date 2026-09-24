@@ -68,7 +68,7 @@ func (l *Layout) Route() {
 	// B: thẳng ngang cùng hàng.
 	for _, e := range l.Edges {
 		u, v := l.items[e.Src], l.items[e.Dst]
-		if e.Case != 0 || e.Back || v.Row != u.Row || gkOf(u) == gkOf(v) {
+		if e.Case != 0 || e.Back || v.Row != u.Row || gkOf(u) == gkOf(v) || v.Kind == "condition" {
 			continue
 		}
 		s := face(u, v)
@@ -127,13 +127,7 @@ func (l *Layout) Route() {
 			// Đích nằm trên hoặc ngang hàng thì không ra đáy được.
 			choices = []byte{s, opp(s)}
 		}
-		e.ExitSide = s
-		for _, c := range choices {
-			if l.sideFree(u, c) {
-				e.ExitSide = c
-				break
-			}
-		}
+		e.ExitSide = l.pickExit(u, s, choices)
 		l.link(e, u, e.ExitSide, v, 'T')
 		cu, cv := l.XOrd[XKey{'c', u.Lane, u.Col}], l.XOrd[XKey{'c', v.Lane, v.Col}]
 		chV := Res{Kind: 'C', A: v.Row}
@@ -239,6 +233,18 @@ func (l *Layout) sideFree(u *Item, side byte) bool {
 		}
 	}
 	return true
+}
+
+// pickExit chọn mặt ra cho một cạnh D: mặt đầu tiên còn trống, không thì mặt
+// hướng về đích. Mặt đó có thể đã có dây vào; assignPorts sẽ tách cổng ra khỏi
+// cổng vào.
+func (l *Layout) pickExit(u *Item, s byte, choices []byte) byte {
+	for _, c := range choices {
+		if l.sideFree(u, c) {
+			return c
+		}
+	}
+	return s
 }
 
 // cellsBetween là các ô nằm ngặt giữa hai cột a và b trên hàng r.

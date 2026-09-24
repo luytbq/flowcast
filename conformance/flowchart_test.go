@@ -14,13 +14,13 @@ import (
 
 var update = flag.Bool("update", false, "ghi lại golden của flowchart từ bản Go")
 
-// Flowchart và mermaid là hành vi bản tham chiếu không có, nên golden của chúng do bản Go
-// sinh và là bộ chống hồi quy chứ không phải đáp án: đổi golden thì phải xem ảnh
-// và đọc diff.
+// Flowchart, mermaid và các chỗ cố ý khác bản tham chiếu (bộ diverge) là hành vi
+// bản tham chiếu không có, nên golden của chúng do bản Go sinh và là bộ chống hồi
+// quy chứ không phải đáp án: đổi golden thì phải xem ảnh và đọc diff.
 func flowcharts(t *testing.T) []string {
 	t.Helper()
 	var paths []string
-	for _, pat := range []string{"flowchart/*.md", "mermaid/*.mmd"} {
+	for _, pat := range []string{"flowchart/*.md", "mermaid/*.mmd", "diverge/*.md"} {
 		ps, err := filepath.Glob(filepath.Join(Dir(), pat))
 		if err != nil || len(ps) == 0 {
 			t.Fatalf("không có case %s: %v", pat, err)

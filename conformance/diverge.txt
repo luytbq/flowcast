@@ -5,3 +5,6 @@
 991-invalid-no-lane: bảng không có lane là flowchart hợp lệ, chốt ở conformance/flowchart
 cli:unknown-extension: thông báo đuôi lạ liệt kê thêm .mmd, định dạng mermaid
 cli:dotfile-has-no-extension: thông báo đuôi lạ liệt kê thêm .mmd, định dạng mermaid
+18-labels-crowded: condition chỉ nhận dây vào từ đỉnh, chốt ở conformance/diverge
+42-place-merge-nested: condition chỉ nhận dây vào từ đỉnh, chốt ở conformance/diverge
+cli:merge-fuzz-137: condition chỉ nhận dây vào từ đỉnh, chốt ở conformance/diverge
