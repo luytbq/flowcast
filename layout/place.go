@@ -197,7 +197,7 @@ func (l *Layout) Place() {
 				if !found {
 					panic(fmt.Sprintf("layout: không còn ô nào trong 50 cột cạnh %s", vid))
 				}
-				l.Warnings = append(l.Warnings, fmt.Sprintf("%s: không còn ô trống cạnh %s, đặt xa hơn", a.ID, vid))
+				l.warn("layout.attach-far", a.ID, "%s: không còn ô trống cạnh %s, đặt xa hơn", a.ID, vid)
 			}
 			a.Row, a.Col, a.Placed = row, c, true
 			l.occ[cell{v.Lane, c, row}] = a.ID

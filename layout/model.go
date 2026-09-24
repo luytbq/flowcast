@@ -1,6 +1,7 @@
 package layout
 
 import (
+	"fmt"
 	"github.com/luytbq/flowcast/model"
 	"github.com/luytbq/flowcast/schema"
 	"github.com/luytbq/flowcast/text"
@@ -75,7 +76,7 @@ type Layout struct {
 	Edges     []*Edge
 	outs, ins map[string][]*Edge
 
-	Warnings []string
+	Warnings []Warning
 
 	// Kết quả của place.
 	TopoOrder   []string
@@ -183,4 +184,17 @@ func hasStyle(r model.Row, v string) bool {
 		}
 	}
 	return false
+}
+
+// Warning là một cảnh báo của engine: sơ đồ vẫn dựng được nhưng có chỗ engine
+// phải chấp nhận một phương án kém hơn. Code là mã máy ổn định, ID là phần tử
+// hoặc cạnh liên quan nếu có, Msg là thông điệp cho người đọc.
+type Warning struct {
+	Code string
+	ID   string
+	Msg  string
+}
+
+func (l *Layout) warn(code, id, format string, a ...any) {
+	l.Warnings = append(l.Warnings, Warning{code, id, fmt.Sprintf(format, a...)})
 }

@@ -35,7 +35,7 @@ func TestChangPlace(t *testing.T) {
 			}
 			assertLines(t, "lanes", lanes, w.Lanes)
 			assertLines(t, "topo", l.TopoOrder, w.Topo)
-			assertLines(t, "warnings", l.Warnings, w.Warnings)
+			assertLines(t, "warnings", warningMsgs(l.Warnings), w.Warnings)
 			if l.NRows != w.NRows {
 				t.Errorf("nrows = %d, cần %d", l.NRows, w.NRows)
 			}
@@ -78,4 +78,12 @@ func equalInts(a, b []int) bool {
 		}
 	}
 	return true
+}
+
+func warningMsgs(ws []layout.Warning) []string {
+	out := make([]string, len(ws))
+	for i, w := range ws {
+		out[i] = w.Msg
+	}
+	return out
 }

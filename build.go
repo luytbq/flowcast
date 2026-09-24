@@ -24,6 +24,7 @@ type (
 	Source  = source.Source
 	Issue   = model.Issue
 	Finding = layout.Finding
+	Warning = layout.Warning
 )
 
 // Options là tham số của một lần dựng.
@@ -63,7 +64,7 @@ type Result struct {
 	Text string
 	// Warnings là cảnh báo của engine xếp hình, Findings là kết quả tự kiểm hình
 	// học. Cả hai rỗng khi bảng có lỗi.
-	Warnings []string
+	Warnings []Warning
 	Findings []Finding
 	Layout   *layout.Result
 	// Merge là báo cáo của merge khi Options.Previous khác nil. Findings khi đó
@@ -149,21 +150,38 @@ func Build(src Source, opt Options) (Result, error) {
 		return Result{}, model.Errf("merge.direction",
 			"merge chưa hỗ trợ sơ đồ hướng %s; dùng --mode force để sinh lại toàn bộ", dir)
 	}
-	lay := layout.New(t.Rows, cfg, text.NewMeasure(m))
+	if err := layoutAndWrite(&r, t.Rows, cfg, m, dir, opt.Previous, b); err != nil {
+		return Result{}, err
+	}
+	return r, nil
+}
+
+// layoutAndWrite xếp hình, tự kiểm và sinh văn bản đích cho một bảng đã qua kiểm tra.
+//
+// Engine chỉ panic khi chính nó vi phạm một bất biến. Lỗi đó được trả về như
+// mọi lỗi khác, để chương trình dùng thư viện và dịch vụ web không sập vì một
+// bảng lạ.
+func layoutAndWrite(r *Result, rows []model.Row, cfg layout.Config, m *text.Metrics, dir string, prev *merge.Old, b budget) (err error) {
+	defer func() {
+		if p := recover(); p != nil {
+			err = model.Errf("layout.internal", "lỗi nội bộ khi xếp hình: %v", p)
+		}
+	}()
+	lay := layout.New(rows, cfg, text.NewMeasure(m))
 	lay.SetDirection(dir)
 	l := lay.Run()
 	if err := b.check(); err != nil {
-		return Result{}, err
+		return err
 	}
 	res := l.Result()
 	r.Warnings = l.Warnings
 	r.Findings = layout.Check(res)
 	res = layout.Orient(res)
 	r.Layout = &res
-	if opt.Previous != nil {
-		extras, rep := merge.Apply(&res, opt.Previous)
+	if prev != nil {
+		extras, rep := merge.Apply(&res, prev)
 		r.Merge = &rep
-		r.Text = drawio.WriteMerged(res, r.Title, extras, opt.Previous.Pages)
+		r.Text = drawio.WriteMerged(res, r.Title, extras, prev.Pages)
 	} else {
 		r.Text = drawio.Write(res, r.Title)
 	}
@@ -172,5 +190,5 @@ func Build(src Source, opt Options) (Result, error) {
 		lanes = 0
 	}
 	r.Stats = Stats{lanes, len(res.Items), len(res.Edges), res.PoolW, res.PoolH}
-	return r, nil
+	return nil
 }

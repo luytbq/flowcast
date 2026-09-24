@@ -48,7 +48,7 @@ func TestChangRoute(t *testing.T) {
 			before := len(l.Warnings)
 			l.Route()
 			w := d.Route
-			assertLines(t, "warnings", l.Warnings[before:], w.Warnings)
+			assertLines(t, "warnings", warningMsgs(l.Warnings[before:]), w.Warnings)
 
 			if len(l.Segs) != len(w.Segs) {
 				t.Fatalf("Go sinh %d đoạn dây, cần %d", len(l.Segs), len(w.Segs))

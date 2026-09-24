@@ -59,8 +59,8 @@ func (l *Layout) topo() []string {
 		for i, it := range rest {
 			ids[i] = it.ID
 		}
-		l.Warnings = append(l.Warnings,
-			"có vòng lặp chưa đánh dấu back=true, xếp theo thứ tự bảng: "+strings.Join(ids, ", "))
+		l.warn("layout.unmarked-cycle", "", "có vòng lặp chưa đánh dấu back=true, xếp theo thứ tự bảng: %s",
+			strings.Join(ids, ", "))
 		out = append(out, ids...)
 	}
 	return out

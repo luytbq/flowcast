@@ -202,7 +202,7 @@ func (c *cli) build() int {
 		}
 	}
 	for _, w := range r.Warnings {
-		c.println("WARNING layout: " + w)
+		c.println("WARNING layout: " + w.Msg)
 	}
 	if r.Merge != nil {
 		for _, l := range r.Merge.Lines() {

@@ -78,7 +78,7 @@ function show(data, built) {
   const errs = data.issues.filter((i) => i.level === 'error').length;
   const warns = data.issues.length - errs;
   for (const i of data.issues) item(i.level, (i.location || '') + (i.id ? ' [' + i.id + ']' : ''), i.message);
-  for (const w of data.warnings || []) item('warning', 'layout', w);
+  for (const w of data.warnings || []) item('warning', 'layout', w.message);
   for (const f of data.findings || []) item(f.level, 'layout', f.message);
   if (!data.ok) {
     summary.className = 'bad';

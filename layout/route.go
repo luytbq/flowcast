@@ -237,7 +237,8 @@ func (l *Layout) sideFree(u *Item, side byte) bool {
 
 // pickExit chọn mặt ra cho một cạnh D: mặt đầu tiên còn trống, không thì mặt
 // hướng về đích. Mặt đó có thể đã có dây vào; assignPorts sẽ tách cổng ra khỏi
-// cổng vào.
+// cổng vào. Mặt đó cũng có thể có db hoặc text; khi ấy chúng không bám sát node
+// mà đứng giữa ô bên cạnh, và dây chạy trong máng ở giữa.
 func (l *Layout) pickExit(u *Item, s byte, choices []byte) byte {
 	for _, c := range choices {
 		if l.sideFree(u, c) {

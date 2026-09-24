@@ -6,9 +6,11 @@ import (
 	"sort"
 )
 
-// Finding là một phát hiện của tự kiểm hình học.
+// Finding là một phát hiện của tự kiểm hình học. Code là mã máy ổn định để
+// caller phân loại; Msg là thông điệp cho người đọc.
 type Finding struct {
 	Level string // "error" hoặc "warning"
+	Code  string
 	Msg   string
 }
 
@@ -39,8 +41,8 @@ func collinearOverlap(a1, b1, a2, b2 [2]float64) float64 {
 // chính engine. Kết quả đã bỏ trùng và giữ thứ tự phát hiện đầu tiên.
 func Check(r Result) []Finding {
 	var issues []Finding
-	add := func(level, format string, a ...any) {
-		issues = append(issues, Finding{level, fmt.Sprintf(format, a...)})
+	add := func(level, code, format string, a ...any) {
+		issues = append(issues, Finding{level, code, fmt.Sprintf(format, a...)})
 	}
 
 	boxes := map[string]box{}
@@ -55,14 +57,14 @@ func Check(r Result) []Finding {
 	for i, a := range ids {
 		for _, b := range ids[i+1:] {
 			if area(boxes[a], boxes[b]) > 0 {
-				add("error", "%s và %s chồng lên nhau", a, b)
+				add("error", "check.node-overlap", "%s và %s chồng lên nhau", a, b)
 			}
 		}
 	}
 	for _, it := range r.Items {
 		lx, lw := r.LaneX[it.Lane], r.LaneW[it.Lane]
 		if it.X < lx || it.X+it.W > lx+lw {
-			add("error", "%s tràn ra ngoài lane", it.ID)
+			add("error", "check.outside-lane", "%s tràn ra ngoài lane", it.ID)
 		}
 	}
 
@@ -76,7 +78,7 @@ func Check(r Result) []Finding {
 		for k := 0; k+1 < len(pts); k++ {
 			a, b := pts[k], pts[k+1]
 			if math.Abs(a[0]-b[0]) > 0.01 && math.Abs(a[1]-b[1]) > 0.01 {
-				add("error", "%s: đoạn %d không vuông góc", e.ID, k)
+				add("error", "check.oblique-segment", "%s: đoạn %d không vuông góc", e.ID, k)
 			}
 			for _, it := range r.Items {
 				// Đoạn đầu và đoạn cuối được chạm vào chính node nguồn và node
@@ -85,7 +87,7 @@ func Check(r Result) []Finding {
 					continue
 				}
 				if segHits(a, b, shrink(boxes[it.ID], 1)) {
-					add("error", "%s: dây cắt qua %s", e.ID, it.ID)
+					add("error", "check.edge-crosses-node", "%s: dây cắt qua %s", e.ID, it.ID)
 				}
 			}
 			all = append(all, wire{ei, a, b})
@@ -100,7 +102,7 @@ func Check(r Result) []Finding {
 				continue
 			}
 			if collinearOverlap(w1.a, w1.b, w2.a, w2.b) > 1 {
-				add("error", "%s và %s chồng dây", e1.ID, e2.ID)
+				add("error", "check.edge-overlap", "%s và %s chồng dây", e1.ID, e2.ID)
 			}
 		}
 	}
@@ -119,17 +121,17 @@ func Check(r Result) []Finding {
 		id := r.Edges[lb.edge].ID
 		for _, it := range r.Items {
 			if area(lb.b, boxes[it.ID]) > 0 {
-				add("warning", "nhãn %s đè lên %s", id, it.ID)
+				add("warning", "check.label-over-node", "nhãn %s đè lên %s", id, it.ID)
 			}
 		}
 		for _, lb2 := range labels[i+1:] {
 			if area(lb.b, lb2.b) > 0 {
-				add("warning", "nhãn %s đè nhãn %s", id, r.Edges[lb2.edge].ID)
+				add("warning", "check.label-over-label", "nhãn %s đè nhãn %s", id, r.Edges[lb2.edge].ID)
 			}
 		}
 		for _, w := range all {
 			if w.edge != lb.edge && segHits(w.a, w.b, lb.b) {
-				add("warning", "nhãn %s đè dây %s", id, r.Edges[w.edge].ID)
+				add("warning", "check.label-over-edge", "nhãn %s đè dây %s", id, r.Edges[w.edge].ID)
 			}
 		}
 	}

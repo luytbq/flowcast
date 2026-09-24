@@ -36,7 +36,7 @@ func TestChangGeometry(t *testing.T) {
 			pr.Place()
 			pr.Route()
 			l := buildLayout(t, d.Name).Run()
-			assertLines(t, "warnings", l.Warnings[len(pr.Warnings):], d.Geom.Warnings)
+			assertLines(t, "warnings", warningMsgs(l.Warnings[len(pr.Warnings):]), d.Geom.Warnings)
 			w := d.Geom.Exact
 			check := func(what string, got float64, hex string) {
 				values++

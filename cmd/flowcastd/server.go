@@ -121,6 +121,13 @@ type apiIssue struct {
 
 type apiFinding struct {
 	Level   string `json:"level"`
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type apiWarning struct {
+	Code    string `json:"code"`
+	ID      string `json:"id,omitempty"`
 	Message string `json:"message"`
 }
 
@@ -131,7 +138,7 @@ type apiResponse struct {
 	Title    string          `json:"title,omitempty"`
 	Source   string          `json:"source,omitempty"`
 	Issues   []apiIssue      `json:"issues"`
-	Warnings []string        `json:"warnings,omitempty"`
+	Warnings []apiWarning    `json:"warnings,omitempty"`
 	Findings []apiFinding    `json:"findings,omitempty"`
 	Stats    *flowcast.Stats `json:"stats,omitempty"`
 	Drawio   string          `json:"drawio,omitempty"`
@@ -251,9 +258,11 @@ func (s *server) handle(w http.ResponseWriter, r *http.Request, build bool) {
 	}
 	if build && resp.OK {
 		resp.Filename = out
-		resp.Warnings = res.Warnings
+		for _, w := range res.Warnings {
+			resp.Warnings = append(resp.Warnings, apiWarning{w.Code, w.ID, w.Msg})
+		}
 		for _, f := range res.Findings {
-			resp.Findings = append(resp.Findings, apiFinding{f.Level, f.Msg})
+			resp.Findings = append(resp.Findings, apiFinding{f.Level, f.Code, f.Msg})
 		}
 		resp.Stats = &res.Stats
 		if r.URL.Query().Get("download") == "1" {

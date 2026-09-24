@@ -1,7 +1,6 @@
 package layout
 
 import (
-	"fmt"
 	"math"
 	"strings"
 
@@ -150,12 +149,12 @@ func (l *Layout) placeLabels() {
 			}
 		}
 		if best == nil {
-			l.Warnings = append(l.Warnings, fmt.Sprintf("%s: đường quá ngắn, không có chỗ đặt nhãn", e.ID))
+			l.warn("layout.label-no-room", e.ID, "%s: đường quá ngắn, không có chỗ đặt nhãn", e.ID)
 			continue
 		}
 		if bestCost > 0 {
-			l.Warnings = append(l.Warnings, fmt.Sprintf("%s: nhãn \"%s\" không tìm được chỗ trống hoàn toàn",
-				e.ID, strings.Join(e.Lines, " ")))
+			l.warn("layout.label-crowded", e.ID, "%s: nhãn \"%s\" không tìm được chỗ trống hoàn toàn",
+				e.ID, strings.Join(e.Lines, " "))
 		}
 		placed = append(placed, best.b)
 		b := best.b

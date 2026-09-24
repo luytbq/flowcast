@@ -199,7 +199,7 @@ func (l *Layout) assignTracks() {
 					}
 				}
 				if lo > hi {
-					l.Warnings = append(l.Warnings, "không xếp được thứ tự track trong "+res.pyRepr())
+					l.warn("layout.track-order", "", "không xếp được thứ tự track trong %s", res.pyRepr())
 					chosen = len(tracks)
 				} else {
 					chosen = max(lo, min(hi, len(tracks)))
