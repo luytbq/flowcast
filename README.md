@@ -115,6 +115,16 @@ python3 tools/fuzz_merge.py --go ./flowcast --n 500 # so merge với bản tham 
 Sinh lại golden thì phải đọc diff trước khi commit. Một golden đổi im lặng là
 một hành vi đã thay đổi mà không ai xem.
 
+## Giấy phép
+
+MIT, xem `LICENSE`. Áp cho mã nguồn trong repo, gồm cả bản tham chiếu Python.
+
+Một chỗ cần người hiểu luật xem qua trước khi phân phối công khai:
+`data/verdana.json` là bảng độ rộng glyph sinh từ font Verdana, một font thương
+mại của Microsoft. Bảng số đo không phải file font, nhưng ranh giới đó không do
+giấy phép này quyết định. Lý do phải nhúng bảng, và phương án dự phòng là đổi
+sang một font tự do, nằm ở mục 11 của `docs/core-design.md`.
+
 ## Dùng bản tham chiếu
 
 Xem `reference/README.md`. Định dạng bảng đầu vào ở `docs/flow-table-format.md`.
