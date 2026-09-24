@@ -62,8 +62,13 @@ gộp thành một đường.
 
 **LayoutResult** - dữ liệu thuần mô tả sơ đồ đã xếp xong: kích thước pool, các
 lane, các phần tử kèm toạ độ và hình nguyên thủy, các cạnh kèm điểm gấp và vị
-trí nhãn. Nó nói bằng hình nguyên thủy (chữ nhật, chữ nhật bo, hình thoi, elip,
-trụ, ghi chú) chứ không bằng loại ngữ nghĩa, để writer không phải biết về kind.
+trí nhãn. Nó nói bằng hình nguyên thủy (chữ nhật, hình thoi, elip, elip đôi,
+elip nét đứt, trụ, ghi chú) chứ không bằng loại ngữ nghĩa, để writer không phải
+biết về kind.
+
+**khai báo hình học** - với mỗi loại phần tử, hình nguyên thủy và luật nối dây
+của nó, như chỉ nhận dây vào ở đỉnh. Engine và writer chỉ đọc khai báo này,
+không so tên loại.
 
 **writer** - hàm biến LayoutResult thành văn bản một định dạng đích. Writer chỉ
 đọc LayoutResult, không gọi thuật toán.

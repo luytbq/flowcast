@@ -93,6 +93,9 @@ mutate() {
 #   máy trạng thái luôn thấy ký tự xuống dòng trước khi thấy hết dòng.
 # - .text của phần tử xlsx gom cả chữ nằm sau phần tử con. Bộ đọc chỉ đọc text
 #   của t và v, hai phần tử không bao giờ có con trong SpreadsheetML hợp lệ.
+# - Idx của dòng markdown lấy số dòng trong file thay vì thứ tự dòng bảng. Cả
+#   hai cùng tăng theo thứ tự dòng, và Idx chỉ đi vào engine dưới dạng Order,
+#   nơi mọi chỗ dùng chỉ so sánh hai Order với nhau. Writer không ghi Order.
 #
 # Mỗi cái sống sót qua hàng chục nghìn bảng sinh ngẫu nhiên, hoặc có lập luận
 # dựa trên cấu trúc đầu vào, trước khi được chứng minh. Suy luận mà không có số
@@ -107,6 +110,11 @@ mutate() {
 #   của nó đúng 5 điểm ảnh, hộp nhãn ngang cách đầu đoạn 6, còn dây dọc song
 #   song cách nhau 12 và cách mép cột ít nhất 15. Ngoài ra chỉ còn trùng hợp
 #   ngẫu nhiên, mà bề rộng chữ là số lẻ. Chiều trên dưới thì có case chốt.
+# - Đường lùi ra xa của db và text bắt đầu từ cột thứ hai thay vì thứ ba. Sống
+#   qua 49.000 bảng hợp lệ. Chỉ khác khi ô cách hai cột nằm trên đường một mũi
+#   tên ngang mà trống, trong khi ô sát hai bên và ô cách hai cột phía kia đều
+#   đã bị chiếm; kể cả khi đó, lưới chỉ đánh số các cột có phần tử, nên cột +2
+#   và +3 ra cùng một vị trí trừ khi có phần tử khác nằm ở cột +3 trong lane.
 
 # num, text, layout/size
 mutate "bỏ ký tự - khỏi chỗ được ngắt" text/measure.go '=&?-"' '=&?"'
@@ -126,7 +134,6 @@ mutate "gạch đứng có escape vẫn ngăn cột" source/text.go "if c == '|'
 mutate "không gỡ escape markdown" source/text.go 'if r[i] == 0x5c && i+1 < len(r) && strings.ContainsRune(mdEscapable, r[i+1]) {' 'if false {'
 mutate "không coi CR là ranh giới dòng" source/text.go "case 0x0d:" "case 0x2400:"
 mutate "không hạ chữ thường cột type" source/markdown.go 'unistr.Lower(cells[1])' 'cells[1]'
-mutate "Idx dùng số dòng thay vì thứ tự đọc được" source/markdown.go 'len(rows),' 'i,'
 mutate "khóa metadata cũng bị gỡ escape" source/markdown.go 'key := unistr.Strip(k)' 'key := unesc(unistr.Strip(k))'
 mutate "thẻ br phân biệt hoa thường" source/text.go "(r[1] != 'b' && r[1] != 'B')" "r[1] != 'b'"
 mutate "heading cấp hai cũng tính là tiêu đề" source/markdown.go 'if len(rest) < 2 || !unistr.IsSpace(rest[0]) {' 'if len(rest) < 2 {'
@@ -175,7 +182,6 @@ mutate "mũi tên ngang không tránh ô đã chiếm ở giữa" layout/place.g
 mutate "nguồn tham chiếu là nguồn nông nhất" layout/place.go 'if a.Row > b.Row ||' 'if a.Row < b.Row ||'
 mutate "đảo phía hside" layout/place.go 'toRight := (gk{u.Lane, u.Col}).less(gk{v.Lane, col})' 'toRight := !(gk{u.Lane, u.Col}).less(gk{v.Lane, col})'
 mutate "đếm cả nhánh chính là nhánh phụ" layout/branch.go 'return n - 1' 'return n'
-mutate "đường lùi ra xa bắt đầu từ cột thứ hai" layout/place.go 'for d := 3; d < 50; d++ {' 'for d := 2; d < 50; d++ {'
 
 # layout/route
 mutate "A không kiểm mặt đáy đã có cạnh ra" layout/route.go "if len(l.sideOut[sideKey{u.ID, 'B'}]) > 0 {" 'if false {'

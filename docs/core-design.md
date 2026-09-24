@@ -1,443 +1,238 @@
 # Thiết kế core
 
-Tài liệu này mô tả hình dạng core sau khi bóc tách từ script hiện tại. Từ vựng
-dùng ở đây định nghĩa trong CONTEXT.md. Các quyết định có lý do chịu lực nằm
-trong docs/adr.
+Tài liệu này mô tả core của flowcast: nó hứa gì với caller, dữ liệu đi qua nó ra
+sao, và vì sao nó được cắt như vậy. Từ vựng định nghĩa trong
+[CONTEXT.md](../CONTEXT.md). Vị trí code nằm ở [structure.md](structure.md),
+thuật toán xếp hình ở [algorithm.md](algorithm.md). Các quyết định kèm lý do
+nằm trong [adr/](adr/).
 
 Mục tiêu: một core phục vụ được hai caller rất khác nhau, một CLI trên máy có
 filesystem và một request HTTP chỉ có bytes, mà không bên nào phải viết lại
 chính sách của bên kia.
 
-## 0. Ngôn ngữ và ràng buộc kỹ thuật
-
-Go, module `github.com/luytbq/flowcast`, mốc tương thích là phiên bản Go ổn định
-hiện hành.
-
-Core **chỉ dùng stdlib, trừ một ngoại lệ**. `archive/zip` và `encoding/xml` đủ
-để đọc xlsx; số đo font đọc từ `data/verdana.json` nên không cần thư viện font.
-Ngoại lệ duy nhất là `golang.org/x/text/unicode/norm` cho chuẩn hóa NFC, vì
-stdlib không có và viết lại chuẩn hóa Unicode cho đúng là bãi mìn; lý do đầy đủ
-trong ADR-0005. Các package cli, web và render được dùng thư viện ngoài.
-
-Đây là một bản port, không phải một bản viết mới. Bản Python trong `reference/`
-ở lại repo và là máy sinh đáp án: mọi module Go phải tái tạo đúng từng byte đầu
-ra trong `conformance/golden/` trước khi được coi là xong. Lý do và cách dùng bộ
-đó nằm trong `conformance/README.md`.
-
-WASM chưa nằm trong phạm vi. Thiết kế không đóng cửa đó: core không chạm I/O nên
-build cho `js/wasm` về sau là việc thêm một target, không phải thiết kế lại.
-
 ## 1. Luật định hình mọi thứ
 
 Core không chạm filesystem, không gọi tiến trình ngoài, không đọc biến môi
-trường, không in ra stdout, không bắt tín hiệu. Vào là bytes, ra là văn bản đích
-cộng dữ liệu chẩn đoán.
+trường, không in ra stdout. Vào là bytes, ra là văn bản đích cộng dữ liệu chẩn
+đoán.
 
-Luật này loại ba thứ đang nằm trong ruột hôm nay: load mở file, export gọi
-drawio CLI, cmd_build in báo cáo rồi trả mã thoát. Cả ba đi ra ngoài core.
+Ba việc vì vậy nằm ngoài core: đọc ghi file (CLI), gọi drawio để xuất ảnh
+(package render), và biến kết quả thành dòng in ra hay mã thoát (CLI và web).
 
-Hệ quả kiểm thử: mọi test của core chạy được không cần file tạm, và mọi lỗi
-hoặc là một Issue trả về, hoặc là một FlowTableError có kiểu. Không có đường
-thứ ba.
+Hệ quả kiểm thử: mọi test của core chạy được không cần file tạm, và mọi lỗi hoặc
+là một Issue trả về, hoặc là một model.Error có mã. Không có đường thứ ba. Kể cả
+khi engine tự vi phạm một bất biến và panic, Build bắt lại và trả lỗi mã
+layout.internal.
 
-## 2. Bố cục package
+## 2. Ràng buộc kỹ thuật
 
-```
-flowcast/
-  reference/               bản Python, máy sinh đáp án, không build vào binary
-  conformance/             bộ đối chiếu: cases/ và golden/
-  data/verdana.json        bảng độ rộng glyph, dùng chung hai bản
-  go.mod
-  build.go                 hàm Build, điểm vào duy nhất của core
-  config.go                CoreConfig, Field, hồ sơ cli và web
-  model/                   Row, Table, Issue, Location, Error
-  num/                     Fmt và Rnd, hai quy tắc chuẩn hóa số
-  source/                  Source, đoán định dạng, các adapter
-    markdown.go  csv.go  xlsx.go  mermaid.go
-  schema/                  lược đồ metadata
-  validate/
-  text/                    đọc bảng số đo, đo và ngắt dòng
-  axis/                    ánh xạ flow, cross sang x, y
-  layout/
-    place.go  route.go  tracks.go  geometry.go  labels.go
-    result.go              LayoutResult và các kiểu con
-    check.go
-  merge/                   Overrides, ApplyOverrides, MergeReport
-  writer/
-    drawio/                sinh xml, và đọc Overrides từ xml
-  cmd/flowcast/            CLI
-  cmd/flowcastd/           HTTP service
-  render/                  adapter drawio CLI: png, svg, verify
-```
+Go, module github.com/luytbq/flowcast, mốc tương thích là phiên bản Go ổn định
+hiện hành.
 
-model và num nằm riêng khỏi gói gốc vì mọi adapter đều cần chúng, còn gói gốc
-lại cần các adapter; gói gốc phơi lại bằng bí danh kiểu. Chia file theo pha đã
-có sẵn trong Layout.run của bản tham chiếu, không phải theo số dòng. Giữ đúng ranh giới đó làm cho việc đối chiếu từng module với bản
-Python trở nên khả thi.
+Core chỉ dùng thư viện chuẩn, trừ một ngoại lệ. archive/zip và encoding/xml đủ để
+đọc xlsx; số đo font nhúng sẵn nên không cần thư viện font. Ngoại lệ duy nhất là
+golang.org/x/text/unicode/norm cho chuẩn hóa NFC, vì thư viện chuẩn không có và
+viết lại chuẩn hóa Unicode cho đúng là việc dễ sai; lý do đầy đủ trong ADR-0005.
+
+WASM chưa nằm trong phạm vi, nhưng thiết kế không đóng cửa: core không chạm I/O
+nên build cho js/wasm là việc thêm một target, không phải thiết kế lại.
 
 ## 3. Interface công khai
 
-Core phơi ra đúng một hàm. Mọi thứ khác là kiểu dữ liệu.
+Core phơi ra hai hàm. Mọi thứ khác là kiểu dữ liệu.
 
 ```go
-func Build(src Source, opt Options) (Result, error)
+func Build(src Source, opt Options) (Result, error) // đọc, kiểm, xếp hình, sinh file
+func Check(src Source, opt Options) (Result, error) // chỉ đọc và kiểm bảng
 ```
 
 ```go
 type Source struct {
-    Data    []byte
-    Name    string            // tiêu đề dự phòng, không dùng để mở file
-    Format  string            // rỗng nghĩa là tự đoán
-    Options map[string]string // tham số riêng của từng định dạng
+    Data        []byte
+    Name        string            // tiêu đề dự phòng, và để đoán định dạng; không dùng để mở file
+    Format      string            // rỗng nghĩa là tự đoán từ Name
+    Options     map[string]string // tham số riêng của định dạng: sheet, delimiter, encoding
+    MaxUnzipped int64
 }
 
 type Options struct {
-    Core      CoreConfig
-    Kind      string         // rỗng nghĩa là tự chọn theo bảng
-    KindConf  map[string]int
-    Writer    string         // rỗng nghĩa là "drawio"
-    Overrides *Overrides     // nil nghĩa là sinh mới
+    Config    *layout.Config // tham số xếp hình; nil là mặc định
+    Title     string         // thay tiêu đề lấy từ nguồn
+    Previous  *merge.Old     // file .drawio cũ để giữ chỉnh sửa tay; nil là sinh mới
+    Direction string         // TD, BT, LR, RL; rỗng là theo nguồn, rồi TD
+    Limits    *Limits        // giới hạn tài nguyên; nil là không chặn
 }
-```
 
-options là chỗ chứa tham số riêng của từng định dạng: sheet cho xlsx, delimiter
-và encoding cho csv, direction cho mermaid. Mỗi source adapter khai báo các
-option nó nhận, cùng miền giá trị, theo đúng cơ chế mà cấu hình kind dùng ở mục
-6. Nhờ vậy CLI và web sinh giao diện từ cùng một khai báo.
-
-```go
 type Result struct {
-    Text        string          // rỗng khi có lỗi chặn
-    Title       string
-    Issues      []Issue
-    Layout      *LayoutResult
-    MergeReport *MergeReport
-    Stats       Stats           // số lane, phần tử, cạnh, kích thước pool
+    Title, Source string
+    Issues   []Issue          // phát hiện về bảng đầu vào
+    Text     string           // file .drawio; rỗng khi bảng có lỗi
+    Warnings []Warning        // cảnh báo của engine, có mã
+    Findings []Finding        // kết quả tự kiểm hình học, có mã
+    Layout   *layout.Result   // toạ độ đã tính
+    Merge    *merge.Report    // báo cáo merge khi có Previous
+    Stats    Stats            // số lane, phần tử, cạnh, kích thước pool
 }
 ```
 
-BuildResult không mang mã thoát và không mang chuỗi đã định dạng sẵn để in. CLI
-tự ánh xạ sang mã thoát, web tự ánh xạ sang HTTP status. Đây là chỗ duy nhất
-hai front-end được phép khác nhau về chính sách.
+Result không mang mã thoát và không mang chuỗi đã định dạng sẵn để in. CLI tự
+ánh xạ sang mã thoát, web tự ánh xạ sang HTTP status. Đây là chỗ duy nhất hai
+front-end được phép khác nhau về chính sách.
 
-Nói rõ về tham số kind: hôm nay chỉ có một engine, và flowchart là engine đó với
-lane trở thành tùy chọn. Tham số này chọn một bộ mặc định, chưa chọn một thuật
-toán. Nó tồn tại để khi có engine thứ hai thật sự thì chữ ký không phải đổi.
+## 4. Mô hình lỗi
 
-## 4. Error model
+Mọi phát hiện đều có mã máy ổn định, đặt theo miền, dấu chấm, rồi triệu chứng.
+Mã là một phần của interface công khai: đổi một mã là một thay đổi phá vỡ tương
+thích.
 
-```go
-type Location struct {
-    Kind   string // "table" hoặc "text"
-    Row    int    // table: số dòng trong bảng, 0 nghĩa là không xác định
-    Column string // table: tên cột
-    Sheet  string
-    Line   int    // text: dòng trong nguồn, dùng cho mermaid
-    ID     string // id phần tử liên quan, nếu xác định được
-}
+| Tiền tố | Miền | Dạng |
+|---|---|---|
+| source. | đọc và giải mã đầu vào | Issue hoặc Error |
+| table. | cấu trúc bảng, header, ô | Issue |
+| ref. | tham chiếu id: from, to, attach, parent | Issue |
+| schema. | key metadata thiếu, lạ, sai miền; tham số xếp hình ngoài miền | Issue hoặc Error |
+| order. | thứ tự dòng theo đặc tả | Issue |
+| mermaid. | cú pháp mermaid không có chỗ chứa | Issue hoặc Error |
+| config. | tham số của lần dựng, như hướng | Error |
+| merge. | merge không làm được | Error |
+| limit. | vượt giới hạn tài nguyên | Error |
+| layout. | cảnh báo của engine; layout.internal là lỗi nội bộ | Warning hoặc Error |
+| check. | tự kiểm hình học | Finding |
 
-type Issue struct {
-    Code   string // mã ổn định, ví dụ "ref.dangling"
-    Level  string // "error" hoặc "warning"
-    Loc    Location
-    Msg    string // tiếng Việt, dành cho người đọc
-    Params map[string]string
-}
-```
-
-Mã lỗi đặt theo miền, chấm, rồi triệu chứng. Chúng là một phần của interface
-công khai: đổi một mã là một thay đổi phá vỡ tương thích.
-
-| tiền tố | miền |
-|---|---|
-| source. | đọc và giải mã đầu vào |
-| table. | cấu trúc bảng, header, ô |
-| ref. | tham chiếu id: from, to, attach, parent |
-| schema. | key metadata thiếu, lạ, hoặc sai miền giá trị |
-| order. | thứ tự dòng theo đặc tả |
-| mermaid. | cú pháp mermaid không có chỗ chứa |
-| layout. | tự kiểm hình học |
-| limit. | vượt giới hạn tài nguyên |
+Issue nói về nội dung bảng người dùng viết, và mang vị trí có cấu trúc (dòng, ô,
+sheet, dòng trong mermaid) để web trỏ đúng chỗ. model.Error dành cho thứ khiến
+việc dựng không thể tiếp tục và không quy được về một dòng: không đoán được định
+dạng, file hỏng, vượt giới hạn, tham số sai. Warning là chỗ engine vẫn dựng được
+nhưng phải chấp nhận một phương án kém hơn. Finding là kết quả tự kiểm.
 
 Thông điệp tiếng Việt nằm trong core, cạnh chỗ phát hiện lỗi. Muốn đa ngôn ngữ
 về sau thì đã có mã để tra, không phải sửa lại chỗ phát hiện.
 
-FlowTableError chỉ dùng cho thứ khiến build không thể tiếp tục và không quy được
-về một dòng cụ thể: không đoán được định dạng, file hỏng, vượt giới hạn. Mọi thứ
-khác là Issue.
-
-## 5. Table và lược đồ metadata
+## 5. Bảng và lược đồ metadata
 
 Bảng giữ đúng 5 cột id, type, parent, content, metadata (ADR-0001). Vì cột
 metadata chở cả tham chiếu bắt buộc là from, to, attach, tính tường minh phải
-nằm ở nơi khác: một lược đồ do kind khai báo.
+nằm ở nơi khác: lược đồ metadata trong package schema, khai báo từng type nhận
+những key nào, key nào bắt buộc, key nào trỏ tới id khác, và miền giá trị.
 
-```go
-type KeySpec struct {
-    Name     string
-    Required bool
-    IsRef    bool     // giá trị là id của một dòng khác
-    Values   []string // nil nghĩa là chuỗi tự do
-    Multi    bool     // nhiều giá trị, ngăn bằng dấu phẩy
-}
+validate có hai phần: một vòng chung chạy trên lược đồ, bắt key thiếu, key lạ,
+giá trị ngoài miền và tham chiếu treo; cộng các luật riêng của sơ đồ mà lược đồ
+không diễn đạt được, như condition phải có từ hai cạnh ra và cạnh ra phải nằm
+liền sau node.
 
-// mỗi type khai báo các key của nó
-var SwimlaneSchema = map[string][]KeySpec{
-    "edge": {
-        {Name: "from", Required: true, IsRef: true},
-        {Name: "to", Required: true, IsRef: true},
-        {Name: "back", Values: []string{"true"}},
-        {Name: "style", Values: []string{"highlight", "dashed", "bold", "noarrow"}, Multi: true},
-    },
-    "db": {
-        {Name: "attach", Required: true, IsRef: true},
-        {Name: "style", Values: []string{"highlight"}, Multi: true},
-    },
-}
-```
+parent là cây chứa đựng đơn cha, không chỉ là "id của một lane". Định nghĩa này
+phủ được lane, subgraph của mermaid, và về sau là subprocess, mà không tốn gì
+thêm hôm nay.
 
-validate trở thành hai phần: một vòng chung chạy trên lược đồ, bắt key thiếu,
-key lạ, giá trị ngoài miền, và tham chiếu treo; cộng một nhúm luật riêng của
-kind mà lược đồ không diễn đạt được, như condition phải có từ hai cạnh ra và
-cạnh ra phải nằm liền sau node.
+## 6. Cấu hình
 
-parent được định nghĩa lại là **cây chứa đựng đơn cha**, không còn là "id của
-một lane". Định nghĩa này phủ được lane, subgraph của mermaid, và về sau là
-trạng thái tổ hợp hay subprocess, mà không tốn gì thêm hôm nay.
+Cấu hình chia hai tầng. Giới hạn tài nguyên không phụ thuộc loại sơ đồ nên nằm ở
+package gốc, dưới dạng hai hồ sơ dữ liệu: CLILimits nới, WebLimits siết. Hồ sơ là
+dữ liệu, không phải nhánh if trong core.
 
-## 6. Config hai tầng
+Tham số xếp hình thuộc về engine và được khai báo thành danh sách Field: tên, mặc
+định, miền giá trị, lời giải thích. CLI sinh cờ từ danh sách này, web sinh form
+và kiểm giá trị từ cùng danh sách đó, nên hai bên không thể lệch nhau.
 
-Cả 18 trường Config hiện tại đều là tham số xếp hình của swimlane. Không trường
-nào thuộc về core. Vì vậy tách đôi.
+Giá trị ngoài miền là lỗi dừng việc dựng, mã schema.out_of_range, chứ không phải
+Issue: Issue nói về nội dung bảng, còn đây là tham số người gọi truyền vào, và
+không có kết quả bộ phận nào đáng trả về. Miền để rộng, vì cấu hình cho ra bố
+cục xấu vẫn là quyền của người dùng và tự kiểm sẽ báo; chỉ giá trị làm engine
+chạy sai mới bị chặn.
 
-```go
-type CoreConfig struct {
-    Strict         bool          // web bật, CLI tắt
-    MaxSourceBytes int
-    MaxRows        int
-    MaxEdges       int
-    MaxCellChars   int
-    Deadline       time.Duration // 0 nghĩa là không chặn
-}
-```
+## 7. Hướng vẽ
 
-Cấu hình kind không phải một dataclass cố định mà là một khai báo:
+Engine chỉ xếp theo một hướng, từ trên xuống. Các hướng khác được dựng bằng cách
+đổi trục kết quả ở cuối (ADR-0006). Các pha xếp chỗ, đi dây, hình học và nhãn
+không có nhánh code nào cho từng hướng.
 
-```go
-type Field struct {
-    Name    string
-    Default int
-    Lo, Hi  int
-    Help    string
-}
-```
+Hộp phần tử không lật theo trục: chữ vẫn đọc từ trái sang phải, bề rộng hộp vẫn
+bị chặn bởi bề rộng tối đa, chiều cao vẫn mọc theo số dòng. Chỉ có lưới lật. Với
+hướng ngang, bề rộng và bề cao được hoán đổi trước khi xếp để hàng của không gian
+ảo có đúng độ dày của cột thật.
 
-CLI sinh cờ từ danh sách Field, web sinh form và validate từ cùng danh sách đó.
-Hai bên không thể lệch nhau, vì chỉ có một nguồn sự thật.
+## 8. Kết quả xếp hình
 
-Đã làm, trong `layout/config.go` và `GET /api/fields`. Một chỗ khác với bản
-thiết kế: giá trị ngoài miền lo..hi là một lỗi dừng việc dựng, mã
-schema.out_of_range, chứ không phải Issue. Lý do: Issue nói về nội dung bảng
-người dùng viết, còn đây là tham số người gọi truyền vào, và không có kết quả
-bộ phận nào đáng trả về. Miền để rộng, vì cấu hình cho ra bố cục xấu vẫn là
-quyền của người dùng và tự kiểm sẽ báo; chỉ giá trị làm engine chạy sai mới bị
-chặn.
+layout.Result là dữ liệu thuần: kích thước pool, lane, phần tử kèm toạ độ, cạnh
+kèm điểm gấp, cổng và vị trí nhãn. Tự kiểm, merge và writer chỉ đọc Result,
+không gọi gì vào engine.
 
-Tên trường phải trung lập theo trục. min_lane_w trong sơ đồ LR là độ dày của
-một băng ngang, nên tên hiện tại sẽ sai nghĩa và cần đổi khi tách.
+Result nói bằng hình nguyên thủy (chữ nhật, thoi, elip, elip đôi, elip nét đứt,
+trụ, ghi chú), không bằng loại ngữ nghĩa. Mỗi loại phần tử khai báo một lần hình
+nguyên thủy và luật nối dây của nó trong layout.Kinds; engine và writer chỉ đọc
+khai báo đó. Nếu writer phải biết loại ngữ nghĩa thì mỗi writer phải biết mọi
+loại, và số việc thành tích của hai con số thay vì tổng. Loại ngữ nghĩa vẫn được
+mang theo trong Result cho công cụ và cho gỡ lỗi, nhưng writer không đọc nó.
 
-Hồ sơ mặc định: hồ sơ cli nới giới hạn, hồ sơ web siết. Hồ sơ là dữ liệu, không
-phải nhánh if trong core.
+Tự kiểm chạy trên Result. Nhờ vậy nó kiểm được mọi đường sinh, và kiểm được cả
+hình học hỏng dựng tay, là cách duy nhất để kiểm chính tự kiểm.
 
-## 7. Trục flow và cross
+## 9. Merge
 
-Đã làm, nhưng không theo cách mục này đề xuất: hướng khác TD được dựng bằng
-cách đổi trục kết quả ở cuối, không viết lại bốn pha theo trục. Lý do và hệ quả
-nằm trong ADR-0006. Phần còn lại của mục này giữ nguyên làm bối cảnh.
+Merge sinh lại sơ đồ mà giữ những gì người dùng đã sửa tay trong file .drawio
+cũ: vị trí node, bề rộng lane, điểm gấp của dây, và các cell tự vẽ. Thiết kế chi
+tiết nằm ở [merge-design.md](merge-design.md).
 
-place và route hôm nay đã trung lập về trục: chúng chỉ làm việc trên lưới lane,
-col, row, và hàm face chỉ trả về L hoặc R, tức dấu trên trục rẽ nhánh. Pixel chỉ
-xuất hiện ở compute_geometry, track_x, track_y, resolve_paths và to_drawio.
+Đọc file cũ là việc của package merge, nhận bytes chứ không nhận đường dẫn. Chỉ
+CLI dùng merge, vì chỉ CLI có file cũ nằm cạnh bảng; dịch vụ web không nhận file
+cũ (ADR-0004). Merge chỉ hỗ trợ hướng từ trên xuống và báo lỗi merge.direction
+với các hướng khác.
 
-Vì vậy không sửa rải rác. Đặt tên hai trục rồi dồn toàn bộ ánh xạ vào một module:
-
-```go
-type Axis struct {
-    Flow string // "down", "up", "right", "left"
-}
-
-func (a Axis) ToXY(flow, cross float64) (x, y float64)
-
-// Extent trả về bề dài theo flow và theo cross của một hộp w x h.
-func (a Axis) Extent(w, h float64) (alongFlow, alongCross float64)
-```
-
-Sau đó TD, LR, BT, RL là bốn giá trị của cùng một ánh xạ, không phải bốn nhánh
-code.
-
-Một điều quan trọng dễ hiểu sai: **hộp node không lật theo trục**. Chữ vẫn đọc
-từ trái sang phải, bề rộng hộp vẫn bị chặn bởi task_max_w, chiều cao vẫn mọc
-theo số dòng. Chỉ có lưới lật. Đó là lý do LR rẻ. Hàm extent ở trên là nơi duy
-nhất biết điều này: với flow đi xuống, bề dài theo flow là h; với flow đi sang
-phải, là w.
-
-Máng và kênh đổi vai cho nhau theo trục, nên chúng nên được gọi theo trục chứ
-không theo hướng màn hình: máng chạy dọc theo flow, kênh chạy dọc theo cross.
-
-LayoutResult mang theo Axis, vì writer cần biết lane nằm dọc hay nằm ngang để
-đặt cờ horizontal của swimlane trong draw.io.
-
-## 8. LayoutResult
-
-Tách Layout-thuật-toán khỏi Layout-kết-quả. Bằng chứng là việc này đã gần xong:
-to_drawio chỉ đọc dữ liệu trên đối tượng Layout, không gọi một method nào của
-nó. Kiểu kết quả đã tồn tại ngầm, chỉ chưa được đặt tên và đóng băng.
-
-```go
-var Shapes = []string{"rect", "round", "diamond", "ellipse", "cylinder", "note"}
-
-type PlacedItem struct {
-    ID         string
-    Shape      string   // một trong Shapes
-    Roles      []string // "highlight", ...
-    Lane       int      // -1 nghĩa là không thuộc lane nào
-    Lines      []string
-    X, Y, W, H float64
-    Order      int
-    Semantic   string // "task", "condition", ... writer không được đọc trường này
-}
-
-type PlacedEdge struct {
-    ID        string
-    Src, Dst  string
-    Lines     []string
-    Points    [][2]float64
-    ExitFrac  *[2]float64
-    EntryFrac *[2]float64
-    LabelT    float64
-    LabelOff  [2]float64
-    Roles     []string // "dashed", "bold", "noarrow", "highlight"
-    Order     int
-    Pinned    bool // đến từ Overrides, đích tự đi dây
-}
-
-type LayoutResult struct {
-    Axis     Axis
-    Pool     [2]float64
-    Origin   [2]float64
-    Lanes    []PlacedLane
-    Items    []PlacedItem
-    Edges    []PlacedEdge
-    Foreign  []any // cell người dùng tự vẽ, giữ nguyên dạng đóng
-    Warnings []Issue
-}
-```
-
-Điểm mấu chốt: LayoutResult nói bằng **hình nguyên thủy**, không bằng loại ngữ
-nghĩa. Kind quyết định task là round và condition là diamond. Writer chỉ cần
-biết sáu hình. Nếu writer phải biết loại ngữ nghĩa thì mỗi writer phải biết mọi
-kind, và số việc thành tích của hai con số thay vì tổng của chúng.
-
-Trường semantic vẫn được mang theo cho công cụ và cho gỡ lỗi, nhưng writer không
-được đọc nó. Đây là một quy ước, và một test nên canh nó.
-
-check chạy trên LayoutResult. Nhờ vậy mọi kind và mọi đường sinh, kể cả merge,
-đều được tự kiểm mà không viết lại gì.
-
-## 9. Overrides và merge
-
-Đọc mxCell là việc của adapter drawio. Áp vị trí cũ theo id là việc chung. Tách
-theo đúng ranh giới đó.
-
-```go
-// trong writer/drawio
-func ReadOverrides(data []byte) (Overrides, []Issue, error)
-
-// trong merge
-func ApplyOverrides(lay LayoutResult, ov Overrides) (LayoutResult, MergeReport)
-```
-
-```go
-type Overrides struct {
-    Items   map[string]ItemOverride // tâm, và kích thước nếu người dùng đã chỉnh
-    Edges   map[string]EdgeOverride // waypoint, điểm neo
-    Lanes   map[string]LaneOverride // vị trí và bề rộng
-    Foreign []any                   // cell tự vẽ, dạng đóng
-}
-```
-
-apply_overrides trả về LayoutResult mới thay vì sửa tại chỗ. Vì vậy build chạy
-được check sau merge, vá đúng lỗ hổng hôm nay là merge đi vòng qua lớp tự kiểm.
-Phát hiện sau merge hạ xuống mức warning, vì đường dây lúc đó một phần do người
-dùng quyết định, nhưng chúng phải được báo chứ không bị vứt.
-
-MergeReport giữ nguyên nội dung hôm nay: phần tử mới, phần tử phải dịch, cạnh
-nối tới phần tử mới, cạnh đã sửa tay, cell tự vẽ mất đầu nối.
+Một bất biến canh merge: merge trên file vừa sinh, chưa ai sửa, không được làm
+đổi một byte nào. File chỉ ghi số đã làm tròn hai chữ số, nên mọi phép so giữa
+số đọc lại và số tính được phải làm tròn giống hệt lúc ghi.
 
 ## 10. Giới hạn tài nguyên
 
 Chặn trên số dòng và số cạnh là biện pháp chính, vì chúng chặn luôn thời gian
-chạy: topo là O(V+E), place duyệt lưới, gán track là tô màu khoảng trên số cạnh.
-deadline_ms là biện pháp phụ, kiểm ở ranh giới giữa các pha, không cắt ngang một
-thuật toán.
+chạy: thời gian dựng tăng gần theo bình phương số phần tử. Timeout là biện pháp
+phụ, kiểm ở ranh giới giữa các pha, không cắt ngang một pha. Với xlsx còn chặn
+tổng số byte giải nén, vì một file zip vài KB có thể giải ra hàng GB.
 
-Vượt giới hạn là FlowTableError mã limit.*, không phải Issue, vì không có kết
-quả bộ phận nào đáng trả về.
-
-Hồ sơ web siết chặt hơn hồ sơ cli. Con số cụ thể là dữ liệu trong limits.go (CLILimits, WebLimits), để
-đổi được mà không sửa code.
+Vượt giới hạn là lỗi mã limit.*, không phải Issue, vì không có kết quả bộ phận
+nào đáng trả về.
 
 ## 11. Font và tính tất định
 
-Cam kết: cùng một Source, cùng một CoreConfig, cùng một cấu hình kind, cùng một
-phiên bản tool thì ra cùng một chuỗi byte. Bộ đối chiếu trong `conformance/`
-canh điều này.
+Cam kết: cùng một đầu vào, cùng một cấu hình, cùng một phiên bản flowcast thì ra
+cùng một chuỗi byte, trên mọi máy.
 
-Đã làm, ở bước 0: **đóng gói bảng độ rộng glyph, không đóng gói file font.**
-Tool chỉ cần advance width theo từng codepoint để đo và ngắt dòng, nên bảng
-`data/verdana.json` với 738 codepoint, khoảng 10KB, là đủ. Bảng sinh bằng
-`tools/extract_metrics.py` và đã commit. Đã xác nhận nó cho ra đầu ra không lệch
-một byte so với đọc thẳng file font.
+Tool không đọc file font lúc chạy. Nó đo chữ bằng bảng advance width theo từng
+codepoint, sinh một lần từ file font bằng công cụ trích số đo trong tools và
+nhúng vào binary. Nhờ vậy binary phân phối đi không mang theo font và không phụ
+thuộc máy đích có cài Verdana hay không.
 
-Bản Go đọc đúng bảng này. Nhờ vậy binary phân phối đi không mang theo font và
-không phụ thuộc máy đích có cài Verdana hay không, và bộ đối chiếu tái tạo được
-trên mọi máy.
+Một rủi ro cần ghi rõ: Verdana là font thương mại của Microsoft. Phân phối lại
+một bảng số đo khác hẳn với phân phối lại font, nhưng nếu dịch vụ này công khai
+thì cần người hiểu luật xem qua. Phương án dự phòng: đổi fontFamily trong đầu ra
+sang một font tự do và sinh bảng đo từ font đó.
 
-Ghi rõ một rủi ro: Verdana là font thương mại của Microsoft, giấy phép phân phối
-lại file font rất chặt. Phân phối lại một bảng số đo là chuyện khác hẳn với phân
-phối lại font, nhưng nếu dịch vụ này công khai thì đây là điểm cần người hiểu
-luật xem qua. Phương án dự phòng nếu không ổn: đổi fontFamily trong đầu ra sang
-một font tự do và sinh bảng đo từ font đó.
-
-Độc lập với chuyện giấy phép: ở chế độ strict, thiếu bảng đo là lỗi cứng chứ
-không phải cảnh báo.
-
-### Số thực phải khớp tới từng bit, và FMA là kẻ thù
+### Số thực phải tất định tới từng bit
 
 Pha hình học so sánh số thực để ra quyết định: nhãn đặt ở ứng viên nào tùy tổng
-chi phí nào nhỏ hơn, và điểm gấp nào bị bỏ tùy hai toạ độ có cách nhau dưới
-0.01 hay không. Lệch một đơn vị ở bit cuối là đủ lật một quyết định. Nên bản Go
-phải cho ra đúng từng bit như bản Python, không chỉ đúng tới hai chữ số thập
-phân.
+chi phí nào nhỏ hơn, điểm gấp nào bị bỏ tùy hai toạ độ có cách nhau dưới 0.01
+hay không. Lệch một đơn vị ở bit cuối là đủ lật một quyết định, nên kết quả phải
+tất định tới từng bit, không chỉ tới hai chữ số thập phân.
 
-Hai chỗ dễ lệch, cả hai đã có phép kiểm canh:
+Các chỗ dễ lệch, đều đã có phép kiểm canh:
 
-**Làm tròn.** `round(x, 2)` của Python làm tròn giá trị nhị phân thật về số
-chẵn gần nhất. `math.Round` của Go làm tròn nửa ra xa số không trên giá trị đã
-nhân lên, nên lệch ở những số như 2.675. `num.Round` đi qua chuỗi thập phân,
-khớp Python trên 120.000 phép làm tròn so từng bit.
-
-**Nhân rồi cộng.** Đặc tả Go cho phép gộp `a*b + c` thành một lệnh FMA, chỉ
-làm tròn một lần, và được gộp cả qua nhiều câu lệnh. Trên arm64 điều đó xảy ra
-ở khoảng một phần tư số phép `a*1.42 + c`, lệch Python một đơn vị ở bit cuối.
-Chỉ phép chuyển kiểu tường minh chặn được việc gộp, nên quy tắc là **mọi phép
-nhân số thực phải bọc trong `float64()`**, trừ khi kết quả đi thẳng vào một
-phép nhân hay chia khác, hoặc vào một phép chuyển kiểu. `internal/lint` kiểm
-tĩnh quy tắc này trên toàn module ở mỗi lần `go test`.
+- **Làm tròn.** num.Round làm tròn trên giá trị nhị phân thật, nửa chính xác về
+  số chẵn, bằng cách đi qua chuỗi thập phân. math.Round sai ở những số như 2.675
+  và 0.125.
+- **Nhân rồi cộng.** Đặc tả Go cho phép gộp a*b + c thành một lệnh FMA, chỉ làm
+  tròn một lần, và được gộp cả qua nhiều câu lệnh. Trên arm64 điều đó xảy ra ở
+  khoảng một phần tư số phép a*1.42 + c. Chỉ phép chuyển kiểu tường minh chặn
+  được việc gộp, nên mọi phép nhân số thực phải bọc trong float64(), trừ khi kết
+  quả đi thẳng vào một phép nhân hay chia khác. Một test tĩnh trong
+  internal/lint kiểm quy tắc này trên toàn module ở mỗi lần go test.
+- **Thứ tự cộng.** Cộng số thực không có tính kết hợp, nên thứ tự cộng dồn toạ độ
+  và chi phí là một phần của kết quả.
+- **Dấu của số không.** max và min trong engine trả số đứng trước khi hai số bằng
+  nhau, vì math.Max và math.Min đổi dấu của số không.
 
 ## 12. Đầu vào mermaid
 
-mermaid là source adapter thứ tư, quy về cùng một Table như ba cái kia. Ánh xạ:
+mermaid quy về cùng một Table như ba định dạng bảng (ADR-0002). Ánh xạ:
 
 | mermaid | Flow Table |
 |---|---|
@@ -452,63 +247,42 @@ id lấy thẳng từ mermaid nên ổn định, và merge theo id chạy đư�
 mermaid mà không cần gì thêm.
 
 Biên của từ vựng metadata: một key được nhận vào chỉ khi nó đổi thứ được vẽ ra,
-có tương đương trung thực trong style string của draw.io, và không tham chiếu
-tới dòng khác. Theo biên đó, bốn kiểu mũi tên chỉ là ba giá trị mới của key
-style đã có, không phải key mới. Màu đặt thẳng trên node không vào, vì key style
-mang vai trò ngữ nghĩa chứ không mang màu; màu khớp bảng màu nhấn thì quy về
-highlight, còn lại cảnh báo. icon, click, href không đổi bố cục nên không vào.
-subgraph lồng nhau thì mô hình chịu được vì parent đã là cây, nhưng engine chưa
-xếp được lane lồng lane, nên phiên bản đầu dẹp về subgraph ngoài cùng kèm cảnh
-báo mã mermaid.nested_subgraph.
+có tương đương trung thực trong style của draw.io, và không tham chiếu tới dòng
+khác. Theo biên đó, các kiểu mũi tên chỉ là giá trị mới của key style đã có.
+Màu đặt thẳng trên node không vào, vì key style mang vai trò ngữ nghĩa chứ không
+mang màu; màu khớp bảng màu nhấn thì quy về highlight, còn lại cảnh báo. icon,
+click, href không đổi bố cục nên không vào. subgraph lồng nhau bị dẹp về
+subgraph ngoài cùng kèm cảnh báo mermaid.nested_subgraph.
 
-Mọi thứ bỏ qua đều là một Issue có mã và có số dòng trong nguồn, để web hiện
-được danh sách đã bỏ qua những gì.
+Mọi thứ bỏ qua đều là một Issue có mã và có số dòng trong nguồn, để web hiện được
+danh sách đã bỏ qua những gì.
 
-## 13. Flowchart và heuristic nhánh chính
+## 13. Flowchart và nhánh chính
 
-flowchart không phải một kind mới. Nó là activity-swimlane với lane trở thành
-tùy chọn. Cụ thể: cho phép bảng không có dòng lane nào, pool_header và
-lane_header bằng 0, bỏ ràng buộc parent phải là id của một lane. Khóa lưới
-gkey trả về cặp lane và col; với đúng một lane nó rút về col và toàn bộ thuật
-toán chạy nguyên vẹn.
+flowchart không phải một loại sơ đồ mới. Nó là activity-swimlane với lane trở
+thành tùy chọn: bảng không có dòng lane nào được dựng trên một lane ẩn, thanh
+tiêu đề và thanh tên lane bằng 0, và không vẽ pool.
 
-Nhưng có một chỗ hỏng thật. branch_drift đi dọc một nhánh tìm cạnh đầu tiên rời
-khỏi lane, không thấy thì trả về 0. Trong sơ đồ một lane nó **luôn** trả về 0,
-nên heuristic mạnh nhất của engine chết hoàn toàn và mọi nhánh rơi về luật dự
-phòng là lần lượt sang phải rồi sang trái, tức đặt theo thứ tự chứ không theo
-nội dung.
+Có một chỗ phải xử lý riêng. Engine xếp nhánh phụ về phía lane mà nhánh đó rốt
+cuộc dẫn tới. Trong sơ đồ một lane, không nhánh nào rời lane, nên tín hiệu đó
+luôn trống và mọi nhánh rơi về luật dự phòng là lần lượt sang phải rồi sang trái.
+Thêm nữa, đặc tả Flow Table để người viết bảng chọn nhánh chính bằng thứ tự dòng,
+còn mermaid không có quy ước đó.
 
-Lý do sâu hơn: đặc tả Flow Table đẩy quyết định này sang người viết bảng, ở luật
-"đặt trước những nhánh kết thúc sớm để nhánh đi tiếp dài nhất nằm cuối", và
-engine tin vào đó qua quy ước cạnh ra cuối cùng là nhánh chính. Mermaid không có
-quy ước nào như vậy.
+Vì vậy với sơ đồ không có lane:
 
-Vì vậy với sơ đồ không có lane, nhánh chính được suy ra theo **độ sâu đường đi**:
-trong các cạnh ra của một node, nhánh có đường dài nhất tới một node kết thúc giữ
-nguyên cột, các nhánh còn lại dạt sang hai bên. Đo độ sâu trên đồ thị đã bỏ cạnh
-back, và dừng ở node hợp nhánh để không tính phần luồng chung vào độ sâu của một
-nhánh riêng.
+- Nhánh chính là nhánh có đường dài nhất tới một node kết thúc, đo trên đồ thị
+  đã bỏ cạnh back, dừng ở node hợp nhánh.
+- Xương sống là chuỗi nhánh chính đi từ mỗi điểm đầu. Node hợp nhánh nằm ngoài
+  xương sống giữ cột của nguồn sâu nhất thay vì quay về cột của node rẽ, để một
+  bước chỉ nhận các nhánh lỗi không kéo luồng chính đi vòng qua nó.
 
-Với sơ đồ có lane, branch_drift vẫn được ưu tiên, vì hướng lane là tín hiệu mạnh
-hơn. Độ sâu chỉ thay vào chỗ branch_drift trả về 0.
+Sơ đồ có lane giữ quy ước của Flow Table.
 
-Đây là phần quyết định sản phẩm có hơn draw.io hay không, nên nó phải được đo
-chứ không được cảm nhận: dựng một bộ sơ đồ mermaid thật trước khi viết heuristic,
-và giữ số liệu check trên bộ đó qua từng thay đổi.
+Số đo lúc đưa hai luật này vào, bằng go run ./tools/metrics trên 28 sơ đồ mà bộ
+mermaid và flowchart có khi đó:
 
-Đo trên bộ `conformance/mermaid` và `conformance/flowchart` cho thấy độ sâu một
-mình chưa đủ. Chỗ hỏng lớn nhất là node hợp nhánh chỉ nhận các nhánh lỗi, như
-bước "báo lỗi cho tác giả" trong một pipeline CI: luật hợp nhánh kéo nó về cột
-chính, và luồng chính phải đi vòng qua nó. Nên có thêm luật thứ hai: xương sống
-là chuỗi nhánh chính đi từ mỗi điểm đầu; node hợp nhánh nằm ngoài xương sống
-giữ cột của nguồn sâu nhất thay vì quay về cột của node rẽ.
-
-Hai luật chỉ áp cho sơ đồ không có lane. Sơ đồ có lane giữ quy ước của Flow
-Table, và golden của chúng vẫn khớp bản tham chiếu.
-
-Số liệu, đo bằng `go run ./tools/metrics` trên 28 sơ đồ:
-
-| chỉ số | trước | sau |
+| Chỉ số | Trước | Sau |
 |---|---|---|
 | dây đi vòng qua kênh (kiểu D) | 38 | 33 |
 | điểm gấp | 126 | 112 |
@@ -516,121 +290,43 @@ Số liệu, đo bằng `go run ./tools/metrics` trên 28 sơ đồ:
 | cạnh của đường dài nhất vẽ thẳng đứng | 117/152 | 135/152 |
 | phát hiện tự kiểm | 0 | 0 |
 
-Mốc tiếp theo, đã đo nhưng chưa chạm vào: **33 chỗ hai dây cắt nhau** trên cả
-bộ, tệ nhất là sơ đồ CI với 7 chỗ. Nguyên nhân đã soi ra: dây đi vòng chạy dọc
-trong máng ngay cạnh cột nguồn, mà máng đó là chỗ mọi mũi tên ngang xuất phát
-từ cột ấy đi qua.
+## 14. Việc đã cân nhắc và để lại
 
-Hai phép thử nhanh đã làm và đã bỏ, có số liệu:
+Những thứ dưới đây đã cân nhắc, kèm lý do, để lần sau không phải nghĩ lại từ
+đầu.
 
-| thử | chỗ cắt | dài | tự kiểm |
+**Giảm chỗ hai dây cắt nhau.** Lúc đo có 33 chỗ cắt trên 28 sơ đồ của bộ mermaid
+và flowchart, tệ nhất là sơ đồ CI với 7 chỗ. Nguyên nhân: dây đi vòng chạy dọc trong máng ngay
+cạnh cột nguồn, mà máng đó là chỗ mọi mũi tên ngang xuất phát từ cột ấy đi qua.
+Hai phép thử nhanh đã làm và đã bỏ:
+
+| Thử | Chỗ cắt | Dài | Tự kiểm |
 |---|---|---|---|
-| hiện tại | 33 | 29362 | 0 |
+| lúc đo | 33 | 29362 | 0 |
 | nhánh không rõ hướng luôn dạt phải | 33 | 29379 | 0 |
 | dây đi vòng luôn dùng máng ngoài cùng | 27 | 32530 | 5 |
 | như trên, nhưng lùi về khi hai đoạn ngang đâm vào node | 31 | 32066 | 2 |
 
-Hai phép sau làm dây dài thêm gần 10% và, tệ hơn, sinh ra lỗi hình học thật:
-đoạn ngang ở hai đầu cắt qua node. Phép kiểm ô trống theo lưới không đủ để
-tránh, vì thứ tự đặt track mới quyết định đường đi cuối cùng.
+Hai phép sau làm dây dài thêm gần 10% và sinh ra lỗi hình học thật. Làm tử tế
+nghĩa là chọn máng và chọn track cùng lúc, với hàm chi phí gồm cả số chỗ cắt,
+chứ không chọn máng trước rồi xếp track sau như hiện nay.
 
-Làm tử tế nghĩa là chọn máng và chọn track cùng lúc, với hàm chi phí gồm cả số
-chỗ cắt, chứ không phải chọn máng trước rồi xếp track sau như hiện nay. Đó là
-một khối riêng, và bộ đo cùng bộ golden đã sẵn sàng để đánh giá nó.
+**Tự kiểm sau merge.** Giá trị thấp hơn tưởng: dây do người dùng giữ lại thì
+đúng theo định nghĩa, dây để draw.io tự đi thì không có toạ độ để kiểm, và nhãn
+không được tính lại sau khi node dịch chỗ. Phần duy nhất còn ý nghĩa là phần tử
+chồng nhau, mà báo cáo merge đã liệt kê. Làm đúng việc này nghĩa là một pha đi
+dây thứ hai chạy trên hình học do người dùng đặt.
 
-## 14. Lộ trình port
-
-Lộ trình bóc tách tại chỗ trước đây không còn dùng được: đây là một bản port,
-nên không có trạng thái trung gian nào mà cả hai bản cùng chạy trên cùng một
-cây code.
-
-### Cổng chặn
-
-Mỗi module Go xong khi nó tái tạo đúng đầu ra của bản tham chiếu trên toàn bộ
-`conformance/cases/`. So từng byte, không so bằng mắt.
-
-Vấn đề: so từng byte chỉ làm được ở cuối chuỗi, khi đã có xml. Các module phía
-trước cần điểm so của riêng chúng. Vì vậy việc đầu tiên là **thêm chế độ dump
-trung gian vào bản tham chiếu**, và bản Go dump đúng cùng định dạng:
-
-| dump | chốt module |
-|---|---|
-| dòng đã ngắt kèm bề rộng từng phần tử | text |
-| Table sau khi parse, dạng JSON | source, model |
-| danh sách Issue, dạng JSON | schema, validate |
-| lưới lane, row, col của từng phần tử | layout/place |
-| danh sách Seg kèm track | layout/route, layout/tracks |
-| toạ độ cuối cùng, tức `to_json` đã có sẵn | layout/geometry, labels |
-
-### Thứ tự
-
-| bước | module | ghi chú |
-|---|---|---|
-| 1 | dump trung gian trong bản tham chiếu | xong |
-| 2 | text | xong, cùng `num` và `layout.SizeItem` |
-| 3 | model, source/markdown | xong |
-| 4 | schema, validate | xong |
-| 5 | layout/place | xong |
-| 6 | layout/route, layout/tracks | xong |
-| 7 | layout/geometry, layout/labels | xong, khớp từng bit |
-| 8 | layout/check | xong |
-| 9 | writer/drawio | xong: 76 file .drawio khớp từng byte |
-| 10 | build, cmd/flowcast | xong: CLI khớp bản tham chiếu từng dòng, nay là 209 bản ghi |
-| 11 | source/csv, source/xlsx | xong |
-| 12 | merge | xong phần port nguyên. Overrides và tự kiểm sau merge ở mục 9 là thay đổi hành vi, làm sau khi port xong |
-| 13 | render, giới hạn tài nguyên, cmd/flowcastd | xong |
-
-### Sau khi khớp
-
-Chỉ khi bước 9 và 12 đã khớp thì mới làm phần mới, vì từ đây bản Python không
-còn là đáp án nữa:
-
-| bước | việc |
-|---|---|
-| 14 | lane thành tùy chọn. Xong: bảng không có lane dựng trên một lane ẩn, header bằng 0, không vẽ pool; merge chạy được |
-| 15 | bộ sơ đồ đo, rồi heuristic độ sâu đường đi. Xong, kèm luật xương sống cho node hợp nhánh, xem mục 13 |
-| 16 | source/mermaid, hướng khác TD quy về TD kèm cảnh báo. Xong, làm trước bước 15 vì bộ sơ đồ đo cần đọc được mermaid |
-| 17 | axis, LR và BT và RL. Xong: engine vẫn xếp theo TD, layout/axis.go hoán đổi kích thước trước khi xếp rồi đổi trục kết quả |
-
-Bước 16 ra trước bước 17 có chủ ý: mermaid quy về TD đã dùng được ngay, còn lật
-trục là khối lớn nhất. Quyết định hỗ trợ LR thật không đổi, chỉ xếp sau bản dùng
-được đầu tiên.
-
-Từ bước 14 trở đi, `conformance/golden/` thôi là đáp án và thành bộ chống hồi
-quy: nó phải đổi khi và chỉ khi một trong các bước đó cố ý đổi bố cục, và mỗi
-lần sinh lại đều phải đọc diff.
-
-## 15. Việc còn lại
-
-Lộ trình trên đã xong. Những thứ dưới đây đã cân nhắc và để lại, kèm lý do, để
-lần sau không phải nghĩ lại từ đầu.
-
-**Tự kiểm sau merge, và tách Merge thành Overrides.** Mục 9 đề xuất chạy lại
-tự kiểm sau merge và hạ phát hiện xuống mức cảnh báo. Sau khi port xong merge
-thì thấy giá trị của nó thấp hơn tưởng: dây do người dùng giữ lại thì đúng theo
-định nghĩa, dây để draw.io tự đi thì không có toạ độ để kiểm, và nhãn không
-được tính lại sau khi node dịch chỗ. Phần duy nhất còn ý nghĩa là phần tử chồng
-nhau, mà MergeReport đã liệt kê sẵn. Làm đúng việc này nghĩa là tính lại dây và
-nhãn cho sơ đồ đã merge, tức một pha đi dây thứ hai chạy trên hình học do người
-dùng đặt; đó là một khối riêng, không phải một phép đổi mã trả về.
-
-**merge cho hướng khác TD.** Merger đọc file cũ trong hệ toạ độ của chính nó.
-Cách rẻ nhất là đổi trục file cũ lúc đọc rồi đổi ngược lúc ghi, nhưng cell tự vẽ
-được chép nguyên văn nên cũng phải đổi trục theo, và đó là chỗ dễ sai. Hiện tại
-merge báo rõ là chưa hỗ trợ.
+**Merge cho hướng khác từ trên xuống.** Cách rẻ nhất là đổi trục file cũ lúc đọc
+rồi đổi ngược lúc ghi, nhưng cell tự vẽ được chép nguyên văn nên cũng phải đổi
+trục theo, và đó là chỗ dễ sai. Hiện tại merge báo rõ là chưa hỗ trợ.
 
 **Lane lồng lane.** Mô hình chịu được vì parent đã là cây, nhưng engine chưa xếp
-được. subgraph lồng nhau của mermaid đang bị dẹp về subgraph ngoài cùng kèm
-cảnh báo.
+được.
 
 **Bề dày lane trong sơ đồ đi ngang.** Tên lane được xoay dọc, nhưng engine vẫn
-lấy bề rộng chữ làm bề dày tối thiểu của băng, nên tên dài làm băng dày quá
-mức. Sửa đúng là tách hai số: bề dày theo chiều cao chữ, bề dài theo bề rộng
-chữ.
+lấy bề rộng chữ làm bề dày tối thiểu của băng, nên tên dài làm băng dày quá mức.
+Sửa đúng là tách hai số: bề dày theo chiều cao chữ, bề dài theo bề rộng chữ.
 
-**Hình nguyên thủy trong Result.** Writer vẫn đọc Kind để chọn hình. Lớp trừu
-tượng hình nguyên thủy chỉ có giá trị khi có kind thứ hai, xem mục 8.
-
-**WASM.** Core không chạm filesystem và không gọi tiến trình ngoài, nên dịch
-sang WASM để chạy thẳng trong trình duyệt là chuyện đóng gói, không phải chuyện
-kiến trúc. Chưa làm vì dịch vụ web đã đủ dùng.
+**WASM.** Core không chạm I/O, nên chạy thẳng trong trình duyệt là chuyện đóng
+gói, không phải chuyện kiến trúc. Chưa làm vì dịch vụ web đã đủ dùng.

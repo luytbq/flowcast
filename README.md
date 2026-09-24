@@ -1,136 +1,151 @@
 # flowcast
 
-Biến một sơ đồ luồng viết bằng bảng hoặc bằng mermaid thành file draw.io có bố
-cục tất định: mọi toạ độ do code tính, cùng một đầu vào luôn cho ra cùng một
-file, và không ai phải sửa toạ độ trong XML bằng tay.
+flowcast biến một sơ đồ luồng viết bằng bảng hoặc bằng mermaid thành file draw.io
+đã xếp hình sẵn. Mọi toạ độ do tool tính, cùng một đầu vào luôn cho ra cùng một
+file, và không ai phải kéo node hay sửa XML bằng tay.
 
-Lý do tồn tại: mermaid và chức năng import của draw.io đều tự xếp hình, và xếp
-không đẹp. Thứ dự án này có mà chúng không có là một engine xếp hình và đi dây
-tất định, đã qua nhiều vòng sửa theo sơ đồ thật.
+Công cụ vẽ tự động thường xếp hình không đẹp: dây cắt qua node, nhãn đè nhau, các
+nhánh rẽ lộn xộn. flowcast có engine xếp hình và đi dây riêng, tự kiểm hình học
+trước khi ghi file, và kiểm được cả việc draw.io có vẽ đúng thứ nó đã tính hay
+không.
 
 ## Làm được gì
 
 - Đọc bảng luồng viết bằng markdown, csv hoặc xlsx, và flowchart mermaid.
-- Vẽ bốn hướng: TD, BT, LR và RL. Sơ đồ có lane thì lane là băng dọc hoặc băng
-  ngang tùy hướng; bảng không có lane nào thì vẽ thành flowchart.
-- Sinh lại mà giữ chỉnh sửa tay trong draw.io: vị trí node, bề rộng lane, điểm
-  gấp của dây, và các cell tự vẽ thêm.
-- Tự kiểm hình học trước khi ghi, và kiểm render: xuất SVG bằng drawio CLI rồi
-  so đường dây draw.io vẽ với toạ độ đã tính.
-- Dùng được từ CLI, từ thư viện Go, và từ dịch vụ web flowcastd.
+- Vẽ bốn hướng: từ trên xuống (TD), từ dưới lên (BT), trái sang phải (LR), phải
+  sang trái (RL). Sơ đồ có lane thì lane là băng dọc hoặc băng ngang tùy hướng.
+  Bảng không khai báo lane nào thì vẽ thành flowchart.
+- Sinh lại sơ đồ mà giữ chỉnh sửa tay trong draw.io: vị trí node, bề rộng lane,
+  điểm gấp của dây, và các hình người dùng tự vẽ thêm.
+- Tự kiểm hình học trước khi ghi: dây cắt node, hai dây chồng nhau, nhãn đè.
+- Xuất PNG, và so đường dây draw.io vẽ ra với toạ độ đã tính.
+- Dùng được qua dòng lệnh, qua dịch vụ web, và như một thư viện Go.
 
-Bản Python trong `reference/` là bản gốc, nay giữ vai trò máy sinh đáp án: bản
-Go cho ra đúng từng byte file .drawio, đúng từng dòng in ra và đúng mã thoát
-như nó, trên toàn bộ bộ đối chiếu. Những chỗ cố ý khác nằm ở cuối mục Dùng.
+## Build
 
-| thư mục | nội dung |
+Cần Go 1.25 trở lên.
+
+```
+go build -o flowcast ./cmd/flowcast      # dòng lệnh
+go build -o flowcastd ./cmd/flowcastd    # dịch vụ web
+```
+
+Xuất ảnh và kiểm render cần thêm drawio CLI (bản desktop của draw.io) trên máy.
+Thiếu nó thì mọi chức năng khác vẫn chạy.
+
+## Chạy từ dòng lệnh
+
+```
+./flowcast check bang.md                     # chỉ kiểm bảng, không vẽ
+./flowcast build bang.md                     # ghi bang.drawio cạnh file đầu vào
+./flowcast build so-do.mmd                   # flowchart mermaid, hoặc khối mermaid trong file .md
+./flowcast build bang.md --direction LR
+./flowcast build bang.md -o ra.drawio --png --verify
+```
+
+Định dạng bảng đầu vào nằm ở [docs/flow-table-format.md](docs/flow-table-format.md).
+
+### Tham số chung
+
+| Tham số | Ý nghĩa |
 |---|---|
-| `cmd/flowcast/` | CLI |
-| gốc, `model/`, `source/`, `schema/`, `validate/`, `text/`, `layout/`, `writer/` | core |
-| `merge/` | sinh lại mà giữ chỉnh sửa tay; chỉ CLI dùng |
-| `render/` | gọi drawio CLI: xuất PNG, SVG, kiểm render; ngoài core |
-| `cmd/flowcastd/` | dịch vụ web |
-| `internal/` | đọc ghi XML kiểu ElementTree, chuỗi kiểu Python, kiểm tĩnh |
-| `reference/` | bản Python đầy đủ, đồng thời là máy sinh đáp án cho bản port |
-| `conformance/` | bộ đối chiếu: bảng đầu vào và đầu ra chuẩn |
-| `data/` | bảng độ rộng glyph, nhúng vào binary |
-| `tools/` | công cụ sinh đáp án, đo độ phủ, thử đột biến |
-| `docs/` | đặc tả định dạng, thiết kế core, ADR |
-| `CONTEXT.md` | từ vựng dùng xuyên suốt code và tài liệu |
+| -o, --output FILE | File .drawio ghi ra. Mặc định cùng tên với file đầu vào, đổi đuôi. |
+| --title T | Tiêu đề sơ đồ. Mặc định lấy từ tiêu đề trong file nguồn. |
+| --direction D | TD, BT, LR hoặc RL. Mặc định theo nguồn; nguồn không nói thì TD. |
+| --mode merge hoặc force | Dùng khi file đích đã có. merge giữ chỉnh sửa tay, force sinh lại toàn bộ. Không truyền thì tool hỏi, hoặc dừng nếu không chạy trong terminal. |
+| --no-backup | Không ghi bản sao .bak của file cũ trước khi ghi đè. |
+| --png [FILE] | Xuất ảnh PNG bằng drawio CLI. Không ghi FILE thì ảnh nằm cạnh file .drawio. |
+| --verify | Xuất SVG bằng drawio CLI rồi so từng đường dây với toạ độ đã tính. |
+| --layout-json FILE | Ghi toạ độ đã tính ra JSON, để công cụ khác đọc. |
+| --sheet S | Với xlsx: tên sheet chứa bảng. |
+| --delimiter D | Với csv: dấu phân cách, khi không muốn tool tự đoán. |
+| --encoding E | Với csv: bảng mã, khi không muốn tool tự đoán. |
 
-Đọc `CONTEXT.md` trước, rồi `docs/core-design.md`. Các quyết định đã chốt kèm lý
-do nằm trong `docs/adr/`; đừng mở lại chúng mà chưa đọc.
+### Tham số xếp hình
 
-## Dùng
+Đơn vị là điểm ảnh. Chạy lệnh flowcast --help để xem miền giá trị của từng tham số.
+
+| Tham số | Mặc định | Ý nghĩa |
+|---|---|---|
+| --task-min-w | 120 | Bề rộng tối thiểu của hộp task |
+| --task-max-w | 240 | Bề rộng tối đa của hộp task |
+| --cond-wrap | 150 | Bề rộng ngắt dòng trong hình thoi |
+| --term-wrap | 170 | Bề rộng ngắt dòng của start, end và external |
+| --db-wrap | 130 | Bề rộng ngắt dòng của db |
+| --text-wrap | 260 | Bề rộng ngắt dòng của ghi chú |
+| --label-wrap | 180 | Bề rộng ngắt dòng của nhãn trên dây |
+| --track-gap | 12 | Khoảng cách giữa hai dây chạy song song |
+| --gutter-margin | 15 | Lề từ mép khe dọc giữa hai cột tới dây đầu tiên |
+| --channel-margin | 12 | Lề từ mép khe ngang giữa hai hàng tới dây đầu tiên |
+| --min-gutter | 24 | Khoảng trống tối thiểu giữa hai cột |
+| --min-channel | 30 | Khoảng trống tối thiểu giữa hai hàng |
+| --attach-gap | 40 | Khoảng cách từ db hoặc ghi chú tới node nó bám |
+| --lane-header | 30 | Bề dày thanh tên lane |
+| --pool-header | 30 | Bề dày thanh tiêu đề sơ đồ |
+| --min-lane-w | 120 | Bề dày tối thiểu của một lane |
+| --label-pad | 4 | Lề quanh chữ của nhãn trên dây |
+
+### Mã thoát
+
+| Mã | Khi nào |
+|---|---|
+| 0 | Thành công |
+| 1 | Không đọc được file, bảng có lỗi, hoặc không ghi được file |
+| 2 | Đã ghi file nhưng tự kiểm hình học báo lỗi |
+| 3 | Đã ghi file nhưng xuất ảnh hỏng, hoặc draw.io vẽ lệch toạ độ đã tính |
+| 4 | Không ghi: file đích đã có mà chưa chọn chế độ, hoặc không đọc được file cũ để merge |
+
+Bảng quá 50000 dòng hoặc file quá 64 MB bị từ chối.
+
+## Chạy dịch vụ web
 
 ```
-go build -o flowcast ./cmd/flowcast
-./flowcast check bang.md
-./flowcast build so-do.mmd                   # flowchart mermaid, hoặc khối ```mermaid trong file .md
-./flowcast build bang.md --direction LR      # TD, BT, LR hoặc RL
-./flowcast build bang.md [-o ra.drawio] [--title "..."] [--mode merge|force] [--task-max-w 280 ...]
-```
-
-Dịch vụ web:
-
-```
-go build -o flowcastd ./cmd/flowcastd
 ./flowcastd -addr :8080
 curl -F file=@bang.md 'localhost:8080/api/build?download=1' -o bang.drawio
 ```
 
-POST /api/build và /api/check nhận multipart với trường file, cùng các trường
-tùy chọn title, direction, sheet, delimiter, encoding và mọi tham số xếp hình,
-rồi trả JSON gồm issue có mã máy và vị trí. GET /api/fields khai báo các tham
-số đó kèm miền giá trị; trang upload dựng form từ chính khai báo này, nên thêm
-một tham số trong core là nó có mặt ở cả CLI lẫn web.
+Mở địa chỉ gốc của dịch vụ trong trình duyệt sẽ ra trang upload.
 
-Bảng có lỗi trả 422, cấu hình sai trả 400, vượt giới hạn trả 413, máy chủ bận
-trả 503. Dịch vụ dùng hồ sơ giới hạn WebLimits trong `limits.go`, không merge
-và không gọi drawio, nên nó không đọc ghi file và không chạy tiến trình ngoài.
+| Đường dẫn | Việc làm |
+|---|---|
+| POST /api/build | Dựng sơ đồ, trả JSON gồm file .drawio và các phát hiện. Thêm download=1 để tải thẳng file .drawio. |
+| POST /api/check | Chỉ kiểm bảng. |
+| GET /api/fields | Danh sách tham số xếp hình kèm mặc định và miền giá trị. |
+| GET /healthz | Kiểm dịch vụ còn sống. |
 
-Tên cờ, các dòng in ra và mã thoát giống hệt bản Python, xem `reference/README.md`.
-Những chỗ khác có chủ đích:
+Hai đường dẫn POST nhận multipart với trường file, cùng các trường tùy chọn title,
+direction, sheet, delimiter, encoding và mọi tham số xếp hình (bỏ hai gạch đầu).
+Trang upload và dòng lệnh dựng danh sách tham số từ cùng một khai báo, nên hai
+bên luôn khớp nhau.
 
-- `--font` bị bỏ qua, vì flowcast đo chữ bằng bảng số đo nhúng sẵn.
-- `--help` in hướng dẫn của bản Go, không phải chữ của argparse.
-- `--layout-json` cùng cấu trúc khóa nhưng viết số theo cách của Go.
-- `--encoding` nhận utf-8, utf-8-sig, cp1252 và latin-1 cùng các tên gọi khác của
-  chúng. Python nhận hàng trăm bảng mã; tên lạ được xử lý như Python xử lý một
-  tên nó không biết.
-- Bản Go làm được ba thứ bản Python không có, nên không so được: đọc flowchart
-  mermaid, vẽ hướng khác TD qua `--direction`, và dựng bảng không có lane nào
-  thành flowchart. Riêng cái cuối đổi hành vi cũ: bản Python báo lỗi "bảng
-  không có lane nào". Merge chỉ hỗ trợ hướng TD.
-- Dây vào một condition luôn nối vào đỉnh, dây ra chỉ đi ở mặt trái, phải hoặc
-  đáy. Bản Python cho dây từ node cùng hàng đi ngang vào mặt bên của condition;
-  bản Go đặt condition xuống hàng dưới nguồn để dây đi vào đỉnh.
-- Dây ra phải chung mặt với dây vào thì bản Go tách cổng ra khỏi giữa mặt, trên
-  đường viền của hình, thay vì để hai dây chồng lên nhau. Dây ra cùng nguồn vẫn
-  được gộp chung một cổng như trước.
-- Case mà bản Go cố ý khác bản tham chiếu được liệt kê trong
-  `conformance/diverge.txt`, kèm lý do.
-- CLI chặn bảng quá 50000 dòng hoặc file quá 64 MB, theo hồ sơ CLILimits.
-  Bản Python không chặn.
-- File .drawio cũ không đọc được khi merge: mã thoát và câu hướng dẫn giống,
-  nhưng phần mô tả lỗi của bộ đọc XML và của zlib là của Go. File khai báo một
-  bảng mã khác UTF-8 không đọc được; draw.io luôn ghi UTF-8.
-- Python 3.14 dùng Unicode 16, còn Go 1.25 dùng Unicode 15. Ký tự mới có ở
-  Unicode 16 có thể được đổi chữ thường hoặc chuẩn hóa khác nhau.
+Cờ -concurrent đặt số lần dựng chạy cùng lúc, mặc định bằng số CPU. Yêu cầu phải
+chờ quá 5 giây để có chỗ thì nhận mã 503.
 
-## Kiểm tra
+Dịch vụ web chặn chặt hơn dòng lệnh: file tới 1 MB, bảng tới 1000 dòng và 1000
+cạnh, mỗi lần dựng tới 10 giây. Vượt giới hạn thì nhận mã 413. Bảng có lỗi nhận
+422, tham số sai nhận 400. Dịch vụ không merge, không đọc ghi file trên máy chủ
+và không gọi drawio.
 
-```
-sh tools/check.sh
-DIRS="TD BT LR RL" sh tools/accept.sh   # cần drawio: dựng mọi case rồi so dây draw.io vẽ
-```
+## Tài liệu
 
-Chạy test của bản tham chiếu, kiểm golden và bản ghi CLI có còn khớp bản tham
-chiếu, đo độ phủ của bộ đối chiếu, rồi toàn bộ test Go. Có drawio trên máy thì
-chạy luôn phép kiểm draw.io thật vẽ dây đúng toạ độ. Thêm:
-
-```
-python3 conformance/generate.py            # sinh lại golden sau khi cố ý đổi hành vi
-go test ./conformance -run Flowchart -update   # sinh lại golden của flowchart và mermaid
-sh tools/mutate.sh                         # cố tình làm sai từng chỗ, xem test có đỏ không
-ONLY=layout/ sh tools/mutate.sh            # chỉ đột biến trên một module
-go run ./tools/metrics conformance/mermaid/*.mmd   # đo chất lượng bố cục
-python3 tools/fuzz_merge.py --go ./flowcast --n 500 # so merge với bản tham chiếu trên seed ngẫu nhiên
-```
-
-Sinh lại golden thì phải đọc diff trước khi commit. Một golden đổi im lặng là
-một hành vi đã thay đổi mà không ai xem.
+| Muốn biết | Đọc |
+|---|---|
+| Viết bảng đầu vào thế nào | [docs/flow-table-format.md](docs/flow-table-format.md) |
+| Nghĩa của các từ dùng trong code và tài liệu | [CONTEXT.md](CONTEXT.md) |
+| Code nằm ở đâu, dữ liệu đi qua những package nào | [docs/structure.md](docs/structure.md) |
+| Engine tính toạ độ và đi dây thế nào | [docs/algorithm.md](docs/algorithm.md) |
+| Chạy kiểm tra, sinh lại golden, thêm case | [docs/testing.md](docs/testing.md) |
+| Thiết kế tổng thể của core | [docs/core-design.md](docs/core-design.md) |
+| Sinh lại mà giữ chỉnh sửa tay hoạt động ra sao | [docs/merge-design.md](docs/merge-design.md) |
+| Đọc csv và xlsx | [docs/input-formats-design.md](docs/input-formats-design.md) |
+| Các quyết định đã chốt và lý do | [docs/adr/](docs/adr/) |
 
 ## Giấy phép
 
-MIT, xem `LICENSE`. Áp cho mã nguồn trong repo, gồm cả bản tham chiếu Python.
+MIT, xem [LICENSE](LICENSE).
 
-Một chỗ cần người hiểu luật xem qua trước khi phân phối công khai:
-`data/verdana.json` là bảng độ rộng glyph sinh từ font Verdana, một font thương
-mại của Microsoft. Bảng số đo không phải file font, nhưng ranh giới đó không do
-giấy phép này quyết định. Lý do phải nhúng bảng, và phương án dự phòng là đổi
-sang một font tự do, nằm ở mục 11 của `docs/core-design.md`.
-
-## Dùng bản tham chiếu
-
-Xem `reference/README.md`. Định dạng bảng đầu vào ở `docs/flow-table-format.md`.
+Tool đo chữ bằng một bảng độ rộng ký tự sinh từ font Verdana, một font thương mại
+của Microsoft, và nhúng bảng này vào binary. Bảng số đo không phải file font,
+nhưng cần người hiểu luật xem qua trước khi phân phối công khai. Lý do phải nhúng
+bảng, và phương án dự phòng là đổi sang một font tự do, nằm ở mục 11 của
+[docs/core-design.md](docs/core-design.md).
