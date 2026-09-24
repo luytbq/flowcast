@@ -16,7 +16,7 @@ Core không chạm filesystem, không gọi tiến trình ngoài, không đọc 
 trường, không in ra stdout. Vào là bytes, ra là văn bản đích cộng dữ liệu chẩn
 đoán.
 
-Ba việc vì vậy nằm ngoài core: đọc ghi file (CLI), gọi drawio để xuất ảnh
+Các việc sau vì vậy nằm ngoài core: đọc ghi file (CLI), gọi drawio để xuất ảnh
 (package render), và biến kết quả thành dòng in ra hay mã thoát (CLI và web).
 
 Hệ quả kiểm thử: mọi test của core chạy được không cần file tạm, và mọi lỗi hoặc
@@ -39,7 +39,7 @@ nên build cho js/wasm là việc thêm một target, không phải thiết kế
 
 ## 3. Interface công khai
 
-Core phơi ra hai hàm. Mọi thứ khác là kiểu dữ liệu.
+Core phơi ra các hàm dưới đây. Mọi thứ khác là kiểu dữ liệu.
 
 ```go
 func Build(src Source, opt Options) (Result, error) // đọc, kiểm, xếp hình, sinh file
@@ -115,7 +115,7 @@ metadata chở cả tham chiếu bắt buộc là from, to, attach, tính tườ
 nằm ở nơi khác: lược đồ metadata trong package schema, khai báo từng type nhận
 những key nào, key nào bắt buộc, key nào trỏ tới id khác, và miền giá trị.
 
-validate có hai phần: một vòng chung chạy trên lược đồ, bắt key thiếu, key lạ,
+validate gồm một vòng chung chạy trên lược đồ, bắt key thiếu, key lạ,
 giá trị ngoài miền và tham chiếu treo; cộng các luật riêng của sơ đồ mà lược đồ
 không diễn đạt được, như condition phải có từ hai cạnh ra và cạnh ra phải nằm
 liền sau node.
@@ -298,7 +298,7 @@ Những thứ dưới đây đã cân nhắc, kèm lý do, để lần sau khôn
 **Giảm chỗ hai dây cắt nhau.** Lúc đo có 33 chỗ cắt trên 28 sơ đồ của bộ mermaid
 và flowchart, tệ nhất là sơ đồ CI với 7 chỗ. Nguyên nhân: dây đi vòng chạy dọc trong máng ngay
 cạnh cột nguồn, mà máng đó là chỗ mọi mũi tên ngang xuất phát từ cột ấy đi qua.
-Hai phép thử nhanh đã làm và đã bỏ:
+Các phép thử nhanh đã làm và đã bỏ:
 
 | Thử | Chỗ cắt | Dài | Tự kiểm |
 |---|---|---|---|

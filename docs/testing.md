@@ -8,7 +8,7 @@ Nên đọc [structure.md](structure.md) trước để biết các package và 
 
 ## Cái gì quyết định một thay đổi là đúng?
 
-Hai thứ, cả hai chỉ nhìn vào đầu ra của flowcast (ADR-0008):
+Chuẩn đúng chỉ nhìn vào đầu ra của flowcast (ADR-0008):
 
 - **Golden.** Mỗi case trong bộ case có một file .drawio và một file báo cáo do
   chính flowcast sinh. File báo cáo liệt kê issue của bảng, cảnh báo của engine
@@ -88,7 +88,7 @@ Script cố tình làm sai từng chỗ trong code, chạy go test, rồi khôi 
 biến mà test vẫn xanh là một chỗ bộ test không canh. Cây làm việc phải sạch trước
 khi chạy, vì script khôi phục bằng git checkout.
 
-Với mỗi đột biến bỏ lọt, chỉ có hai cách xử lý:
+Mỗi đột biến bỏ lọt được xử lý theo một trong các cách sau:
 
 - Thêm case làm lỗi đó lộ ra ở đầu ra.
 - Chứng minh đột biến không bao giờ đổi đầu ra, rồi ghi lý do vào danh sách đột
