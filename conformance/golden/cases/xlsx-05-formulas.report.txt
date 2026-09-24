@@ -1,0 +1,2 @@
+issue source.xlsx_cell WARNING Flow!D4: ô công thức chưa có giá trị lưu sẵn, đọc thành rỗng
+sơ đồ: 1 lane, 2 phần tử, 1 cạnh

@@ -1,6 +1,0 @@
-WARNING dòng 11 [E3]: back="maybe" không hợp lệ, chỉ nhận true/false
-WARNING dòng 11 [E3]: A-2 đứng trước nguồn A-3 nhưng cạnh không ghi back=true
-check: 0 lỗi, 2 cảnh báo
-build: 1 lane, 4 phần tử, 4 cạnh, 205.66x414px
-WARNING layout: có vòng lặp chưa đánh dấu back=true, xếp theo thứ tự bảng: A-2, A-3, A-4
-layout: 0 lỗi, 0 cảnh báo

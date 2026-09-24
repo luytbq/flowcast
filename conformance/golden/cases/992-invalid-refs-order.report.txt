@@ -1,0 +1,5 @@
+issue ref.duplicate_id ERROR   dòng 12 [A-1]: id trùng với dòng 6
+issue ref.dangling ERROR   dòng 11 [E9]: from=KHONG1 trỏ tới id không tồn tại
+issue ref.dangling ERROR   dòng 11 [E9]: to=KHONG2 trỏ tới id không tồn tại
+issue order.out_edges_not_adjacent ERROR   dòng 6 [A-1]: cạnh ra phải nằm liền sau A-1 (và các db/text gắn vào nó); đang lệch: E1
+issue order.missing_back WARNING dòng 7 [E1]: A-2 đứng trước nguồn A-1 nhưng cạnh không ghi back=true

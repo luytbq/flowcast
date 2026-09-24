@@ -1,0 +1,2 @@
+issue schema.unknown_key WARNING dòng 9 [E1]: metadata "st\_yle" không dùng cho type edge, bị bỏ qua
+sơ đồ: 1 lane, 2 phần tử, 1 cạnh

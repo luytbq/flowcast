@@ -1,4 +1,0 @@
-WARNING dòng 6 [A-1]: start có cạnh đi vào: E2
-check: 0 lỗi, 1 cảnh báo
-build: 1 lane, 3 phần tử, 1 cạnh, 338x254px
-layout: 0 lỗi, 0 cảnh báo

@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/luytbq/flowcast"
-	"github.com/luytbq/flowcast/conformance"
 )
 
 // TestVerifyKhopBanThamChieu so kiểm render với verify_svg của bản tham chiếu
@@ -24,15 +23,7 @@ func TestVerifyKhopBanThamChieu(t *testing.T) {
 	if err := json.Unmarshal(data, &vs); err != nil {
 		t.Fatal(err)
 	}
-	// SVG của case trong diverge.txt được xuất từ bố cục cũ mà bản Go cố ý bỏ.
-	skip, err := conformance.Diverged("../conformance")
-	if err != nil {
-		t.Fatal(err)
-	}
 	for _, v := range vs {
-		if _, ok := skip[v.Case]; ok {
-			continue
-		}
 		src, err := os.ReadFile("../conformance/cases/" + v.Case + ".md")
 		if err != nil {
 			t.Fatal(err)

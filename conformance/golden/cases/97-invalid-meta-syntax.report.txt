@@ -1,0 +1,1 @@
+issue schema.meta_syntax ERROR   dòng 7 [E1]: metadata sai cú pháp: "back" (cần key=value)

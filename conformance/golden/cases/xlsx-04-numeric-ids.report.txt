@@ -1,0 +1,6 @@
+issue source.xlsx_cell WARNING Flow!A2 [3]: ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi
+issue source.xlsx_cell WARNING Flow!A3 [5]: ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi
+issue source.xlsx_cell WARNING Flow!C3 [3]: ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi
+issue source.xlsx_cell WARNING Flow!A5 [7]: ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi
+issue source.xlsx_cell WARNING Flow!C5 [3]: ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi
+sơ đồ: 1 lane, 2 phần tử, 1 cạnh

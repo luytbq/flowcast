@@ -1,4 +1,0 @@
-WARNING dòng 14 [A-4]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
-build: 1 lane, 4 phần tử, 5 cạnh, 186x404px
-layout: 0 lỗi, 0 cảnh báo

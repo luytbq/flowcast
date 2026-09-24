@@ -1,0 +1,2 @@
+issue ref.parent_not_lane ERROR   dòng 8 [A-2]: parent "A-1" không phải id của một lane
+issue graph.no_out_edge WARNING dòng 8 [A-2]: task không có cạnh ra

@@ -1,0 +1,2 @@
+issue table.markdown_escape WARNING dòng 3 [A-1]: nội dung còn escape kiểu markdown (\|); csv/xlsx không cần escape
+sơ đồ: 1 lane, 2 phần tử, 1 cạnh

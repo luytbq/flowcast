@@ -1,0 +1,5 @@
+issue graph.no_out_edge WARNING dòng 14 [B-3]: task không có cạnh ra
+engine layout.label-crowded: E4: nhãn "gửi yêu cầu" không tìm được chỗ trống hoàn toàn
+tự kiểm warning check.label-over-label: nhãn E3 đè nhãn E4
+tự kiểm warning check.label-over-edge: nhãn E4 đè dây E3
+sơ đồ: 2 lane, 4 phần tử, 4 cạnh

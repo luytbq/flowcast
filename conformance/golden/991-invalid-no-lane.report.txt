@@ -1,5 +1,0 @@
-ERROR   -: bảng không có lane nào
-ERROR   dòng 5 [A-1]: thiếu parent (id của lane chứa phần tử)
-ERROR   dòng 7 [A-2]: thiếu parent (id của lane chứa phần tử)
-check: 3 lỗi, 0 cảnh báo
-build: dừng vì bảng có lỗi

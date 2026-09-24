@@ -1,0 +1,2 @@
+issue order.out_edges_not_adjacent ERROR   dòng 6 [A-1]: cạnh ra phải nằm liền sau A-1 (và các db/text gắn vào nó); đang lệch: E1
+issue order.out_edges_not_adjacent ERROR   dòng 7 [A-2]: cạnh ra phải nằm liền sau A-2 (và các db/text gắn vào nó); đang lệch: E2

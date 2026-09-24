@@ -1,0 +1,2 @@
+issue source.cp1252 WARNING -: file không phải utf-8, đã đọc theo cp1252; chữ tiếng Việt có thể đã hỏng từ trước
+sơ đồ: 2 lane, 3 phần tử, 2 cạnh

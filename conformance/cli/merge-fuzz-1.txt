@@ -3,7 +3,7 @@ $ ["build", "$T/flow.md", "--mode", "merge"]
 check: đọc bảng từ markdown
 check: 0 lỗi, 0 cảnh báo
 build: chế độ merge, giữ chỉnh sửa tay
-build: đã ghi $T/flow.drawio (2 lane, 5 phần tử, 5 cạnh, 1057.34x509.5px)
+build: đã ghi $T/flow.drawio (2 lane, 5 phần tử, 5 cạnh, 1057.33x509.5px)
 build: bản sao file cũ $T/flow.drawio.bak
 merge: giữ vị trí (5): A-1, B-1, B-2, B-3, A-2
 merge: element mới (0): -
@@ -21,6 +21,6 @@ merge: element chồng nhau (1): B-1/B-2
 layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG
 [exit 0]
 --- files
-ea877c0e2e8a88f0  flow.drawio
+3ab142e770f8c2b9  flow.drawio
 a1415c06c2424050  flow.drawio.bak
 6bbd5839a9ee97c4  flow.md

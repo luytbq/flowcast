@@ -7,9 +7,9 @@ $ ["build", "$T/in.md"]
 check: đọc bảng từ markdown
 check: 0 lỗi, 0 cảnh báo
 build: chế độ tạo mới
-build: đã ghi $T/in.drawio (1 lane, 7 phần tử, 7 cạnh, 455.66x433px)
+build: đã ghi $T/in.drawio (1 lane, 7 phần tử, 7 cạnh, 444x523px)
 layout: 0 lỗi, 0 cảnh báo
 [exit 0]
 --- files
-cae77a62aa76b8ae  in.drawio
+55d4e33afb4e716c  in.drawio
 6efe67e2b95a3e78  in.md

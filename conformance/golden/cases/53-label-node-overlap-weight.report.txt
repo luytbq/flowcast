@@ -1,0 +1,8 @@
+issue graph.no_out_edge WARNING dòng 14 [A-5]: task không có cạnh ra
+engine layout.label-crowded: E3: nhãn "trả kết quả kèm mã lỗi chi tiết" không tìm được chỗ trống hoàn toàn
+engine layout.label-crowded: E5: nhãn "trả kết quả kèm mã lỗi chi tiết" không tìm được chỗ trống hoàn toàn
+tự kiểm warning check.label-over-label: nhãn E3 đè nhãn E5
+tự kiểm warning check.label-over-edge: nhãn E3 đè dây E5
+tự kiểm warning check.label-over-edge: nhãn E5 đè dây E3
+tự kiểm warning check.label-over-edge: nhãn E5 đè dây E4
+sơ đồ: 1 lane, 5 phần tử, 4 cạnh

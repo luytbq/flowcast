@@ -1,0 +1,2 @@
+issue graph.no_out_edge WARNING dòng 12 [B-3]: task không có cạnh ra
+sơ đồ: 2 lane, 3 phần tử, 3 cạnh

@@ -1,3 +1,0 @@
-ERROR   dòng 8 [A-2]: condition chỉ có 1 cạnh ra, cần ít nhất 2
-check: 1 lỗi, 0 cảnh báo
-build: dừng vì bảng có lỗi

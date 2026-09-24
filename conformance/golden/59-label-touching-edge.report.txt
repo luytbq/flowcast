@@ -1,4 +1,0 @@
-WARNING dòng 13 [C-3]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
-build: 1 lane, 5 phần tử, 3 cạnh, 513.66x374px
-layout: 0 lỗi, 0 cảnh báo

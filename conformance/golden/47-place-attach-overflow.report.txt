@@ -1,4 +1,0 @@
-check: 0 lỗi, 0 cảnh báo
-build: 1 lane, 8 phần tử, 2 cạnh, 868x334px
-WARNING layout: D5: không còn ô trống cạnh A-2, đặt xa hơn
-layout: 0 lỗi, 0 cảnh báo

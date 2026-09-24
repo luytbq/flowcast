@@ -67,7 +67,7 @@ func TestBuildTraVeDrawioGiongGolden(t *testing.T) {
 		t.Fatalf("mã %d: %s", rec.Code, rec.Body.String())
 	}
 	r := decode(t, rec)
-	golden, err := os.ReadFile("../../conformance/golden/05-merge-node.drawio")
+	golden, err := os.ReadFile("../../conformance/golden/cases/05-merge-node.drawio")
 	if err != nil {
 		t.Fatal(err)
 	}

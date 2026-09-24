@@ -1,0 +1,2 @@
+issue mermaid.db_attach WARNING dòng 15: db K đứng cạnh J thay cho mũi tên nối
+sơ đồ: 0 lane, 13 phần tử, 14 cạnh

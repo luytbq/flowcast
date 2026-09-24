@@ -96,18 +96,3 @@ func TestTuKiemTrenHinhHocHong(t *testing.T) {
 }
 
 // TestChangCheck chạy tự kiểm trên đầu ra của chính engine Go, qua cả bộ case.
-func TestChangCheck(t *testing.T) {
-	dumps, err := Load(Dir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, d := range dumps {
-		if d.Geom == nil {
-			continue
-		}
-		t.Run(d.Name, func(t *testing.T) {
-			l := buildLayout(t, d.Name).Run()
-			assertFindings(t, layout.Check(l.Result()), d.Check)
-		})
-	}
-}

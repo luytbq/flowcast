@@ -31,6 +31,9 @@ if [ -z "$PREFLIGHT" ]; then
 	echo
 fi
 
+replace=$(mktemp -d)/replaceonce
+go build -o "$replace" ./tools/replaceonce
+
 caught=0
 missed=0
 
@@ -47,19 +50,11 @@ mutate() {
 		case "$file" in "${ONLY:-}"*) ;; *) return 0 ;; esac
 		current="$file"
 	fi
-	python3 - "$file" "$from" "$to" "${PREFLIGHT:-}" <<'EOPY'
-import io, sys
-p, a, b, preflight = sys.argv[1:5]
-s = io.open(p, encoding='utf-8').read()
-n = s.count(a)
-# Đúng một chỗ, không hơn không kém. Thay chỗ đầu khi có nhiều chỗ sẽ để lại
-# bản sao còn nguyên và đột biến thành vô hại, khiến cổng trông như bỏ lọt.
-if n != 1:
-    sys.exit(f'ERROR {p}: tìm thấy {n} chỗ khớp {a!r}, cần đúng 1')
-if not preflight:
-    io.open(p, 'w', encoding='utf-8').write(s.replace(a, b))
-EOPY
-	[ -n "$PREFLIGHT" ] && return 0
+	if [ -n "$PREFLIGHT" ]; then
+		"$replace" -check "$file" "$from" "$to"
+		return 0
+	fi
+	"$replace" "$file" "$from" "$to"
 	if go test -count=1 ./... >/dev/null 2>&1; then
 		echo "BỎ LỌT     $label"
 		missed=$((missed + 1))
@@ -201,9 +196,12 @@ mutate "hộp chữ nhật chia sẻ mặt đã có cạnh B hoặc C" layout/ro
 mutate "cùng cột thì hướng sang trái" layout/route.go 'if gkOf(u) == gkOf(v) || gkOf(u).less(gkOf(v)) {' 'if gkOf(u).less(gkOf(v)) {'
 
 # gán cổng và track
-mutate "bỏ bộ cổng né giữa mặt" layout/tracks.go 'if len(fixed) > 0 && n <= 6 {' 'if false {'
+mutate "bỏ bộ cổng né giữa mặt" layout/tracks.go '} else if (len(fixed) > 0 || entries) && n <= 6 {' '} else if false {'
+mutate "dây ra không tách khỏi dây vào cùng mặt" layout/tracks.go 'entries := len(l.sideIn[key]) > 0' 'entries := false'
+mutate "cổng tách không trên đường viền hình thoi" layout/shape.go '		inset = math.Abs(t - 0.5)' '		inset = 0'
+mutate "condition nhận dây ngang vào mặt bên" layout/shape.go '"condition": {Shape: ShapeDiamond, EntryTopOnly: true},' '"condition": {Shape: ShapeDiamond},'
 mutate "mặt bên sắp cổng theo cột thay vì theo hàng" layout/tracks.go "if side == 'L' || side == 'R' {" 'if false {'
-mutate "cổng mặt trái đặt ở mép phải" layout/tracks.go 'e.ExitFrac = [2]float64{0.0, fr[i]}' 'e.ExitFrac = [2]float64{1.0, fr[i]}'
+mutate "cổng mặt trái đặt ở mép phải" layout/shape.go '	return [2]float64{inset, t}' '	return [2]float64{far, t}'
 mutate "không ưu tiên track dùng chung cùng đích" layout/tracks.go 'if fits(s, ti, true) {' 'if false {'
 mutate "đoạn cùng đích không được chồng" layout/tracks.go 'if !(s.Key != "" && t.Key == s.Key) && overlap(t, s) {' 'if overlap(t, s) {'
 mutate "bỏ ràng buộc thứ tự chân nối" layout/tracks.go 'if pa.Pos == pb.Pos && pa.Dir < pb.Dir {' 'if false {'
@@ -268,7 +266,7 @@ mutate "không thoát & trong nội dung html" writer/drawio/write.go 'r := stri
 mutate "nối dòng bằng xuống dòng thay vì br" writer/drawio/write.go 'return strings.Join(out, "<br>")' 'return strings.Join(out, "\n")'
 mutate "tên trang cắt 40 ký tự" writer/drawio/write.go 'if len(name) > 80 {' 'if len(name) > 40 {'
 mutate "tên trang cắt theo byte thay vì rune" writer/drawio/write.go 'name := []rune(title)' 'name := []rune(string([]byte(title)[:min(len(title), 80)]))'
-mutate "ghi chú tô nhấn dùng style của node" writer/drawio/write.go 'if it.Kind == "text" {' 'if false {'
+mutate "ghi chú tô nhấn dùng style của node" writer/drawio/write.go 'if it.Shape == layout.ShapeNote {' 'if false {'
 mutate "bỏ nét đứt" writer/drawio/write.go 'style += "dashed=1;"' 'style += ""'
 mutate "bỏ thuộc tính x của nhãn" writer/drawio/write.go 'g.Set("x", f(e.LabelT))' '_ = e.LabelT'
 mutate "ghi cả điểm đầu và điểm cuối vào points" writer/drawio/write.go 'pts = e.Pts[1 : len(e.Pts)-1]' 'pts = e.Pts'
@@ -327,7 +325,7 @@ mutate "thông điệp lỗi hệ thống không viết hoa chữ đầu" cmd/fl
 mutate "force không sao lưu file cũ" cmd/flowcast/main.go 'if mode != "new" && !c.a.noBackup {' 'if mode == "merge" && !c.a.noBackup {'
 mutate "không có terminal vẫn hỏi chế độ" cmd/flowcast/main.go 'if !isTerminal(c.stdin) {' 'if false {'
 mutate "lỗi hình học không đổi mã thoát" cmd/flowcast/main.go '		code = 2' '		code = 0'
-mutate "bỏ tiền tố cảnh báo layout" cmd/flowcast/main.go 'c.println("WARNING layout: " + w)' 'c.println(w)'
+mutate "bỏ tiền tố cảnh báo layout" cmd/flowcast/main.go 'c.println("WARNING layout: " + w.Msg)' 'c.println(w.Msg)'
 mutate "không nhận .txt là markdown" cmd/flowcast/main.go '".txt": true,' ''
 mutate "check không trả mã 1 khi bảng lỗi" cmd/flowcast/main.go '	if c.printIssues(r.Issues) > 0 {
 		return 1
@@ -446,7 +444,8 @@ mutate "gốc toạ độ không cộng dồn qua cha" merge/merge.go '		cid = c
 	return x, y' '		break
 	}
 	return x, y'
-mutate "lane giữ bề rộng mới tính" merge/merge.go '			w = attrf(oc.geo(), "width")' '			_ = oc'
+mutate "lane giữ bề rộng mới tính" merge/merge.go '				w = ow' '				_ = ow'
+mutate "lane chưa sửa lấy bề rộng đã làm tròn" merge/merge.go 'if ow := attrf(oc.geo(), "width"); num.Fmt(ow) != num.Fmt(w) {' 'if ow := attrf(oc.geo(), "width"); true {'
 mutate "lane đã xoá theo lane cuối thay vì lane kế tiếp" merge/merge.go '					target, base = t, newX[t]
 					break' '					_ = t
 					break'
@@ -483,7 +482,8 @@ mutate "dây giữ dù node đầu nối đã được đặt lại" merge/merge
 mutate "điểm gấp không theo lane dịch" merge/merge.go '			e.Waypoints = append(e.Waypoints, [2]float64{ax + dx, ay})' '			e.Waypoints = append(e.Waypoints, [2]float64{ax, ay})'
 mutate "giữ cả khóa neo không có giá trị" merge/merge.go '			if v, ok := st.vals[k]; ok && v.set {' '			if v, ok := st.vals[k]; ok {'
 mutate "điểm gấp lệch bao nhiêu vẫn coi là chưa sửa" merge/merge.go '		if math.Abs(a[0]-b[0]) > 2 || math.Abs(a[1]-b[1]) > 2 {' '		if false {'
-mutate "điểm neo sửa vẫn coi là chưa sửa" merge/merge.go '		if !ok || math.Abs(v-w.v) > 1e-3 {' '		if !ok {'
+mutate "điểm neo sửa vẫn coi là chưa sửa" merge/merge.go '		if !ok || num.Fmt(v) != num.Fmt(w.v) {' '		if !ok {'
+mutate "điểm neo so không làm tròn" merge/merge.go '		if !ok || num.Fmt(v) != num.Fmt(w.v) {' '		if !ok || v != w.v {'
 mutate "dây sửa tay không có nhãn vẫn báo nhãn về giữa" merge/merge.go '			if len(e.Lines) > 0 {
 				m.rep.LabelsCentered' '			if true {
 				m.rep.LabelsCentered'

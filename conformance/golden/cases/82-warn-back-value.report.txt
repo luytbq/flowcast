@@ -1,0 +1,4 @@
+issue schema.bad_back WARNING dòng 11 [E3]: back="maybe" không hợp lệ, chỉ nhận true/false
+issue order.missing_back WARNING dòng 11 [E3]: A-2 đứng trước nguồn A-3 nhưng cạnh không ghi back=true
+engine layout.unmarked-cycle: có vòng lặp chưa đánh dấu back=true, xếp theo thứ tự bảng: A-2, A-3, A-4
+sơ đồ: 1 lane, 4 phần tử, 4 cạnh

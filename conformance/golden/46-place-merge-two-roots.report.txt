@@ -1,3 +1,0 @@
-check: 0 lỗi, 0 cảnh báo
-build: 1 lane, 8 phần tử, 7 cạnh, 336x667px
-layout: 0 lỗi, 0 cảnh báo

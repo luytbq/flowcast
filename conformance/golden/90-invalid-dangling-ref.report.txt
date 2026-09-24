@@ -1,3 +1,0 @@
-ERROR   dòng 7 [E1]: to=A-9 trỏ tới id không tồn tại
-check: 1 lỗi, 0 cảnh báo
-build: dừng vì bảng có lỗi

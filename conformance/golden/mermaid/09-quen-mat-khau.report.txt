@@ -1,0 +1,2 @@
+issue mermaid.shape WARNING dòng 7: f có hình start/end nhưng nằm giữa luồng, vẽ thành task
+sơ đồ: 0 lane, 11 phần tử, 13 cạnh

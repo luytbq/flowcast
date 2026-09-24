@@ -1,4 +1,0 @@
-check: 0 lỗi, 0 cảnh báo
-build: 3 lane, 2 phần tử, 1 cạnh, 590.09x238px
-WARNING layout: E1: nhãn "gửi yêu cầu" không tìm được chỗ trống hoàn toàn
-layout: 0 lỗi, 0 cảnh báo

@@ -1,0 +1,4 @@
+issue table.empty_id ERROR   dòng 6: id trống
+issue table.reserved_id ERROR   dòng 7 [pool]: id "pool" trùng id dành riêng của draw.io
+issue table.bad_type ERROR   dòng 8 [A-1]: type không hợp lệ: "procedure"
+issue graph.no_out_edge WARNING dòng 7 [pool]: task không có cạnh ra

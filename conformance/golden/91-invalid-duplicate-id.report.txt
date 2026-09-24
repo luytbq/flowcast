@@ -1,4 +1,0 @@
-ERROR   dòng 9 [A-2]: id trùng với dòng 8
-WARNING dòng 8 [A-2]: task không có cạnh ra
-check: 1 lỗi, 1 cảnh báo
-build: dừng vì bảng có lỗi

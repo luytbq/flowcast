@@ -1,6 +1,0 @@
-ERROR   dòng 6: id trống
-ERROR   dòng 7 [pool]: id "pool" trùng id dành riêng của draw.io
-ERROR   dòng 8 [A-1]: type không hợp lệ: "procedure"
-WARNING dòng 7 [pool]: task không có cạnh ra
-check: 3 lỗi, 1 cảnh báo
-build: dừng vì bảng có lỗi

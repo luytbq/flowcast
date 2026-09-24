@@ -1,0 +1,2 @@
+issue table.cell_count ERROR   dòng 6: dòng có 4 cột, cần 5 (gạch đứng trong nội dung phải viết \|)
+issue ref.dangling ERROR   dòng 7 [E1]: from=A-1 trỏ tới id không tồn tại

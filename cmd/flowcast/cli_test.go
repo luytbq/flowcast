@@ -5,8 +5,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"flag"
 	"fmt"
-	"github.com/luytbq/flowcast/conformance"
 	"github.com/luytbq/flowcast/layout"
 	"os"
 	"path/filepath"
@@ -17,38 +17,34 @@ import (
 
 const transcripts = "../../conformance/cli"
 
-// TestCLIKhopBanThamChieu phát lại từng bản ghi phiên làm việc của CLI bản tham
-// chiếu và so từng dòng in ra, mã thoát, và nội dung từng file sinh ra.
+var update = flag.Bool("update", false, "ghi lại bản ghi CLI từ kết quả hiện tại")
+
+// TestCLIKhopBanGhi phát lại từng bản ghi phiên làm việc của CLI và so từng
+// dòng in ra, mã thoát, và nội dung từng file sinh ra.
 //
-// Subagent flowtable-drawio đọc mã thoát và chép nguyên văn các dòng tool in
-// ra, nên đây là điều kiện để flowcast thay được bản Python.
-func TestCLIKhopBanThamChieu(t *testing.T) {
+// Dòng in ra và mã thoát là giao diện mà script và agent dựa vào, nên chúng chỉ
+// được đổi có chủ đích: sửa code, chạy go test ./cmd/flowcast -update, rồi đọc
+// diff của các bản ghi.
+func TestCLIKhopBanGhi(t *testing.T) {
 	paths, err := filepath.Glob(filepath.Join(transcripts, "*.txt"))
 	if err != nil || len(paths) == 0 {
-		t.Fatalf("không có bản ghi nào: %v; chạy tools/cli_transcripts.py", err)
-	}
-	// Bản ghi của case trong diverge.txt là hành vi cũ mà bản Go cố ý bỏ.
-	skip, err := conformance.Diverged("../../conformance")
-	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("không có bản ghi nào: %v", err)
 	}
 	for _, p := range paths {
 		want, err := os.ReadFile(p)
 		if err != nil {
 			t.Fatal(err)
 		}
-		var input string
-		fmt.Sscanf(string(want), "# input: %s", &input)
-		if _, ok := skip[input]; ok {
-			continue
-		}
-		if _, ok := skip["cli:"+strings.TrimSuffix(filepath.Base(p), ".txt")]; ok {
-			continue
-		}
 		t.Run(strings.TrimSuffix(filepath.Base(p), ".txt"), func(t *testing.T) {
 			got := replay(t, string(want))
+			if *update {
+				if err := os.WriteFile(p, []byte(got), 0o644); err != nil {
+					t.Fatal(err)
+				}
+				return
+			}
 			if got != string(want) {
-				t.Errorf("lệch:\n--- Go\n%s--- Python\n%s", got, want)
+				t.Errorf("lệch:\n--- có\n%s--- bản ghi\n%s", got, want)
 			}
 		})
 	}
@@ -118,12 +114,13 @@ func replay(t *testing.T, want string) string {
 	var b strings.Builder
 	b.WriteString(lines[0] + "\n")
 	if fake, ok := strings.CutPrefix(lines[1], "# drawio: "); ok {
-		// Chỉ drawio giả nằm trong PATH, như lúc bản tham chiếu sinh bản ghi.
+		// PATH chỉ gồm thư mục drawio giả, để drawio thật trên máy không lọt vào.
+		// drawio giả chỉ dùng lệnh có sẵn trong sh nên không cần thêm gì.
 		dir, err := filepath.Abs(filepath.Join("../../conformance/drawio-fakes", fake))
 		if err != nil {
 			t.Fatal(err)
 		}
-		t.Setenv("PATH", dir+":/usr/bin:/bin")
+		t.Setenv("PATH", dir)
 		b.WriteString(lines[1] + "\n")
 	}
 	for _, ln := range lines[1:] {

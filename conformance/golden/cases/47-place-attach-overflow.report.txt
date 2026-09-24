@@ -1,0 +1,2 @@
+engine layout.attach-far: D5: không còn ô trống cạnh A-2, đặt xa hơn
+sơ đồ: 1 lane, 8 phần tử, 2 cạnh

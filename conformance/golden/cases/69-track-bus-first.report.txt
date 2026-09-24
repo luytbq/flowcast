@@ -1,0 +1,2 @@
+issue graph.no_out_edge WARNING dòng 14 [A-4]: task không có cạnh ra
+sơ đồ: 1 lane, 4 phần tử, 5 cạnh

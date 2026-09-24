@@ -1,5 +1,0 @@
-WARNING Flow dòng 5: hàng đang bị ẩn nhưng vẫn được đọc
-WARNING Flow!D6:E6: ô gộp: chỉ ô trên cùng bên trái giữ giá trị
-check: 0 lỗi, 2 cảnh báo
-build: 2 lane, 3 phần tử, 2 cạnh, 394.02x250px
-layout: 0 lỗi, 0 cảnh báo

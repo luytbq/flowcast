@@ -1,6 +1,6 @@
 # input: 03-condition-two -> .md
 $ ["check", "$T/.md"]
-ERROR   đuôi file "" không hỗ trợ; dùng .md, .csv hoặc .xlsx
+ERROR   đuôi file "" không hỗ trợ; dùng .md, .csv, .xlsx hoặc .mmd
 [exit 1]
 --- files
 35ce030c1847ff7d  .md

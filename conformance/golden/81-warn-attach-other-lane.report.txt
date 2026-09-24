@@ -1,4 +1,0 @@
-WARNING dòng 10 [A-2]: nằm ở lane A nhưng gắn vào B-1 thuộc lane B; sẽ vẽ trong lane B
-check: 0 lỗi, 1 cảnh báo
-build: 2 lane, 4 phần tử, 2 cạnh, 510x250px
-layout: 0 lỗi, 0 cảnh báo

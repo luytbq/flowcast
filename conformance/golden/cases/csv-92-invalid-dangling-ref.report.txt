@@ -1,0 +1,1 @@
+issue ref.dangling ERROR   dòng 5 [E1]: to=B-1 trỏ tới id không tồn tại

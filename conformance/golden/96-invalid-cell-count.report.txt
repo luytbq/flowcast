@@ -1,4 +1,0 @@
-ERROR   dòng 6: dòng có 4 cột, cần 5 (gạch đứng trong nội dung phải viết \|)
-ERROR   dòng 7 [E1]: from=A-1 trỏ tới id không tồn tại
-check: 2 lỗi, 0 cảnh báo
-build: dừng vì bảng có lỗi

@@ -1,6 +1,6 @@
 # ADR-0007: bản Go được phép khác bản tham chiếu, nhưng phải ghi lại từng chỗ
 
-- Trạng thái: đã chấp nhận
+- Trạng thái: bị thay thế bởi ADR-0008
 - Ngày: 2026-09-23
 
 ## Bối cảnh
