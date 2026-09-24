@@ -21,14 +21,14 @@ const (
 
 // shapeStyle không bật whiteSpace=wrap: chữ đã được ngắt dòng sẵn bằng <br>, và
 // để draw.io tự ngắt lại thì số dòng có thể khác kích thước node đã tính.
-var shapeStyle = map[string]string{
-	"task":      "rounded=0;html=1;",
-	"condition": "rhombus;html=1;",
-	"start":     "ellipse;html=1;",
-	"end":       "shape=doubleEllipse;html=1;",
-	"external":  "ellipse;html=1;dashed=1;",
-	"db":        "shape=cylinder3;html=1;boundedLbl=1;backgroundOutline=1;size=8;",
-	"text":      "text;html=1;align=left;verticalAlign=middle;spacingLeft=4;",
+var shapeStyle = map[layout.Shape]string{
+	layout.ShapeRect:          "rounded=0;html=1;",
+	layout.ShapeDiamond:       "rhombus;html=1;",
+	layout.ShapeEllipse:       "ellipse;html=1;",
+	layout.ShapeDoubleEllipse: "shape=doubleEllipse;html=1;",
+	layout.ShapeDashedEllipse: "ellipse;html=1;dashed=1;",
+	layout.ShapeCylinder:      "shape=cylinder3;html=1;boundedLbl=1;backgroundOutline=1;size=8;",
+	layout.ShapeNote:          "text;html=1;align=left;verticalAlign=middle;spacingLeft=4;",
 }
 
 // htmlLines nối các dòng bằng <br> sau khi thoát ký tự html. Phép thoát này
@@ -86,9 +86,9 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 		writePool(root, r, title, ox, oy)
 	}
 	for _, it := range r.Items {
-		style := shapeStyle[it.Kind]
+		style := shapeStyle[it.Shape]
 		if it.Highlight {
-			if it.Kind == "text" {
+			if it.Shape == layout.ShapeNote {
 				style += highlightText
 			} else {
 				style += highlightNode

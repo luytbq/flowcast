@@ -5,10 +5,6 @@ import (
 	"sort"
 )
 
-// nonRect là các loại node không phải hộp chữ nhật. Chúng chỉ nối dây ở bốn
-// điểm giữa cạnh, nên một condition cần cả hai mặt bên cho các nhánh.
-var nonRect = map[string]bool{"condition": true, "start": true, "end": true, "external": true}
-
 // hspan là một mũi tên ngang đã đặt: nằm trên hàng row, chiếm khoảng lưới mở
 // (a, b). Ô nằm trong khoảng đó coi như bị chiếm, vì mũi tên chạy xuyên qua.
 type hspan struct {
@@ -118,10 +114,12 @@ func (l *Layout) Place() {
 		}
 
 		placed := false
-		needsSides := nonRect[v.Kind] && l.sideBranches(v) >= 2
-		// condition chỉ nhận dây vào từ đỉnh, nên không bao giờ đứng cùng hàng
-		// với nguồn của nó.
-		if len(preds) == 1 && l.nonBackIn(vid) == 1 && !needsSides && v.Kind != "condition" && (len(same) == 0 || sideBranch != 0) {
+		// Hình chỉ có một điểm nối mỗi mặt mà có từ hai nhánh phụ thì cần cả hai
+		// mặt bên cho các nhánh.
+		needsSides := kindOf(v.Kind).Shape.singlePort() && l.sideBranches(v) >= 2
+		// Phần tử chỉ nhận dây vào từ đỉnh thì không bao giờ đứng cùng hàng với
+		// nguồn của nó.
+		if len(preds) == 1 && l.nonBackIn(vid) == 1 && !needsSides && !kindOf(v.Kind).EntryTopOnly && (len(same) == 0 || sideBranch != 0) {
 			u := l.items[preds[0].Src]
 			r := u.Row
 			a, b := gk{u.Lane, u.Col}, gk{v.Lane, col}

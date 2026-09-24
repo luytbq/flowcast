@@ -7,9 +7,9 @@ package layout
 // bất kỳ hình học nào, kể cả hình học hỏng mà một engine đúng không bao giờ sinh
 // ra; đó là cách duy nhất để kiểm chính tự kiểm.
 //
-// Phần tử còn mang loại ngữ nghĩa (task, condition, ...) chứ chưa mang hình
-// nguyên thủy như mục 8 của docs/core-design.md mô tả. Lớp trừu tượng đó chỉ có
-// giá trị khi có kind thứ hai; tới lúc đó writer mới thôi đọc Kind.
+// Phần tử mang hình nguyên thủy trong Shape, và writer chỉ đọc Shape. Kind là
+// loại ngữ nghĩa (task, condition, ...), giữ lại cho caller muốn biết phần tử
+// là gì, ví dụ khi ghi toạ độ ra JSON.
 type Result struct {
 	PoolW, PoolH           float64
 	Origin                 [2]float64
@@ -39,6 +39,7 @@ type PlacedLane struct {
 type PlacedItem struct {
 	ID         string
 	Kind       string
+	Shape      Shape
 	Lane       int
 	Order      int
 	Attach     string
@@ -90,7 +91,7 @@ func (l *Layout) Result() Result {
 		r.Lanes = append(r.Lanes, PlacedLane{ln.ID, ln.Lines})
 	}
 	for _, it := range l.ItemOrder {
-		r.Items = append(r.Items, PlacedItem{ID: it.ID, Kind: it.Kind, Lane: it.Lane, Order: it.Order, Attach: it.Attach,
+		r.Items = append(r.Items, PlacedItem{ID: it.ID, Kind: it.Kind, Shape: kindOf(it.Kind).Shape, Lane: it.Lane, Order: it.Order, Attach: it.Attach,
 			Row: it.Row, Col: it.Col, Lines: it.Lines, Highlight: it.Highlight, X: it.X, Y: it.Y, W: it.W, H: it.H})
 	}
 	for _, e := range l.Edges {

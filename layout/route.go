@@ -68,7 +68,7 @@ func (l *Layout) Route() {
 	// B: thẳng ngang cùng hàng.
 	for _, e := range l.Edges {
 		u, v := l.items[e.Src], l.items[e.Dst]
-		if e.Case != 0 || e.Back || v.Row != u.Row || gkOf(u) == gkOf(v) || v.Kind == "condition" {
+		if e.Case != 0 || e.Back || v.Row != u.Row || gkOf(u) == gkOf(v) || kindOf(v.Kind).EntryTopOnly {
 			continue
 		}
 		s := face(u, v)
@@ -216,7 +216,7 @@ func (l *Layout) attachSides(u *Item) map[byte]bool {
 
 // sideFree nói mặt đó của u còn nhận thêm một cạnh ra kiểu D được không.
 //
-// Hình thoi và elip chỉ có một điểm nối mỗi mặt, nên một cạnh là kín. Hộp chữ
+// Hình chỉ có một điểm nối mỗi mặt (thoi, elip) thì một cạnh là kín. Hộp chữ
 // nhật chia được nhiều cổng trên một mặt, trừ khi mặt đó đã có cạnh B hoặc C:
 // chúng ra đúng giữa mặt nên không chia được.
 func (l *Layout) sideFree(u *Item, side byte) bool {
@@ -224,7 +224,7 @@ func (l *Layout) sideFree(u *Item, side byte) bool {
 		return false
 	}
 	used := l.sideOut[sideKey{u.ID, side}]
-	if nonRect[u.Kind] {
+	if kindOf(u.Kind).Shape.singlePort() {
 		return len(used) == 0
 	}
 	for _, x := range used {

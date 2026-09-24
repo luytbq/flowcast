@@ -1,11 +1,6 @@
 package layout
 
-import (
-	"math"
-	"sort"
-
-	"github.com/luytbq/flowcast/num"
-)
+import "sort"
 
 // assignPorts đặt vị trí cổng ra trên mặt của node nguồn.
 //
@@ -25,7 +20,7 @@ func (l *Layout) assignPorts() {
 			continue
 		}
 		entries := len(l.sideIn[key]) > 0
-		if !entries && (nonRect[u.Kind] || len(es) == 1) {
+		if !entries && (kindOf(u.Kind).Shape.singlePort() || len(es) == 1) {
 			for _, e := range es {
 				e.ExitFrac = sideFrac[side]
 			}
@@ -78,37 +73,12 @@ func (l *Layout) assignPorts() {
 			return loose[i].Order < loose[j].Order
 		})
 		for i, e := range loose {
-			e.ExitFrac = outline(u.Kind, side, fr[i])
+			e.ExitFrac = kindOf(u.Kind).Shape.outline(side, fr[i])
 		}
 	}
 	for _, e := range l.Edges {
 		e.EntryFrac = sideFrac[e.EntrySide]
 	}
-}
-
-// outline là điểm trên đường viền của node, trên mặt side, ở vị trí t dọc theo
-// mặt đó. Hộp chữ nhật thì điểm nằm ngay trên cạnh; hình thoi và elip thì điểm
-// lùi vào trong khung bao cho tới khi chạm đường viền, để draw.io vẽ đầu dây
-// đúng chỗ đã tính. Làm tròn tới hai chữ số như writer ghi ra, để merge đọc lại
-// file thấy cổng khớp với cổng tính được.
-func outline(kind string, side byte, t float64) [2]float64 {
-	inset := 0.0
-	switch {
-	case kind == "condition":
-		inset = math.Abs(t - 0.5)
-	case nonRect[kind]:
-		d := float64(2*t) - 1
-		inset = num.Round(0.5-float64(0.5*math.Sqrt(1-float64(d*d))), 2)
-	}
-	switch side {
-	case 'B':
-		return [2]float64{t, 1 - inset}
-	case 'T':
-		return [2]float64{t, inset}
-	case 'R':
-		return [2]float64{1 - inset, t}
-	}
-	return [2]float64{inset, t}
 }
 
 // assignTracks tô màu khoảng cho từng kênh và máng.
