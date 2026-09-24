@@ -8,13 +8,14 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 )
 
-// pyFloat đọc số như float(s) của Python. Khác strconv.ParseFloat ở chỗ nhận
-// khoảng trắng hai đầu, kể cả khoảng trắng Unicode, và chữ số Unicode, nhận dấu gạch dưới giữa hai chữ số,
-// và không nhận số viết theo hệ mười sáu.
-func pyFloat(s string) (float64, bool) {
+// parseFloat đọc một số trong file .drawio cũ, dễ dãi với những gì người dùng
+// hay công cụ khác có thể đã ghi vào. Khác strconv.ParseFloat ở chỗ nhận
+// khoảng trắng hai đầu, kể cả khoảng trắng Unicode, nhận chữ số Unicode, nhận
+// dấu gạch dưới giữa hai chữ số, và không nhận số viết theo hệ mười sáu.
+func parseFloat(s string) (float64, bool) {
 	var b strings.Builder
 	for _, r := range s {
 		// Ký tự ASCII giữ nguyên, nên U+001C tới U+001F không phải khoảng trắng ở
@@ -22,7 +23,7 @@ func pyFloat(s string) (float64, bool) {
 		switch {
 		case r < utf8.RuneSelf:
 			b.WriteRune(r)
-		case pystr.IsSpace(r):
+		case unistr.IsSpace(r):
 			b.WriteByte(' ')
 		default:
 			d, ok := decimalValue(r)
@@ -57,9 +58,8 @@ func pyFloat(s string) (float64, bool) {
 	return v, true
 }
 
-// decimalLiteral kiểm cú pháp digits [. digits] [e [sign] digits] của Python,
-// trong đó phần nguyên hoặc phần lẻ được vắng một, và trả về chuỗi đã bỏ dấu
-// gạch dưới.
+// decimalLiteral kiểm cú pháp digits [. digits] [e [sign] digits], trong đó
+// phần nguyên hoặc phần lẻ được vắng một, và trả về chuỗi đã bỏ dấu gạch dưới.
 func decimalLiteral(s string) (string, bool) {
 	var out []byte
 	i := 0
@@ -121,8 +121,9 @@ func decimalValue(r rune) (int, bool) {
 	return 0, false
 }
 
-// b64decode giải base64 như base64.b64decode của Python ở chế độ không chặt:
-// bỏ qua ký tự ngoài bảng chữ, và dừng ở dấu đệm đủ cho nhóm bốn ký tự.
+// b64decode giải base64 ở chế độ không chặt: bỏ qua ký tự ngoài bảng chữ, như
+// xuống dòng mà trình soạn thảo chèn vào, và dừng ở dấu đệm đủ cho nhóm bốn ký
+// tự.
 func b64decode(s string) ([]byte, error) {
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 	var out []byte
@@ -171,8 +172,8 @@ func b64decode(s string) ([]byte, error) {
 	return nil, errors.New("Incorrect padding")
 }
 
-// unquote giải %XX như urllib.parse.unquote: chỉ trong các đoạn ASCII, và byte
-// giải ra được đọc thành UTF-8 với phép thay U+FFFD của Python.
+// unquote giải %XX trong nội dung trang draw.io đã nén: chỉ trong các đoạn
+// ASCII, và byte giải ra được đọc thành UTF-8, byte hỏng thành U+FFFD.
 func unquote(s string) string {
 	if !strings.Contains(s, "%") {
 		return s
@@ -224,7 +225,7 @@ func unquoteBytes(s string) []byte {
 	return out
 }
 
-// decodeReplace đọc UTF-8 như bytes.decode("utf-8", "replace") của Python: mỗi
+// decodeReplace đọc UTF-8 và thay phần hỏng theo khuyến nghị của Unicode: mỗi
 // đoạn con hợp lệ dài nhất của một chuỗi byte hỏng thành đúng một U+FFFD. Phép
 // chuyển string của Go thay từng byte, nên một chuỗi ba byte bị cắt cụt ra hai
 // U+FFFD thay vì một.

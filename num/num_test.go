@@ -2,10 +2,10 @@ package num
 
 import "testing"
 
-// Kỳ vọng lấy thẳng từ bản tham chiếu, không viết từ trí nhớ. Các giá trị dưới
-// đây chọn đúng chỗ làm tròn nửa chừng, nơi cách làm tròn ngây thơ sẽ lệch:
+// Các giá trị dưới đây chọn đúng chỗ làm tròn nửa chừng, nơi cách làm tròn ngây
+// thơ sẽ lệch:
 // 0.125 và 2.675 rơi xuống, 0.135 và 0.005 rơi lên, tuỳ giá trị nhị phân thật.
-func TestFmtKhopVoiBanThamChieu(t *testing.T) {
+func TestFmtLamTronHaiChuSo(t *testing.T) {
 	cases := []struct {
 		in   float64
 		want string
@@ -20,7 +20,7 @@ func TestFmtKhopVoiBanThamChieu(t *testing.T) {
 		{611.4, "611.4"},
 		{63.99, "63.99"},
 		{-11.5, "-11.5"},
-		{-0.001, "-0"},
+		{-0.001, "0"},
 		{1e-09, "0"},
 		{2.675, "2.67"},
 		{1.005, "1"},

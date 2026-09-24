@@ -54,7 +54,7 @@ type vectorFile struct {
 func TestVectorNgatDong(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join(Dir(), "text-vectors.json"))
 	if err != nil {
-		t.Fatalf("không đọc được vector: %v; chạy tools/text_vectors.py", err)
+		t.Fatalf("không đọc được vector: %v", err)
 	}
 	var vf vectorFile
 	if err := json.Unmarshal(data, &vf); err != nil {
@@ -117,7 +117,7 @@ func TestNganSachNgatDong(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(vf.Budgets) == 0 {
-		t.Fatal("vector không có mục ngân sách; chạy lại tools/text_vectors.py")
+		t.Fatal("vector không có mục ngân sách")
 	}
 	cfg := layout.DefaultConfig()
 	for kind, want := range vf.Budgets {
@@ -143,7 +143,7 @@ func TestNganSachNgatDong(t *testing.T) {
 func TestVectorKichThuoc(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join(Dir(), "text-vectors.json"))
 	if err != nil {
-		t.Fatalf("không đọc được vector: %v; chạy tools/text_vectors.py", err)
+		t.Fatalf("không đọc được vector: %v", err)
 	}
 	var vf vectorFile
 	if err := json.Unmarshal(data, &vf); err != nil {

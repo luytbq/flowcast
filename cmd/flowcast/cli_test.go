@@ -163,8 +163,8 @@ func replay(t *testing.T, want string) string {
 	return b.String()
 }
 
-// inDir chạy f với thư mục làm việc là dir, như bản tham chiếu được chạy trong
-// thư mục tạm.
+// inDir chạy f với thư mục làm việc là dir, để đường dẫn tương đối trong bản ghi
+// trỏ vào thư mục tạm.
 func inDir(t *testing.T, dir string, f func() int) int {
 	t.Helper()
 	old, err := os.Getwd()

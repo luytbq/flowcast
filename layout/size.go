@@ -1,7 +1,7 @@
 package layout
 
 import (
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 	"strings"
 
 	"github.com/luytbq/flowcast/num"
@@ -15,7 +15,7 @@ import (
 // khi có ranh giới ký tự rơi đúng vào khoảng lệch đó. Chốt thẳng con số thì
 // không phụ thuộc may rủi.
 //
-// Loại không nhận ra dùng ngân sách của ghi chú, đúng như bản tham chiếu.
+// Loại không nhận ra dùng ngân sách của ghi chú.
 func WrapBudget(cfg Config, kind string) float64 {
 	switch kind {
 	case "task":
@@ -86,8 +86,8 @@ func SizeLabel(tm *text.Measure, cfg Config, lines []string) (wrapped []string, 
 	return wl, lw + float64(2*cfg.LabelPad), lh + 2
 }
 
-// HasText cho biết nội dung một dòng bảng có chữ thật hay không, theo đúng cách
-// bản tham chiếu tính: nối các dòng bằng xuống dòng rồi cắt khoảng trắng.
+// HasText cho biết nội dung một dòng bảng có chữ thật hay không: nối các dòng
+// bằng xuống dòng rồi cắt khoảng trắng.
 func HasText(lines []string) bool {
-	return pystr.Strip(strings.Join(lines, "\n")) != ""
+	return unistr.Strip(strings.Join(lines, "\n")) != ""
 }

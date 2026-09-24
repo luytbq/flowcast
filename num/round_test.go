@@ -8,10 +8,10 @@ import (
 	"testing"
 )
 
-// TestRoundKhopPythonTungBit so Round với round(x, d) của Python trên 60.000 giá
-// trị, gồm cả số đúng nửa chừng và bit ngẫu nhiên, và so từng bit chứ không so
-// chuỗi đã định dạng.
-func TestRoundKhopPythonTungBit(t *testing.T) {
+// TestRoundKhopVectorTungBit so Round với vector trên 60.000 giá trị, gồm cả số
+// đúng nửa chừng và bit ngẫu nhiên, và so từng bit chứ không so chuỗi đã định
+// dạng.
+func TestRoundKhopVectorTungBit(t *testing.T) {
 	data, err := os.ReadFile("../conformance/round-vectors.json")
 	if err != nil {
 		t.Fatal(err)
@@ -35,7 +35,7 @@ func TestRoundKhopPythonTungBit(t *testing.T) {
 			if got := Round(x, d); math.Float64bits(got) != math.Float64bits(want) {
 				bad++
 				if bad <= 5 {
-					t.Errorf("Round(%v, %d) = %v, Python ra %v", x, d, got, want)
+					t.Errorf("Round(%v, %d) = %v, vector ra %v", x, d, got, want)
 				}
 			}
 		}

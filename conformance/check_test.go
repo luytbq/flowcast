@@ -47,20 +47,19 @@ func assertFindings(t *testing.T, got []layout.Finding, want [][2]string) {
 	}
 	for i := range got {
 		if got[i].Level != want[i][0] || got[i].Msg != want[i][1] {
-			t.Errorf("phát hiện %d: Go %s %q, Py %s %q", i, got[i].Level, got[i].Msg, want[i][0], want[i][1])
+			t.Errorf("phát hiện %d: được %s %q, vector %s %q", i, got[i].Level, got[i].Msg, want[i][0], want[i][1])
 		}
 	}
 }
 
-// TestTuKiemTrenHinhHocHong chạy tự kiểm trên hình học do các bản tham chiếu đã
-// bị đột biến sinh ra.
+// TestTuKiemTrenHinhHocHong chạy tự kiểm trên các hình học hỏng ghi sẵn.
 //
 // Engine đúng không sinh ra lỗi hình học, nên đầu ra của nó không kiểm được tự
 // kiểm. Các hình học này thì hỏng đủ kiểu, và phủ cả tám loại phát hiện.
 func TestTuKiemTrenHinhHocHong(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join(Dir(), "check-vectors.json"))
 	if err != nil {
-		t.Fatalf("%v; chạy tools/check_vectors.py", err)
+		t.Fatalf("%v", err)
 	}
 	var vs []checkVector
 	if err := json.Unmarshal(data, &vs); err != nil {

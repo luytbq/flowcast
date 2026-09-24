@@ -53,7 +53,7 @@
         </mxCell>
         <mxCell id="C--&gt;E" value="Có" edge="1" parent="1" source="C" target="E" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry" x="-0.03">
-            <mxPoint x="16.83" y="-0" as="offset" />
+            <mxPoint x="16.83" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="D--&gt;Z" value="" edge="1" parent="1" source="D" target="Z" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
@@ -72,7 +72,7 @@
         </mxCell>
         <mxCell id="G--&gt;I" value="Có" edge="1" parent="1" source="G" target="I" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry" x="-0.03">
-            <mxPoint x="16.83" y="-0" as="offset" />
+            <mxPoint x="16.83" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="H--&gt;F" value="" edge="1" parent="1" source="H" target="F" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">

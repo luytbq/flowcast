@@ -9,10 +9,9 @@ import (
 	"github.com/luytbq/flowcast/layout"
 )
 
-// args là đối số của một lệnh, đọc theo đúng cách argparse của bản tham chiếu
-// hiểu: cờ đứng trước hay sau tên file đều được, và nhận cả "--cờ giá trị" lẫn
-// "--cờ=giá trị". Gói flag chuẩn của Go dừng ở đối số vị trí đầu tiên nên không
-// dùng được.
+// args là đối số của một lệnh: cờ đứng trước hay sau tên file đều được, và
+// nhận cả "--cờ giá trị" lẫn "--cờ=giá trị". Gói flag chuẩn của Go dừng ở đối
+// số vị trí đầu tiên nên không dùng được.
 type args struct {
 	cmd        string
 	file       string
@@ -21,7 +20,6 @@ type args struct {
 	direction  string
 	layoutJSON string
 	mode       string
-	font       string
 	png        string // rỗng: không xuất; "-" nghĩa là đường mặc định
 	verify     bool
 	noBackup   bool
@@ -31,8 +29,8 @@ type args struct {
 	cfg        layout.Config
 }
 
-// configFlags ánh xạ cờ dòng lệnh tới trường của layout.Config. Tên cờ giữ đúng
-// như bản tham chiếu, vì subagent flowtable-drawio gọi bằng chính các tên này.
+// configFlags ánh xạ cờ dòng lệnh tới trường của layout.Config. Tên cờ là giao
+// diện mà script gọi flowcast dựa vào, nên chỉ đổi khi có chủ đích.
 func configFlags(c *layout.Config) map[string]*int {
 	out := map[string]*int{}
 	for _, f := range layout.Fields() {
@@ -63,7 +61,6 @@ cờ của build:
   --png [FILE]         xuất ảnh PNG bằng drawio CLI
   --verify             xuất SVG rồi so đường dây draw.io vẽ với toạ độ đã tính
   --layout-json FILE   ghi toạ độ đã tính ra JSON
-  --font FILE          bị bỏ qua: flowcast đo chữ bằng bảng số đo nhúng sẵn
 
 tham số xếp hình, tính bằng điểm ảnh:
 `)
@@ -88,7 +85,7 @@ func parseArgs(argv []string) (*args, error) {
 	strs := map[string]*string{"sheet": &a.sheet, "delimiter": &a.delimiter, "encoding": &a.encoding}
 	if a.cmd == "build" {
 		strs["output"], strs["title"], strs["layout-json"] = &a.output, &a.title, &a.layoutJSON
-		strs["mode"], strs["font"] = &a.mode, &a.font
+		strs["mode"] = &a.mode
 		strs["direction"] = &a.direction
 	}
 	rest := argv[1:]
@@ -119,8 +116,8 @@ func parseArgs(argv []string) (*args, error) {
 		case name == "help":
 			return nil, errHelp
 		case a.cmd == "build" && name == "png":
-			// Như nargs='?' của argparse: lấy đối số kế tiếp làm đường ra nếu
-			// nó không phải một cờ, ngược lại dùng đường mặc định.
+			// Giá trị không bắt buộc: lấy đối số kế tiếp làm đường ra nếu nó
+			// không phải một cờ, ngược lại dùng đường mặc định.
 			a.png = "-"
 			if hasVal {
 				a.png = val

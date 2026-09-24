@@ -19,11 +19,11 @@ import (
 //
 // Đặc tả Go cho phép trình biên dịch gộp a*b + c thành một lệnh FMA, chỉ làm
 // tròn một lần thay vì hai, và được phép gộp cả qua nhiều câu lệnh. Trên arm64
-// điều đó xảy ra ở khoảng một phần tư số phép a*1.42 + c, lệch bản tham chiếu
-// Python một đơn vị ở bit cuối. Bản Python không bao giờ gộp. Chỉ phép chuyển
-// kiểu tường minh mới chặn được việc gộp, nên mọi phép nhân số thực phải được
-// bọc, trừ khi kết quả của nó đi thẳng vào một phép nhân hoặc chia khác: FMA
-// chỉ gộp nhân với cộng và trừ.
+// điều đó xảy ra ở khoảng một phần tư số phép a*1.42 + c, lệch một đơn vị ở bit
+// cuối so với máy không gộp, nên cùng một bảng ra hai file khác nhau. Chỉ phép
+// chuyển kiểu tường minh mới chặn được việc gộp, nên mọi phép nhân số thực phải
+// được bọc, trừ khi kết quả của nó đi thẳng vào một phép nhân hoặc chia khác:
+// FMA chỉ gộp nhân với cộng và trừ.
 func TestKhongCoPhepNhanSoThucTranKhoiFMA(t *testing.T) {
 	root, err := filepath.Abs("../..")
 	if err != nil {

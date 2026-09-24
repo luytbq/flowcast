@@ -2,7 +2,7 @@ package source
 
 import (
 	"fmt"
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 	"strings"
 
 	"github.com/luytbq/flowcast/model"
@@ -60,7 +60,7 @@ func ParseMarkdown(data []byte) (model.Table, error) {
 			Idx:      len(rows),
 			Loc:      loc,
 			ID:       cells[0],
-			Type:     pystr.Lower(cells[1]),
+			Type:     unistr.Lower(cells[1]),
 			Parent:   cells[2],
 			Lines:    mdLines(cells[3]),
 			Meta:     meta,
@@ -82,30 +82,30 @@ func h1Title(ln string) (string, bool) {
 		return "", false
 	}
 	rest := []rune(ln[1:])
-	if len(rest) < 2 || !pystr.IsSpace(rest[0]) {
+	if len(rest) < 2 || !unistr.IsSpace(rest[0]) {
 		return "", false
 	}
 	i := 0
-	for i < len(rest) && pystr.IsSpace(rest[i]) {
+	for i < len(rest) && unistr.IsSpace(rest[i]) {
 		i++
 	}
 	if i == len(rest) {
 		return unescape(string(rest[len(rest)-1:])), true
 	}
-	return unescape(pystr.RStrip(string(rest[i:]))), true
+	return unescape(unistr.RStrip(string(rest[i:]))), true
 }
 
-// isSeparator nhận dòng |---|---| ngay dưới header theo biểu thức
-// ^\s*\|[\s:\-|]+\|?\s*$ của bản tham chiếu. Chỉ cắt khoảng trắng đầu dòng:
+// isSeparator nhận dòng |---|---| ngay dưới header, tức một dòng khớp
+// ^\s*\|[\s:\-|]+\|?\s*$. Chỉ cắt khoảng trắng đầu dòng:
 // khoảng trắng cuối dòng thuộc tập ký tự hợp lệ, nên "| " cũng là một dòng phân
 // cách.
 func isSeparator(ln string) bool {
-	s := pystr.LStrip(ln)
+	s := unistr.LStrip(ln)
 	if !strings.HasPrefix(s, "|") || len(s) == 1 {
 		return false
 	}
 	for _, c := range s[1:] {
-		if !pystr.IsSpace(c) && c != ':' && c != '-' && c != '|' {
+		if !unistr.IsSpace(c) && c != ':' && c != '-' && c != '|' {
 			return false
 		}
 	}
@@ -133,7 +133,7 @@ func parseMeta(cell string, loc model.Location, rid string, issues *[]model.Issu
 	meta := map[string]string{}
 	var order []string
 	for _, part := range strings.Split(cell, ";") {
-		part = pystr.Strip(part)
+		part = unistr.Strip(part)
 		if part == "" {
 			continue
 		}
@@ -148,13 +148,12 @@ func parseMeta(cell string, loc model.Location, rid string, issues *[]model.Issu
 			})
 			continue
 		}
-		key := pystr.Strip(k)
-		// Key viết lại thì giá trị đè lên nhưng vị trí giữ nguyên, đúng như
-		// dict của Python.
+		key := unistr.Strip(k)
+		// Key viết lại thì giá trị đè lên nhưng vị trí giữ ở lần viết đầu.
 		if _, seen := meta[key]; !seen {
 			order = append(order, key)
 		}
-		meta[key] = unesc(pystr.Strip(v))
+		meta[key] = unesc(unistr.Strip(v))
 	}
 	return meta, order
 }

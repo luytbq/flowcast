@@ -71,7 +71,7 @@ var fields = []Field{
 // Fields trả về khai báo của mọi trường cấu hình, theo thứ tự trong Config.
 func Fields() []Field { return append([]Field(nil), fields...) }
 
-// DefaultConfig trả về đúng bộ mặc định của bản tham chiếu.
+// DefaultConfig trả về bộ tham số mặc định.
 func DefaultConfig() Config {
 	var c Config
 	for _, f := range fields {

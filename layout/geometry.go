@@ -1,7 +1,7 @@
 package layout
 
 import (
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 	"math"
 	"strings"
 
@@ -49,7 +49,7 @@ func (l *Layout) labelReservations(spans map[string]float64) (map[gzKey]float64,
 		}
 		u := l.items[e.Src]
 		if e.ExitSide == 'B' {
-			lzC[u.Row+1] = pyMax(lzC[u.Row+1], e.LH+8)
+			lzC[u.Row+1] = fmax(lzC[u.Row+1], e.LH+8)
 			continue
 		}
 		key := gzKey{u.Lane, l.gutter(u.Lane, u.Col, e.ExitSide), 'r'}
@@ -59,10 +59,10 @@ func (l *Layout) labelReservations(spans map[string]float64) (map[gzKey]float64,
 		crosses := l.items[e.Dst].Lane != u.Lane
 		switch {
 		case e.Case == 'D' || (crosses && spans != nil):
-			lzG[key] = pyMax(lzG[key], e.LW+8)
+			lzG[key] = fmax(lzG[key], e.LW+8)
 		case spans != nil:
 			if deficit := e.LW + 16 - spans[e.ID]; deficit > 0 {
-				lzG[key] = pyMax(lzG[key], deficit)
+				lzG[key] = fmax(lzG[key], deficit)
 			}
 		}
 	}
@@ -96,9 +96,10 @@ func (l *Layout) hugPlan() map[string]hug {
 
 // computeGeometry đổi lưới lane, cột, hàng và số track thành toạ độ pixel.
 //
-// Thứ tự cộng giữ đúng như bản tham chiếu, vì cộng số thực không có tính kết
-// hợp: x của cột tiếp theo được cộng dồn riêng từ bề rộng từng máng và từng
-// cột, nên nó có thể lệch bit cuối so với x của lane cộng với tổng bề rộng.
+// Thứ tự cộng là một phần của kết quả, vì cộng số thực không có tính kết hợp:
+// x của cột tiếp theo được cộng dồn riêng từ bề rộng từng máng và từng cột, nên
+// nó có thể lệch bit cuối so với x của lane cộng với tổng bề rộng. Đổi thứ tự
+// cộng là đổi file đầu ra.
 func (l *Layout) computeGeometry(lzG map[gzKey]float64, lzC map[int]float64) {
 	cfg := l.Cfg
 	g := &geom{
@@ -110,16 +111,16 @@ func (l *Layout) computeGeometry(lzG map[gzKey]float64, lzC map[int]float64) {
 	rowH := map[int]float64{}
 	for _, it := range l.ItemOrder {
 		if _, hugged := g.hugs[it.ID]; !hugged {
-			colW[[2]int{it.Lane, it.Col}] = pyMax(colW[[2]int{it.Lane, it.Col}], it.W)
+			colW[[2]int{it.Lane, it.Col}] = fmax(colW[[2]int{it.Lane, it.Col}], it.W)
 		}
-		rowH[it.Row] = pyMax(rowH[it.Row], it.H)
+		rowH[it.Row] = fmax(rowH[it.Row], it.H)
 	}
 	for aid, h := range g.hugs {
 		key := gzKey{h.u.Lane, l.gutter(h.u.Lane, h.u.Col, h.side), 'r'}
 		if h.side == 'R' {
 			key.side = 'l'
 		}
-		g.azG[key] = pyMax(g.azG[key], float64(cfg.AttachGap)+l.items[aid].W)
+		g.azG[key] = fmax(g.azG[key], float64(cfg.AttachGap)+l.items[aid].W)
 	}
 
 	l.LaneX, l.LaneW = nil, nil
@@ -134,7 +135,7 @@ func (l *Layout) computeGeometry(lzG map[gzKey]float64, lzC map[int]float64) {
 				inner = float64(2*cfg.GutterMargin + (n-1)*cfg.TrackGap)
 			}
 			widths[gi] = g.azG[gzKey{lane, gi, 'l'}] + g.azG[gzKey{lane, gi, 'r'}] +
-				lzG[gzKey{lane, gi, 'l'}] + lzG[gzKey{lane, gi, 'r'}] + pyMax(float64(cfg.MinGutter), inner)
+				lzG[gzKey{lane, gi, 'l'}] + lzG[gzKey{lane, gi, 'r'}] + fmax(float64(cfg.MinGutter), inner)
 		}
 		total := 0.0
 		for _, w := range widths {
@@ -147,8 +148,8 @@ func (l *Layout) computeGeometry(lzG map[gzKey]float64, lzC map[int]float64) {
 		total += cw
 		// Tên lane nối các dòng bằng ký tự xuống dòng rồi mới đo, nên mỗi lần
 		// xuống dòng được tính thêm bề rộng một glyph .notdef.
-		head := l.tm.W(pystr.Strip(strings.Join(lrow.Lines, "\n"))) + 30
-		if need := pyMax(float64(cfg.MinLaneW), head) - total; need > 0 {
+		head := l.tm.W(unistr.Strip(strings.Join(lrow.Lines, "\n"))) + 30
+		if need := fmax(float64(cfg.MinLaneW), head) - total; need > 0 {
 			widths[0] += need / 2
 			widths[len(widths)-1] += need / 2
 			total += need
@@ -176,7 +177,7 @@ func (l *Layout) computeGeometry(lzG map[gzKey]float64, lzC map[int]float64) {
 		if n > 0 {
 			inner = float64(2*cfg.ChannelMargin + (n-1)*cfg.TrackGap)
 		}
-		h := pyMax(float64(cfg.MinChannel), lzC[k]+inner)
+		h := fmax(float64(cfg.MinChannel), lzC[k]+inner)
 		g.chanY[k] = y
 		y += h
 		if k < l.NRows {
@@ -264,7 +265,7 @@ func (l *Layout) resolvePaths() {
 			out = append(out, b)
 		}
 		// Luôn nối điểm cuối, kể cả khi clean chỉ còn một điểm: khi đó đường có
-		// hai điểm trùng nhau, đúng như bản tham chiếu.
+		// hai điểm trùng nhau, và mọi dây vẫn có điểm đầu lẫn điểm cuối.
 		out = append(out, clean[len(clean)-1])
 		for i := range out {
 			out[i] = [2]float64{num.Round(out[i][0], 2), num.Round(out[i][1], 2)}

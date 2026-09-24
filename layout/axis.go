@@ -22,9 +22,9 @@ func ValidDirection(dir string) bool {
 // cao của mọi phần tử và nhãn được hoán đổi trước khi xếp, để hàng của không
 // gian ảo có đúng độ dày của cột thật. Chữ vẫn được ngắt dòng theo chiều thật.
 //
-// Nhờ vậy place, route, geometry và labels không đổi một dòng, và sơ đồ TD vẫn
-// khớp bản tham chiếu từng bit. Tự kiểm chạy trên kết quả ảo: đổi trục và lật
-// giữ nguyên mọi quan hệ chồng lấn và khoảng cách.
+// Nhờ vậy place, route, geometry và labels không có nhánh code nào cho từng
+// hướng, và sơ đồ TD không bị ảnh hưởng khi thêm hướng. Tự kiểm chạy trên kết
+// quả ảo: đổi trục và lật giữ nguyên mọi quan hệ chồng lấn và khoảng cách.
 
 func transposed(dir string) bool { return dir == DirLR || dir == DirRL }
 
@@ -65,7 +65,7 @@ func (o orient) pt(p [2]float64) [2]float64 {
 
 func (o orient) box(b [4]float64) [4]float64 {
 	a, c := o.pt([2]float64{b[0], b[1]}), o.pt([2]float64{b[2], b[3]})
-	return [4]float64{pyMin(a[0], c[0]), pyMin(a[1], c[1]), pyMax(a[0], c[0]), pyMax(a[1], c[1])}
+	return [4]float64{fmin(a[0], c[0]), fmin(a[1], c[1]), fmax(a[0], c[0]), fmax(a[1], c[1])}
 }
 
 // frac đổi điểm neo dạng tỉ lệ trên cạnh của một hộp.

@@ -27,7 +27,7 @@ type metricsFile struct {
 	Advances map[string]int `json:"advances"`
 }
 
-// LoadMetrics đọc bảng do tools/extract_metrics.py sinh ra.
+// LoadMetrics đọc bảng do tools/extractmetrics sinh ra.
 func LoadMetrics(path string) (*Metrics, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {

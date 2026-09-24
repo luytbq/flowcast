@@ -19,13 +19,12 @@ func (r Res) String() string {
 	return fmt.Sprintf("G:%d:%d", r.A, r.B)
 }
 
-// pyRepr in Res đúng như repr của tuple trong bản tham chiếu, vì nó đi thẳng
-// vào nội dung một cảnh báo mà người dùng đọc.
-func (r Res) pyRepr() string {
+// label gọi tên Res cho người đọc cảnh báo.
+func (r Res) label() string {
 	if r.Kind == 'C' {
-		return fmt.Sprintf("('C', %d)", r.A)
+		return fmt.Sprintf("kênh %d", r.A)
 	}
-	return fmt.Sprintf("('G', %d, %d)", r.A, r.B)
+	return fmt.Sprintf("máng %d của lane %d", r.B, r.A)
 }
 
 // Stub là chỗ một đoạn dây nối vào node hoặc vào đoạn khác, nhìn từ bên trong

@@ -22,7 +22,8 @@ type Report struct {
 	Overlaps         []string // "a/b"
 }
 
-// Lines là các dòng CLI in ra, theo đúng thứ tự và lời của bản tham chiếu.
+// Lines là các dòng CLI in ra. Thứ tự và lời là giao diện, được chốt bằng bản
+// ghi CLI.
 func (r Report) Lines() []string {
 	row := func(label string, xs []string) string {
 		list := "-"

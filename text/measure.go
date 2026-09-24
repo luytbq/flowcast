@@ -1,7 +1,7 @@
 package text
 
 import (
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 	"math"
 	"strings"
 )
@@ -108,13 +108,13 @@ func (t *Measure) splitLong(word string, maxw float64) []string {
 }
 
 func (t *Measure) wrapLine(line string, maxw float64) []string {
-	line = pystr.Strip(line)
+	line = unistr.Strip(line)
 	if t.W(line) <= maxw {
 		return []string{line}
 	}
 	var out []string
 	cur := ""
-	for _, word := range pystr.Fields(line) {
+	for _, word := range unistr.Fields(line) {
 		cand := word
 		if cur != "" {
 			cand = cur + " " + word

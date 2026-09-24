@@ -1,8 +1,8 @@
 // Lệnh flowcast đọc một Flow Table rồi ghi file .drawio.
 //
-// Đầu ra, mã thoát và tên cờ giữ đúng như bản tham chiếu Python, để subagent
-// flowtable-drawio chuyển sang dùng flowcast mà không phải đổi gì: nó đọc mã
-// thoát và chép nguyên văn các dòng ERROR layout:, ERROR render:, merge:.
+// Dòng in ra, mã thoát và tên cờ là giao diện mà script và agent dựa vào: chúng
+// đọc mã thoát và chép nguyên văn các dòng ERROR layout:, ERROR render:, merge:.
+// Vì vậy chúng được chốt bằng bản ghi CLI và chỉ đổi khi có chủ đích.
 //
 // Mã thoát:
 //
@@ -28,7 +28,7 @@ import (
 	"unicode"
 
 	"github.com/luytbq/flowcast"
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 	"github.com/luytbq/flowcast/merge"
 	"github.com/luytbq/flowcast/model"
 	"github.com/luytbq/flowcast/num"
@@ -73,7 +73,7 @@ var supported = map[string]bool{".md": true, ".markdown": true, ".txt": true,
 
 // read đọc file đầu vào thành Source. Lỗi trả về đã ở dạng thông điệp in ra.
 func (c *cli) read() (flowcast.Source, error) {
-	ext := pystr.Lower(source.Ext(c.a.file))
+	ext := unistr.Lower(source.Ext(c.a.file))
 	if !supported[ext] {
 		return flowcast.Source{}, fmt.Errorf("đuôi file \"%s\" không hỗ trợ; dùng .md, .csv, .xlsx hoặc .mmd", ext)
 	}
@@ -141,9 +141,6 @@ func (c *cli) build() int {
 	if c.printIssues(chk.Issues) > 0 {
 		c.println("build: dừng vì bảng có lỗi")
 		return 1
-	}
-	if c.a.font != "" {
-		c.println("WARNING --font bị bỏ qua: flowcast đo chữ bằng bảng số đo nhúng sẵn, không đọc file font")
 	}
 
 	out := c.a.output
@@ -305,7 +302,7 @@ func (c *cli) chooseMode(out string) (string, bool) {
 	}
 	fmt.Fprint(c.out, out+" đã tồn tại. [m]erge giữ chỉnh sửa tay / [f]orce sinh lại toàn bộ / [q]uit: ")
 	line, _ := bufio.NewReader(c.stdin).ReadString('\n')
-	switch pystr.Lower(pystr.Strip(line)) {
+	switch unistr.Lower(unistr.Strip(line)) {
 	case "m", "merge":
 		return "merge", true
 	case "f", "force":
@@ -337,8 +334,8 @@ func strerror(err error) string {
 	return err.Error()
 }
 
-// copyFile chép file cũ trước khi ghi đè, giữ quyền và thời điểm sửa như
-// shutil.copy2.
+// copyFile chép file cũ trước khi ghi đè, giữ quyền và thời điểm sửa của file
+// gốc.
 func copyFile(src, dst string) error {
 	st, err := os.Stat(src)
 	if err != nil {
@@ -354,10 +351,8 @@ func copyFile(src, dst string) error {
 	return os.Chtimes(dst, st.ModTime(), st.ModTime())
 }
 
-// writeLayoutJSON ghi toạ độ đã tính, cùng cấu trúc khóa với bản tham chiếu.
-// Cách viết số thì theo Go, không khớp từng byte: bản tham chiếu viết 334 hay
-// 334.0 tùy giá trị đó tình cờ là int hay float trong Python. Đây là file gỡ
-// lỗi, không phải sản phẩm.
+// writeLayoutJSON ghi toạ độ đã tính ra JSON, để gỡ lỗi bố cục hoặc cho công cụ
+// khác đọc. Cấu trúc khóa ổn định; cách viết số thì không được cam kết.
 func writeLayoutJSON(path string, r flowcast.Result) error {
 	l := r.Layout
 	lanes := []map[string]any{}

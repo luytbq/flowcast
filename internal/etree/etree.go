@@ -1,8 +1,8 @@
-// Package etree đọc và ghi XML đúng như xml.etree.ElementTree của Python.
+// Package etree đọc và ghi XML dưới dạng cây phần tử.
 //
-// Merge chép nguyên các cell người dùng tự vẽ từ file .drawio cũ sang file mới,
-// và bản tham chiếu ghi chúng lại qua ElementTree. Để file mới khớp từng byte,
-// cây XML phải được đọc và ghi theo đúng những quy tắc đó:
+// Merge chép nguyên các cell người dùng tự vẽ từ file .drawio cũ sang file mới.
+// Để một file đi qua merge nhiều lần mà không trôi, cây XML được đọc và ghi theo
+// các quy tắc cố định sau:
 //
 //   - Text là chữ đứng trước phần tử con đầu tiên, Tail là chữ đứng sau phần tử
 //     đó. Chú thích và chỉ thị xử lý bị bỏ, và chữ hai bên chúng dính liền lại.
@@ -24,7 +24,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 )
 
 // Element là một phần tử XML.
@@ -62,7 +62,8 @@ func (e *Element) Get(k string) (string, bool) {
 	return "", false
 }
 
-// Set gán một thuộc tính. Thuộc tính mới được thêm vào cuối, như dict của Python.
+// Set gán một thuộc tính. Thuộc tính mới được thêm vào cuối, thuộc tính đã có
+// giữ nguyên vị trí.
 func (e *Element) Set(k, v string) {
 	for i := range e.Attrs {
 		if e.Attrs[i][0] == k {
@@ -293,18 +294,18 @@ func Indent(root *Element) {
 			levels = append(levels, levels[level]+"  ")
 		}
 		child := levels[level+1]
-		if pystr.Strip(e.Text) == "" {
+		if unistr.Strip(e.Text) == "" {
 			e.Text = child
 		}
 		for _, c := range e.Children {
 			if len(c.Children) > 0 {
 				rec(c, level+1)
 			}
-			if pystr.Strip(c.Tail) == "" {
+			if unistr.Strip(c.Tail) == "" {
 				c.Tail = child
 			}
 		}
-		if last := e.Children[len(e.Children)-1]; pystr.Strip(last.Tail) == "" {
+		if last := e.Children[len(e.Children)-1]; unistr.Strip(last.Tail) == "" {
 			last.Tail = levels[level]
 		}
 	}

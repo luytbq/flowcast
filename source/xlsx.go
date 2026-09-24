@@ -19,9 +19,9 @@ const (
 	nsRel  = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 )
 
-// xnode là một phần tử XML đã đọc, đủ cho những gì bản tham chiếu đọc bằng
-// ElementTree: tên có namespace, thuộc tính, chữ ngay bên trong trước phần tử
-// con đầu tiên, và phần tử con.
+// xnode là một phần tử XML đã đọc, đủ cho những gì cần đọc trong file xlsx:
+// tên có namespace, thuộc tính, chữ ngay bên trong trước phần tử con đầu tiên,
+// và phần tử con.
 type xnode struct {
 	space, local string
 	attrs        []xml.Attr
@@ -54,8 +54,8 @@ func parseXML(data []byte) (*xnode, error) {
 		case xml.EndElement:
 			stack = stack[:len(stack)-1]
 		case xml.CharData:
-			// Như .text của ElementTree: chỉ phần chữ đứng trước phần tử con đầu
-			// tiên.
+			// Chỉ giữ phần chữ đứng trước phần tử con đầu tiên; chữ xen giữa
+			// các phần tử con không mang nội dung ô.
 			if len(stack) > 0 && len(stack[len(stack)-1].children) == 0 {
 				stack[len(stack)-1].text += string(t)
 			}
@@ -69,7 +69,7 @@ func parseXML(data []byte) (*xnode, error) {
 
 func (n *xnode) is(local string) bool { return n.space == nsMain && n.local == local }
 
-// get đọc thuộc tính theo tên không namespace, như Element.get của ElementTree.
+// get đọc thuộc tính theo tên không namespace.
 func (n *xnode) get(name string) (string, bool) {
 	for _, a := range n.attrs {
 		if a.Name.Space == "" && a.Name.Local == name {
@@ -261,8 +261,7 @@ func parseXLSX(data []byte, name, sheet string, maxUnzipped int64) (model.Table,
 func readXLSX(data []byte, name, sheet string, readAll func(io.Reader) ([]byte, error)) (model.Table, error) {
 	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
 	if err != nil {
-		// Thông điệp của zipfile.BadZipFile trong bản tham chiếu.
-		return model.Table{}, model.Errf("source.xlsx", "không đọc được %s: File is not a zip file", name)
+		return model.Table{}, model.Errf("source.xlsx", "không đọc được %s: không phải file xlsx hợp lệ", name)
 	}
 	files := map[string]*zip.File{}
 	for _, f := range zr.File {

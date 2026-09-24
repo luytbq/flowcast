@@ -5,7 +5,7 @@
 package source
 
 import (
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 	"strings"
 
 	"golang.org/x/text/unicode/norm"
@@ -18,11 +18,10 @@ var Header = []string{"id", "type", "parent", "content", "metadata"}
 // mdEscapable là tập ký tự mà markdown cho phép đặt gạch chéo ngược phía trước.
 const mdEscapable = "\\`*_{}[]()#+-.!|<>~"
 
-// splitLines cắt dòng theo đúng tập ranh giới mà str.splitlines của Python
-// dùng, không chỉ theo xuống dòng kiểu Unix.
-//
-// Tách riêng vì đây là chỗ dễ lệch giữa hai bản: file soạn trên Windows dùng
-// CRLF, và vài nguồn dán vào có dấu phân đoạn của Unicode.
+// splitLines cắt dòng theo mọi ranh giới dòng, không chỉ theo xuống dòng kiểu
+// Unix: LF, CR, CRLF, VT, FF, các ký tự phân tách U+001C tới U+001E, NEL, và
+// dấu phân dòng, phân đoạn của Unicode. File soạn trên Windows dùng CRLF, và
+// vài nguồn dán vào có dấu phân đoạn của Unicode.
 func splitLines(s string) []string {
 	var out []string
 	start, i := 0, 0
@@ -55,7 +54,7 @@ func splitLines(s string) []string {
 // Chỉ gạch đứng không có gạch chéo ngược phía trước mới là dấu ngăn cột, nên
 // nội dung viết \| giữ được gạch đứng mà không vỡ bảng.
 func splitCells(line string) []string {
-	s := pystr.Strip(line)
+	s := unistr.Strip(line)
 	s = strings.TrimPrefix(s, "|")
 	if strings.HasSuffix(s, "|") && !strings.HasSuffix(s, "\\|") {
 		s = s[:len(s)-1]
@@ -65,7 +64,7 @@ func splitCells(line string) []string {
 	prevEscape := false
 	for _, c := range s {
 		if c == '|' && !prevEscape {
-			cells = append(cells, pystr.Strip(cur.String()))
+			cells = append(cells, unistr.Strip(cur.String()))
 			cur.Reset()
 			prevEscape = false
 			continue
@@ -73,7 +72,7 @@ func splitCells(line string) []string {
 		cur.WriteRune(c)
 		prevEscape = c == '\\' && !prevEscape
 	}
-	return append(cells, pystr.Strip(cur.String()))
+	return append(cells, unistr.Strip(cur.String()))
 }
 
 // unescape gỡ gạch chéo ngược của markdown rồi chuẩn hóa về NFC.
@@ -119,8 +118,8 @@ func splitBR(cell string) []string {
 //
 // So từng ký tự thay vì hạ chữ thường cả chuỗi rồi dò vị trí: hạ chữ thường đổi
 // được độ dài chuỗi, như İ thành i cộng dấu chấm, nên vị trí dò trên chuỗi đã hạ
-// không cắt đúng chuỗi gốc. Không phân biệt hoa thường chỉ áp cho b và r; với
-// hai chữ này, re.IGNORECASE của Python không khớp thêm ký tự nào ngoài B và R.
+// không cắt đúng chuỗi gốc. Không phân biệt hoa thường chỉ áp cho b và r, và
+// chỉ khớp đúng B và R, không khớp ký tự Unicode nào khác.
 // Tham lam không lùi là đủ: khoảng trắng, dấu gạch chéo và dấu lớn hơn không lẫn
 // vào nhau nên không có cách lùi nào khớp được khi cách tham lam không khớp.
 func matchBR(r []rune) int {
@@ -128,7 +127,7 @@ func matchBR(r []rune) int {
 		return 0
 	}
 	i := 3
-	for i < len(r) && pystr.IsSpace(r[i]) {
+	for i < len(r) && unistr.IsSpace(r[i]) {
 		i++
 	}
 	if i < len(r) && r[i] == '/' {
@@ -141,13 +140,13 @@ func matchBR(r []rune) int {
 }
 
 func trimLeftSpace(s string) string {
-	return pystr.LStrip(s)
+	return unistr.LStrip(s)
 }
 
 func lower(cells []string) []string {
 	out := make([]string, len(cells))
 	for i, c := range cells {
-		out[i] = pystr.Lower(c)
+		out[i] = unistr.Lower(c)
 	}
 	return out
 }

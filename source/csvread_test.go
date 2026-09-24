@@ -7,13 +7,12 @@ import (
 	"testing"
 )
 
-// TestReadCSVKhopCsvReaderCuaPython so readCSV với csv.reader của Python trên
-// hàng nghìn chuỗi ngẫu nhiên và các chuỗi dựng tay ở đúng những góc mà
-// encoding/csv của Go hiểu khác.
-func TestReadCSVKhopCsvReaderCuaPython(t *testing.T) {
+// TestReadCSVKhopVector so readCSV với vector trên hàng nghìn chuỗi ngẫu nhiên
+// và các chuỗi dựng tay ở đúng những góc mà encoding/csv của Go hiểu khác.
+func TestReadCSVKhopVector(t *testing.T) {
 	data, err := os.ReadFile("../conformance/csv-vectors.json")
 	if err != nil {
-		t.Fatalf("%v; chạy tools/csv_vectors.py", err)
+		t.Fatalf("%v", err)
 	}
 	var vs []struct {
 		Text  string     `json:"text"`

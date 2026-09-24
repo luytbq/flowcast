@@ -185,7 +185,8 @@ func (l *Layout) Place() {
 			}
 			if !found {
 				// Lùi ra xa chỉ tránh ô đã chiếm, không tránh khoảng của mũi
-				// tên ngang, đúng như bản tham chiếu.
+				// tên ngang. Phần tử đặt xa có thể nằm trên đường một mũi tên
+				// ngang; khi đó tự kiểm báo dây cắt qua phần tử.
 				for d := 3; d < 50; d++ {
 					if _, taken := l.occ[cell{v.Lane, col + d, row}]; !taken {
 						c, found = col+d, true

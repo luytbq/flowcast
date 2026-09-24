@@ -9,12 +9,12 @@ import (
 	"github.com/luytbq/flowcast"
 )
 
-// TestVerifyKhopBanThamChieu so kiểm render với verify_svg của bản tham chiếu
-// trên SVG thật do drawio xuất, nguyên vẹn và bị làm lệch từng kiểu.
-func TestVerifyKhopBanThamChieu(t *testing.T) {
+// TestVerifyKhopVector chạy kiểm render trên SVG thật do drawio xuất, nguyên vẹn
+// và bị làm lệch từng kiểu, và so danh sách điểm lệch với vector.
+func TestVerifyKhopVector(t *testing.T) {
 	data, err := os.ReadFile("../conformance/verify-vectors.json")
 	if err != nil {
-		t.Fatalf("%v; chạy tools/verify_vectors.py", err)
+		t.Fatalf("%v", err)
 	}
 	var vs []struct {
 		Case, Variant, SVG string

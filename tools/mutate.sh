@@ -83,7 +83,7 @@ mutate() {
 # - Dừng ở ứng viên nhãn chi phí không. Ứng viên được chọn bằng so sánh < nghiêm
 #   ngặt, nên một ứng viên chi phí không đứng sau không bao giờ thay được ứng
 #   viên chi phí không đứng trước; break chỉ là tối ưu.
-# - pyMax trả số sau khi hai số bằng nhau. Chỉ khác khi đó là âm không và dương
+# - fmax trả số sau khi hai số bằng nhau. Chỉ khác khi đó là âm không và dương
 #   không, mà âm không không sinh ra được trong pha hình học: mọi toạ độ là tổng
 #   bề rộng dương bắt đầu từ 0, x - x luôn ra dương không, và số âm duy nhất là
 #   d = -1 nhân với một lượng dương khác không.
@@ -125,11 +125,11 @@ mutate "bỏ chuẩn hóa NFC" source/text.go 'return norm.NFC.String(b.String()
 mutate "gạch đứng có escape vẫn ngăn cột" source/text.go "if c == '|' && !prevEscape {" "if c == '|' {"
 mutate "không gỡ escape markdown" source/text.go 'if r[i] == 0x5c && i+1 < len(r) && strings.ContainsRune(mdEscapable, r[i+1]) {' 'if false {'
 mutate "không coi CR là ranh giới dòng" source/text.go "case 0x0d:" "case 0x2400:"
-mutate "không hạ chữ thường cột type" source/markdown.go 'pystr.Lower(cells[1])' 'cells[1]'
+mutate "không hạ chữ thường cột type" source/markdown.go 'unistr.Lower(cells[1])' 'cells[1]'
 mutate "Idx dùng số dòng thay vì thứ tự đọc được" source/markdown.go 'len(rows),' 'i,'
-mutate "khóa metadata cũng bị gỡ escape" source/markdown.go 'key := pystr.Strip(k)' 'key := unesc(pystr.Strip(k))'
+mutate "khóa metadata cũng bị gỡ escape" source/markdown.go 'key := unistr.Strip(k)' 'key := unesc(unistr.Strip(k))'
 mutate "thẻ br phân biệt hoa thường" source/text.go "(r[1] != 'b' && r[1] != 'B')" "r[1] != 'b'"
-mutate "heading cấp hai cũng tính là tiêu đề" source/markdown.go 'if len(rest) < 2 || !pystr.IsSpace(rest[0]) {' 'if len(rest) < 2 {'
+mutate "heading cấp hai cũng tính là tiêu đề" source/markdown.go 'if len(rest) < 2 || !unistr.IsSpace(rest[0]) {' 'if len(rest) < 2 {'
 mutate "thứ tự key metadata theo map thay vì theo ô" source/markdown.go 'if _, seen := meta[key]; !seen {' 'if _, seen := meta[key]; seen {'
 
 # schema và validate
@@ -222,7 +222,7 @@ mutate "lề header lane 20 thay vì 30" layout/geometry.go '"\n"))) + 30' '"\n"
 mutate "tên lane nối bằng khoảng trắng thay vì xuống dòng" layout/geometry.go 'strings.Join(lrow.Lines, "\n")' 'strings.Join(lrow.Lines, " ")'
 mutate "phần bù bề rộng lane dồn hết vào máng đầu" layout/geometry.go 'widths[0] += need / 2' 'widths[0] += need'
 mutate "máng tính thừa một track" layout/geometry.go 'inner = float64(2*cfg.GutterMargin + (n-1)*cfg.TrackGap)' 'inner = float64(2*cfg.GutterMargin + n*cfg.TrackGap)'
-mutate "kênh không có chiều cao tối thiểu" layout/geometry.go 'h := pyMax(float64(cfg.MinChannel), lzC[k]+inner)' 'h := lzC[k] + inner'
+mutate "kênh không có chiều cao tối thiểu" layout/geometry.go 'h := fmax(float64(cfg.MinChannel), lzC[k]+inner)' 'h := lzC[k] + inner'
 mutate "db bám bên phải không cách node" layout/geometry.go 'a.X = h.u.X + h.u.W + float64(cfg.AttachGap)' 'a.X = h.u.X + h.u.W'
 mutate "trackY bỏ chỗ chừa nhãn" layout/geometry.go 'return g.chanY[s.Res.A] + g.lzC[s.Res.A] +' 'return g.chanY[s.Res.A] +'
 mutate "không bỏ điểm thẳng hàng" layout/geometry.go 'if vertical || horizontal {' 'if false {'
@@ -295,10 +295,10 @@ mutate "phần tử rỗng không có khoảng trắng trước gạch chéo" in
 mutate "phần tử chỉ có chữ ghi thành thẻ rỗng" internal/etree/etree.go 'if e.Text != "" || len(e.Children) > 0 {' 'if len(e.Children) > 0 {'
 mutate "bỏ tail khi ghi" internal/etree/etree.go '	b.WriteString(textEsc.Replace(e.Tail))' '	_ = e.Tail'
 mutate "thụt lề bốn khoảng trắng" internal/etree/etree.go 'levels = append(levels, levels[level]+"  ")' 'levels = append(levels, levels[level]+"    ")'
-mutate "thụt lề ghi đè cả chữ thật" internal/etree/etree.go '		if pystr.Strip(e.Text) == "" {
+mutate "thụt lề ghi đè cả chữ thật" internal/etree/etree.go '		if unistr.Strip(e.Text) == "" {
 			e.Text = child' '		if true {
 			e.Text = child'
-mutate "thụt lề ghi đè cả tail thật" internal/etree/etree.go '			if pystr.Strip(c.Tail) == "" {' '			if true {'
+mutate "thụt lề ghi đè cả tail thật" internal/etree/etree.go '			if unistr.Strip(c.Tail) == "" {' '			if true {'
 mutate "tail của con cuối không lùi về cấp cha" internal/etree/etree.go '			last.Tail = levels[level]' '			last.Tail = child'
 mutate "chữ sau phần tử con dồn vào text của cha" internal/etree/etree.go '			if len(cur.Children) == 0 {' '			if true {'
 mutate "không chuẩn hóa xuống dòng trong thuộc tính" internal/etree/etree.go '			case '"'"'\n'"'"', '"'"'\t'"'"':
@@ -339,15 +339,15 @@ mutate "cờ cấu hình đứng trước tên file bị bỏ qua" cmd/flowcast/
 mutate "cú pháp --cờ=giá trị không tách giá trị" cmd/flowcast/args.go 'name, val, hasVal := strings.Cut(tok[2:], "=")' 'name, val, hasVal := tok[2:], "", false'
 
 # source/csv
-mutate "chữ sau dấu nháy đóng không được nối vào ô" source/pycsv.go '				state = inField
+mutate "chữ sau dấu nháy đóng không được nối vào ô" source/csvread.go '				state = inField
 				return add(c)
 			}
 		case eatCRNL:' '				state = inField
 				return nil
 			}
 		case eatCRNL:'
-mutate "hết dữ liệu trong dấu nháy thì bỏ ô dở" source/pycsv.go 'if len(field) != 0 || state == inQuotedField {' 'if len(field) != 0 {'
-mutate "CR đơn không là ranh giới dòng khi đọc csv" source/pycsv.go 'i := strings.IndexAny(s, "\r\n")' 'i := strings.IndexAny(s, "\n")'
+mutate "hết dữ liệu trong dấu nháy thì bỏ ô dở" source/csvread.go 'if len(field) != 0 || state == inQuotedField {' 'if len(field) != 0 {'
+mutate "CR đơn không là ranh giới dòng khi đọc csv" source/csvread.go 'i := strings.IndexAny(s, "\r\n")' 'i := strings.IndexAny(s, "\n")'
 mutate "utf-8-sig không bỏ BOM" source/encoding.go 'return strings.TrimPrefix(string(raw), "\ufeff"), true' 'return string(raw), true'
 mutate "cp1252 nhận cả byte không được định nghĩa" source/encoding.go '			if !ok {
 				return "", false
@@ -366,9 +366,9 @@ mutate "bảng không dừng ở hàng trống" source/grid.go '		if empty {
 mutate "không cảnh báo escape markdown trong csv" source/grid.go 'if strings.Contains(cells[3], `\|`) || strings.Contains(cells[4], `\|`) {' 'if false {'
 mutate "ô csv không tách dòng tại xuống dòng thật" source/grid.go 'parts = append(parts, strings.Split(chunk, "\n")...)' 'parts = append(parts, chunk)'
 mutate "cảnh báo cp1252 so tên đã chuẩn hóa" source/grid.go 'if used == "cp1252" {' 'if c, _ := normalizeEncoding(used); c == "cp1252" {'
-mutate "khoảng trắng Python bỏ U+001C tới U+001F" internal/pystr/pystr.go 'return unicode.IsSpace(r) || (r >= 0x1c && r <= 0x1f)' 'return unicode.IsSpace(r)'
-mutate "Lower không tách İ thành hai ký tự" internal/pystr/pystr.go 'if r == 0x130 {' 'if false {'
-mutate "thẻ br không nhận khoảng trắng Unicode" source/text.go 'for i < len(r) && pystr.IsSpace(r[i]) {
+mutate "khoảng trắng bỏ U+001C tới U+001F" internal/unistr/unistr.go 'return unicode.IsSpace(r) || (r >= 0x1c && r <= 0x1f)' 'return unicode.IsSpace(r)'
+mutate "Lower không tách İ thành hai ký tự" internal/unistr/unistr.go 'if r == 0x130 {' 'if false {'
+mutate "thẻ br không nhận khoảng trắng Unicode" source/text.go 'for i < len(r) && unistr.IsSpace(r[i]) {
 		i++
 	}
 	if i < len(r) && r[i] == '"'"'/'"'"' {' 'for i < len(r) && r[i] == '"'"' '"'"' {
@@ -376,8 +376,8 @@ mutate "thẻ br không nhận khoảng trắng Unicode" source/text.go 'for i <
 	}
 	if i < len(r) && r[i] == '"'"'/'"'"' {'
 mutate "tiêu đề toàn khoảng trắng không khớp" source/markdown.go '		return unescape(string(rest[len(rest)-1:])), true' '		return "", false'
-mutate "dòng phân cách cắt cả khoảng trắng cuối" source/markdown.go '	s := pystr.LStrip(ln)
-	if !strings.HasPrefix(s, "|") || len(s) == 1 {' '	s := pystr.Strip(ln)
+mutate "dòng phân cách cắt cả khoảng trắng cuối" source/markdown.go '	s := unistr.LStrip(ln)
+	if !strings.HasPrefix(s, "|") || len(s) == 1 {' '	s := unistr.Strip(ln)
 	if !strings.HasPrefix(s, "|") || len(s) == 1 {'
 
 # source/xlsx
@@ -395,21 +395,21 @@ mutate "--sheet không lọc" source/xlsx.go '			if s.name == sheet {' '			if tr
 mutate "cột lấy theo thứ tự ô thay vì theo địa chỉ" source/xlsx.go '				ci = colIndex(ref)' '				ci = len(cells)'
 
 # merge
-mutate "số không nhận khoảng trắng hai đầu" merge/pyparse.go '	t := strings.Trim(b.String(), " \t\n\v\f\r")' '	t := b.String()'
-mutate "số không nhận dấu gạch dưới" merge/pyparse.go "			if c == '_' && n > 0 && i+1 < len(s) && s[i+1] >= '0' && s[i+1] <= '9' {" '			if false {'
-mutate "số không nhận inf" merge/pyparse.go '	case "inf", "infinity":' '	case "infinity":'
-mutate "số nhận hai dấu" merge/pyparse.go '	if len(t)-len(body) > 1 {' '	if len(t)-len(body) > 2 {'
-mutate "base64 dừng ở mọi dấu đệm" merge/pyparse.go '			if quad >= 2 {
+mutate "số không nhận khoảng trắng hai đầu" merge/parse.go '	t := strings.Trim(b.String(), " \t\n\v\f\r")' '	t := b.String()'
+mutate "số không nhận dấu gạch dưới" merge/parse.go "			if c == '_' && n > 0 && i+1 < len(s) && s[i+1] >= '0' && s[i+1] <= '9' {" '			if false {'
+mutate "số không nhận inf" merge/parse.go '	case "inf", "infinity":' '	case "infinity":'
+mutate "số nhận hai dấu" merge/parse.go '	if len(t)-len(body) > 1 {' '	if len(t)-len(body) > 2 {'
+mutate "base64 dừng ở mọi dấu đệm" merge/parse.go '			if quad >= 2 {
 				pads++' '			if true {
 				pads++'
-mutate "base64 báo lỗi ký tự lạ" merge/pyparse.go '		if v < 0 {
+mutate "base64 báo lỗi ký tự lạ" merge/parse.go '		if v < 0 {
 			continue
 		}' '		if v < 0 {
 			return nil, errors.New("Incorrect padding")
 		}'
-mutate "unquote giải cả %XX sai" merge/pyparse.go '			if ok1 && ok2 {' '			if ok1 || ok2 {'
-mutate "bỏ giải %XX" merge/pyparse.go '		b.WriteString(decodeReplace(unquoteBytes(s[:n])))' '		b.WriteString(s[:n])'
-mutate "UTF-8 hỏng thay từng byte" merge/pyparse.go '		if need > 0 && j-i == need+1 {
+mutate "unquote giải cả %XX sai" merge/parse.go '			if ok1 && ok2 {' '			if ok1 || ok2 {'
+mutate "bỏ giải %XX" merge/parse.go '		b.WriteString(decodeReplace(unquoteBytes(s[:n])))' '		b.WriteString(s[:n])'
+mutate "UTF-8 hỏng thay từng byte" merge/parse.go '		if need > 0 && j-i == need+1 {
 			b.Write(p[i:j])
 		} else {
 			b.WriteRune(utf8.RuneError)
@@ -427,10 +427,10 @@ mutate "id trùng giữ cell đầu" merge/read.go '		old.cells[cid] = &oldCell{
 		}'
 mutate "không giữ các trang khác" merge/read.go '		old.Pages = pages[1:]' '		_ = pages'
 mutate "style không ghi nhận khóa không có dấu bằng" merge/read.go '		st.vals[k] = styleVal{v, found}' '		st.vals[k] = styleVal{v, true}'
-mutate "số hỏng đọc thành một" merge/read.go '	v, ok := pyFloat(s)
+mutate "số hỏng đọc thành một" merge/read.go '	v, ok := parseFloat(s)
 	if !ok {
 		return 0
-	}' '	v, ok := pyFloat(s)
+	}' '	v, ok := parseFloat(s)
 	if !ok {
 		return 1
 	}'
@@ -473,7 +473,7 @@ mutate "node mới xếp theo thứ tự bảng thay vì topo" merge/merge.go '	
 			return a < b
 		}
 		return flow[i].Order < flow[j].Order' '		return flow[i].Order < flow[j].Order'
-mutate "node không có neo đặt ở đầu lane" merge/merge.go '					bottom = pyMax(bottom, b[3])' '					bottom = pyMin(bottom, b[3])'
+mutate "node không có neo đặt ở đầu lane" merge/merge.go '					bottom = fmax(bottom, b[3])' '					bottom = fmin(bottom, b[3])'
 mutate "node khác lane vẫn giữ khoảng lệch x của neo" merge/merge.go '	if an.Lane == it.Lane {
 		cx = ax + fv[0] - fa[0]' '	if true {
 		cx = ax + fv[0] - fa[0]'
@@ -512,7 +512,7 @@ mutate "lane nới dịch cả thứ trong lane bằng tổng" merge/merge.go '	
 				mv.shift(gl, 0)' '			if mv.lane == i && gl != 0 {
 				mv.shift(gl+gr, 0)'
 mutate "lane nới dịch cả thứ tương đối ở lane sau" merge/merge.go '			} else if mv.lane > i && !mv.rel {' '			} else if mv.lane > i {'
-mutate "lane nới không có lề" merge/merge.go '		gr := pyMax(0.0, right-(lw-pad))' '		gr := pyMax(0.0, right-lw)'
+mutate "lane nới không có lề" merge/merge.go '		gr := fmax(0.0, right-(lw-pad))' '		gr := fmax(0.0, right-lw)'
 mutate "không đẩy sơ đồ xuống khi bị kéo lên đầu" merge/merge.go '	if low < top {' '	if false {'
 mutate "đầu lane không tính lề" merge/merge.go '	top := float64(r.PoolHeader + r.LaneHeader + pad)' '	top := float64(r.PoolHeader + r.LaneHeader)'
 mutate "chiều cao pool bỏ điểm gấp" merge/merge.go '			bottoms = append(bottoms, p[1])
@@ -522,11 +522,11 @@ mutate "chiều cao pool bỏ điểm gấp" merge/merge.go '			bottoms = append
 	}
 	for _, b := range m.freehandBoxesNow() {'
 mutate "chiều cao pool bỏ cell tự vẽ" merge/merge.go '		bottoms = append(bottoms, b[3])' '		_ = b'
-mutate "chiều cao pool không chừa kênh cuối" merge/merge.go '		h = pyMax(h, b+float64(r.MinChannel))' '		h = pyMax(h, b)'
+mutate "chiều cao pool không chừa kênh cuối" merge/merge.go '		h = fmax(h, b+float64(r.MinChannel))' '		h = fmax(h, b)'
 mutate "cell tự vẽ theo lane đo không cộng header" merge/merge.go '			x, y = x+m.r.LaneX[f.lane], y+float64(m.r.PoolHeader)' '			x = x + m.r.LaneX[f.lane]'
 mutate "không báo element chồng nhau" merge/merge.go '				m.rep.Overlaps = append(m.rep.Overlaps, a.ID+"/"+b.ID)' '				_ = b'
 mutate "báo cả cell pool là bị xoá" merge/merge.go '		if !isLayer(id) && id != "pool" && !m.tableIDs[id] {' '		if !isLayer(id) && !m.tableIDs[id] {'
-mutate "pySum không bù sai số" merge/merge.go '	if lo != 0 && !math.IsInf(lo, 0) && !math.IsNaN(lo) {' '	if false {'
+mutate "fsum không bù sai số" merge/merge.go '	if lo != 0 && !math.IsInf(lo, 0) && !math.IsNaN(lo) {' '	if false {'
 mutate "merge không sao lưu file cũ" cmd/flowcast/main.go 'if mode != "new" && !c.a.noBackup {' 'if mode == "force" && !c.a.noBackup {'
 mutate "merge in báo cáo nhưng vẫn in tự kiểm" cmd/flowcast/main.go '		c.println("layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG")
 		return c.exportAndVerify(out, r, 0)' '		c.println("layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG")

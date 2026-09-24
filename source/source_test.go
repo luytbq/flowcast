@@ -2,10 +2,9 @@ package source
 
 import "testing"
 
-// Ext theo đúng os.path.splitext của Python: dấu chấm ở đầu tên file không phải
-// dấu tách đuôi, nên ".md" là một file không có đuôi chứ không phải file
-// markdown.
-func TestExtGiongSplitextCuaPython(t *testing.T) {
+// Dấu chấm ở đầu tên file không phải dấu tách đuôi, nên ".md" là một file không
+// có đuôi chứ không phải file markdown.
+func TestExtBoQuaDauChamDauTen(t *testing.T) {
 	cases := map[string]string{
 		"a.md":          ".md",
 		"so.do.md":      ".md",

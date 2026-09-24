@@ -3,13 +3,13 @@ package layout
 import (
 	"strings"
 
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 )
 
 func splitStyle(s string) []string {
 	var out []string
 	for _, p := range strings.Split(s, ",") {
-		if p = pystr.Strip(p); p != "" {
+		if p = unistr.Strip(p); p != "" {
 			out = append(out, p)
 		}
 	}
@@ -17,7 +17,7 @@ func splitStyle(s string) []string {
 }
 
 // gk là khóa lưới của một cột: lane trước, cột trong lane sau. So sánh theo thứ
-// tự từ điển, đúng như so tuple (lane, col) trong bản tham chiếu.
+// tự từ điển.
 type gk struct{ lane, col int }
 
 func (a gk) less(b gk) bool { return a.lane < b.lane || (a.lane == b.lane && a.col < b.col) }
@@ -35,18 +35,17 @@ func sign(v int) int {
 	return 0
 }
 
-// pyMax và pyMin mang đúng ngữ nghĩa max và min của Python: khi hai số bằng
-// nhau thì trả về số đứng trước. math.Max và math.Min không dùng được, vì
-// math.Max(-0, 0) luôn trả +0, và dấu của số không lọt được vào toạ độ, nơi
-// num.Fmt in nó ra thành "-0".
-func pyMax(a, b float64) float64 {
+// fmax và fmin trả về số đứng trước khi hai số bằng nhau. math.Max và math.Min
+// không dùng được, vì math.Max(-0, 0) luôn trả +0: kết quả khi đó phụ thuộc vào
+// dấu của số không chứ không chỉ vào giá trị, và engine cần kết quả tất định.
+func fmax(a, b float64) float64 {
 	if b > a {
 		return b
 	}
 	return a
 }
 
-func pyMin(a, b float64) float64 {
+func fmin(a, b float64) float64 {
 	if b < a {
 		return b
 	}

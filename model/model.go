@@ -20,8 +20,8 @@ type Row struct {
 	MetaKeys []string
 }
 
-// Text nối các dòng nội dung rồi cắt khoảng trắng, đúng cách bản tham chiếu
-// dùng để quyết định một ô có chữ thật hay không.
+// Text nối các dòng nội dung rồi cắt khoảng trắng. Kết quả rỗng nghĩa là ô
+// không có chữ thật.
 func (r Row) Text() string { return trimSpace(joinLines(r.Lines)) }
 
 // Table là kết quả đọc một nguồn đầu vào.

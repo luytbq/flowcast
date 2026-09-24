@@ -13,8 +13,8 @@ func boxOf(it *Item) box { return box{it.X, it.Y, it.X + it.W, it.Y + it.H} }
 
 // area là diện tích phần chồng nhau của hai hộp.
 func area(a, b box) float64 {
-	w := pyMin(a[2], b[2]) - pyMax(a[0], b[0])
-	h := pyMin(a[3], b[3]) - pyMax(a[1], b[1])
+	w := fmin(a[2], b[2]) - fmax(a[0], b[0])
+	h := fmin(a[3], b[3]) - fmax(a[1], b[1])
 	if w > 0 && h > 0 {
 		return float64(w * h)
 	}
@@ -24,8 +24,8 @@ func area(a, b box) float64 {
 // segHits nói đoạn thẳng từ a tới b có cắt vào trong hộp hay không. Chỉ chạm
 // mép thì không tính.
 func segHits(a, b [2]float64, bx box) bool {
-	x1, x2 := pyMin(a[0], b[0]), pyMax(a[0], b[0])
-	y1, y2 := pyMin(a[1], b[1]), pyMax(a[1], b[1])
+	x1, x2 := fmin(a[0], b[0]), fmax(a[0], b[0])
+	y1, y2 := fmin(a[1], b[1]), fmax(a[1], b[1])
 	return x1 < bx[2] && x2 > bx[0] && y1 < bx[3] && y2 > bx[1]
 }
 
@@ -60,7 +60,7 @@ func labelCandidates(e *Edge) []candidate {
 					d = 1
 				}
 				for _, cx := range []float64{a[0] + float64(d*(6+w/2)), (a[0] + b[0]) / 2} {
-					ax := pyMin(pyMax(cx, pyMin(a[0], b[0])), pyMax(a[0], b[0]))
+					ax := fmin(fmax(cx, fmin(a[0], b[0])), fmax(a[0], b[0]))
 					for _, cy := range []float64{a[1] - 3 - h/2, a[1] + 3 + h/2} {
 						out = append(out, candidate{
 							box{cx - w/2, cy - h/2, cx + w/2, cy + h/2},
@@ -74,7 +74,7 @@ func labelCandidates(e *Edge) []candidate {
 					d = 1
 				}
 				for _, cy := range []float64{a[1] + float64(d*(6+h/2)), (a[1] + b[1]) / 2} {
-					ay := pyMin(pyMax(cy, pyMin(a[1], b[1])), pyMax(a[1], b[1]))
+					ay := fmin(fmax(cy, fmin(a[1], b[1])), fmax(a[1], b[1]))
 					for _, cx := range []float64{a[0] + 5 + w/2, a[0] - 5 - w/2} {
 						out = append(out, candidate{
 							box{cx - w/2, cy - h/2, cx + w/2, cy + h/2},
@@ -93,7 +93,7 @@ func labelCandidates(e *Edge) []candidate {
 //
 // Chi phí cộng diện tích chồng lên node, lên nhãn đã đặt và lên header, cộng
 // một khoản cố định cho mỗi dây khác cắt qua. Ứng viên đầu tiên có chi phí
-// bằng không được nhận ngay. Thứ tự cộng giữ đúng bản tham chiếu, vì các tổng
+// bằng không được nhận ngay. Thứ tự cộng là một phần của kết quả, vì các tổng
 // này được so sánh với nhau và cộng số thực không có tính kết hợp.
 func (l *Layout) placeLabels() {
 	type named struct {

@@ -4,7 +4,7 @@ package validate
 
 import (
 	"fmt"
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 	"strings"
 
 	"github.com/luytbq/flowcast/model"
@@ -12,7 +12,8 @@ import (
 )
 
 // Thông điệp dùng dấu nháy viết thẳng chứ không dùng %q. %q thoát ký tự đặc
-// biệt, nên một key metadata có gạch chéo ngược sẽ in ra khác bản tham chiếu.
+// biệt, nên một key metadata có gạch chéo ngược sẽ in ra khác với cái người
+// dùng đã viết trong bảng.
 
 // Validate trả về mọi phát hiện, theo thứ tự cố định.
 //
@@ -162,7 +163,7 @@ func (v *validator) checkRefs(r model.Row, spec schema.TypeSpec) {
 func styleList(r model.Row) []string {
 	var out []string
 	for _, s := range strings.Split(r.Meta["style"], ",") {
-		s = pystr.Strip(s)
+		s = unistr.Strip(s)
 		if s == "" {
 			continue
 		}

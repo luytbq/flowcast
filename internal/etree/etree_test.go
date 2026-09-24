@@ -6,12 +6,12 @@ import (
 	"testing"
 )
 
-// TestKhopElementTree so việc đọc rồi ghi lại, và đọc rồi thụt lề rồi ghi lại,
-// với ElementTree của Python trên tài liệu XML sinh ngẫu nhiên.
-func TestKhopElementTree(t *testing.T) {
+// TestDocGhiKhopVector so việc đọc rồi ghi lại, và đọc rồi thụt lề rồi ghi lại,
+// với vector trên tài liệu XML sinh ngẫu nhiên.
+func TestDocGhiKhopVector(t *testing.T) {
 	data, err := os.ReadFile("../../conformance/etree-vectors.json")
 	if err != nil {
-		t.Fatalf("%v; chạy tools/etree_vectors.py", err)
+		t.Fatalf("%v", err)
 	}
 	var vs []struct{ Doc, Plain, Indented string }
 	if err := json.Unmarshal(data, &vs); err != nil {

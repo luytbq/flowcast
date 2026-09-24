@@ -1,7 +1,7 @@
 package source
 
 import (
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 	"path/filepath"
 	"strings"
 
@@ -66,7 +66,7 @@ func Parse(s Source) (model.Table, error) {
 }
 
 func guessFormat(name string) string {
-	switch pystr.Lower(Ext(name)) {
+	switch unistr.Lower(Ext(name)) {
 	case ".md", ".markdown", ".txt":
 		return "markdown"
 	case ".csv", ".tsv":
@@ -79,8 +79,8 @@ func guessFormat(name string) string {
 	return ""
 }
 
-// Ext tách đuôi file như os.path.splitext của Python: dấu chấm ở đầu tên file
-// không tính là dấu tách đuôi, nên ".md" không có đuôi.
+// Ext tách đuôi file. Dấu chấm ở đầu tên file không tính là dấu tách đuôi, nên
+// file ẩn ".md" không có đuôi.
 func Ext(path string) string {
 	base := filepath.Base(path)
 	trimmed := strings.TrimLeft(base, ".")

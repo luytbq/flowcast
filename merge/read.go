@@ -14,7 +14,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/luytbq/flowcast/internal/etree"
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 )
 
 // Old là trang đầu của file .drawio cũ, cùng các trang còn lại được giữ nguyên.
@@ -124,7 +124,7 @@ func attrf(el *etree.Element, key string) float64 {
 	if !ok {
 		return 0
 	}
-	v, ok := pyFloat(s)
+	v, ok := parseFloat(s)
 	if !ok {
 		return 0
 	}
@@ -154,7 +154,7 @@ func Read(data []byte, name string) (*Old, error) {
 		}
 		model = pages[0].Find("mxGraphModel")
 		if model == nil {
-			model, err = decodeDiagram(pystr.Strip(pages[0].Text))
+			model, err = decodeDiagram(unistr.Strip(pages[0].Text))
 			if err != nil {
 				return nil, &ErrRead{fmt.Sprintf("không giải nén được trang đầu của %s: %v", name, err)}
 			}
@@ -176,8 +176,7 @@ func Read(data []byte, name string) (*Old, error) {
 		if cid == "" {
 			continue
 		}
-		// id trùng: cell sau thay cell trước nhưng giữ chỗ của cell trước, như
-		// gán vào dict của Python.
+		// id trùng: cell sau thay cell trước nhưng giữ chỗ của cell trước.
 		if _, ok := old.cells[cid]; !ok {
 			old.ids = append(old.ids, cid)
 		}

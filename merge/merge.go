@@ -25,8 +25,7 @@ var constraintKeys = [...]string{"exitX", "exitY", "exitDx", "exitDy", "exitPeri
 func isLayer(id string) bool { return id == "0" || id == "1" }
 
 // looksLikeTableID nhận id theo quy ước của bảng, như API-3, SVC-2.1 hay E7.1.
-// Nó khớp đúng biểu thức của bản tham chiếu dưới re của Python: \d nhận mọi
-// chữ số Unicode, và $ nhận cả một dấu xuống dòng ở cuối.
+// Chữ số là mọi chữ số Unicode, và id được phép có một dấu xuống dòng ở cuối.
 func looksLikeTableID(s string) bool {
 	s = strings.TrimSuffix(s, "\n")
 	digitsDots := func(t string) bool {
@@ -61,27 +60,28 @@ type box [4]float64
 func itemBox(it *layout.PlacedItem) box { return box{it.X, it.Y, it.X + it.W, it.Y + it.H} }
 
 func overlap(a, b box) bool {
-	return pyMin(a[2], b[2])-pyMax(a[0], b[0]) > 0 && pyMin(a[3], b[3])-pyMax(a[1], b[1]) > 0
+	return fmin(a[2], b[2])-fmax(a[0], b[0]) > 0 && fmin(a[3], b[3])-fmax(a[1], b[1]) > 0
 }
 
-// pyMax và pyMin giữ ngữ nghĩa max và min của Python: hai số bằng nhau thì trả
-// số đứng trước, để dấu của số không không bị đổi.
-func pyMax(a, b float64) float64 {
+// fmax và fmin trả về số đứng trước khi hai số bằng nhau, để dấu của số không
+// không bị đổi.
+func fmax(a, b float64) float64 {
 	if b > a {
 		return b
 	}
 	return a
 }
 
-func pyMin(a, b float64) float64 {
+func fmin(a, b float64) float64 {
 	if b < a {
 		return b
 	}
 	return a
 }
 
-// pySum cộng như sum() của Python 3.12 trở lên, có bù sai số làm tròn.
-func pySum(xs []float64) float64 {
+// fsum cộng có bù sai số làm tròn (thuật toán Neumaier), để sai số không tích
+// lũy qua nhiều lane.
+func fsum(xs []float64) float64 {
 	hi, lo := 0.0, 0.0
 	for _, x := range xs {
 		t := hi + x
@@ -521,7 +521,7 @@ func (m *merger) laneRelX(it *layout.PlacedItem) float64 {
 	lx, lw := r.LaneX[it.Lane], r.LaneW[it.Lane]
 	cx := lx + fx
 	if lw >= it.W+2*pad {
-		cx = pyMin(pyMax(cx, lx+it.W/2+pad), lx+lw-it.W/2-pad)
+		cx = fmin(fmax(cx, lx+it.W/2+pad), lx+lw-it.W/2-pad)
 	}
 	return cx
 }
@@ -567,7 +567,7 @@ func (m *merger) placeNewItems() {
 				if k == 0 {
 					bottom = b[3]
 				} else {
-					bottom = pyMax(bottom, b[3])
+					bottom = fmax(bottom, b[3])
 				}
 			}
 			m.put(it, m.laneRelX(it), bottom+float64(r.MinChannel)+it.H/2)
@@ -672,7 +672,7 @@ func (m *merger) untouched(e *layout.PlacedEdge) bool {
 		}
 		// File ghi tỉ lệ đã làm tròn hai chữ số, nên so sau khi làm tròn giống
 		// hệt lúc ghi. Tỉ lệ như 1/3 lệch 0.0033 so với số đọc lại.
-		v, ok := pyFloat(s)
+		v, ok := parseFloat(s)
 		if !ok || num.Fmt(v) != num.Fmt(w.v) {
 			return false
 		}
@@ -881,15 +881,15 @@ func (m *merger) growLanes() {
 				left, right, first = it.X, it.X+it.W, false
 				continue
 			}
-			left, right = pyMin(left, it.X), pyMax(right, it.X+it.W)
+			left, right = fmin(left, it.X), fmax(right, it.X+it.W)
 		}
 		if first {
 			continue
 		}
 		lx, lw := r.LaneX[i], r.LaneW[i]
 		left, right = left-lx, right-lx
-		gl := pyMax(0.0, pad-left)
-		gr := pyMax(0.0, right-(lw-pad))
+		gl := fmax(0.0, pad-left)
+		gr := fmax(0.0, right-(lw-pad))
 		if gl == 0 && gr == 0 {
 			continue
 		}
@@ -927,7 +927,7 @@ func (m *merger) fitVertical() {
 	}
 	low := ys[0]
 	for _, y := range ys[1:] {
-		low = pyMin(low, y)
+		low = fmin(low, y)
 	}
 	if low < top {
 		dy := top - low
@@ -955,10 +955,10 @@ func (m *merger) finish() {
 	// header; merge giữ đúng chiều cao đó để không đổi file khi bảng không đổi.
 	h := float64(r.PoolHeader + r.LaneHeader + r.MinChannel)
 	for _, b := range bottoms {
-		h = pyMax(h, b+float64(r.MinChannel))
+		h = fmax(h, b+float64(r.MinChannel))
 	}
 	r.PoolH = h
-	r.PoolW = pySum(r.LaneW)
+	r.PoolW = fsum(r.LaneW)
 	items := append([]*layout.PlacedItem(nil), m.final...)
 	sort.SliceStable(items, func(i, j int) bool { return items[i].Order < items[j].Order })
 	for k, a := range items {

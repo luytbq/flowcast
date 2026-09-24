@@ -21,13 +21,13 @@ func shrink(b box, d float64) box { return box{b[0] + d, b[1] + d, b[2] - d, b[3
 // đường, vì khi vẽ ra mắt không phân biệt được.
 func collinearOverlap(a1, b1, a2, b2 [2]float64) float64 {
 	if math.Abs(a1[1]-b1[1]) < 0.01 && math.Abs(a2[1]-b2[1]) < 0.01 && math.Abs(a1[1]-a2[1]) < 0.5 {
-		lo := pyMax(pyMin(a1[0], b1[0]), pyMin(a2[0], b2[0]))
-		hi := pyMin(pyMax(a1[0], b1[0]), pyMax(a2[0], b2[0]))
+		lo := fmax(fmin(a1[0], b1[0]), fmin(a2[0], b2[0]))
+		hi := fmin(fmax(a1[0], b1[0]), fmax(a2[0], b2[0]))
 		return hi - lo
 	}
 	if math.Abs(a1[0]-b1[0]) < 0.01 && math.Abs(a2[0]-b2[0]) < 0.01 && math.Abs(a1[0]-a2[0]) < 0.5 {
-		lo := pyMax(pyMin(a1[1], b1[1]), pyMin(a2[1], b2[1]))
-		hi := pyMin(pyMax(a1[1], b1[1]), pyMax(a2[1], b2[1]))
+		lo := fmax(fmin(a1[1], b1[1]), fmin(a2[1], b2[1]))
+		hi := fmin(fmax(a1[1], b1[1]), fmax(a2[1], b2[1]))
 		return hi - lo
 	}
 	return 0

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 	"github.com/luytbq/flowcast/model"
 )
 
@@ -14,7 +14,7 @@ func findHeader(grid [][]string) (row, col int, ok bool) {
 	for r, cells := range grid {
 		low := make([]string, len(cells))
 		for i, c := range cells {
-			low[i] = pystr.Lower(pystr.Strip(c))
+			low[i] = unistr.Lower(unistr.Strip(c))
 		}
 		for c0 := 0; c0 < max(1, len(low)-4); c0++ {
 			if c0+5 <= len(low) && equalStrings(low[c0:c0+5], Header) {
@@ -37,7 +37,7 @@ func plainLines(cell string) []string {
 		parts = append(parts, strings.Split(chunk, "\n")...)
 	}
 	for i, p := range parts {
-		parts[i] = normalize(pystr.Strip(p))
+		parts[i] = normalize(unistr.Strip(p))
 	}
 	return parts
 }
@@ -55,7 +55,7 @@ func tableFromGrid(grid [][]string, locs []model.Location) (title string, rows [
 	}
 	for r := 0; r < hr && title == ""; r++ {
 		for _, c := range grid[r] {
-			if s := pystr.Strip(c); s != "" {
+			if s := unistr.Strip(c); s != "" {
 				title = normalize(s)
 				break
 			}
@@ -67,7 +67,7 @@ func tableFromGrid(grid [][]string, locs []model.Location) (title string, rows [
 		empty := true
 		for i := range cells {
 			if hc+i < len(row) {
-				cells[i] = pystr.Strip(row[hc+i])
+				cells[i] = unistr.Strip(row[hc+i])
 			}
 			empty = empty && cells[i] == ""
 		}
@@ -79,7 +79,7 @@ func tableFromGrid(grid [][]string, locs []model.Location) (title string, rows [
 				Loc: locs[r], ID: cells[0], Msg: `nội dung còn escape kiểu markdown (\|); csv/xlsx không cần escape`})
 		}
 		meta, keys := parseMeta(cells[4], locs[r], cells[0], &issues, normalize)
-		rows = append(rows, model.Row{Idx: len(rows), Loc: locs[r], ID: cells[0], Type: pystr.Lower(cells[1]),
+		rows = append(rows, model.Row{Idx: len(rows), Loc: locs[r], ID: cells[0], Type: unistr.Lower(cells[1]),
 			Parent: cells[2], Lines: plainLines(cells[3]), Meta: meta, MetaKeys: keys})
 	}
 	return title, rows, issues, hr, nil
@@ -137,8 +137,8 @@ func ParseCSV(data []byte, name, delimiter, encoding string) (model.Table, error
 	if err != nil {
 		return model.Table{}, err
 	}
-	// So nguyên văn chứ không so tên đã chuẩn hóa, đúng như bản tham chiếu:
-	// --encoding CP1252 viết hoa đọc được theo cp1252 mà không kèm cảnh báo.
+	// So nguyên văn chứ không so tên đã chuẩn hóa: người dùng tự ghi
+	// --encoding CP1252 là đã biết mình chọn gì, nên không cần cảnh báo.
 	if used == "cp1252" {
 		issues = append(issues, model.Issue{Code: "source.cp1252", Level: model.LevelWarning,
 			Msg: "file không phải utf-8, đã đọc theo cp1252; chữ tiếng Việt có thể đã hỏng từ trước"})

@@ -5,7 +5,8 @@ import (
 	"strings"
 )
 
-// fieldLimit là giới hạn độ dài một ô của csv.reader trong Python.
+// fieldLimit là độ dài tối đa của một ô, để một file hỏng thiếu dấu nháy đóng
+// không nuốt cả file vào một ô.
 const fieldLimit = 131072
 
 type csvState int
@@ -19,14 +20,14 @@ const (
 	eatCRNL
 )
 
-// readCSV đọc csv đúng như csv.reader(io.StringIO(text, newline=”),
-// delimiter=d) của Python với dialect mặc định.
+// readCSV đọc csv với dấu phân cách d, theo cách các bảng tính xuất ra: dấu nháy
+// kép bao ô, hai dấu nháy liền nhau trong ô là một dấu nháy, và không có ký tự
+// thoát.
 //
-// Không dùng encoding/csv: nó hiểu dấu nháy khác Python ở nhiều góc. Chẳng hạn
-// "a"b ra ab trong Python nhưng ra a"b trong Go, và dòng trống ra một hàng rỗng
-// trong Python nhưng bị bỏ qua trong Go. Đây là máy trạng thái của _csv.c, chỉ
-// giữ các nhánh dùng tới khi không có escapechar, doublequote bật và strict tắt.
-// Đã kiểm trên conformance/csv-vectors.json.
+// Không dùng encoding/csv vì nó xử lý hai góc khác với điều người dùng bảng tính
+// chờ đợi: "a"b ra a"b thay vì ab, và dòng trống bị bỏ qua thay vì ra một hàng
+// rỗng, trong khi hàng rỗng là thứ kết thúc bảng. Hành vi được chốt trên
+// conformance/csv-vectors.json.
 func readCSV(text string, d rune) ([][]string, error) {
 	var (
 		records [][]string
@@ -152,9 +153,8 @@ func readCSV(text string, d rune) ([][]string, error) {
 	}
 }
 
-// splitKeepEnds cắt dòng như khi lặp một io.StringIO(text, newline=”) của
-// Python: giữ nguyên ký tự xuống dòng ở cuối mỗi dòng, và nhận cả LF, CR lẫn
-// CRLF làm ranh giới.
+// splitKeepEnds cắt dòng, giữ nguyên ký tự xuống dòng ở cuối mỗi dòng, và nhận
+// cả LF, CR lẫn CRLF làm ranh giới.
 func splitKeepEnds(s string) []string {
 	var out []string
 	for len(s) > 0 {

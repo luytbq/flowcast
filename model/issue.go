@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	"github.com/luytbq/flowcast/internal/pystr"
+	"github.com/luytbq/flowcast/internal/unistr"
 	"strings"
 )
 
@@ -14,8 +14,8 @@ const (
 
 // Location nói phát hiện nằm ở đâu trong nguồn.
 //
-// Có cấu trúc chứ không phải chuỗi, để web trỏ đúng ô và đúng dòng. String
-// dựng lại đúng chuỗi mà bản tham chiếu in ra, nên cổng đối chiếu so được.
+// Có cấu trúc chứ không phải chuỗi, để web trỏ đúng ô và đúng dòng. String là
+// dạng CLI in ra.
 type Location struct {
 	Kind   string `json:"kind"`             // "table" hoặc "text"
 	Row    int    `json:"row,omitempty"`    // table: số dòng trong file, 0 nghĩa là không xác định
@@ -58,7 +58,7 @@ type Issue struct {
 	Params map[string]string
 }
 
-// String in ra đúng dạng bản tham chiếu dùng, để cổng đối chiếu so được.
+// String là dạng CLI in ra cho một Issue.
 func (i Issue) String() string {
 	tag := ""
 	if i.ID != "" {
@@ -72,7 +72,7 @@ func (i Issue) String() string {
 }
 
 func joinLines(lines []string) string { return strings.Join(lines, "\n") }
-func trimSpace(s string) string       { return pystr.Strip(s) }
+func trimSpace(s string) string       { return unistr.Strip(s) }
 
 // Error là lỗi khiến việc đọc không thể tiếp tục và không quy được về một dòng
 // cụ thể: không tìm thấy header, file hỏng, vượt giới hạn. Mọi thứ khác là

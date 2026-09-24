@@ -1,11 +1,10 @@
-// Code generated from Python's cp1252 codec; DO NOT EDIT.
+// Bảng cp1252 theo đặc tả Windows-1252; không sửa tay.
 
 package source
 
-// cp1252High là ánh xạ của cp1252 cho byte 0x80 tới 0x9F, lấy từ codec cp1252
-// của Python. Byte từ 0xA0 trở lên trùng Latin-1. Các byte không có ở đây,
-// 0x81, 0x8D, 0x8F, 0x90, 0x9D, không được định nghĩa: Python báo lỗi khi
-// giải mã chúng, nên bản Go cũng vậy.
+// cp1252High là ánh xạ của cp1252 cho byte 0x80 tới 0x9F. Byte từ 0xA0 trở lên
+// trùng Latin-1. Các byte không có ở đây, 0x81, 0x8D, 0x8F, 0x90, 0x9D, không
+// được định nghĩa trong cp1252, nên giải mã chúng là lỗi chứ không đoán.
 var cp1252High = map[byte]rune{
 	0x80: 0x20AC,
 	0x82: 0x201A,
