@@ -295,8 +295,13 @@ func (m *merger) layoutLanes() {
 	x := 0.0
 	for i, ln := range r.Lanes {
 		w := r.LaneW[i]
+		// File chỉ ghi bề rộng đã làm tròn hai chữ số. Bề rộng cũ khớp bề rộng
+		// mới sau khi làm tròn nghĩa là lane chưa bị sửa tay; lấy lại số chưa làm
+		// tròn thì tổng bề rộng pool mới không lệch so với lúc sinh.
 		if oc := m.oldLane(ln.ID); oc != nil {
-			w = attrf(oc.geo(), "width")
+			if ow := attrf(oc.geo(), "width"); num.Fmt(ow) != num.Fmt(w) {
+				w = ow
+			}
 		}
 		newX = append(newX, x)
 		newW = append(newW, w)
@@ -665,8 +670,10 @@ func (m *merger) untouched(e *layout.PlacedEdge) bool {
 		if !ok {
 			return false
 		}
+		// File ghi tỉ lệ đã làm tròn hai chữ số, nên so sau khi làm tròn giống
+		// hệt lúc ghi. Tỉ lệ như 1/3 lệch 0.0033 so với số đọc lại.
 		v, ok := pyFloat(s)
-		if !ok || math.Abs(v-w.v) > 1e-3 {
+		if !ok || num.Fmt(v) != num.Fmt(w.v) {
 			return false
 		}
 	}
@@ -944,9 +951,9 @@ func (m *merger) finish() {
 	for _, b := range m.freehandBoxesNow() {
 		bottoms = append(bottoms, b[3])
 	}
-	// Cùng khoảng chừa như kênh cuối của layout mới, để merge không đổi chiều
-	// cao khi bảng không đổi.
-	h := float64(r.PoolHeader + r.LaneHeader + 60)
+	// Sơ đồ không có phần tử nào thì layout mới chỉ có một kênh tối thiểu dưới
+	// header; merge giữ đúng chiều cao đó để không đổi file khi bảng không đổi.
+	h := float64(r.PoolHeader + r.LaneHeader + r.MinChannel)
 	for _, b := range bottoms {
 		h = pyMax(h, b+float64(r.MinChannel))
 	}

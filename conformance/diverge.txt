@@ -8,3 +8,6 @@ cli:dotfile-has-no-extension: thông báo đuôi lạ liệt kê thêm .mmd, đ�
 18-labels-crowded: condition chỉ nhận dây vào từ đỉnh, chốt ở conformance/diverge
 42-place-merge-nested: condition chỉ nhận dây vào từ đỉnh, chốt ở conformance/diverge
 cli:merge-fuzz-137: condition chỉ nhận dây vào từ đỉnh, chốt ở conformance/diverge
+cli:merge-fuzz-1: merge dùng bề rộng lane chưa làm tròn khi lane chưa bị sửa, bề rộng pool không lệch 0.01px
+cli:merge-fuzz-38: merge so tỉ lệ cổng sau khi làm tròn như lúc ghi, dây chưa sửa giữ vị trí nhãn
+cli:merge-fuzz-53: merge so tỉ lệ cổng sau khi làm tròn như lúc ghi, dây chưa sửa giữ vị trí nhãn
