@@ -18,9 +18,9 @@ import (
 // geometry valid. It stops after cfg.Optimize rounds or when a round changes
 // nothing.
 //
-// The cost only ever goes down and every coordinate a move produces is one that
-// already exists in the layout, so the loop cannot oscillate. The round limit
-// only bounds the running time.
+// Every move lowers the cost by at least minGain and the cost cannot go below
+// zero, so the loop cannot oscillate and ends after finitely many moves. The
+// round limit only bounds the running time.
 //
 // Optimize runs in the virtual TD space, before Check and Orient, so one code
 // path serves every direction and the self-check sees the final geometry.

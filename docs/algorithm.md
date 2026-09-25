@@ -327,9 +327,10 @@ A path is valid when:
 - the wire's label stays at least as close to the path as before. The label box
   stays put and is re-anchored on the new path.
 
-The loop stops after --optimize rounds or when a round keeps no move. The cost
-only goes down and each move reuses coordinates that already exist, so the loop
-cannot oscillate; the round limit only bounds running time. A second run over
+The loop stops after --optimize rounds or when a round keeps no move. Every move
+lowers the cost by at least a fixed minimum and the cost cannot go below zero,
+so the loop cannot oscillate and ends after finitely many moves; the round limit
+only bounds running time. A second run over
 the optimizer's own output changes nothing.
 
 ## 8. Self-check
