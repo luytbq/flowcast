@@ -78,9 +78,10 @@ func splitCells(line string) []string {
 
 // unescape removes markdown backslashes and then normalizes to NFC.
 //
-// Normalization is required, not cosmetic: "Xử lý" in decomposed form measures
-// 42.43px instead of 30.75px, which changes the layout outright, and macOS often
-// produces the decomposed form when copying Vietnamese text. See docs/adr/0005.
+// Normalization is required, not cosmetic: a short accented Vietnamese label in
+// decomposed form measures 42.43px instead of 30.75px, which changes the layout
+// outright, and macOS often produces the decomposed form when copying accented
+// text. See docs/adr/0005.
 func unescape(s string) string {
 	var b strings.Builder
 	r := []rune(s)

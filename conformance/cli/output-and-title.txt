@@ -1,11 +1,11 @@
 # input: 05-merge-node -> in.md
-$ ["build", "$T/in.md", "-o", "$T/ra.drawio", "--title", "Tiêu đề khác"]
+$ ["build", "$T/in.md", "-o", "$T/out.drawio", "--title", "Another title"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/ra.drawio (1 lanes, 5 elements, 5 edges, 345.26x433px)
+build: wrote $T/out.drawio (1 lanes, 5 elements, 5 edges, 336x433px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-cfec3086adb5d4eb  in.md
-c812d93634d06445  ra.drawio
+649216b163872f90  in.md
+150414efea684d4d  out.drawio

@@ -1,4 +1,4 @@
-# Nhãn tránh đường phân cách lane
+# Labels avoid the lane separator line
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
@@ -6,6 +6,6 @@
 | B | lane | | Lane B | |
 | A-1 | start | A | A-1 x | |
 | E1 | edge | |  | from=A-1; to=B-2 |
-| E2 | edge | | gửi yêu cầu | from=A-1; to=B-3 |
+| E2 | edge | | send request | from=A-1; to=B-3 |
 | B-2 | external | B | B-2 x | |
 | B-3 | end | B | B-3 x | |

@@ -1,4 +1,4 @@
-# Chữ L không ra mặt đang có db
+# An L avoids a side holding a db
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

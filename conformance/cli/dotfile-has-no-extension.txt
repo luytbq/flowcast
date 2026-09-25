@@ -3,4 +3,4 @@ $ ["check", "$T/.md"]
 ERROR   unsupported file extension ""; use .md, .csv, .xlsx or .mmd
 [exit 1]
 --- files
-35ce030c1847ff7d  .md
+5b87df5db0eb01a0  .md

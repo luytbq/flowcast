@@ -1,5 +1,5 @@
 # input: merge/moved-node -> *
-$ ["build", "$T/flow.md", "--mode", "merge", "-o", "$T/flow.drawio", "--title", "Tiêu đề mới"]
+$ ["build", "$T/flow.md", "--mode", "merge", "-o", "$T/flow.drawio", "--title", "New title"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode merge, keep manual edits
@@ -21,6 +21,6 @@ merge: overlapping elements (1): API-1/API-1.1
 layout: merge does not self-check wires and labels; see the list above and the PNG image
 [exit 0]
 --- files
-ff414ed980abbda3  flow.drawio
-e4fc8dfd202292ea  flow.drawio.bak
-6ade948319eff0ba  flow.md
+95a4639b173ce578  flow.drawio
+0f78cbf65f3daefd  flow.drawio.bak
+9602e0fb9bb828a5  flow.md

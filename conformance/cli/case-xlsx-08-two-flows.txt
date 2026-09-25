@@ -1,15 +1,15 @@
 # input: xlsx-08-two-flows -> in.xlsx
 $ ["check", "$T/in.xlsx"]
-check: read table from xlsx sheet Một
+check: read table from xlsx sheet One
 check: 0 errors, 0 warnings
 [exit 0]
 $ ["build", "$T/in.xlsx"]
-check: read table from xlsx sheet Một
+check: read table from xlsx sheet One
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (2 lanes, 2 elements, 1 edges, 396.02x170px)
+build: wrote $T/in.drawio (2 lanes, 2 elements, 1 edges, 400.16x170px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-62ff3b5710b48373  in.drawio
-315f31f00fae88bb  in.xlsx
+b05f42f9885257e8  in.drawio
+624ef5a88665fdf3  in.xlsx

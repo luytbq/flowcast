@@ -7,9 +7,9 @@ $ ["build", "$T/in.md"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (2 lanes, 7 elements, 8 edges, 385.66x584px)
+build: wrote $T/in.drawio (2 lanes, 7 elements, 8 edges, 392.78x584px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-61a5f1b27c5f1748  in.drawio
-9e50e7474193962c  in.md
+5e0d0debf2895698  in.drawio
+41248a9ea48a84cb  in.md

@@ -1,0 +1,17 @@
+flowchart TD
+    start([Open the app]) --> token{Has token?}
+    token -->|Yes| verify[Verify token]
+    token -->|No| login[Login screen]
+    verify --> valid{Token valid?}
+    valid -->|Yes| home([Home page])
+    valid -->|No| refresh[Refresh token]
+    refresh --> ok{Refreshed?}
+    ok -->|Yes| home
+    ok -->|No| login
+    login --> submit[Submit account]
+    submit --> check{Password ok?}
+    check -->|Wrong| count[Count failure]
+    count --> locked{Over 5 tries?}
+    locked -->|Yes| lock([Lock account])
+    locked -->|Not yet| login
+    check -->|Right| home

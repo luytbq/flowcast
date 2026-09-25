@@ -1,14 +1,14 @@
-Luồng có tiêu đề
-ghi chú không thuộc bảng
+Flow with a title
+note not in the table
 
-id,type,parent,content,metadata,cột thừa
-A,lane,,Lane A,,cột thừa
-B,lane,,Lane B,,cột thừa
-A-1,start,A,Bắt đầu,,cột thừa
-E1,edge,,gửi yêu cầu,from=A-1; to=B-1,cột thừa
-B-1,task,B,Xử lý,,cột thừa
-E2,edge,,,from=B-1; to=B-2,cột thừa
-B-2,end,B,Xong,,cột thừa
+id,type,parent,content,metadata,extra col
+A,lane,,Lane A,,extra col
+B,lane,,Lane B,,extra col
+A-1,start,A,Start,,extra col
+E1,edge,,send request,from=A-1; to=B-1,extra col
+B-1,task,B,Process,,extra col
+E2,edge,,,from=B-1; to=B-2,extra col
+B-2,end,B,Done,,extra col
 
-ghi chú sau bảng
-A-9,task,A,không đọc,
+note after table
+A-9,task,A,not read,

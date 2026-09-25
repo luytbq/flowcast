@@ -1,10 +1,10 @@
-# Hai ứng viên nhãn cùng chi phí thì lấy ứng viên trước
+# Two label candidates of equal cost: the first one wins
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
-| A | lane | | Bộ phận xử lý nghiệp vụ A kéo dài | |
+| A | lane | | Long business processing dept A | |
 | B | lane | | Lane B | |
-| C | lane | | Hệ thống C<br>thanh toán<br>nội bộ | |
+| C | lane | | System C<br>payments<br>internal | |
 | B-1 | start | B | B-1 x | |
-| E1 | edge | | gửi yêu cầu | from=B-1; to=B-2 |
+| E1 | edge | | send request | from=B-1; to=B-2 |
 | B-2 | external | B | B-2 x | |

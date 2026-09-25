@@ -11,10 +11,10 @@ WARNING line 11 [E3]: back="maybe" is invalid, only true/false are accepted
 WARNING line 11 [E3]: A-2 comes before its source A-3 but the edge does not say back=true
 check: 0 errors, 2 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 4 elements, 4 edges, 205.66x414px)
+build: wrote $T/in.drawio (1 lanes, 4 elements, 4 edges, 210.78x414px)
 WARNING layout: found a loop not marked back=true, laid out in table order: A-2, A-3, A-4
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-ece0d422a07bf82f  in.drawio
-e489fdefa4915377  in.md
+5be78e9ec84bcc12  in.drawio
+55d502ececcf3d16  in.md

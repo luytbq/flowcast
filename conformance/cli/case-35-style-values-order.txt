@@ -13,9 +13,9 @@ WARNING line 7 [E1]: style "aaa" does not apply to type edge, ignored
 WARNING line 7 [E1]: style "mmm" does not apply to type edge, ignored
 check: 0 errors, 3 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 128x244px)
+build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 130x244px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-001d83259baebc4e  in.drawio
-263aa92e6746eff8  in.md
+fd5998f5b3556ebe  in.drawio
+b33b98d5d79a8321  in.md

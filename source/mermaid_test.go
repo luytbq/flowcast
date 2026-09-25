@@ -58,27 +58,27 @@ func expectCodes(t *testing.T, got model.Table, want ...string) {
 
 func TestMermaidNodeShapeBecomesType(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
-  s([Bắt đầu]) --> a[Hộp] --> b(Bo góc) --> c{Rẽ?}
+  s([Begin]) --> a[Box] --> b(Rounded) --> c{Branch?}
   c -->|x| d[[Con]]
-  c -->|y| e((Luồng khác))
-  d --> f(((Hết)))
-  e --> g([Xong])`)
+  c -->|y| e((Other flow))
+  d --> f(((Finish)))
+  e --> g([Done])`)
 	expectRows(t, tb,
-		"s | start |  | Bắt đầu | ",
+		"s | start |  | Begin | ",
 		"s-->a | edge |  |  | from=s;to=a",
-		"a | task |  | Hộp | ",
+		"a | task |  | Box | ",
 		"a-->b | edge |  |  | from=a;to=b",
-		"b | task |  | Bo góc | ",
+		"b | task |  | Rounded | ",
 		"b-->c | edge |  |  | from=b;to=c",
-		"c | condition |  | Rẽ? | ",
+		"c | condition |  | Branch? | ",
 		"c-->d | edge |  | x | from=c;to=d",
 		"c-->e | edge |  | y | from=c;to=e",
 		"d | task |  | Con | ",
 		"d-->f | edge |  |  | from=d;to=f",
-		"f | end |  | Hết | ",
-		"e | external |  | Luồng khác | ",
+		"f | end |  | Finish | ",
+		"e | external |  | Other flow | ",
 		"e-->g | edge |  |  | from=e;to=g",
-		"g | end |  | Xong | ")
+		"g | end |  | Done | ")
 	expectCodes(t, tb)
 }
 
@@ -88,9 +88,9 @@ func TestMermaidArrowStyles(t *testing.T) {
   a -.-> c
   a ==> d
   a --- e
-  a -. chấm .-> f
-  a == đậm ==> g
-  a -- chữ --> h
+  a -. dotted .-> f
+  a == thick ==> g
+  a -- text --> h
   a ---> i
   a -.- j
   a --o k
@@ -101,9 +101,9 @@ func TestMermaidArrowStyles(t *testing.T) {
 		"a-->c | edge |  |  | from=a;to=c;style=dashed",
 		"a-->d | edge |  |  | from=a;to=d;style=bold",
 		"a-->e | edge |  |  | from=a;to=e;style=noarrow",
-		"a-->f | edge |  | chấm | from=a;to=f;style=dashed",
-		"a-->g | edge |  | đậm | from=a;to=g;style=bold",
-		"a-->h | edge |  | chữ | from=a;to=h",
+		"a-->f | edge |  | dotted | from=a;to=f;style=dashed",
+		"a-->g | edge |  | thick | from=a;to=g;style=bold",
+		"a-->h | edge |  | text | from=a;to=h",
 		"a-->i | edge |  |  | from=a;to=i",
 		"a-->j | edge |  |  | from=a;to=j;style=dashed,noarrow",
 		"a-->k | edge |  |  | from=a;to=k",
@@ -119,11 +119,11 @@ func TestMermaidArrowStyles(t *testing.T) {
 // Flow Table ids look like LANE-1, and mermaid accepts such ids too, so a hyphen
 // between two id characters must not be read as an arrow.
 func TestMermaidIDWithHyphen(t *testing.T) {
-	tb := parseMM(t, "flowchart TD\n  API-1[Nhận] --> API-2.x[Xử lý]\n  API-2.x --- SVC-3")
+	tb := parseMM(t, "flowchart TD\n  API-1[Receive] --> API-2.x[Process]\n  API-2.x --- SVC-3")
 	expectRows(t, tb,
-		"API-1 | task |  | Nhận | ",
+		"API-1 | task |  | Receive | ",
 		"API-1-->API-2.x | edge |  |  | from=API-1;to=API-2.x",
-		"API-2.x | task |  | Xử lý | ",
+		"API-2.x | task |  | Process | ",
 		"API-2.x-->SVC-3 | edge |  |  | from=API-2.x;to=SVC-3;style=noarrow",
 		"SVC-3 | task |  | SVC-3 | ")
 }
@@ -131,14 +131,14 @@ func TestMermaidIDWithHyphen(t *testing.T) {
 // A diamond with only one outgoing edge is not a branch point, and the Flow Table
 // requires a condition to have at least two branches, so it is drawn as a task.
 func TestMermaidSingleBranchDiamondBecomesTask(t *testing.T) {
-	tb := parseMM(t, "flowchart TD\n  a{Chỉ một?} --> b[Tiếp]\n  c{Hai?} -->|có| b\n  c -->|không| d[Khác]")
+	tb := parseMM(t, "flowchart TD\n  a{Only one?} --> b[Next]\n  c{Two?} -->|yes| b\n  c -->|no| d[Other]")
 	rows := rowsOf(tb)
-	if rows[0] != "a | task |  | Chỉ một? | " {
+	if rows[0] != "a | task |  | Only one? | " {
 		t.Errorf("first row %q", rows[0])
 	}
 	found := false
 	for _, r := range rows {
-		if r == "c | condition |  | Hai? | " {
+		if r == "c | condition |  | Two? | " {
 			found = true
 		}
 	}
@@ -153,10 +153,10 @@ func TestMermaidWarningsInLineOrder(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
   a --> b
   click a "x"
-  c{Một} --> d
-  e[Kho]:::x --> f
+  c{One} --> d
+  e[Store]:::x --> f
   click f "y"
-  g{Hai} --> h`)
+  g{Two} --> h`)
 	var lines []int
 	for _, i := range tb.Issues {
 		lines = append(lines, i.Loc.Line)
@@ -191,51 +191,51 @@ func TestMermaidChainsAndAmpersandSources(t *testing.T) {
 // to an already written node carries back=true, per the Flow Table order rule.
 func TestMermaidMergeAndLoopOrder(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
-  s([Vào]) --> c{Ok?}
-  c -->|có| m[Hợp]
-  c -->|không| r[Sửa]
+  s([In]) --> c{Ok?}
+  c -->|yes| m[Merge]
+  c -->|no| r[Fix]
   r --> c
   r --> m
-  m --> x([Ra])`)
+  m --> x([Out])`)
 	expectRows(t, tb,
-		"s | start |  | Vào | ",
+		"s | start |  | In | ",
 		"s-->c | edge |  |  | from=s;to=c",
 		"c | condition |  | Ok? | ",
-		"c-->m | edge |  | có | from=c;to=m",
-		"c-->r | edge |  | không | from=c;to=r",
-		"r | task |  | Sửa | ",
+		"c-->m | edge |  | yes | from=c;to=m",
+		"c-->r | edge |  | no | from=c;to=r",
+		"r | task |  | Fix | ",
 		"r-->c | edge |  |  | from=r;to=c;back=true",
 		"r-->m | edge |  |  | from=r;to=m",
-		"m | task |  | Hợp | ",
+		"m | task |  | Merge | ",
 		"m-->x | edge |  |  | from=m;to=x",
-		"x | end |  | Ra | ")
+		"x | end |  | Out | ")
 }
 
 func TestMermaidSubgraphBecomesLane(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
-  subgraph U [Người dùng]
-    a([Mở]) --> b[Gửi]
+  subgraph U [User]
+    a([Open]) --> b[Send]
   end
-  subgraph S["Máy chủ"]
-    c[Nhận]
+  subgraph S["Server"]
+    c[Receive]
     subgraph S2
-      d[Lưu]
+      d[Save]
     end
   end
-  b --> c --> d --> e[Ngoài]`)
+  b --> c --> d --> e[Outside]`)
 	expectRows(t, tb,
-		"U | lane |  | Người dùng | ",
-		"S | lane |  | Máy chủ | ",
+		"U | lane |  | User | ",
+		"S | lane |  | Server | ",
 		"_ | lane |  |  | ",
-		"a | start | U | Mở | ",
+		"a | start | U | Open | ",
 		"a-->b | edge |  |  | from=a;to=b",
-		"b | task | U | Gửi | ",
+		"b | task | U | Send | ",
 		"b-->c | edge |  |  | from=b;to=c",
-		"c | task | S | Nhận | ",
+		"c | task | S | Receive | ",
 		"c-->d | edge |  |  | from=c;to=d",
-		"d | task | S | Lưu | ",
+		"d | task | S | Save | ",
 		"d-->e | edge |  |  | from=d;to=e",
-		"e | task | _ | Ngoài | ")
+		"e | task | _ | Outside | ")
 	expectCodes(t, tb, "mermaid.nested_subgraph", "mermaid.outside_subgraph")
 }
 
@@ -260,17 +260,17 @@ func TestMermaidDbIsAFlowNodeWithItsEdges(t *testing.T) {
 
 func TestMermaidLabelText(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
-  a["Dòng một<br/>dòng hai"] --> b["`+"`**đậm** thường`"+`"]
-  b --> c[Nháy #quot;kép#quot; và #35;]
-  c --> d[<b>thẻ</b> bỏ]`)
+  a["Line one<br/>line two"] --> b["`+"`**bold** plain`"+`"]
+  b --> c[Quote #quot;double#quot; and #35;]
+  c --> d[<b>tag</b> dropped]`)
 	expectRows(t, tb,
-		"a | task |  | Dòng một/dòng hai | ",
+		"a | task |  | Line one/line two | ",
 		"a-->b | edge |  |  | from=a;to=b",
-		"b | task |  | đậm thường | ",
+		"b | task |  | bold plain | ",
 		"b-->c | edge |  |  | from=b;to=c",
-		`c | task |  | Nháy "kép" và # | `,
+		`c | task |  | Quote "double" and # | `,
 		"c-->d | edge |  |  | from=c;to=d",
-		"d | task |  | thẻ bỏ | ")
+		"d | task |  | tag dropped | ")
 }
 
 func TestMermaidHighlightColorBecomesHighlight(t *testing.T) {
@@ -300,15 +300,15 @@ func TestMermaidRenamesReservedIDs(t *testing.T) {
 }
 
 func TestMermaidDuplicateEdgeIDGetsSuffix(t *testing.T) {
-	tb := parseMM(t, "flowchart TD\n  a -->|một| b\n  a -->|hai| b")
-	if rows := rowsOf(tb); rows[2] != "a-->b#2 | edge |  | hai | from=a;to=b" {
+	tb := parseMM(t, "flowchart TD\n  a -->|one| b\n  a -->|two| b")
+	if rows := rowsOf(tb); rows[2] != "a-->b#2 | edge |  | two | from=a;to=b" {
 		t.Errorf("rows:\n  %s", strings.Join(rows, "\n  "))
 	}
 }
 
 func TestMermaidDirectionAndTitle(t *testing.T) {
-	tb := parseMM(t, "---\ntitle: Tiêu đề\n---\nflowchart LR\n  a --> b")
-	if tb.Title != "Tiêu đề" || tb.Direction != "LR" {
+	tb := parseMM(t, "---\ntitle: My title\n---\nflowchart LR\n  a --> b")
+	if tb.Title != "My title" || tb.Direction != "LR" {
 		t.Errorf("title %q, direction %q", tb.Title, tb.Direction)
 	}
 	expectCodes(t, tb)
@@ -332,7 +332,7 @@ func TestMermaidNotFlowchart(t *testing.T) {
 }
 
 func TestMermaidInMarkdown(t *testing.T) {
-	src := "# Tài liệu\n\nVăn bản.\n\n```mermaid\nflowchart TD\n  a --> b\n  a --x c\n```\n"
+	src := "# Document\n\nSome text.\n\n```mermaid\nflowchart TD\n  a --> b\n  a --x c\n```\n"
 	tb, err := Parse(Source{Name: "doc.md", Data: []byte(src)})
 	if err != nil {
 		t.Fatal(err)

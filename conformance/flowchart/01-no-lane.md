@@ -1,7 +1,7 @@
-# Sơ đồ không có lane
+# Diagram without lanes
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
-| A-1 | start | | Vào | |
+| A-1 | start | | Enter | |
 | E1 | edge | | | from=A-1; to=A-2 |
-| A-2 | end | | Xong | |
+| A-2 | end | | Done | |

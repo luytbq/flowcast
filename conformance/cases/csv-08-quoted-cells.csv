@@ -1,8 +1,8 @@
 id,type,parent,content,metadata
-A,lane,,"Lane, có phẩy",
-A-1,start,A,"Dòng một
-Dòng hai",
-E1,edge,,"nhãn ""trích""",from=A-1; to=A-2
-A-2,task,A,có<br>thẻ br,
+A,lane,,"Lane, with comma",
+A-1,start,A,"Line one
+Line two",
+E1,edge,,"label ""quoted""",from=A-1; to=A-2
+A-2,task,A,has<br>br tag,
 E2,edge,,,from=A-2; to=A-3
-A-3,end,A,Xong,
+A-3,end,A,Done,

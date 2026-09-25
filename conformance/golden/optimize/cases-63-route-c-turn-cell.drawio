@@ -1,10 +1,10 @@
 <mxfile host="flowtable2drawio">
-  <diagram id="flowtable" name="Chữ L cần ô rẽ góc chưa có dây ngang">
+  <diagram id="flowtable" name="An L route needs a free corner cell">
     <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="584" pageHeight="404" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="pool" value="Chữ L cần ô rẽ góc chưa có dây ngang" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+        <mxCell id="pool" value="An L route needs a free corner cell" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="40" y="40" width="504" height="324" as="geometry" />
         </mxCell>
         <mxCell id="A" value="Lane A" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">

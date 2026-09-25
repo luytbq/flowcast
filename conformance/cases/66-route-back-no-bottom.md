@@ -1,4 +1,4 @@
-# Cạnh back không ra mặt đáy
+# A back edge does not leave the bottom
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

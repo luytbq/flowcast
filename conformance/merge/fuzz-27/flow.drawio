@@ -1,10 +1,10 @@
 <mxfile host="flowtable2drawio">
-  <diagram id="flowtable" name="&#272;i d&#226;y t&#7893;ng qu&#225;t &#432;u ti&#234;n m&#7863;t b&#234;n tr&#432;&#7899;c m&#7863;t &#273;&#225;y">
+  <diagram id="flowtable" name="General routing prefers a side over the bottom">
     <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="218" pageHeight="404" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="pool" value="&#272;i d&#226;y t&#7893;ng qu&#225;t &#432;u ti&#234;n m&#7863;t b&#234;n tr&#432;&#7899;c m&#7863;t &#273;&#225;y" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;">
+        <mxCell id="pool" value="General routing prefers a side over the bottom" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;">
           <mxGeometry x="40" y="40" width="138" height="324" as="geometry" />
         </mxCell>
         <mxCell id="A" value="Lane A" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;">

@@ -89,7 +89,7 @@ func TestWrapVectors(t *testing.T) {
 			if bad {
 				failed++
 				if failed <= 5 {
-					t.Errorf("%q at maxw=%d:\n  Go   lines=%q hard=%v w=%s h=%s\n  Py   lines=%q hard=%v w=%s h=%s",
+					t.Errorf("%q at maxw=%d:\n  got    lines=%q hard=%v w=%s h=%s\n  vector lines=%q hard=%v w=%s h=%s",
 						s.Text, v.MaxW, got, tm.Hard(), num.Fmt(gw), num.Fmt(gh),
 						v.Lines, v.Hard, v.W, v.H)
 				}
@@ -174,7 +174,7 @@ func TestSizeVectors(t *testing.T) {
 			if bad {
 				failed++
 				if failed <= 5 {
-					t.Errorf("%s %q:\n  Go lines=%q w=%s h=%s\n  Py lines=%q w=%s h=%s",
+					t.Errorf("%s %q:\n  got    lines=%q w=%s h=%s\n  vector lines=%q w=%s h=%s",
 						k.Kind, r.Text, lines, num.Fmt(w), num.Fmt(h), r.Lines, r.W, r.H)
 				}
 			}

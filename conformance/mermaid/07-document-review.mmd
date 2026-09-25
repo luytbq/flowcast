@@ -1,0 +1,13 @@
+flowchart TD
+    draft([Author writes draft]) --> review[Send to reviewer]
+    review --> decision{Review outcome}
+    decision -->|Revise| edit[Author revises]
+    edit --> review
+    decision -->|Rejected| archive[Archive]
+    archive --> stop([Stop])
+    decision -->|Accepted| legal{Needs legal?}
+    legal -->|Yes| legalReview[Legal review]
+    legalReview --> publish[Publish]
+    legal -->|No| publish
+    publish --> announce[Internal notice]
+    announce --> finish([Completed])

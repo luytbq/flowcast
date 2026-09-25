@@ -10,11 +10,11 @@
         <mxCell id="A" value="Lane A" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="0" y="30" width="148" height="304" as="geometry" />
         </mxCell>
-        <mxCell id="A-1" value="Vào" vertex="1" parent="A" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+        <mxCell id="A-1" value="Enter" vertex="1" parent="A" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="34" y="60" width="80" height="44" as="geometry" />
         </mxCell>
-        <mxCell id="A-3" value="Xong" vertex="1" parent="A" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="34" y="134" width="80" height="50" as="geometry" />
+        <mxCell id="A-3" value="Done" vertex="1" parent="A" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+          <mxGeometry x="33" y="134" width="82" height="50" as="geometry" />
         </mxCell>
         <mxCell id="A-2" value="DB.ORDER" vertex="1" parent="A" style="shape=cylinder3;html=1;boundedLbl=1;backgroundOutline=1;size=8;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="24" y="214" width="100" height="60" as="geometry" />

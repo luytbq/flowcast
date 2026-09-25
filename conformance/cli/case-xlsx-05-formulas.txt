@@ -9,9 +9,9 @@ check: read table from xlsx sheet Flow
 WARNING Flow!D4: formula cell has no cached value, read as empty
 check: 0 errors, 1 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 139.03x244px)
+build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 141.75x244px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-4ef3ac1bdb0a3d75  in.drawio
-8161969cd2b0657a  in.xlsx
+5afb906cd5d5d8d3  in.drawio
+400a4d746caa0215  in.xlsx

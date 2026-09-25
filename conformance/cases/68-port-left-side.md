@@ -1,4 +1,4 @@
-# Cổng trên mặt trái nằm ở mép trái
+# A left-side port sits on the left edge
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

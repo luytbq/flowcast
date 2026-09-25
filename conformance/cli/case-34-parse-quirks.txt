@@ -9,9 +9,9 @@ check: read table from markdown
 WARNING line 9 [E1]: metadata "st\_yle" does not apply to type edge, ignored
 check: 0 errors, 1 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 148x260px)
+build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 140x260px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-ba34d22fa488fd0d  in.drawio
-95562592753a5869  in.md
+ae118fd1736e2429  in.drawio
+33308ca56ce61542  in.md

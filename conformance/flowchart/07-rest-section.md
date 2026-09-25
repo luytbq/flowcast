@@ -1,9 +1,9 @@
-# Phần tử không đi tới được từ start
+# Elements not reachable from start
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
-| A-1 | start |  | Vào |  |
+| A-1 | start |  | Enter |  |
 | E1 | edge | | | from=A-1; to=A-2 |
-| A-2 | end |  | Xong |  |
-| A-9 | text |  | Phần còn lại |  |
-| A-3 | task |  | Việc rời rạc |  |
+| A-2 | end |  | Done |  |
+| A-9 | text |  | Rest of the table |  |
+| A-3 | task |  | Orphan task |  |

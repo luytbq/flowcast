@@ -1,5 +1,5 @@
-# Bề rộng lane theo tên lane nhiều dòng
+# Lane width follows a multiline lane name
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
-| A | lane | | Lane A<br>dòng hai | |
+| A | lane | | Lane A<br>line two | |

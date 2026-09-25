@@ -1,13 +1,13 @@
-# Đi dây tổng quát qua kênh và máng
+# General routing through channels and gutters
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
-| A-1 | start |  | Vào |  |
+| A-1 | start |  | Enter |  |
 | E1 | edge | | | from=A-1; to=B-1 |
-| B-1 | task |  | Điều phối |  |
+| B-1 | task |  | Dispatch |  |
 | E2 | edge | | | from=B-1; to=C-1 |
-| C-1 | task |  | Xử lý sâu |  |
+| C-1 | task |  | Deep work |  |
 | E3 | edge | | | from=C-1; to=C-2 |
-| C-2 | task |  | Ghi kết quả |  |
-| E4 | edge | | vòng về | from=C-2; to=A-2 |
-| A-2 | end |  | Nhận kết quả |  |
+| C-2 | task |  | Write result |  |
+| E4 | edge | | loop back | from=C-2; to=A-2 |
+| A-2 | end |  | Get results |  |

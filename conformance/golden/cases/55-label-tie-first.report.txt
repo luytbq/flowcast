@@ -1,2 +1,2 @@
-engine layout.label-crowded: E1: label "gửi yêu cầu" could not find a completely free spot
+engine layout.label-crowded: E1: label "send request" could not find a completely free spot
 diagram: 3 lanes, 2 elements, 1 edges

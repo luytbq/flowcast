@@ -1,4 +1,4 @@
-# Hai cạnh song song cùng đích, chỉ một cạnh đi thẳng đứng
+# Two parallel edges share a target, only one goes straight down
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

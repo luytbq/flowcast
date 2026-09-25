@@ -1,4 +1,4 @@
-# Cổng né giữa mặt khi mặt đã có cạnh cố định
+# A port skips the side center if it has a fixed edge
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

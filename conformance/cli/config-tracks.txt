@@ -3,9 +3,9 @@ $ ["build", "$T/in.md", "--track-gap", "30", "--gutter-margin", "5", "--channel-
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (2 lanes, 11 elements, 14 edges, 443.66x964px)
+build: wrote $T/in.drawio (2 lanes, 11 elements, 14 edges, 448.78x964px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-cae7ad0b852b52bd  in.drawio
-229c0013e87e8e72  in.md
+13dea4f2e7f83061  in.drawio
+36d518dc3ad2f3c3  in.md

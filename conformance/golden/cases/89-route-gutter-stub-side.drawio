@@ -1,10 +1,10 @@
 <mxfile host="flowtable2drawio">
-  <diagram id="flowtable" name="Chân nối vào máng bên đứng đúng phía, để hai đoạn cùng vị trí không đè nhau">
+  <diagram id="flowtable" name="A side-gutter stub sits on its proper side so same-spot segments never overlap">
     <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="402" pageHeight="455" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="pool" value="Chân nối vào máng bên đứng đúng phía, để hai đoạn cùng vị trí không đè nhau" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
+        <mxCell id="pool" value="A side-gutter stub sits on its proper side so same-spot segments never overlap" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="40" y="40" width="322" height="375" as="geometry" />
         </mxCell>
         <mxCell id="A" value="Lane A" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
@@ -32,7 +32,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="E3" value="không" edge="1" parent="pool" source="A-2" target="A-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
+        <mxCell id="E3" value="no" edge="1" parent="pool" source="A-2" target="A-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry" x="-0.9">
             <Array as="points">
               <mxPoint x="84" y="187" />
@@ -40,7 +40,7 @@
               <mxPoint x="159" y="271" />
               <mxPoint x="84" y="271" />
             </Array>
-            <mxPoint x="27.52" y="0" as="offset" />
+            <mxPoint x="16.44" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="E4" value="" edge="1" parent="pool" source="A-3" target="A-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">

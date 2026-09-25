@@ -78,14 +78,14 @@ func TestBuildReturnsDrawioMatchingGolden(t *testing.T) {
 
 func TestDownloadReturnsFileDirectly(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
-	rec := upload(t, h, "/api/build?download=1", "Sơ đồ đặt hàng.md", readCase(t, "05-merge-node.md"), nil)
+	rec := upload(t, h, "/api/build?download=1", "Jalapeño order flow.md", readCase(t, "05-merge-node.md"), nil)
 	if rec.Code != http.StatusOK || !strings.HasPrefix(rec.Body.String(), "<mxfile") {
 		t.Fatalf("code %d: %.200s", rec.Code, rec.Body.String())
 	}
 	if ct := rec.Header().Get("Content-Type"); !strings.HasPrefix(ct, "application/vnd.jgraph.mxfile") {
 		t.Errorf("Content-Type %q", ct)
 	}
-	want := `attachment; filename*=utf-8''S%C6%A1%20%C4%91%E1%BB%93%20%C4%91%E1%BA%B7t%20h%C3%A0ng.drawio`
+	want := `attachment; filename*=utf-8''Jalape%C3%B1o%20order%20flow.drawio`
 	if cd := rec.Header().Get("Content-Disposition"); cd != want {
 		t.Errorf("Content-Disposition %q", cd)
 	}
@@ -93,8 +93,8 @@ func TestDownloadReturnsFileDirectly(t *testing.T) {
 
 func TestFilenameKeepsOnlyBaseName(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
-	rec := upload(t, h, "/api/build", `..\..\etc/bang.md`, readCase(t, "05-merge-node.md"), nil)
-	if r := decode(t, rec); r.Filename != "bang.drawio" {
+	rec := upload(t, h, "/api/build", `..\..\etc/table.md`, readCase(t, "05-merge-node.md"), nil)
+	if r := decode(t, rec); r.Filename != "table.drawio" {
 		t.Errorf("filename %q", r.Filename)
 	}
 }
@@ -102,7 +102,7 @@ func TestFilenameKeepsOnlyBaseName(t *testing.T) {
 func TestInvalidTableReturns422WithIssues(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
 	for _, url := range []string{"/api/build", "/api/check"} {
-		rec := upload(t, h, url, "loi.md", readCase(t, "90-invalid-dangling-ref.md"), nil)
+		rec := upload(t, h, url, "invalid.md", readCase(t, "90-invalid-dangling-ref.md"), nil)
 		r := decode(t, rec)
 		if rec.Code != http.StatusUnprocessableEntity || r.OK || r.Drawio != "" || len(r.Issues) == 0 {
 			t.Fatalf("%s: code %d, %+v", url, rec.Code, r)
@@ -129,12 +129,12 @@ func TestCheckReturnsNoDrawio(t *testing.T) {
 
 func TestXlsxAndReadOptions(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
-	rec := upload(t, h, "/api/build", "hai.xlsx", readCase(t, "xlsx-08-two-flows.xlsx"), map[string]string{"sheet": "Hai"})
+	rec := upload(t, h, "/api/build", "two.xlsx", readCase(t, "xlsx-08-two-flows.xlsx"), map[string]string{"sheet": "Two"})
 	r := decode(t, rec)
 	if rec.Code != http.StatusOK || !r.OK || r.Source == "" {
 		t.Fatalf("code %d: %s", rec.Code, rec.Body.String())
 	}
-	rec = upload(t, h, "/api/build", "hai.xlsx", readCase(t, "xlsx-08-two-flows.xlsx"), map[string]string{"sheet": "Không có"})
+	rec = upload(t, h, "/api/build", "two.xlsx", readCase(t, "xlsx-08-two-flows.xlsx"), map[string]string{"sheet": "Missing"})
 	if r := decode(t, rec); rec.Code != http.StatusUnprocessableEntity || r.Error == nil {
 		t.Errorf("missing sheet: code %d, %s", rec.Code, rec.Body.String())
 	}

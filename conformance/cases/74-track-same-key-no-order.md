@@ -1,4 +1,4 @@
-# Đoạn cùng đích không chịu ràng buộc thứ tự
+# Same-target segments have no order constraint
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

@@ -1,0 +1,13 @@
+flowchart TD
+    A([Customer opens cart]) --> B[Check stock level]
+    B --> C{In stock?}
+    C -->|No| D[Out of stock]
+    D --> Z([Finish])
+    C -->|Yes| E[Compute shipping fee]
+    E --> F[Choose a payment method]
+    F --> G{Payment succeeded?}
+    G -->|No| H[Show payment error]
+    H --> F
+    G -->|Yes| I[Create order]
+    I --> J[Send confirmation]
+    J --> K([Completed])

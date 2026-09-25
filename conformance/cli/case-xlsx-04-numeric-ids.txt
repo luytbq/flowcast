@@ -17,9 +17,9 @@ WARNING Flow!A5 [7]: numeric cell in the id/parent column; format the column as 
 WARNING Flow!C5 [3]: numeric cell in the id/parent column; format the column as Text so ids like 4.10 are not changed
 check: 0 errors, 5 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 128x244px)
+build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 130x244px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-2aeb241ba5254294  in.drawio
-14b9da63f6e00b4c  in.xlsx
+fcdbce4e4e6a0efc  in.drawio
+87fe68f04c34378c  in.xlsx

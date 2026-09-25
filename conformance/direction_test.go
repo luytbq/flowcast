@@ -11,7 +11,7 @@ import (
 	"github.com/luytbq/flowcast/merge"
 )
 
-var dirCases = []string{"cases/05-merge-node.md", "cases/28-tracks-fan-in.md", "mermaid/01-dat-hang.mmd"}
+var dirCases = []string{"cases/05-merge-node.md", "cases/28-tracks-fan-in.md", "mermaid/01-place-order.mmd"}
 
 // BT is the flip of TD, and RL is the flip of LR: node sizes do not change, so
 // the layout is identical, only the orientation differs. LR truly differs from
@@ -129,7 +129,7 @@ func TestDirectionLRDrawsLanesAsHorizontalBands(t *testing.T) {
 // The direction declared by the source, such as mermaid's flowchart LR line,
 // must be used when the caller does not force another direction.
 func TestDirectionTakenFromSource(t *testing.T) {
-	src := dirSource(t, "mermaid/01-dat-hang.mmd")
+	src := dirSource(t, "mermaid/01-place-order.mmd")
 	lr := flowcast.Source{Name: "lr.mmd", Data: []byte(strings.Replace(string(src.Data), "flowchart TD", "flowchart LR", 1))}
 	td, err := flowcast.Build(src, flowcast.Options{})
 	if err != nil {

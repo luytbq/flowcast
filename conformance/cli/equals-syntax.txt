@@ -1,11 +1,11 @@
 # input: 28-tracks-fan-in -> in.md
-$ ["build", "$T/in.md", "--output=$T/ra.drawio", "--task-max-w=200", "--title=Có dấu bằng"]
+$ ["build", "$T/in.md", "--output=$T/out.drawio", "--task-max-w=200", "--title=With an equals sign"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/ra.drawio (2 lanes, 11 elements, 14 edges, 409.66x924px)
+build: wrote $T/out.drawio (2 lanes, 11 elements, 14 edges, 414.78x924px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-229c0013e87e8e72  in.md
-d48b3e28bd1516ea  ra.drawio
+36d518dc3ad2f3c3  in.md
+b0318942386d6ce6  out.drawio

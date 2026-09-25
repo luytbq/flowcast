@@ -71,7 +71,7 @@ A target element is skipped at step 4, not written at that point, in the followi
 
 Because of the merge rule, a shared target node such as "return the result to the user" naturally falls below every branch leading to it. The branches above only point to it through to=, and the reader knows that node sits further down.
 
-Elements that cannot be reached from a start are gathered at the end of the table, after a text row whose content is "Phần còn lại".
+Elements that cannot be reached from a start are gathered at the end of the table, after a text row whose content is "Rest of the table".
 
 ## Example
 
@@ -79,27 +79,27 @@ The ordering flow below has a branching condition, a merge node, a data table, a
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
-| USR | lane | | Người dùng | |
+| USR | lane | | User | |
 | API | lane | | API | |
 | SVC | lane | | Order Service | |
-| USR-1 | start | USR | Gửi yêu cầu đặt hàng | |
+| USR-1 | start | USR | Send order request | |
 | E1 | edge | | POST /orders | from=USR-1; to=API-1 |
-| API-1 | task | API | Kiểm tra dữ liệu | |
-| API-1.1 | text | API | Chỉ kiểm tra định dạng, chưa kiểm tồn kho | attach=API-1 |
+| API-1 | task | API | Validate data | |
+| API-1.1 | text | API | Checks format only, not stock | attach=API-1 |
 | E2 | edge | | | from=API-1; to=API-2 |
-| API-2 | condition | API | Dữ liệu hợp lệ? | style=highlight |
+| API-2 | condition | API | Data valid? | style=highlight |
 | E3 | edge | | No | from=API-2; to=API-3 |
 | E4 | edge | | Yes | from=API-2; to=SVC-1 |
-| API-3 | task | API | Trả lỗi 400 | |
+| API-3 | task | API | Return error 400 | |
 | E5 | edge | | | from=API-3; to=USR-2 |
-| SVC-1 | task | SVC | Tạo đơn hàng | |
+| SVC-1 | task | SVC | Create order | |
 | SVC-2 | db | SVC | DB.ORDER | attach=SVC-1 |
 | E6 | edge | | | from=SVC-1; to=SVC-3 |
-| SVC-3 | task | SVC | Trả kết quả | |
+| SVC-3 | task | SVC | Return result | |
 | E7 | edge | | | from=SVC-3; to=USR-2 |
 | E7.1 | edge | | | from=SVC-3; to=SVC-4; style=dashed |
-| USR-2 | end | USR | Nhận kết quả | |
-| SVC-4 | end | SVC | Gửi email xác nhận | |
+| USR-2 | end | USR | Receive result | |
+| SVC-4 | end | SVC | Send confirmation email | |
 
 Reading this table:
 

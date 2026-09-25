@@ -1,10 +1,10 @@
-# Cạnh ra không nằm liền sau node
+# Outgoing edge not right after its node
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
 | A | lane | | Lane A | |
-| A-1 | start | A | Vào | |
-| A-2 | task | A | Xen vào giữa | |
+| A-1 | start | A | Enter | |
+| A-2 | task | A | Wedged between | |
 | E1 | edge | | | from=A-1; to=A-2 |
 | E2 | edge | | | from=A-2; to=A-3 |
-| A-3 | end | A | Xong | |
+| A-3 | end | A | Done | |

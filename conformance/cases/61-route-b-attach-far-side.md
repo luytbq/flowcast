@@ -1,4 +1,4 @@
-# db nằm xa ở mặt đối diện vẫn chặn mũi tên ngang
+# A far db on the opposite side still blocks a side arrow
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

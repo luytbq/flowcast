@@ -1,4 +1,4 @@
-# Track mới chèn đúng vị trí ràng buộc thứ tự cho phép
+# A new track is inserted where the order constraints allow
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

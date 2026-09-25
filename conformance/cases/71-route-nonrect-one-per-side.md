@@ -1,4 +1,4 @@
-# Hình thoi và elip chỉ một cạnh mỗi mặt
+# Diamonds and ellipses take one edge per side
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

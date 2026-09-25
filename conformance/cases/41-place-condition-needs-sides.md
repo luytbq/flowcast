@@ -1,12 +1,12 @@
-# Condition hai nhánh phụ không nhận mũi tên ngang
+# Condition with two side branches takes no horizontal arrow
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
 | A | lane | | A | |
 | B | lane | | B | |
-| A-1 | start | A | Vào | |
+| A-1 | start | A | Enter | |
 | E1 | edge | | | from=A-1; to=B-1 |
-| B-1 | condition | B | Ba hướng? | |
+| B-1 | condition | B | Three-way? | |
 | E2 | edge | | x | from=B-1; to=B-2 |
 | E3 | edge | | y | from=B-1; to=B-3 |
 | E4 | edge | | z | from=B-1; to=B-4 |

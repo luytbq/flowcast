@@ -1,4 +1,4 @@
-# Chữ L cần ô rẽ góc chưa có dây ngang
+# L shape needs a corner cell with no wire
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
@@ -11,4 +11,4 @@
 | E2 | edge | |  | from=A-2; to=B-4 |
 | D-3 | task | D | D-3 x | |
 | E3 | edge | |  | from=D-3; to=B-4 |
-| B-4 | task | B | B-4 x kèm thêm chữ cho dài ra |  |
+| B-4 | task | B | B-4 x and extra words to pad it |  |

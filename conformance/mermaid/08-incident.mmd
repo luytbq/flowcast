@@ -1,0 +1,15 @@
+flowchart TD
+    alert([Monitoring alert]) --> ack[On-call acks]
+    ack --> sev{Severity?}
+    sev -->|Low| ticket[Create normal ticket]
+    ticket --> close([Close])
+    sev -->|High| war[Open incident war room]
+    war --> diag[Diagnose]
+    diag --> known{Known issue?}
+    known -->|Yes| runbook[Run the runbook]
+    known -->|No| mitigate[Temporary mitigation]
+    runbook --> fixed{Resolved?}
+    mitigate --> fixed
+    fixed -->|Not yet| diag
+    fixed -->|Done| postmortem[Write postmortem]
+    postmortem --> close

@@ -4,7 +4,7 @@ $ ["build", "$T/in.md", "--track-gap", "0", "--png"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (2 lanes, 11 elements, 14 edges, 373.66x924px)
+build: wrote $T/in.drawio (2 lanes, 11 elements, 14 edges, 378.78x924px)
 ERROR   layout: E2 and E4 have overlapping wires
 ERROR   layout: E2 and E6 have overlapping wires
 ERROR   layout: E2 and E8 have overlapping wires
@@ -15,5 +15,5 @@ layout: 6 errors, 0 warnings
 ERROR   drawio export failed: fake drawio: cannot open file
 [exit 2]
 --- files
-6c12db8b216dd516  in.drawio
-229c0013e87e8e72  in.md
+3bca1b71662af6f3  in.drawio
+36d518dc3ad2f3c3  in.md

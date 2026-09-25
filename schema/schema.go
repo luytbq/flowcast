@@ -19,7 +19,7 @@ var (
 var ReservedIDs = set("0", "1", "pool")
 
 // RestMarker is the content of the text row that marks the rest of the table.
-const RestMarker = "Phần còn lại"
+const RestMarker = "Rest of the table"
 
 // Ref is a metadata key that points to the id of another row.
 type Ref struct {

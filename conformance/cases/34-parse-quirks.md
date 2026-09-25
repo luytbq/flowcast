@@ -1,10 +1,10 @@
-## Heading cấp hai, không phải tiêu đề
+## Level-two heading, not the title
 
-# Tiêu đề thật
+# The real title
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
 | A | lane | | Lane A | |
-| A-1 | START | A | Vào<BR>dòng hai | |
-| E1 | edge | | nhãn | from=A-1; to=A-2; st\_yle=x |
-| A-2 | End | A | Xong | |
+| A-1 | START | A | Enter<BR>line two | |
+| E1 | edge | | label | from=A-1; to=A-2; st\_yle=x |
+| A-2 | End | A | Done | |

@@ -1,4 +1,4 @@
-# Đi dây tổng quát ưu tiên mặt bên trước mặt đáy
+# General routing prefers a side over the bottom
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

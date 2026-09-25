@@ -15,9 +15,9 @@ func table(rows ...string) Source {
 }
 
 func TestEngineInternalErrorBecomesCodedErrorNotPanic(t *testing.T) {
-	rows := []string{"| A | lane | | A | |", "| A-1 | task | A | Việc | |"}
+	rows := []string{"| A | lane | | A | |", "| A-1 | task | A | Work | |"}
 	for i := 0; i < 60; i++ {
-		rows = append(rows, fmt.Sprintf("| A-1.%d | text | A | ghi chú %d | attach=A-1 |", i, i))
+		rows = append(rows, fmt.Sprintf("| A-1.%d | text | A | note %d | attach=A-1 |", i, i))
 	}
 	_, err := Build(table(rows...), Options{})
 	var me *model.Error
@@ -29,11 +29,11 @@ func TestEngineInternalErrorBecomesCodedErrorNotPanic(t *testing.T) {
 func TestUnmarkedCycleWarningHasCode(t *testing.T) {
 	r, err := Build(table(
 		"| A | lane | | A | |",
-		"| A-1 | start | A | Vào | |",
+		"| A-1 | start | A | In | |",
 		"| E1 | edge | | | from=A-1; to=A-2 |",
-		"| A-2 | task | A | Hai | |",
+		"| A-2 | task | A | Two | |",
 		"| E2 | edge | | | from=A-2; to=A-3 |",
-		"| A-3 | task | A | Ba | |",
+		"| A-3 | task | A | Three | |",
 		"| E3 | edge | | | from=A-3; to=A-2 |",
 	), Options{})
 	if err != nil || r.HasErrors() {

@@ -127,6 +127,14 @@ They are fixed regression data. When intentionally changing a behavior that a ve
 pins down, fix the expected result in the corresponding file and record the reason in
 the commit.
 
+The text measuring and render check vectors are generated rather than edited by hand.
+Rebuild them from the repo root (the second needs the drawio CLI):
+
+```
+go run ./tools/textvectors conformance/text-vectors.json
+go run ./tools/verifyvectors conformance/verify-vectors.json
+```
+
 ## Measuring layout quality
 
 ```

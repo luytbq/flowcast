@@ -9,9 +9,9 @@ check: read table from markdown
 WARNING line 7 [C-1]: start has incoming edges: E5
 check: 0 errors, 1 warnings
 build: mode new
-build: wrote $T/in.drawio (2 lanes, 3 elements, 5 edges, 549.47x343px)
+build: wrote $T/in.drawio (2 lanes, 3 elements, 5 edges, 618.69x343px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-e7a5ad83213ca2db  in.drawio
-2e9e605cb5d4c181  in.md
+668e7b5a3e19baf2  in.drawio
+d77b69e163906658  in.md

@@ -7,10 +7,10 @@ $ ["build", "$T/in.md"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (3 lanes, 2 elements, 1 edges, 590.09x238px)
-WARNING layout: E1: label "gửi yêu cầu" could not find a completely free spot
+build: wrote $T/in.drawio (3 lanes, 2 elements, 1 edges, 571.81x238px)
+WARNING layout: E1: label "send request" could not find a completely free spot
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-b06234e48dd81f09  in.drawio
-e0af75a31ee66faf  in.md
+db55fd3402e448b8  in.drawio
+3b232fb6f02bf53e  in.md

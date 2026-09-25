@@ -6,7 +6,7 @@ WARNING line 9 [A-1]: start has incoming edges: E3
 WARNING line 16 [E92]: C-2 comes before its source C-92 but the edge does not say back=true
 check: 0 errors, 3 warnings
 build: mode merge, keep manual edits
-build: wrote $T/flow.drawio (4 lanes, 5 elements, 3 edges, 998x249px)
+build: wrote $T/flow.drawio (4 lanes, 5 elements, 3 edges, 988x249px)
 build: backup of the old file $T/flow.drawio.bak
 merge: kept position (2): A-1, B-3
 merge: new element (3): C-92, C-2, C-2.0
@@ -24,6 +24,6 @@ merge: overlapping elements (0): -
 layout: merge does not self-check wires and labels; see the list above and the PNG image
 [exit 0]
 --- files
-1a827205341b3877  flow.drawio
-99f1713d7c62a13d  flow.drawio.bak
-495f5cdf1f413ce3  flow.md
+b6bd2bf2fd268aff  flow.drawio
+f62728488ef9e264  flow.drawio.bak
+072bdb7b993ecfb2  flow.md

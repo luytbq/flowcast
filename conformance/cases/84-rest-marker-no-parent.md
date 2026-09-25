@@ -1,10 +1,10 @@
-# Dòng Phần còn lại không có parent
+# A Rest of the table row without a parent
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
 | A | lane | | Lane A | |
-| A-1 | start | A | Vào | |
+| A-1 | start | A | Enter | |
 | E1 | edge | | | from=A-1; to=A-2 |
-| A-2 | end | A | Xong | |
-| R | text | | Phần còn lại | |
-| A-3 | task | A | Việc rời rạc | |
+| A-2 | end | A | Done | |
+| R | text | | Rest of the table | |
+| A-3 | task | A | Detached task | |

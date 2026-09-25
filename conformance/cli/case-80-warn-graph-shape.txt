@@ -17,10 +17,10 @@ WARNING line 13 [A-4]: end has outgoing edges: E5
 WARNING line 14 [E5]: A-1 comes before its source A-4 but the edge does not say back=true
 check: 0 errors, 5 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 4 elements, 5 edges, 432.18x353px)
+build: wrote $T/in.drawio (1 lanes, 4 elements, 5 edges, 399.82x353px)
 WARNING layout: found a loop not marked back=true, laid out in table order: A-1, A-2, A-3, A-4
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-ebd3136bfaf81414  in.drawio
-d78407e199dc7b2e  in.md
+fbd54fe1abdd32d4  in.drawio
+59db63a2fb1b8053  in.md

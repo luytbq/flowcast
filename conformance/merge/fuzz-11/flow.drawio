@@ -1,10 +1,10 @@
 <mxfile host="flowtable2drawio">
-  <diagram id="flowtable" name="Hai c&#7841;nh song song c&#249;ng &#273;&#237;ch, ch&#7881; m&#7897;t c&#7841;nh &#273;i th&#7859;ng &#273;&#7913;ng">
+  <diagram id="flowtable" name="Two parallel edges share a target, only one goes straight down">
     <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="214" pageHeight="318" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="pool" value="Hai c&#7841;nh song song c&#249;ng &#273;&#237;ch, ch&#7881; m&#7897;t c&#7841;nh &#273;i th&#7859;ng &#273;&#7913;ng" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;">
+        <mxCell id="pool" value="Two parallel edges share a target, only one goes straight down" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;">
           <mxGeometry x="abc" y="56" width="134" height="238" as="geometry" />
         </mxCell>
         <mxCell id="A" value="Lane A" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;">
@@ -28,7 +28,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-      <mxCell id="A-2" value="b&#7843;n sao" style="text;" vertex="1" parent="1"><mxGeometry x="235.0" y="142.7" width="60" height="30" as="geometry" /></mxCell><mxCell style="text;html=1;" vertex="1" parent="1" id="hand-3" value="Ghi ch&#250;"><mxGeometry x="552.730143739181" y="327.0" width="170" height="31.4" as="geometry" /></mxCell></root>
+      <mxCell id="A-2" value="copy" style="text;" vertex="1" parent="1"><mxGeometry x="235.0" y="142.7" width="60" height="30" as="geometry" /></mxCell><mxCell style="text;html=1;" vertex="1" parent="1" id="hand-3" value="Note"><mxGeometry x="552.730143739181" y="327.0" width="170" height="31.4" as="geometry" /></mxCell></root>
     </mxGraphModel>
   </diagram>
 </mxfile>

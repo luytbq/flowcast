@@ -5,4 +5,4 @@ check: read table from markdown
 check: 0 errors, 0 warnings
 [exit 0]
 --- files
-35ce030c1847ff7d  in.md
+5b87df5db0eb01a0  in.md

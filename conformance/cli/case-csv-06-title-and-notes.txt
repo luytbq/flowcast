@@ -7,9 +7,9 @@ $ ["build", "$T/in.csv"]
 check: read table from csv (comma, utf-8-sig)
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (2 lanes, 3 elements, 2 edges, 394.02x250px)
+build: wrote $T/in.drawio (2 lanes, 3 elements, 2 edges, 390.16x250px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-70ae9ae6675aaae4  in.csv
-180e8457c7fe7150  in.drawio
+6f1cc80dbd214844  in.csv
+728ea024930fecec  in.drawio

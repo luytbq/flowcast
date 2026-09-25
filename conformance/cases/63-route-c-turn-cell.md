@@ -1,4 +1,4 @@
-# Chữ L cần ô rẽ góc chưa có dây ngang
+# An L route needs a free corner cell
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

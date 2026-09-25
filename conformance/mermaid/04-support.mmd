@@ -1,0 +1,23 @@
+flowchart TD
+    subgraph KH [Customer]
+        a([Submit support request])
+        r([Get a response])
+    end
+    subgraph L1 [Tier 1 support]
+        b[Triage the request]
+        c{Solvable right away?}
+        d[Reply to customer]
+    end
+    subgraph L2 [Tier 2 engineer]
+        e[Investigate]
+        f{Product bug?}
+        g[Create bug ticket]
+        h[Configuration guide]
+    end
+    a --> b --> c
+    c -->|Yes| d
+    c -->|No| e
+    e --> f
+    f -->|Yes| g --> d
+    f -->|No| h --> d
+    d --> r

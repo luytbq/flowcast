@@ -1,0 +1,18 @@
+flowchart TD
+    A([Create transfer]) --> B[Check balance]
+    B --> C{Enough funds?}
+    C -->|No| X([Reject])
+    C -->|Yes| D{Amount over 500 million?}
+    D -->|Yes| E[Send to manager]
+    E --> F{Approved?}
+    F -->|No| X
+    F -->|Yes| G[Verify OTP]
+    D -->|No| G
+    G --> H{OTP valid?}
+    H -->|Wrong| I[Re-enter OTP]
+    I --> H
+    H -->|Right| J[Post transaction]
+    J --> K[(Ledger)]
+    J --> L([Succeeded])
+    classDef ok fill:#dae8fc,stroke:#6c8ebf
+    class L ok

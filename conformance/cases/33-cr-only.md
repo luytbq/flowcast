@@ -1,1 +1,1 @@
-# Xuống dòng kiểu CR cũ| id | type | parent | content | metadata ||---|---|---|---|---|| A | lane | | Lane A | || A-1 | start | A | Vào | || E1 | edge | | nhãn | from=A-1; to=A-2 || A-2 | end | A | Xong | |
+# Old CR-only line endings| id | type | parent | content | metadata ||---|---|---|---|---|| A | lane | | Lane A | || A-1 | start | A | Enter | || E1 | edge | | label | from=A-1; to=A-2 || A-2 | end | A | Done | |

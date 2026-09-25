@@ -1,0 +1,14 @@
+flowchart TD
+    A([Refund request]) --> B{Within 7 days?}
+    B -- Expired --> C[Reject with reason]
+    C --> Z([Close request])
+    B -- In time --> D{Item opened?}
+    D -- Opened --> E[Inspect condition]
+    E --> F{Resellable?}
+    F -- No --> G[Refund 50%]
+    F -- Yes --> H[Refund 100%]
+    D -- Unopened --> H
+    G --> I[Bank transfer]
+    H --> I
+    I --> J[Send receipt]
+    J --> Z

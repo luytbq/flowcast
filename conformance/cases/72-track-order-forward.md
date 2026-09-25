@@ -1,4 +1,4 @@
-# Ràng buộc thứ tự chân nối theo chiều xuôi
+# Stub order constraint in the forward direction
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

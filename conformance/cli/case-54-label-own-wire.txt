@@ -9,12 +9,11 @@ check: read table from markdown
 WARNING line 14 [B-3]: task has no outgoing edge
 check: 0 errors, 1 warnings
 build: mode new
-build: wrote $T/in.drawio (2 lanes, 4 elements, 4 edges, 467.19x279px)
-WARNING layout: E4: label "gửi yêu cầu" could not find a completely free spot
-WARNING layout: label E3 overlaps label E4
-WARNING layout: label E4 overlaps wire E3
-layout: 0 errors, 2 warnings
+build: wrote $T/in.drawio (2 lanes, 4 elements, 4 edges, 462.43x279px)
+WARNING layout: E4: label "send request" could not find a completely free spot
+WARNING layout: label E2 overlaps label E4
+layout: 0 errors, 1 warnings
 [exit 0]
 --- files
-b7e6352a8857530e  in.drawio
-299538688538a46a  in.md
+b5ef778c7cabb2df  in.drawio
+43edde292bc73e7c  in.md

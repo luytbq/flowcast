@@ -6,4 +6,4 @@ $ ["build", "$T/khong-co.md"]
 ERROR   cannot read $T/khong-co.md: No such file or directory
 [exit 1]
 --- files
-35ce030c1847ff7d  in.md
+5b87df5db0eb01a0  in.md

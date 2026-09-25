@@ -4,7 +4,7 @@ check: read table from markdown
 WARNING line 14 [B-4]: task has no outgoing edge
 check: 0 errors, 1 warnings
 build: mode merge, keep manual edits
-build: wrote $T/flow.drawio (3 lanes, 4 elements, 3 edges, 629.94x361px)
+build: wrote $T/flow.drawio (3 lanes, 4 elements, 3 edges, 622.25x361px)
 build: backup of the old file $T/flow.drawio.bak
 merge: kept position (2): B-3, B-4
 merge: new element (2): A-1, C-2
@@ -22,6 +22,6 @@ merge: overlapping elements (0): -
 layout: merge does not self-check wires and labels; see the list above and the PNG image
 [exit 0]
 --- files
-0718e0124a527959  flow.drawio
-21a665da39ac47c4  flow.drawio.bak
-eceb077106ce3eb0  flow.md
+6fcc005fff70c767  flow.drawio
+25c67da51b7c2ce7  flow.drawio.bak
+03e8749acc1df9f9  flow.md

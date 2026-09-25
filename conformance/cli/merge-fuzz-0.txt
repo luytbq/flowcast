@@ -3,7 +3,7 @@ $ ["build", "$T/flow.md", "--mode", "merge"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode merge, keep manual edits
-build: wrote $T/flow.drawio (2 lanes, 1 elements, 0 edges, 263.19x622.71px)
+build: wrote $T/flow.drawio (2 lanes, 1 elements, 0 edges, 258.43x622.71px)
 build: backup of the old file $T/flow.drawio.bak
 merge: kept position (0): -
 merge: new element (1): A-3
@@ -22,6 +22,6 @@ merge: overlapping elements (0): -
 layout: merge does not self-check wires and labels; see the list above and the PNG image
 [exit 0]
 --- files
-f190c59cb2c5a181  flow.drawio
-d9b80b88854eaa17  flow.drawio.bak
-ec0d79079083872e  flow.md
+9e6c9f8494560759  flow.drawio
+baa971abcfacf0e4  flow.drawio.bak
+645663cde227b60c  flow.md

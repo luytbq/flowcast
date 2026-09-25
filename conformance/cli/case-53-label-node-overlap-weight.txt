@@ -9,15 +9,11 @@ check: read table from markdown
 WARNING line 14 [A-5]: task has no outgoing edge
 check: 0 errors, 1 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 5 elements, 4 edges, 338x386px)
-WARNING layout: E3: label "trả kết quả kèm mã lỗi chi tiết" could not find a completely free spot
-WARNING layout: E5: label "trả kết quả kèm mã lỗi chi tiết" could not find a completely free spot
-WARNING layout: label E3 overlaps label E5
+build: wrote $T/in.drawio (1 lanes, 5 elements, 4 edges, 338x371px)
+WARNING layout: E3: label "return result with error detail" could not find a completely free spot
 WARNING layout: label E3 overlaps wire E5
-WARNING layout: label E5 overlaps wire E3
-WARNING layout: label E5 overlaps wire E4
-layout: 0 errors, 4 warnings
+layout: 0 errors, 1 warnings
 [exit 0]
 --- files
-8d9277ba3a931cc0  in.drawio
-9b4a37752a0ced56  in.md
+872b5454ba11e8ac  in.drawio
+7394cfe9d21bade1  in.md

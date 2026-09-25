@@ -9,9 +9,9 @@ check: read table from markdown
 WARNING line 14 [B-4]: task has no outgoing edge
 check: 0 errors, 1 warnings
 build: mode new
-build: wrote $T/in.drawio (3 lanes, 4 elements, 3 edges, 629.94x361px)
+build: wrote $T/in.drawio (3 lanes, 4 elements, 3 edges, 611.66x361px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-c6b171f262992df1  in.drawio
-abd0aa9c10461093  in.md
+a665740fd0397a45  in.drawio
+981945e5439ffff1  in.md

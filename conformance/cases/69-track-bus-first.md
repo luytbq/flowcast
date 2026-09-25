@@ -1,4 +1,4 @@
-# Đoạn cùng đích ưu tiên track đã có đoạn cùng đích
+# Same-target segments prefer a track already used
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

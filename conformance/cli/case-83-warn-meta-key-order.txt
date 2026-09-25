@@ -13,9 +13,9 @@ WARNING line 7 [E1]: metadata "alpha" does not apply to type edge, ignored
 WARNING line 7 [E1]: metadata "mu" does not apply to type edge, ignored
 check: 0 errors, 3 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 128x244px)
+build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 130x244px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-03f35d5389bec26e  in.drawio
-6ad04b3da4708569  in.md
+bc4e57870085bc78  in.drawio
+818f931e33c0a14d  in.md

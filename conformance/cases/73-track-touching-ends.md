@@ -1,4 +1,4 @@
-# Hai đoạn chạm đầu vẫn tính là chồng
+# Two segments touching at the ends still overlap
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

@@ -1,4 +1,4 @@
-# Nhánh phụ bị chặn dạt qua nhiều cột trước khi xuống hàng
+# A blocked side branch drifts across columns before moving down
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
@@ -7,8 +7,8 @@
 | E2 | edge | |  | from=A-2; to=A-6 |
 | A-3 | condition | A | A-3 x | |
 | E3 | edge | |  | from=A-3; to=A-4 |
-| E4 | edge | | có | from=A-3; to=A-5 |
-| E5 | edge | | nhánh dài hơn | from=A-3; to=A-6 |
+| E4 | edge | | yes | from=A-3; to=A-5 |
+| E5 | edge | | longer branch | from=A-3; to=A-6 |
 | A-4 | condition | A | A-4 x | |
 | E7 | edge | |  | from=A-4; to=A-6 |
 | E8 | edge | |  | from=A-4; to=A-5 |

@@ -3,4 +3,4 @@ $ ["check", "$T/in.dat"]
 ERROR   unsupported file extension ".dat"; use .md, .csv, .xlsx or .mmd
 [exit 1]
 --- files
-35ce030c1847ff7d  in.dat
+5b87df5db0eb01a0  in.dat

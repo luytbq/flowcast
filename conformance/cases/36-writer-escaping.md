@@ -1,10 +1,10 @@
-# Đối soát giao dịch của cổng thanh toán nội bộ với ngân hàng đối tác qua kênh "thẻ & ví" điện tử
+# Reconcile internal payment gateway transactions with the partner bank over the "card & wallet" e-channel
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
-| A | lane | | Kế toán & đối soát | |
-| A-1 | start | A | Nhận file "đối soát" | |
-| E1 | edge | | gửi & chờ | from=A-1; to=A-2 |
-| A-2 | task | A | Cột	tách bằng tab | |
+| A | lane | | Accounting & recon | |
+| A-1 | start | A | Receive "recon" file | |
+| E1 | edge | | send & wait | from=A-1; to=A-2 |
+| A-2 | task | A | Column	split by tab | |
 | E2 | edge | | | from=A-2; to=A-3 |
-| A-3 | end | A | Xong | |
+| A-3 | end | A | Done | |

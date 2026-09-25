@@ -1,4 +1,4 @@
-# Ra đáy rồi đi thẳng xuống khi cột đích trống
+# Exit bottom, go straight down if target column free
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|

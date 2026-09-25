@@ -3,4 +3,4 @@ $ ["check", "$T/in.csv", "--delimiter", ";"]
 ERROR   header row not found in csv; check the delimiter, or use --delimiter
 [exit 1]
 --- files
-96a08709c8ded76c  in.csv
+b888b39cb18f1c29  in.csv

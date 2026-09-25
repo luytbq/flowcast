@@ -6,4 +6,4 @@ $ ["build", "$T/in.xlsx"]
 ERROR   cannot read $T/in.xlsx: not a valid xlsx file
 [exit 1]
 --- files
-5166be99e698831a  in.xlsx
+1f3ccb65ee2f1f48  in.xlsx

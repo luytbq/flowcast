@@ -1,6 +1,6 @@
-# Phần bù bề rộng lane chia đều cho hai máng ngoài
+# Extra lane width splits evenly to both outer gutters
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
-| A | lane | | Lane A<br>dòng hai | |
+| A | lane | | Lane A<br>line two | |
 | A-3 | external | A | A-3 x | |

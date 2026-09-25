@@ -1,10 +1,10 @@
-# Xuống dòng, gạch đứng thoát, dấu tiếng Việt
+# Line breaks, escaped pipes, accented letters
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
 | A | lane | | Lane A | |
-| A-1 | start | A | Bắt đầu | |
+| A-1 | start | A | Start | |
 | E1 | edge | | | from=A-1; to=A-2 |
-| A-2 | task | A | Dòng một<br>Dòng hai \| có gạch \| đứng | |
-| E2 | edge | | nhãn \<có\> ngoặc | from=A-2; to=A-3 |
-| A-3 | end | A | Kết thúc phiên đối soát | |
+| A-2 | task | A | Line one<br>Line two \| résumé \| café | |
+| E2 | edge | | label \<with\> tags | from=A-2; to=A-3 |
+| A-3 | end | A | End the recon session | |

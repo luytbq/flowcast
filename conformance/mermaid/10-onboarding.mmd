@@ -1,17 +1,17 @@
 ---
-title: Tiếp nhận nhân viên mới
+title: Onboarding a new employee
 ---
 flowchart TD
-    subgraph HR [Nhân sự]
-        o([Nhận quyết định tuyển]) --> p[Chuẩn bị hợp đồng]
-        p --> q[Ký hợp đồng]
+    subgraph HR [People]
+        o([Receive hire decision]) --> p[Prepare contract]
+        p --> q[Sign contract]
     end
-    subgraph IT [Hạ tầng]
-        r[Cấp tài khoản] --> s[Cấp máy tính]
+    subgraph IT [Infra]
+        r[Create accounts] --> s[Issue laptop]
     end
-    subgraph Team [Nhóm]
-        t[Giao người kèm] --> u[Kế hoạch 30 ngày]
-        u --> v([Bắt đầu làm việc])
+    subgraph Team [Squad]
+        t[Assign a mentor] --> u[30-day plan]
+        u --> v([Start working])
     end
     q --> r
     q --> t

@@ -6,8 +6,8 @@ check: 0 errors, 1 warnings
 build: mode merge, keep manual edits
 build: wrote $T/flow.drawio (1 lanes, 5 elements, 4 edges, 338x386px)
 build: backup of the old file $T/flow.drawio.bak
-WARNING layout: E3: label "trả kết quả kèm mã lỗi chi tiết" could not find a completely free spot
-WARNING layout: E5: label "trả kết quả kèm mã lỗi chi tiết" could not find a completely free spot
+WARNING layout: E3: label "return result with detailed error code" could not find a completely free spot
+WARNING layout: E5: label "return result with detailed error code" could not find a completely free spot
 merge: kept position (5): A-3, A-3.0, A-4, A-4.0, A-5
 merge: new element (0): -
 merge: new element shifted down due to overlap (0): -
@@ -24,6 +24,6 @@ merge: overlapping elements (0): -
 layout: merge does not self-check wires and labels; see the list above and the PNG image
 [exit 0]
 --- files
-8d9277ba3a931cc0  flow.drawio
-8d9277ba3a931cc0  flow.drawio.bak
-9b4a37752a0ced56  flow.md
+700d68d8366a1385  flow.drawio
+ad97febe7c7970c8  flow.drawio.bak
+77f7e7a16ceb5687  flow.md

@@ -1,6 +1,6 @@
 # input: xlsx-08-two-flows -> in.xlsx
-$ ["check", "$T/in.xlsx", "--sheet", "Không có"]
-ERROR   $T/in.xlsx has no sheet named "Không có"
+$ ["check", "$T/in.xlsx", "--sheet", "Missing"]
+ERROR   $T/in.xlsx has no sheet named "Missing"
 [exit 1]
 --- files
-315f31f00fae88bb  in.xlsx
+624ef5a88665fdf3  in.xlsx

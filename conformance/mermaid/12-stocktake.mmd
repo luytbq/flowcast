@@ -1,0 +1,13 @@
+flowchart TD
+    s([Shift start]) --> scan[Scan each shelf]
+    scan --> more{More shelves?}
+    more -->|More| scan
+    more -->|None| cmp[Compare to books]
+    cmp --> diff{Mismatch?}
+    diff -->|No| ok([Close stocktake])
+    diff -->|Yes| recount[Recount mismatches]
+    recount --> still{Still off?}
+    still -->|No| ok
+    still -->|Yes| report[Write discrepancy report]
+    report --> adjust[Adjust inventory]
+    adjust --> ok

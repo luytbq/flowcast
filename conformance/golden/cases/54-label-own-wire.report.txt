@@ -1,5 +1,4 @@
 issue graph.no_out_edge WARNING line 14 [B-3]: task has no outgoing edge
-engine layout.label-crowded: E4: label "gửi yêu cầu" could not find a completely free spot
-self-check warning check.label-over-label: label E3 overlaps label E4
-self-check warning check.label-over-edge: label E4 overlaps wire E3
+engine layout.label-crowded: E4: label "send request" could not find a completely free spot
+self-check warning check.label-over-label: label E2 overlaps label E4
 diagram: 2 lanes, 4 elements, 4 edges

@@ -1,8 +1,4 @@
 issue graph.no_out_edge WARNING line 14 [A-5]: task has no outgoing edge
-engine layout.label-crowded: E3: label "trả kết quả kèm mã lỗi chi tiết" could not find a completely free spot
-engine layout.label-crowded: E5: label "trả kết quả kèm mã lỗi chi tiết" could not find a completely free spot
-self-check warning check.label-over-label: label E3 overlaps label E5
+engine layout.label-crowded: E3: label "return result with error detail" could not find a completely free spot
 self-check warning check.label-over-edge: label E3 overlaps wire E5
-self-check warning check.label-over-edge: label E5 overlaps wire E3
-self-check warning check.label-over-edge: label E5 overlaps wire E4
 diagram: 1 lanes, 5 elements, 4 edges

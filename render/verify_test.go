@@ -41,7 +41,7 @@ func TestVerifyMatchesVectors(t *testing.T) {
 			continue
 		}
 		if !reflect.DeepEqual(got, v.Problems) {
-			t.Errorf("%s/%s:\n  Go %q\n  Py %q", v.Case, v.Variant, got, v.Problems)
+			t.Errorf("%s/%s:\n  got    %q\n  vector %q", v.Case, v.Variant, got, v.Problems)
 		}
 	}
 }
