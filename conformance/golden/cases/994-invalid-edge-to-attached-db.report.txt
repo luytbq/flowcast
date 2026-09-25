@@ -1,0 +1,2 @@
+issue ref.bad_target ERROR   line 10 [E2]: to=A-2.1 is db; edges only connect start/end/task/condition/external or a db without attach
+issue graph.no_out_edge WARNING line 8 [A-2]: task has no outgoing edge
