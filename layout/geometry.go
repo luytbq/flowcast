@@ -129,7 +129,7 @@ func (l *Layout) computeGeometry(lzG map[gzKey]float64, lzC map[int]float64) {
 		g.azG[key] = fmax(g.azG[key], float64(cfg.AttachGap)+l.items[aid].W)
 	}
 
-	l.LaneX, l.LaneW = nil, nil
+	l.LaneX, l.LaneW, l.LaneMinW = nil, nil, nil
 	x := 0.0
 	for lane, lrow := range l.Lanes {
 		cols := l.Cols[lane]
@@ -162,6 +162,7 @@ func (l *Layout) computeGeometry(lzG map[gzKey]float64, lzC map[int]float64) {
 		}
 		l.LaneX = append(l.LaneX, x)
 		l.LaneW = append(l.LaneW, total)
+		l.LaneMinW = append(l.LaneMinW, fmax(float64(cfg.MinLaneW), head))
 		cx := x
 		for gi := range widths {
 			g.gutX[[2]int{lane, gi}] = cx

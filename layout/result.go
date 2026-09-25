@@ -24,8 +24,11 @@ type Result struct {
 	MinChannel   int
 	Lanes        []PlacedLane
 	LaneX, LaneW []float64
-	Items        []PlacedItem // in table row order
-	Edges        []PlacedEdge // in table row order
+	// LaneMinW is the narrowest each lane may become when the optimizer shrinks
+	// it: the minimum lane width or the width its name needs.
+	LaneMinW []float64
+	Items    []PlacedItem // in table row order
+	Edges    []PlacedEdge // in table row order
 	// TopoOrder is the topological order of the nodes. Merge places new nodes in
 	// this order so that nodes earlier in the flow get their spot first.
 	TopoOrder []string
@@ -86,7 +89,7 @@ func (l *Layout) Result() Result {
 		PoolW: l.PoolW, PoolH: l.PoolH, Origin: Origin,
 		PoolHeader: l.Cfg.PoolHeader, LaneHeader: l.Cfg.LaneHeader, MinChannel: l.Cfg.MinChannel,
 		NoLanes: l.NoLanes, Dir: l.Dir,
-		LaneX: l.LaneX, LaneW: l.LaneW, TopoOrder: l.TopoOrder,
+		LaneX: l.LaneX, LaneW: l.LaneW, LaneMinW: l.LaneMinW, TopoOrder: l.TopoOrder,
 	}
 	for _, ln := range l.Lanes {
 		r.Lanes = append(r.Lanes, PlacedLane{ln.ID, ln.Lines})

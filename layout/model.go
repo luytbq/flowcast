@@ -98,6 +98,9 @@ type Layout struct {
 
 	// Output of the geometry phase.
 	LaneX, LaneW []float64
+	// LaneMinW is the narrowest each lane may be: the minimum lane width or the
+	// width its name needs, whichever is larger.
+	LaneMinW     []float64
 	PoolW, PoolH float64
 	g            *geom
 }

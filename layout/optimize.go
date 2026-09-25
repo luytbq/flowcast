@@ -38,7 +38,6 @@ func Optimize(r Result, cfg Config, trace Trace) Result {
 		rounds++
 		n := o.round(rounds)
 		moves += n
-		trace.Log("optimize: round %d: %d moves", rounds, n)
 		if n == 0 {
 			break
 		}
@@ -96,15 +95,20 @@ func newOptimizer(r Result, cfg Config) *optimizer {
 	return o
 }
 
-// round runs one pass over every part and returns the number of moves applied.
+// round runs one pass over every kind of part, in this order: wires, items,
+// lanes. A move on one part can open room for another, which is why the loop
+// runs more than one round. It returns the number of moves applied.
 func (o *optimizer) round(n int) int {
-	moves := 0
+	wires := 0
 	for i := range o.r.Edges {
 		for o.straighten(i, n) {
-			moves++
+			wires++
 		}
 	}
-	return moves
+	items := o.shiftItems(n)
+	lanes := o.shrinkLanes(n)
+	o.trace.Log("optimize: round %d: %d wires straightened, %d items moved, %d lanes narrowed", n, wires, items, lanes)
+	return wires + items + lanes
 }
 
 // straighten tries to remove two bends from edge i by sliding one inner segment
@@ -256,10 +260,16 @@ func crosses(a1, b1, a2, b2 [2]float64) bool {
 // are checked against clearance rules, so a path the router built with a
 // tighter clearance does not block every later move.
 func (o *optimizer) valid(i int, pts [][2]float64) bool {
+	return o.validFrom(i, pts, o.r.Edges[i].Pts)
+}
+
+// validFrom is valid with the edge's previous path given explicitly, for when
+// the edge already holds its candidate path while other edges are checked.
+func (o *optimizer) validFrom(i int, pts, prev [][2]float64) bool {
 	e := o.r.Edges[i]
 	old := map[[2][2]float64]bool{}
-	for k := 0; k+1 < len(e.Pts); k++ {
-		old[[2][2]float64{e.Pts[k], e.Pts[k+1]}] = true
+	for k := 0; k+1 < len(prev); k++ {
+		old[[2][2]float64{prev[k], prev[k+1]}] = true
 	}
 	gap := float64(o.cfg.TrackGap)
 	last := len(pts) - 2
@@ -268,12 +278,14 @@ func (o *optimizer) valid(i int, pts [][2]float64) bool {
 		if !inside(a, o.pool) || !inside(b, o.pool) {
 			return false
 		}
-		if old[[2][2]float64{a, b}] {
-			continue
-		}
+		unchanged := old[[2][2]float64{a, b}]
 		for _, it := range o.r.Items {
 			bx := o.boxes[it.ID]
-			if (it.ID == e.Src && k == 0) || (it.ID == e.Dst && k == last) {
+			end := (it.ID == e.Src && k == 0) || (it.ID == e.Dst && k == last)
+			// An unchanged segment still has to stay out of items, since the
+			// move may have brought an item to it; only the clearance rules
+			// are relaxed for it.
+			if end || unchanged {
 				if segHits(a, b, shrink(bx, 1)) {
 					return false
 				}
@@ -282,6 +294,9 @@ func (o *optimizer) valid(i int, pts [][2]float64) bool {
 			if segHits(a, b, grow(bx, gap)) {
 				return false
 			}
+		}
+		if unchanged {
+			continue
 		}
 		for j, f := range o.r.Edges {
 			if j == i {

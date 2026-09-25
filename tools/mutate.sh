@@ -332,6 +332,20 @@ mutate "tối ưu không neo lại nhãn" layout/optimize.go '	p, dist, _ := anc
 	p, dist, _ := anchor(pts, *e.Label, e.LabelOff)'
 mutate "tối ưu bỏ qua chỗ cắt" layout/optimize.go '					c += costCross' '					c += 0'
 
+mutate "dịch phần tử không coi đoạn đứng yên của dây mình là vật cản" layout/optimize_items.go '			if moving[k] || moving[k+1] {' '			if true {'
+mutate "dịch phần tử bỏ qua nhãn" layout/optimize_items.go '			if e.Label != nil && area(b, *e.Label) > 0 {' '			if false {'
+mutate "không có lực kéo về tâm lane" layout/optimize_items.go 'const costGravity = 0.05' 'const costGravity = 0'
+mutate "ghi chú được kéo sát hơn attach-gap" layout/optimize_items.go 'math.Abs(gap-float64(o.cfg.AttachGap))' 'math.Max(gap-float64(o.cfg.AttachGap), 0)'
+mutate "không thử bước dịch ngắn hơn" layout/optimize_items.go '			if dx, paths, ok = o.bisectShift(m, edges, dx); !ok {' '			if true {'
+mutate "co lane không dời nhãn theo dây" layout/optimize_items.go '				labelDX = d' '				labelDX = 0'
+mutate "co lane bỏ qua nhãn" layout/optimize_items.go '				add(e.Label[0], e.Label[2])' '				_ = e.Label'
+mutate "co lane xuống dưới bề rộng tối thiểu" layout/optimize_items.go 'w := math.Max(o.laneMinW(li), hi-lo+float64(2*margin))' 'w := hi - lo + float64(2*margin)'
+mutate "kiểm dây của nhóm với đường cũ của nhau" layout/optimize_items.go '		o.r.Edges[i].Pts = paths[i]
+	}
+	defer func() {' '		_ = paths[i]
+	}
+	defer func() {'
+mutate "cổng lệch trên elip để draw.io chiếu lại" writer/drawio/write.go '				style += "exitPerimeter=0;"' '				style += ""'
 # cmd/flowcast
 mutate "không đưa lỗi lên trước cảnh báo" cmd/flowcast/main.go 'return sorted[i].Level == model.LevelError && sorted[j].Level != model.LevelError' 'return false'
 mutate "dòng build viết kích thước có khoảng trắng" cmd/flowcast/main.go '(%d lanes, %d elements, %d edges, %sx%spx)' '(%d lanes, %d elements, %d edges, %s x %spx)'

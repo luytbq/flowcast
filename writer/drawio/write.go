@@ -32,6 +32,22 @@ var shapeStyle = map[layout.Shape]string{
 	layout.ShapeNote:          "text;html=1;align=left;verticalAlign=middle;spacingLeft=4;",
 }
 
+// offOutline reports whether a port at frac on a shape of the given kind lies
+// off the four side midpoints of a diamond or ellipse.
+func offOutline(s layout.Shape, frac [2]float64) bool {
+	switch s {
+	case layout.ShapeDiamond, layout.ShapeEllipse, layout.ShapeDoubleEllipse, layout.ShapeDashedEllipse:
+	default:
+		return false
+	}
+	for _, mid := range [][2]float64{{0.5, 0}, {1, 0.5}, {0.5, 1}, {0, 0.5}} {
+		if frac == mid {
+			return false
+		}
+	}
+	return true
+}
+
 // htmlLines joins lines with <br> after escaping html characters. This escaping
 // stacks on top of the XML attribute escaping done when writing the file, so &
 // in the content becomes &amp;amp; in the file: draw.io decodes the attribute
@@ -108,6 +124,10 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 			geo(c, it.X-r.LaneX[it.Lane], it.Y-float64(r.PoolHeader), it.W, it.H)
 		}
 	}
+	shapeOf := map[string]layout.Shape{}
+	for _, it := range r.Items {
+		shapeOf[it.ID] = it.Shape
+	}
 	for _, e := range r.Edges {
 		style := "edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" +
 			"labelBackgroundColor=default;"
@@ -118,8 +138,17 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 				style += kv[0] + "=" + kv[1] + ";"
 			}
 		default:
-			style += "exitX=" + f(e.ExitFrac[0]) + ";exitY=" + f(e.ExitFrac[1]) + ";exitDx=0;exitDy=0;" +
-				"entryX=" + f(e.EntryFrac[0]) + ";entryY=" + f(e.EntryFrac[1]) + ";entryDx=0;entryDy=0;"
+			style += "exitX=" + f(e.ExitFrac[0]) + ";exitY=" + f(e.ExitFrac[1]) + ";exitDx=0;exitDy=0;"
+			// A port off the midpoint of a diamond or ellipse side is computed on
+			// the outline and rounded to two decimals, which can leave it a hair
+			// inside the shape. draw.io would project it back onto the outline
+			// along a ray from the centre, moving it and adding a jog, so it is
+			// told to use the point as given. The key sits where merge writes it
+			// back, right after exitDy, so a merged file stays byte-identical.
+			if offOutline(shapeOf[e.Src], e.ExitFrac) {
+				style += "exitPerimeter=0;"
+			}
+			style += "entryX=" + f(e.EntryFrac[0]) + ";entryY=" + f(e.EntryFrac[1]) + ";entryDx=0;entryDy=0;"
 		}
 		if e.Dashed {
 			style += "dashed=1;"
