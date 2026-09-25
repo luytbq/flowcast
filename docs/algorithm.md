@@ -288,10 +288,35 @@ lane and a wire kind is chosen per grid cell before any coordinate exists. That
 leaves slack only the coordinates show. The optimizer works on the finished
 geometry alone and ignores the grid.
 
-Each round visits every wire in table order and tries its moves. A move is kept
-only when it lowers the cost and the geometry stays valid. The cost adds 100 per
-bend, the wire length in pixels, 300 per crossing with another wire, and 200 per
-label of another wire the path runs through. A path is valid when:
+A round visits every kind of part in a fixed order: wires, then items, then
+lanes. A move on one part can open room for another, which is why the loop runs
+more than one round. A move is kept only when it lowers the cost and the
+geometry stays valid.
+
+The cost adds 100 per bend, the wire length in pixels, 300 per crossing with
+another wire, 200 per label of another wire a path runs through, 1 per pixel by
+which a db or note sits off --attach-gap from its node, and a weak pull of 0.05
+per pixel from an item towards the centre of its lane. The pull only breaks
+ties: an item between two straight wires can slide without changing their total
+length, and without the pull it would stay at the lane edge and keep the lane
+wide.
+
+- **Wires.** Slide an inner segment onto the parallel segment two steps away, so
+  the segment in between vanishes along with two bends. A wire that detours
+  through a gutter track while the column under its source is free becomes a
+  single turn.
+- **Items.** Move a node sideways together with its db and notes, or move a db or
+  note alone towards its node. Candidates are as far left and as far right as
+  the obstacles in the item's own row band allow (other items, labels, wires that
+  stay put, the lane border), and every position that lines a connected wire up
+  straight. When the full move is invalid, the longest valid shorter move is
+  found by halving. The ends of the wires on the item follow it, and a vertical
+  end segment keeps its bend with it so it stays vertical.
+- **Lanes.** Narrow each lane to its content plus a margin, never below its
+  minimum width or the width its name needs, centre the content, and move every
+  later lane left by the width saved.
+
+A path is valid when:
 
 - no segment touches an element, except the first and last segments at their own
   source and target;
@@ -301,11 +326,6 @@ label of another wire the path runs through. A path is valid when:
   8 px, so the ports and the arrow head stay as they were;
 - the wire's label stays at least as close to the path as before. The label box
   stays put and is re-anchored on the new path.
-
-The move so far is straightening: slide an inner segment onto the parallel
-segment two steps away, so the segment in between vanishes along with two bends.
-A wire that detours through a gutter track while the column under its source is
-free becomes a single turn.
 
 The loop stops after --optimize rounds or when a round keeps no move. The cost
 only goes down and each move reuses coordinates that already exist, so the loop
