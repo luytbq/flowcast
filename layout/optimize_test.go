@@ -67,3 +67,17 @@ func TestOptimizeReanchorsLabelInPlace(t *testing.T) {
 		t.Errorf("label offset %v, want [0 11]", e.LabelOff)
 	}
 }
+
+// TestOptimizeRejectsStraighteningThatAddsACrossing: removing two bends is worth
+// less than one new crossing, so the detour stays.
+func TestOptimizeRejectsStraighteningThatAddsACrossing(t *testing.T) {
+	r := jogResult()
+	r.Edges = append(r.Edges, PlacedEdge{ID: "F", Src: "P", Dst: "Q",
+		Pts: [][2]float64{{420, 200}, {520, 200}}})
+	cfg := DefaultConfig()
+	cfg.Optimize = 5
+	got := Optimize(r, cfg, nil).Edges[0].Pts
+	if !reflect.DeepEqual(got, r.Edges[0].Pts) {
+		t.Errorf("straightened across another wire: %v", got)
+	}
+}
