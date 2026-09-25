@@ -26,6 +26,7 @@ import (
 	"sort"
 	"strings"
 	"syscall"
+	"time"
 	"unicode"
 
 	"github.com/luytbq/flowcast"
@@ -67,6 +68,15 @@ type cli struct {
 
 func (c *cli) println(s ...any) { fmt.Fprintln(c.out, s...) }
 
+// trace returns the step logger for --verbose, or nil when it is off. Each line
+// starts with "verbose: " so that scripts reading the normal output can skip it.
+func (c *cli) trace() flowcast.Trace {
+	if !c.a.verbose {
+		return nil
+	}
+	return func(format string, a ...any) { c.println("verbose: " + fmt.Sprintf(format, a...)) }
+}
+
 // supported lists the readable file extensions, checked before opening the file,
 // as the reference implementation does: an unknown extension is rejected even if
 // the file does not exist.
@@ -83,6 +93,7 @@ func (c *cli) read() (flowcast.Source, error) {
 	if err != nil {
 		return flowcast.Source{}, fmt.Errorf("cannot read %s: %s", c.a.file, strerror(err))
 	}
+	c.trace().Log("cli: read %s, %d bytes", c.a.file, len(data))
 	opts := map[string]string{}
 	for k, v := range map[string]string{"sheet": c.a.sheet, "delimiter": c.a.delimiter, "encoding": c.a.encoding} {
 		if v != "" {
@@ -116,7 +127,7 @@ func (c *cli) check() int {
 		c.println("ERROR   " + err.Error())
 		return 1
 	}
-	r, err := flowcast.Check(src, flowcast.Options{Limits: &flowcast.CLILimits})
+	r, err := flowcast.Check(src, flowcast.Options{Limits: &flowcast.CLILimits, Trace: c.trace()})
 	if err != nil {
 		c.println("ERROR   " + err.Error())
 		return 1
@@ -154,6 +165,7 @@ func (c *cli) build() int {
 		c.println("build: stopped, no write mode chosen")
 		return 4
 	}
+	c.trace().Log("cli: output %s, mode %s", out, mode)
 	var prev *merge.Old
 	if mode == "merge" {
 		data, err := os.ReadFile(out)
@@ -166,10 +178,11 @@ func (c *cli) build() int {
 			c.println("ERROR   " + err.Error() + "; not overwriting. Use --mode force to regenerate everything")
 			return 4
 		}
+		c.trace().Log("cli: read the existing file %s, %d bytes, for merge", out, len(data))
 	}
 
 	r, err := flowcast.Build(src, flowcast.Options{Config: &c.a.cfg, Title: c.a.title, Previous: prev,
-		Direction: c.a.direction, Limits: &flowcast.CLILimits})
+		Direction: c.a.direction, Limits: &flowcast.CLILimits, Trace: c.trace()})
 	if err != nil {
 		c.println("ERROR   " + err.Error())
 		return 1
@@ -181,11 +194,13 @@ func (c *cli) build() int {
 			c.println("ERROR   " + err.Error())
 			return 4
 		}
+		c.trace().Log("cli: copied the old file to %s", backup)
 	}
 	if err := os.WriteFile(out, []byte(r.Text), 0o644); err != nil {
 		c.println("ERROR   " + err.Error())
 		return 1
 	}
+	c.trace().Log("cli: wrote %s, %d bytes", out, len(r.Text))
 	c.println("build: mode " + map[string]string{
 		"new": "new", "force": "force, regenerate everything", "merge": "merge, keep manual edits"}[mode])
 	s := r.Stats
@@ -199,6 +214,7 @@ func (c *cli) build() int {
 			c.println("ERROR   " + err.Error())
 			return 1
 		}
+		c.trace().Log("cli: wrote the layout JSON to %s", c.a.layoutJSON)
 	}
 	for _, w := range r.Warnings {
 		c.println("WARNING layout: " + w.Msg)
@@ -255,9 +271,11 @@ func (c *cli) exportAndVerify(out string, r flowcast.Result, code int) int {
 		if png == "-" {
 			png = strings.TrimSuffix(out, source.Ext(out)) + ".png"
 		}
+		t0 := time.Now()
 		if err := render.Export(ctx, exe, out, png, "png", 2); err != nil {
 			return fail(err)
 		}
+		c.trace().Log("render: exported %s with %s %s", png, exe, flowcast.Since(t0))
 		c.println("png: " + png)
 	}
 	if verify {
@@ -267,9 +285,11 @@ func (c *cli) exportAndVerify(out string, r flowcast.Result, code int) int {
 		}
 		defer os.RemoveAll(dir)
 		svg := filepath.Join(dir, "render.svg")
+		t0 := time.Now()
 		if err := render.Export(ctx, exe, out, svg, "svg", 0); err != nil {
 			return fail(err)
 		}
+		c.trace().Log("render: exported SVG for verification %s", flowcast.Since(t0))
 		data, err := os.ReadFile(svg)
 		if err != nil {
 			return fail(err)

@@ -2,6 +2,7 @@ package layout
 
 import (
 	"math"
+	"time"
 
 	"github.com/luytbq/flowcast/num"
 )
@@ -23,17 +24,35 @@ import (
 //
 // Optimize runs in the virtual TD space, before Check and Orient, so one code
 // path serves every direction and the self-check sees the final geometry.
-func Optimize(r Result, cfg Config) Result {
+func Optimize(r Result, cfg Config, trace Trace) Result {
 	if cfg.Optimize <= 0 {
+		trace.Log("optimize: off")
 		return r
 	}
+	t0 := time.Now()
 	o := newOptimizer(r, cfg)
-	for round := 0; round < cfg.Optimize; round++ {
-		if !o.round() {
+	o.trace = trace
+	before := totalBends(o.r)
+	rounds, moves := 0, 0
+	for rounds < cfg.Optimize {
+		rounds++
+		n := o.round(rounds)
+		moves += n
+		trace.Log("optimize: round %d: %d moves", rounds, n)
+		if n == 0 {
 			break
 		}
 	}
+	trace.Log("optimize: %d rounds, %d moves, bends %d -> %d %s", rounds, moves, before, totalBends(o.r), Since(t0))
 	return o.r
+}
+
+func totalBends(r Result) int {
+	n := 0
+	for _, e := range r.Edges {
+		n += len(e.Pts) - 2
+	}
+	return n
 }
 
 // Cost weights. A bend is worth 100 px of wire, a crossing 300, a wire through
@@ -55,6 +74,7 @@ type optimizer struct {
 	cfg   Config
 	boxes map[string]box
 	pool  box
+	trace Trace
 }
 
 func newOptimizer(r Result, cfg Config) *optimizer {
@@ -76,22 +96,22 @@ func newOptimizer(r Result, cfg Config) *optimizer {
 	return o
 }
 
-// round runs one pass over every part and reports whether anything changed.
-func (o *optimizer) round() bool {
-	changed := false
+// round runs one pass over every part and returns the number of moves applied.
+func (o *optimizer) round(n int) int {
+	moves := 0
 	for i := range o.r.Edges {
-		for o.straighten(i) {
-			changed = true
+		for o.straighten(i, n) {
+			moves++
 		}
 	}
-	return changed
+	return moves
 }
 
 // straighten tries to remove two bends from edge i by sliding one inner segment
 // until it lines up with the parallel segment two steps away, which makes the
 // segment in between vanish. It applies the best such move and reports whether
 // it applied one.
-func (o *optimizer) straighten(i int) bool {
+func (o *optimizer) straighten(i, round int) bool {
 	e := &o.r.Edges[i]
 	pts := e.Pts
 	m := len(pts) - 1 // number of segments
@@ -101,6 +121,7 @@ func (o *optimizer) straighten(i int) bool {
 	base := o.edgeCost(i, pts)
 	var best [][2]float64
 	bestCost := base - minGain
+	bestS, bestT := 0, 0
 	for s := 1; s <= m-2; s++ {
 		for _, t := range []int{s - 2, s + 2} {
 			if t < 0 || t > m-1 {
@@ -111,13 +132,15 @@ func (o *optimizer) straighten(i int) bool {
 				continue
 			}
 			if c := o.edgeCost(i, cand); c < bestCost {
-				best, bestCost = cand, c
+				best, bestCost, bestS, bestT = cand, c, s, t
 			}
 		}
 	}
 	if best == nil {
 		return false
 	}
+	o.trace.Log("optimize: round %d: %s: segment %d slid onto segment %d, bends %d -> %d, cost %.1f -> %.1f",
+		round, e.ID, bestS, bestT, len(pts)-2, len(best)-2, base, bestCost)
 	o.setPath(i, best)
 	return true
 }

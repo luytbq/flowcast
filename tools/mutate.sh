@@ -157,7 +157,7 @@ mutate "không bỏ qua db và text khi xét cạnh liền sau" validate/validat
 mutate "condition chỉ cần một cạnh ra" validate/validate.go 'r.Type == "condition" && len(es) < 2' 'r.Type == "condition" && len(es) < 1'
 mutate "không cảnh báo cạnh condition thiếu nhãn" validate/validate.go 'if e.Text() == "" {' 'if false {'
 mutate "quên bỏ qua dòng trùng id khi xét đồ thị" validate/validate.go 'if j, ok := v.byID[r.ID]; !ok || j != i {' 'if j, ok := v.byID[r.ID]; false || j == -1 && !ok {'
-mutate "thông điệp dùng %q thay vì nháy thẳng" validate/validate.go 'fmt.Sprintf("metadata \"%s\" không dùng cho type %s, bị bỏ qua", k, r.Type)' 'fmt.Sprintf("metadata %q không dùng cho type %s, bị bỏ qua", k, r.Type)'
+mutate "thông điệp dùng %q thay vì nháy thẳng" validate/validate.go 'fmt.Sprintf("metadata \"%s\" does not apply to type %s, ignored", k, r.Type)' 'fmt.Sprintf("metadata %q does not apply to type %s, ignored", k, r.Type)'
 
 # Phép kiểm tĩnh FMA
 mutate "gỡ bọc float64() khỏi phép nhân trước phép cộng" layout/size.go 'float64(tw*1.42)+24+pad' 'tw*1.42+24+pad'
@@ -265,7 +265,7 @@ mutate "không kiểm nhãn đè nhãn" layout/check.go 'if area(lb.b, lb2.b) > 
 mutate "nhãn đè dây của chính cạnh cũng báo" layout/check.go 'if w.edge != lb.edge && segHits(w.a, w.b, lb.b) {' 'if segHits(w.a, w.b, lb.b) {'
 mutate "không bỏ phát hiện trùng" layout/check.go 'if !seen[f] {' 'if true {'
 mutate "cặp node chồng không sắp theo id" layout/check.go 'sort.Strings(ids)' 'sort.Sort(sort.Reverse(sort.StringSlice(ids)))'
-mutate "số thứ tự đoạn xiên đếm từ 1" layout/check.go '"%s: đoạn %d không vuông góc", e.ID, k)' '"%s: đoạn %d không vuông góc", e.ID, k+1)'
+mutate "số thứ tự đoạn xiên đếm từ 1" layout/check.go '"%s: segment %d is not orthogonal", e.ID, k)' '"%s: segment %d is not orthogonal", e.ID, k+1)'
 
 # writer/drawio
 mutate "không thoát & trong nội dung html" writer/drawio/write.go 'r := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")' 'r := strings.NewReplacer("<", "&lt;", ">", "&gt;")'
@@ -322,9 +322,19 @@ mutate "Copy dùng chung thuộc tính" internal/etree/etree.go 'Attrs: append([
 
 mutate "lane không trừ header của pool" writer/drawio/write.go 'geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH-float64(r.PoolHeader))' 'geo(c, r.LaneX[i], float64(r.PoolHeader), r.LaneW[i], r.PoolH)'
 
+# layout/optimize
+mutate "tối ưu bỏ qua số vòng" layout/optimize.go '	if cfg.Optimize <= 0 {' '	if true {'
+mutate "tối ưu cho dây đi qua phần tử" layout/optimize.go '			if segHits(a, b, grow(bx, gap)) {' '			if false {'
+mutate "tối ưu nhận bước không giảm chi phí" layout/optimize.go '	bestCost := base - minGain' '	bestCost := base + 1e9'
+mutate "tối ưu đảo được đoạn đầu và đoạn cuối" layout/optimize.go '	if !sameDir(pts[0], pts[1], out[0], out[1]) || !sameDir(pts[n-2], pts[n-1], out[n-2], out[n-1]) {' '	if false {'
+mutate "tối ưu không giữ khoảng cách với dây khác" layout/optimize.go '				if tooClose(a, b, f.Pts[q], f.Pts[q+1], gap, shared) {' '				if false {'
+mutate "tối ưu không neo lại nhãn" layout/optimize.go '	p, dist, _ := anchor(pts, *e.Label, e.LabelOff)' '	return
+	p, dist, _ := anchor(pts, *e.Label, e.LabelOff)'
+mutate "tối ưu bỏ qua chỗ cắt" layout/optimize.go '					c += costCross' '					c += 0'
+
 # cmd/flowcast
 mutate "không đưa lỗi lên trước cảnh báo" cmd/flowcast/main.go 'return sorted[i].Level == model.LevelError && sorted[j].Level != model.LevelError' 'return false'
-mutate "dòng build viết kích thước có khoảng trắng" cmd/flowcast/main.go '(%d lane, %d phần tử, %d cạnh, %sx%spx)' '(%d lane, %d phần tử, %d cạnh, %s x %spx)'
+mutate "dòng build viết kích thước có khoảng trắng" cmd/flowcast/main.go '(%d lanes, %d elements, %d edges, %sx%spx)' '(%d lanes, %d elements, %d edges, %s x %spx)'
 mutate "đường ra mặc định giữ đuôi nguồn" cmd/flowcast/main.go 'out = strings.TrimSuffix(c.a.file, source.Ext(c.a.file)) + ".drawio"' 'out = c.a.file + ".drawio"'
 mutate "dấu chấm đầu tên file tính là dấu tách đuôi" source/source.go 'trimmed := strings.TrimLeft(base, ".")' 'trimmed := base'
 mutate "thông điệp lỗi hệ thống không viết hoa chữ đầu" cmd/flowcast/main.go 'r[0] = unicode.ToUpper(r[0])' '_ = r'
@@ -534,8 +544,8 @@ mutate "không báo element chồng nhau" merge/merge.go '				m.rep.Overlaps = a
 mutate "báo cả cell pool là bị xoá" merge/merge.go '		if !isLayer(id) && id != "pool" && !m.tableIDs[id] {' '		if !isLayer(id) && !m.tableIDs[id] {'
 mutate "fsum không bù sai số" merge/merge.go '	if lo != 0 && !math.IsInf(lo, 0) && !math.IsNaN(lo) {' '	if false {'
 mutate "merge không sao lưu file cũ" cmd/flowcast/main.go 'if mode != "new" && !c.a.noBackup {' 'if mode == "force" && !c.a.noBackup {'
-mutate "merge in báo cáo nhưng vẫn in tự kiểm" cmd/flowcast/main.go '		c.println("layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG")
-		return c.exportAndVerify(out, r, 0)' '		c.println("layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG")
+mutate "merge in báo cáo nhưng vẫn in tự kiểm" cmd/flowcast/main.go '		c.println("layout: merge does not self-check wires and labels; see the list above and the PNG image")
+		return c.exportAndVerify(out, r, 0)' '		c.println("layout: merge does not self-check wires and labels; see the list above and the PNG image")
 		for _, f := range r.Findings {
 			c.println(f.Msg)
 		}
@@ -574,7 +584,18 @@ mutate "không đếm cạnh" limits.go '			edges++' '			_ = r'
 mutate "không truyền giới hạn giải nén" limits.go '		src.MaxUnzipped = b.lim.MaxUnzipped' '		_ = src'
 mutate "không kiểm thời gian" limits.go '	if b.lim.Timeout > 0 && time.Since(b.start) > b.lim.Timeout {' '	if false {'
 mutate "giải nén không đếm dồn" source/xlsx.go '		unzipped += int64(len(b))' '		_ = b'
-mutate "Check bỏ qua giới hạn" build.go '	t, err := parseWithin(src, newBudget(opt.Limits))' '	t, err := parseWithin(src, newBudget(nil))'
+mutate "Check bỏ qua giới hạn" build.go '	t, err := readAndTrace(src, newBudget(opt.Limits), opt.Trace)' '	t, err := readAndTrace(src, newBudget(nil), opt.Trace)'
+
+mutate "verbose không in gì" cmd/flowcast/main.go '	if !c.a.verbose {
+		return nil
+	}' '	if true {
+		return nil
+	}'
+mutate "verbose in cả khi không bật" cmd/flowcast/main.go '	if !c.a.verbose {
+		return nil
+	}' '	if false {
+		return nil
+	}'
 
 # cmd/flowcastd
 mutate "web không giới hạn thân yêu cầu" cmd/flowcastd/server.go '	r.Body = http.MaxBytesReader(w, r.Body, int64(s.lim.MaxBytes)+multipartSlack)' '	_ = multipartSlack'

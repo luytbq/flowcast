@@ -26,11 +26,13 @@ The phases in order:
 4. Geometry: convert the grid to pixels, build polylines.
 5. Repeat phase 4 once, after learning how much extra room labels need.
 6. Place labels.
-7. Geometry self-check.
-8. Axis swap according to the direction.
+7. Optimize the finished geometry, when --optimize is above 0.
+8. Geometry self-check.
+9. Axis swap according to the direction.
 
-Phase 1 runs while building the initial state, phases 7 and 8 run in Build. The
-remaining phases are in the Run function.
+Phase 1 runs while building the initial state, phases 7 to 9 run in Build. The
+remaining phases are in the Run function. Every phase logs a line per step
+through Options.Trace, which the CLI prints under --verbose.
 
 ## 1. Measuring
 
@@ -279,7 +281,38 @@ the cheapest one is taken and a warning is recorded.
 Labels placed earlier take space from labels placed later, so the order of wires
 in the table affects label positions.
 
-## 7. Self-check
+## 7. Optimization
+
+Phases 2 to 6 decide on the grid, where a column has one x for every row of its
+lane and a wire kind is chosen per grid cell before any coordinate exists. That
+leaves slack only the coordinates show. The optimizer works on the finished
+geometry alone and ignores the grid.
+
+Each round visits every wire in table order and tries its moves. A move is kept
+only when it lowers the cost and the geometry stays valid. The cost adds 100 per
+bend, the wire length in pixels, 300 per crossing with another wire, and 200 per
+label of another wire the path runs through. A path is valid when:
+
+- no segment touches an element, except the first and last segments at their own
+  source and target;
+- new segments keep at least one track gap from elements and from parallel wires
+  that share neither source nor target;
+- the first and last segments keep their direction and do not get shorter than
+  8 px, so the ports and the arrow head stay as they were;
+- the wire's label stays at least as close to the path as before. The label box
+  stays put and is re-anchored on the new path.
+
+The move so far is straightening: slide an inner segment onto the parallel
+segment two steps away, so the segment in between vanishes along with two bends.
+A wire that detours through a gutter track while the column under its source is
+free becomes a single turn.
+
+The loop stops after --optimize rounds or when a round keeps no move. The cost
+only goes down and each move reuses coordinates that already exist, so the loop
+cannot oscillate; the round limit only bounds running time. A second run over
+the optimizer's own output changes nothing.
+
+## 8. Self-check
 
 The self-check runs on Result and does not read engine state. It reports an
 error when:
@@ -298,7 +331,7 @@ wire.
 A correct engine never produces an error here. A self-check error means the
 engine has a bug, not that the input table has an error.
 
-## 8. Axis swap
+## 9. Axis swap
 
 For left-to-right and right-to-left directions, the width and height of every
 element and label are swapped before placement. This way a row in the virtual
@@ -319,9 +352,10 @@ for the real picture.
 
 ## How do you trace which phase caused a bug?
 
-Run build with the --layout-json flag to write the coordinates to JSON. This file
-has the row and column of each element, and the wire kind, exit side and points
-of each wire. Then follow the symptom:
+Run build with --verbose to see what each phase did: the grid cell of every
+element, the wire kind and exit side of every edge, the size after each geometry
+pass, and every move of the optimizer. Add --layout-json to write the final
+coordinates to JSON. Then follow the symptom:
 
 | Symptom | Look at |
 |---|---|
@@ -332,6 +366,7 @@ of each wire. Then follow the symptom:
 | Gap too wide or too narrow | Geometry: room reserved for labels and for a db or note sitting alongside |
 | Label placed somewhere odd | Label placement: candidate list and costs |
 | Wrong only in directions other than top-down | Axis swap |
+| Right with --optimize 0, wrong with it on | Optimization: the move in the --verbose log that changed that wire |
 
 After fixing, check with images: build with the --png flag to look at it, and
 the --verify flag to have draw.io confirm it draws at the computed coordinates.

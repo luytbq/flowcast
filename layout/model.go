@@ -78,6 +78,9 @@ type Layout struct {
 
 	Warnings []Warning
 
+	// Trace, when set, receives a line per processing step. See Trace.
+	Trace Trace
+
 	// Output of place.
 	TopoOrder   []string
 	NRows       int

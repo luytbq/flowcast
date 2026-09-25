@@ -3,6 +3,7 @@ package layout
 import (
 	"math"
 	"strings"
+	"time"
 
 	"github.com/luytbq/flowcast/num"
 )
@@ -177,14 +178,25 @@ func (l *Layout) placeLabels() {
 // second pass reserves extra space for the labels that did not fit and
 // recomputes.
 func (l *Layout) Run() *Layout {
+	t0 := time.Now()
 	l.Place()
+	l.tracePlace(t0)
+	t0 = time.Now()
 	l.Route()
+	l.traceRoute(t0)
+	t0 = time.Now()
 	lzG, lzC := l.labelReservations(nil)
 	l.computeGeometry(lzG, lzC)
 	l.resolvePaths()
+	l.traceGeometry(1, len(lzG)+len(lzC), t0)
+	t0 = time.Now()
 	lzG, lzC = l.labelReservations(l.horizontalSpans())
 	l.computeGeometry(lzG, lzC)
 	l.resolvePaths()
+	l.traceGeometry(2, len(lzG)+len(lzC), t0)
+	t0 = time.Now()
+	before := len(l.Warnings)
 	l.placeLabels()
+	l.traceLabels(before, t0)
 	return l
 }

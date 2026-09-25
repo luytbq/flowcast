@@ -59,13 +59,15 @@ The input table format is described in [docs/flow-table-format.md](docs/flow-tab
 | --png [FILE] | Export a PNG image with the drawio CLI. Without FILE the image is placed next to the .drawio file. |
 | --verify | Export SVG with the drawio CLI and compare each wire against the computed coordinates. |
 | --layout-json FILE | Write the computed coordinates to JSON, for other tools to read. |
+| --verbose | Log every processing step, with counts and timing, on lines starting with "verbose: ". Works with check and build. |
 | --sheet S | For xlsx: name of the sheet holding the table. |
 | --delimiter D | For csv: the delimiter, when you do not want the tool to guess. |
 | --encoding E | For csv: the encoding, when you do not want the tool to guess. |
 
 ### Layout options
 
-Units are pixels. Run flowcast --help to see the value range of each option.
+Units are pixels, except --optimize, which counts rounds. Run flowcast --help to see
+the value range of each option.
 
 | Option | Default | Meaning |
 |---|---|---|
@@ -86,6 +88,7 @@ Units are pixels. Run flowcast --help to see the value range of each option.
 | --pool-header | 30 | Thickness of the diagram title bar |
 | --min-lane-w | 120 | Minimum thickness of a lane |
 | --label-pad | 4 | Padding around the text of a label on a wire |
+| --optimize | 0 | Rounds of geometric optimization after layout, such as removing needless bends; 0 turns it off |
 
 ### Exit codes
 

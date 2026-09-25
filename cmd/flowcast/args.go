@@ -24,6 +24,7 @@ type args struct {
 	png        string // empty: no export; "-" means the default path
 	verify     bool
 	noBackup   bool
+	verbose    bool
 	sheet      string
 	delimiter  string
 	encoding   string
@@ -50,7 +51,7 @@ func helpText() string {
 	b.WriteString(`flowcast: turn a flow table or mermaid flowchart into a draw.io file
 
 usage:
-  flowcast check <file> [--sheet S] [--delimiter D] [--encoding E]
+  flowcast check <file> [--sheet S] [--delimiter D] [--encoding E] [--verbose]
   flowcast build <file> [flags]
 
 build flags:
@@ -62,6 +63,7 @@ build flags:
   --png [FILE]         export a PNG image with the drawio CLI
   --verify             export SVG and compare the wires draw.io draws with the computed coordinates
   --layout-json FILE   write the computed coordinates to JSON
+  --verbose            log every processing step, with counts and timing
 
 layout parameters, in pixels:
 `)
@@ -116,6 +118,8 @@ func parseArgs(argv []string) (*args, error) {
 		switch {
 		case name == "help":
 			return nil, errHelp
+		case name == "verbose":
+			a.verbose = true
 		case a.cmd == "build" && name == "png":
 			// The value is optional: take the next argument as the output path if
 			// it is not a flag, otherwise use the default path.

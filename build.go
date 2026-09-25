@@ -9,6 +9,7 @@ package flowcast
 
 import (
 	"sync"
+	"time"
 
 	"github.com/luytbq/flowcast/data"
 	"github.com/luytbq/flowcast/layout"
@@ -25,7 +26,11 @@ type (
 	Issue   = model.Issue
 	Finding = layout.Finding
 	Warning = layout.Warning
+	Trace   = layout.Trace
 )
+
+// Since formats the time a step took, for the end of a trace line.
+func Since(t0 time.Time) string { return layout.Since(t0) }
 
 // Options are the parameters of one build.
 type Options struct {
@@ -44,6 +49,9 @@ type Options struct {
 	// Exceeding a limit returns an error whose model.Error code starts with
 	// "limit.".
 	Limits *Limits
+	// Trace, when set, receives one line per processing step: what the step
+	// did, with counts and timing. The CLI prints these lines under --verbose.
+	Trace Trace
 }
 
 // Stats is the size of the built diagram.
@@ -101,27 +109,67 @@ func defaultMetrics() (*text.Metrics, error) {
 // The returned error is one that stops reading from continuing, such as a
 // missing header. Errors of individual rows are in Result.Issues.
 func Check(src Source, opt Options) (Result, error) {
-	t, err := parseWithin(src, newBudget(opt.Limits))
+	t, err := readAndTrace(src, newBudget(opt.Limits), opt.Trace)
 	if err != nil {
 		return Result{}, err
 	}
-	issues := append(append([]Issue{}, t.Issues...), validate.Validate(t.Rows)...)
+	issues := validateAndTrace(t, opt.Trace)
 	return Result{Title: t.Title, Source: t.Source, Issues: issues}, nil
+}
+
+// readAndTrace parses the source and logs what it found.
+func readAndTrace(src Source, b budget, trace Trace) (model.Table, error) {
+	t0 := time.Now()
+	t, err := parseWithin(src, b)
+	if err != nil {
+		trace.Log("source: %s: %v", src.Name, err)
+		return t, err
+	}
+	var lanes, nodes, edges int
+	for _, r := range t.Rows {
+		switch r.Type {
+		case "lane":
+			lanes++
+		case "edge":
+			edges++
+		default:
+			nodes++
+		}
+	}
+	trace.Log("source: read %d bytes of %s as %s, title %q, direction %q: %d rows (%d lanes, %d elements, %d edges), %d issues %s",
+		len(src.Data), src.Name, t.Source, t.Title, t.Direction, len(t.Rows), lanes, nodes, edges, len(t.Issues), layout.Since(t0))
+	return t, nil
+}
+
+// validateAndTrace validates a parsed table and logs the outcome.
+func validateAndTrace(t model.Table, trace Trace) []Issue {
+	t0 := time.Now()
+	issues := append(append([]Issue{}, t.Issues...), validate.Validate(t.Rows)...)
+	ne := 0
+	for _, i := range issues {
+		if i.Level == model.LevelError {
+			ne++
+		}
+	}
+	trace.Log("validate: %d errors, %d warnings %s", ne, len(issues)-ne, layout.Since(t0))
+	return issues
 }
 
 // Build reads, validates and builds the diagram.
 func Build(src Source, opt Options) (Result, error) {
+	t0 := time.Now()
 	b := newBudget(opt.Limits)
-	t, err := parseWithin(src, b)
+	t, err := readAndTrace(src, b, opt.Trace)
 	if err != nil {
 		return Result{}, err
 	}
 	r := Result{Title: t.Title, Source: t.Source}
-	r.Issues = append(append([]Issue{}, t.Issues...), validate.Validate(t.Rows)...)
+	r.Issues = validateAndTrace(t, opt.Trace)
 	if opt.Title != "" {
 		r.Title = opt.Title
 	}
 	if r.HasErrors() {
+		opt.Trace.Log("build: stopped, the table has errors")
 		return r, nil
 	}
 	m, err := defaultMetrics()
@@ -152,9 +200,17 @@ func Build(src Source, opt Options) (Result, error) {
 		return Result{}, model.Errf("merge.direction",
 			"merge does not support direction %s yet; use --mode force to regenerate everything", dir)
 	}
-	if err := layoutAndWrite(&r, t.Rows, cfg, m, dir, opt.Previous, b); err != nil {
+	mode := "new"
+	if opt.Previous != nil {
+		mode = "merge"
+	}
+	opt.Trace.Log("config: direction %s, %s, optimize %d rounds", dir, mode, cfg.Optimize)
+	if err := layoutAndWrite(&r, t.Rows, cfg, m, dir, opt.Previous, b, opt.Trace); err != nil {
+		opt.Trace.Log("build: failed: %v", err)
 		return Result{}, err
 	}
+	opt.Trace.Log("build: done: %d lanes, %d elements, %d edges, %.2fx%.2f px, %d bytes %s",
+		r.Stats.Lanes, r.Stats.Items, r.Stats.Edges, r.Stats.W, r.Stats.H, len(r.Text), layout.Since(t0))
 	return r, nil
 }
 
@@ -164,30 +220,53 @@ func Build(src Source, opt Options) (Result, error) {
 // The engine only panics when it violates one of its own invariants. That error
 // is returned like any other, so programs using the library and the web service
 // do not crash on an unusual table.
-func layoutAndWrite(r *Result, rows []model.Row, cfg layout.Config, m *text.Metrics, dir string, prev *merge.Old, b budget) (err error) {
+func layoutAndWrite(r *Result, rows []model.Row, cfg layout.Config, m *text.Metrics, dir string, prev *merge.Old, b budget, trace Trace) (err error) {
 	defer func() {
 		if p := recover(); p != nil {
 			err = model.Errf("layout.internal", "internal layout error: %v", p)
 		}
 	}()
+	t0 := time.Now()
 	lay := layout.New(rows, cfg, text.NewMeasure(m))
+	lay.Trace = trace
+	trace.Log("size: measured and wrapped the text of %d elements and %d edges %s", len(lay.ItemOrder), len(lay.Edges), layout.Since(t0))
 	lay.SetDirection(dir)
 	l := lay.Run()
 	if err := b.check(); err != nil {
 		return err
 	}
-	res := layout.Optimize(l.Result(), cfg)
+	res := layout.Optimize(l.Result(), cfg, trace)
 	r.Warnings = l.Warnings
+	for _, w := range l.Warnings {
+		trace.Log("warning: %s %s", w.Code, w.Msg)
+	}
+	t0 = time.Now()
 	r.Findings = layout.Check(res)
+	ne := 0
+	for _, f := range r.Findings {
+		if f.Level == "error" {
+			ne++
+		}
+		trace.Log("check:   %s %s %s", f.Level, f.Code, f.Msg)
+	}
+	trace.Log("check: %d errors, %d warnings %s", ne, len(r.Findings)-ne, layout.Since(t0))
 	res = layout.Orient(res)
+	if dir != layout.DirTD {
+		trace.Log("orient: mapped the top-down layout to %s", dir)
+	}
 	r.Layout = &res
+	t0 = time.Now()
 	if prev != nil {
 		extras, rep := merge.Apply(&res, prev)
 		r.Merge = &rep
+		trace.Log("merge: kept %d positions, placed %d new elements, kept %d wires, left %d wires to draw.io, kept %d freehand cells %s",
+			len(rep.Pinned), len(rep.Placed), len(rep.KeptEdges), len(rep.Rerouted), len(rep.FreehandKept), layout.Since(t0))
+		t0 = time.Now()
 		r.Text = drawio.WriteMerged(res, r.Title, extras, prev.Pages)
 	} else {
 		r.Text = drawio.Write(res, r.Title)
 	}
+	trace.Log("write: %d bytes of draw.io XML %s", len(r.Text), layout.Since(t0))
 	lanes := len(res.Lanes)
 	if res.NoLanes {
 		lanes = 0

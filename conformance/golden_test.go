@@ -267,7 +267,7 @@ func TestOptimizeKeepsInvariants(t *testing.T) {
 		if bends(r.Layout) > bends(plain.Layout) {
 			t.Errorf("%s: optimize added bends: %d > %d", name, bends(r.Layout), bends(plain.Layout))
 		}
-		if again := layout.Optimize(*r.Layout, *opt.Config); !reflect.DeepEqual(again, *r.Layout) {
+		if again := layout.Optimize(*r.Layout, *opt.Config, nil); !reflect.DeepEqual(again, *r.Layout) {
 			t.Errorf("%s: a second optimize still changed the layout", name)
 		}
 		old, err := merge.Read([]byte(r.Text), "old.drawio")

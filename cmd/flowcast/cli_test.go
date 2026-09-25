@@ -177,3 +177,47 @@ func inDir(t *testing.T, dir string, f func() int) int {
 	defer os.Chdir(old)
 	return f()
 }
+
+// TestVerboseOnlyAddsPrefixedLines: --verbose adds one "verbose: " line per
+// step and leaves every other line exactly as it is without the flag.
+func TestVerboseOnlyAddsPrefixedLines(t *testing.T) {
+	src, err := os.ReadFile("../../conformance/cases/05-merge-node.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	dir := t.TempDir()
+	in := filepath.Join(dir, "in.md")
+	if err := os.WriteFile(in, src, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	runOut := func(extra ...string) (string, int) {
+		// Start from no output file each time, so both runs report the same mode.
+		os.Remove(filepath.Join(dir, "in.drawio"))
+		var out bytes.Buffer
+		argv := append([]string{"build", in, "--mode", "force", "--no-backup", "--optimize", "5"}, extra...)
+		code := run(argv, strings.NewReader(""), &out, &out)
+		return out.String(), code
+	}
+	plain, c1 := runOut()
+	verbose, c2 := runOut("--verbose")
+	if c1 != c2 {
+		t.Fatalf("exit code %d without --verbose, %d with it", c1, c2)
+	}
+	var kept []string
+	steps := map[string]bool{}
+	for _, ln := range strings.SplitAfter(verbose, "\n") {
+		if rest, ok := strings.CutPrefix(ln, "verbose: "); ok {
+			steps[strings.SplitN(rest, ":", 2)[0]] = true
+			continue
+		}
+		kept = append(kept, ln)
+	}
+	if strings.Join(kept, "") != plain {
+		t.Errorf("--verbose changed the normal output:\n%s\nwant:\n%s", strings.Join(kept, ""), plain)
+	}
+	for _, s := range []string{"cli", "source", "validate", "config", "size", "place", "route", "geometry", "labels", "optimize", "check", "write", "build"} {
+		if !steps[s] {
+			t.Errorf("--verbose logged no %q step", s)
+		}
+	}
+}

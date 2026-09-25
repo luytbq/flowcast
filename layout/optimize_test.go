@@ -25,7 +25,7 @@ func jogResult() Result {
 func TestOptimizeStraightensGutterDetour(t *testing.T) {
 	cfg := DefaultConfig()
 	cfg.Optimize = 5
-	got := Optimize(jogResult(), cfg).Edges[0].Pts
+	got := Optimize(jogResult(), cfg, nil).Edges[0].Pts
 	want := [][2]float64{{450, 120}, {450, 260}, {150, 260}, {150, 300}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("path after optimize %v, want %v", got, want)
@@ -34,7 +34,7 @@ func TestOptimizeStraightensGutterDetour(t *testing.T) {
 
 func TestOptimizeOffChangesNothing(t *testing.T) {
 	r := jogResult()
-	if got := Optimize(r, DefaultConfig()); !reflect.DeepEqual(got, r) {
+	if got := Optimize(r, DefaultConfig(), nil); !reflect.DeepEqual(got, r) {
 		t.Errorf("optimize = 0 still changed the result")
 	}
 }
@@ -45,7 +45,7 @@ func TestOptimizeNeverRoutesThroughAnItem(t *testing.T) {
 	r.Items = append(r.Items, PlacedItem{ID: "X", X: 420, Y: 200, W: 60, H: 30})
 	cfg := DefaultConfig()
 	cfg.Optimize = 5
-	got := Optimize(r, cfg).Edges[0].Pts
+	got := Optimize(r, cfg, nil).Edges[0].Pts
 	if !reflect.DeepEqual(got, r.Edges[0].Pts) {
 		t.Errorf("wire pulled through an item: %v", got)
 	}
@@ -58,7 +58,7 @@ func TestOptimizeReanchorsLabelInPlace(t *testing.T) {
 	r.Edges[0].LabelOff = [2]float64{30, 11}
 	cfg := DefaultConfig()
 	cfg.Optimize = 5
-	e := Optimize(r, cfg).Edges[0]
+	e := Optimize(r, cfg, nil).Edges[0]
 	if *e.Label != lb {
 		t.Fatalf("label box moved: %v", *e.Label)
 	}
