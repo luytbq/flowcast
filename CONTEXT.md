@@ -24,6 +24,11 @@ diagram semantics.
 validation rules, and the layout algorithm. There is currently a single kind,
 activity-swimlane, and a flowchart is that same kind with lanes made optional.
 
+**element type** - the type column of an element row: start, end, task, condition,
+external, db or text. Not to be confused with kind, which is the diagram type.
+Everything the code knows about an element type is declared once per layer:
+schema.Elements for the table rules, layout.Geometry for the drawing.
+
 **metadata schema** - a kind's declaration of the valid keys in the metadata column:
 per type, which keys are required, which keys are references to other ids, and the
 value range of each key. Because the metadata column carries required references too
@@ -67,9 +72,10 @@ speaks in primitive shapes (rectangle, diamond, ellipse, double ellipse, dashed
 ellipse, cylinder, note) rather than semantic types, so that a writer does not need to
 know about kinds.
 
-**geometry declaration** - for each element type, its primitive shape and its wiring
-rules, such as only accepting incoming wires at the top. The engine and writers only
-read this declaration, they do not compare type names.
+**geometry declaration** - layout.Geometry: for each element type, its primitive
+shape, its wiring rules (such as only accepting incoming wires at the top), how its
+text wraps and how big its box gets. The engine and writers only read this
+declaration, they do not compare type names.
 
 **writer** - a function that turns a LayoutResult into the text of a target format.
 A writer only reads the LayoutResult, it does not call the algorithm.

@@ -41,7 +41,7 @@ type PlacedLane struct {
 
 type PlacedItem struct {
 	ID         string
-	Kind       string
+	Type       string
 	Shape      Shape
 	Lane       int
 	Order      int
@@ -95,7 +95,7 @@ func (l *Layout) Result() Result {
 		r.Lanes = append(r.Lanes, PlacedLane{ln.ID, ln.Lines})
 	}
 	for _, it := range l.ItemOrder {
-		r.Items = append(r.Items, PlacedItem{ID: it.ID, Kind: it.Kind, Shape: kindOf(it.Kind).Shape, Lane: it.Lane, Order: it.Order, Attach: it.Attach,
+		r.Items = append(r.Items, PlacedItem{ID: it.ID, Type: it.Type, Shape: geometryOf(it.Type).Shape, Lane: it.Lane, Order: it.Order, Attach: it.Attach,
 			Row: it.Row, Col: it.Col, Lines: it.Lines, Highlight: it.Highlight, X: it.X, Y: it.Y, W: it.W, H: it.H})
 	}
 	for _, e := range l.Edges {

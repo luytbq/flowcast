@@ -195,7 +195,7 @@ func TestConditionEntersTopExitsThreeSides(t *testing.T) {
 		}
 		kind := map[string]string{}
 		for _, it := range r.Layout.Items {
-			kind[it.ID] = it.Kind
+			kind[it.ID] = it.Type
 		}
 		for _, e := range r.Layout.Edges {
 			if kind[e.Dst] == "condition" && e.EntryFrac != [2]float64{0.5, 0} {

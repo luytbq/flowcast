@@ -83,12 +83,6 @@ func (v *validator) checkIDs() {
 	}
 }
 
-// isMarker recognizes the text row that marks the rest of the table. That row
-// is not an element, so it needs no parent.
-func isMarker(r model.Row) bool {
-	return r.Type == "text" && r.Text() == schema.RestMarker && r.Meta["attach"] == ""
-}
-
 func (v *validator) checkRows() {
 	for _, r := range v.rows {
 		if !schema.AllTypes[r.Type] {
@@ -99,7 +93,7 @@ func (v *validator) checkRows() {
 			if r.Parent != "" {
 				v.err(r, "table.parent_not_empty", fmt.Sprintf("%s must leave parent empty", r.Type))
 			}
-		case !isMarker(r):
+		case !schema.IsRestMarker(r):
 			// A table without lanes is a flowchart: every element shares one area
 			// and leaves parent empty.
 			if r.Parent == "" && len(v.lanes) == 0 {
@@ -209,24 +203,25 @@ func (v *validator) checkGraph() {
 			continue
 		}
 		es := outs[r.ID]
-		if r.Type == "condition" && len(es) < 2 {
+		el := schema.Elements[r.Type]
+		if len(es) < el.MinOutEdges {
 			v.err(r, "graph.condition_branches",
-				fmt.Sprintf("condition has only %d outgoing edges, needs at least 2", len(es)))
+				fmt.Sprintf("%s has only %d outgoing edges, needs at least %d", r.Type, len(es), el.MinOutEdges))
 		}
-		if (r.Type == "task" || r.Type == "condition") && len(es) == 0 {
+		if el.WarnNoOutEdge && len(es) == 0 {
 			v.warn(r, "graph.no_out_edge", fmt.Sprintf("%s has no outgoing edge", r.Type))
 		}
-		if r.Type == "start" && len(ins[r.ID]) > 0 {
-			v.warn(r, "graph.start_has_in", "start has incoming edges: "+ids(ins[r.ID]))
+		if el.WarnInEdge && len(ins[r.ID]) > 0 {
+			v.warn(r, "graph.start_has_in", r.Type+" has incoming edges: "+ids(ins[r.ID]))
 		}
-		if r.Type == "end" && len(es) > 0 {
-			v.warn(r, "graph.end_has_out", "end has outgoing edges: "+ids(es))
+		if el.WarnOutEdge && len(es) > 0 {
+			v.warn(r, "graph.end_has_out", r.Type+" has outgoing edges: "+ids(es))
 		}
-		if r.Type == "condition" {
+		if el.LabelBranches {
 			for _, e := range es {
 				if e.Text() == "" {
 					v.warn(e, "graph.branch_no_label",
-						fmt.Sprintf("outgoing edge of condition %s has no label", r.ID))
+						fmt.Sprintf("outgoing edge of %s %s has no label", r.Type, r.ID))
 				}
 			}
 		}

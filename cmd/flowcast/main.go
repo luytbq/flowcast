@@ -385,7 +385,7 @@ func writeLayoutJSON(path string, r flowcast.Result) error {
 	}
 	items := map[string]any{}
 	for _, it := range l.Items {
-		items[it.ID] = map[string]any{"kind": it.Kind, "row": it.Row, "col": it.Col,
+		items[it.ID] = map[string]any{"kind": it.Type, "row": it.Row, "col": it.Col,
 			"x": it.X, "y": it.Y, "w": it.W, "h": it.H}
 	}
 	edges := map[string]any{}

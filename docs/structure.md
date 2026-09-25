@@ -41,7 +41,7 @@ merge and writer all read only the Result and never touch the engine's internal 
 | model | Shared data types: Row, Table, Issue, Location, Error | Adding fields to Issue or to error locations |
 | num | Number rounding and printing rules, shared by every layer | Changing how numbers are written to files |
 | source | Reads each input format: markdown, csv, xlsx, mermaid; guesses format and encoding | Adding an input format, fixing file reading bugs |
-| schema | Declares the valid metadata keys for each row type | Adding a metadata key, adding a row type |
+| schema | Declares each row type: valid metadata keys, and for element types (schema.Elements) how they relate to the flow and which graph rules apply | Adding a metadata key, adding an element type (together with layout.Geometry) |
 | validate | Checks a parsed Table: valid references, duplicate ids, diagram-specific rules | Adding a table validation rule |
 | text | Measures and wraps text using the character width table | Changing how text wraps |
 | data | The font's character width table, embedded in the binary | Changing the measuring font |
@@ -67,7 +67,7 @@ one. How the phases work together is described in [algorithm.md](algorithm.md).
 |---|---|
 | config.go | Layout parameters, defaults and value ranges. Both the command line and the web build their option lists from here |
 | model.go | The state of one layout run: elements, edges, grid; engine warnings |
-| shape.go | The geometry declaration of each element type: primitive shape, wiring rules, points on the outline |
+| shape.go | The geometry declaration of each element type (layout.Geometry): primitive shape, wiring rules, wrap width, size rule, points on the outline |
 | size.go | Measures and wraps each element, before any placement step |
 | topo.go | Topological order of the nodes |
 | branch.go | Chooses the main branch, assigns columns to side branches, finds the join column |

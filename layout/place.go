@@ -110,7 +110,7 @@ func (l *Layout) Place() {
 					row = r
 				}
 			}
-		case v.Kind == "start":
+		case geometryOf(v.Type).StartsFlow:
 			row = 0
 		default:
 			row = maxRow + 1
@@ -119,10 +119,10 @@ func (l *Layout) Place() {
 		placed := false
 		// A shape with a single connection point per side and two or more side
 		// branches needs both lateral sides for those branches.
-		needsSides := kindOf(v.Kind).Shape.singlePort() && l.sideBranches(v) >= 2
+		needsSides := geometryOf(v.Type).Shape.singlePort() && l.sideBranches(v) >= 2
 		// An element that accepts incoming wires only at its top never stands on
 		// the same row as its source.
-		if len(preds) == 1 && l.nonBackIn(vid) == 1 && !needsSides && !kindOf(v.Kind).EntryTopOnly && (len(same) == 0 || sideBranch != 0) {
+		if len(preds) == 1 && l.nonBackIn(vid) == 1 && !needsSides && !geometryOf(v.Type).EntryTopOnly && (len(same) == 0 || sideBranch != 0) {
 			u := l.items[preds[0].Src]
 			r := u.Row
 			a, b := gk{u.Lane, u.Col}, gk{v.Lane, col}

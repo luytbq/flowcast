@@ -10,7 +10,7 @@ import (
 // Item is a drawn element: a node, or a db or text standing next to a node.
 type Item struct {
 	ID        string
-	Kind      string
+	Type      string
 	Lane      int
 	Lines     []string
 	W, H      float64
@@ -138,7 +138,7 @@ func newLayout(rows []model.Row, cfg Config, tm *text.Measure) *Layout {
 		l.Cfg.PoolHeader, l.Cfg.LaneHeader = 0, 0
 	}
 	for _, r := range rows {
-		if !schema.NodeTypes[r.Type] && !(schema.AttachTypes[r.Type] && !isMarker(r)) {
+		if !schema.NodeTypes[r.Type] && !(schema.AttachTypes[r.Type] && !schema.IsRestMarker(r)) {
 			continue
 		}
 		attach := ""
@@ -153,7 +153,7 @@ func newLayout(rows []model.Row, cfg Config, tm *text.Measure) *Layout {
 		}
 		lines, w, h := SizeItem(tm, cfg, r.Type, r.Lines)
 		it := &Item{
-			ID: r.ID, Kind: r.Type, Lane: l.laneIdx[laneID], Lines: lines, W: w, H: h,
+			ID: r.ID, Type: r.Type, Lane: l.laneIdx[laneID], Lines: lines, W: w, H: h,
 			Order: r.Idx, Highlight: hasStyle(r, "highlight"), Attach: attach,
 		}
 		l.items[r.ID] = it
@@ -178,10 +178,6 @@ func newLayout(rows []model.Row, cfg Config, tm *text.Measure) *Layout {
 		l.ins[e.Dst] = append(l.ins[e.Dst], e)
 	}
 	return l
-}
-
-func isMarker(r model.Row) bool {
-	return r.Type == "text" && r.Text() == schema.RestMarker && r.Meta["attach"] == ""
 }
 
 func hasStyle(r model.Row, v string) bool {

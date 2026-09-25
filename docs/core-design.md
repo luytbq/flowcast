@@ -167,12 +167,13 @@ with bend points, ports and label positions. The self-check, merge and the
 writer only read Result and never call into the engine.
 
 Result speaks in primitive shapes (rectangle, diamond, ellipse, double ellipse,
-dashed ellipse, cylinder, note), not in semantic kinds. Each element kind
-declares its primitive shape and its wiring rules once in layout.Kinds; the
-engine and the writer only read that declaration. If writers had to know semantic
-kinds, every writer would have to know every kind, and the amount of work would
-be the product of the two numbers instead of their sum. The semantic kind is
-still carried in Result for tools and for debugging, but writers do not read it.
+dashed ellipse, cylinder, note), not in element types. Each element type declares
+its primitive shape, wiring rules, wrap width and size rule once in
+layout.Geometry, and its table rules once in schema.Elements; the engine, the
+writer and validate only read those declarations. If writers had to know element
+types, every writer would have to know every type, and the amount of work would
+be the product of the two numbers instead of their sum. The element type is still
+carried in Result for tools and for debugging, but writers do not read it.
 
 The self-check runs on Result. That way it checks every generation path, and it
 can also check hand-built broken geometry, which is the only way to test the

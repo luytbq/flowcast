@@ -126,9 +126,9 @@ positions across lanes.
 
 ### Wire kinds
 
-Rules specific to each element kind, such as a condition only accepting wires at
-its top or which shape has only one connection point per side, are read from
-that kind's geometry declaration table, not written as conditions scattered
+Rules specific to each element type, such as a condition only accepting wires at
+its top or which shape has only one connection point per side, are read from the
+geometry declaration (layout.Geometry), not written as conditions scattered
 through the code.
 
 The engine scans all edges in four passes, one wire kind per pass, from simple

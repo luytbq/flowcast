@@ -71,7 +71,7 @@ func (l *Layout) Route() {
 	// B: straight horizontal on the same row.
 	for _, e := range l.Edges {
 		u, v := l.items[e.Src], l.items[e.Dst]
-		if e.Case != 0 || e.Back || v.Row != u.Row || gkOf(u) == gkOf(v) || kindOf(v.Kind).EntryTopOnly {
+		if e.Case != 0 || e.Back || v.Row != u.Row || gkOf(u) == gkOf(v) || geometryOf(v.Type).EntryTopOnly {
 			continue
 		}
 		s := face(u, v)
@@ -229,7 +229,7 @@ func (l *Layout) sideFree(u *Item, side byte) bool {
 		return false
 	}
 	used := l.sideOut[sideKey{u.ID, side}]
-	if kindOf(u.Kind).Shape.singlePort() {
+	if geometryOf(u.Type).Shape.singlePort() {
 		return len(used) == 0
 	}
 	for _, x := range used {

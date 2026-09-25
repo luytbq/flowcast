@@ -6,12 +6,12 @@
 // docs/adr/0001.
 package schema
 
-// Row types. NodeTypes are always in the flow. AttachTypes may carry attach and
-// then stand beside the node they attach to; nothing requires them to. A db
-// without attach is in the flow like a node and may have edges.
+// Row types, derived from Elements. NodeTypes are always in the flow.
+// AttachTypes may carry attach and then stand beside the element they attach
+// to; nothing requires them to.
 var (
-	NodeTypes   = set("start", "end", "task", "condition", "external")
-	AttachTypes = set("db", "text")
+	NodeTypes   = elementSet(func(e Element) bool { return e.AlwaysInFlow })
+	AttachTypes = elementSet(func(e Element) bool { return e.MayAttach })
 	AllTypes    = union(NodeTypes, AttachTypes, set("lane", "edge"))
 )
 
@@ -49,6 +49,13 @@ const attachNote = "can only attach to start/end/task/condition/external or a db
 // defaultSpec applies to every node type: only style is accepted, and style only accepts highlight.
 var defaultSpec = TypeSpec{Keys: []string{"style"}, StyleValues: []string{"highlight"}}
 
+// attachSpec applies to the element types that may attach to another element.
+var attachSpec = TypeSpec{
+	Keys:        []string{"attach", "style"},
+	StyleValues: []string{"highlight"},
+	Refs:        []Ref{{Key: "attach", Note: attachNote, SameLane: true}},
+}
+
 var swimlane = map[string]TypeSpec{
 	"lane": {Keys: nil, StyleValues: []string{"highlight"}},
 	"edge": {
@@ -59,30 +66,24 @@ var swimlane = map[string]TypeSpec{
 			{Key: "to", Required: true, Note: edgeNote},
 		},
 	},
-	"db": {
-		Keys:        []string{"attach", "style"},
-		StyleValues: []string{"highlight"},
-		Refs:        []Ref{{Key: "attach", Note: attachNote, SameLane: true}},
-	},
-	"text": {
-		Keys:        []string{"attach", "style"},
-		StyleValues: []string{"highlight"},
-		Refs:        []Ref{{Key: "attach", Note: attachNote, SameLane: true}},
-	},
 }
 
 // InFlow reports whether a row of this type and metadata takes part in the flow:
 // it can be the end of an edge, has its own row, column and outgoing edges, and
 // other elements can attach to it. A node always does; a db does when it does
 // not attach to anything.
-func InFlow(kind string, meta map[string]string) bool {
-	return NodeTypes[kind] || (kind == "db" && meta["attach"] == "")
+func InFlow(elementType string, meta map[string]string) bool {
+	e := Elements[elementType]
+	return e.AlwaysInFlow || (e.InFlowUnattached && meta["attach"] == "")
 }
 
-// For returns the schema of a row type.
-func For(kind string) TypeSpec {
-	if s, ok := swimlane[kind]; ok {
+// For returns the metadata schema of a row type.
+func For(rowType string) TypeSpec {
+	if s, ok := swimlane[rowType]; ok {
 		return s
+	}
+	if e, ok := Elements[rowType]; ok && e.MayAttach {
+		return attachSpec
 	}
 	return defaultSpec
 }

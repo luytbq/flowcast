@@ -9,8 +9,8 @@ import (
 func TestEveryElementTypeHasGeometryDeclaration(t *testing.T) {
 	for _, set := range []map[string]bool{schema.NodeTypes, schema.AttachTypes} {
 		for kind := range set {
-			if _, ok := Kinds[kind]; !ok {
-				t.Errorf("type %s has no declaration in Kinds", kind)
+			if _, ok := Geometry[kind]; !ok {
+				t.Errorf("type %s has no declaration in Geometry", kind)
 			}
 		}
 	}

@@ -21,7 +21,7 @@ func (l *Layout) assignPorts() {
 			continue
 		}
 		entries := len(l.sideIn[key]) > 0
-		if !entries && (kindOf(u.Kind).Shape.singlePort() || len(es) == 1) {
+		if !entries && (geometryOf(u.Type).Shape.singlePort() || len(es) == 1) {
 			for _, e := range es {
 				e.ExitFrac = sideFrac[side]
 			}
@@ -74,7 +74,7 @@ func (l *Layout) assignPorts() {
 			return loose[i].Order < loose[j].Order
 		})
 		for i, e := range loose {
-			e.ExitFrac = kindOf(u.Kind).Shape.outline(side, fr[i])
+			e.ExitFrac = geometryOf(u.Type).Shape.outline(side, fr[i])
 		}
 	}
 	for _, e := range l.Edges {

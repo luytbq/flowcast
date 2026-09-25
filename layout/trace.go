@@ -38,7 +38,7 @@ func (l *Layout) tracePlace(t0 time.Time) {
 	l.Trace.Log("place: %d rows, columns per lane %s, %d items %s",
 		l.NRows, strings.Join(cols, " "), len(l.ItemOrder), Since(t0))
 	for _, it := range l.ItemOrder {
-		what := it.Kind
+		what := it.Type
 		if it.Attach != "" {
 			what += " attached to " + it.Attach
 		}

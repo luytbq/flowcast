@@ -138,9 +138,9 @@ mutate "drop the :: branch from break points" text/measure.go "return i >= 2 && 
 mutate "unknown codepoint measures 0 instead of notdef" text/metrics.go 'total += m.Notdef' 'total += 0'
 mutate "drop binary narrowing in Wrap" text/measure.go 'out = append(out, t.wrapLine(line, float64(hi))...)' 'out = append(out, first...)'
 mutate "hard flag not set on a hard cut" text/measure.go 't.hard = true' '_ = 0'
-mutate "task wrap budget off by 2px" layout/size.go 'cfg.TaskMaxW - 32' 'cfg.TaskMaxW - 30'
-mutate "unknown type budget uses DBWrap" layout/size.go 'return float64(cfg.TextWrap)' 'return float64(cfg.DBWrap)'
-mutate "diamond wrap budget off by 10px" layout/size.go 'return float64(cfg.CondWrap)' 'return float64(cfg.CondWrap) + 10'
+mutate "task wrap budget off by 2px" layout/shape.go 'cfg.TaskMaxW - 32' 'cfg.TaskMaxW - 30'
+mutate "note budget uses DBWrap" layout/shape.go 'return float64(cfg.TextWrap)' 'return float64(cfg.DBWrap)'
+mutate "diamond wrap budget off by 10px" layout/shape.go 'return float64(cfg.CondWrap)' 'return float64(cfg.CondWrap) + 10'
 mutate "Fmt rounds to 3 digits instead of 2" num/num.go "'f', 2, 64" "'f', 3, 64"
 mutate "Rnd rounds down instead of up" num/num.go 'math.Ceil(v/2.0)' 'math.Floor(v/2.0)'
 
@@ -159,18 +159,13 @@ mutate "metadata key order follows map instead of cells" source/markdown.go 'if 
 mutate "swap the from and to check order" schema/schema.go '{Key: "from", Required: true, Note: edgeNote},
 			{Key: "to", Required: true, Note: edgeNote},' '{Key: "to", Required: true, Note: edgeNote},
 			{Key: "from", Required: true, Note: edgeNote},'
-mutate "text attach becomes required" schema/schema.go '	"text": {
-		Keys:        []string{"attach", "style"},
-		StyleValues: []string{"highlight"},
-		Refs:        []Ref{{Key: "attach", Note: attachNote, SameLane: true}},' '	"text": {
-		Keys:        []string{"attach", "style"},
-		StyleValues: []string{"highlight"},
-		Refs:        []Ref{{Key: "attach", Required: true, Note: attachNote, SameLane: true}},'
-mutate "attached db counts as part of the flow" schema/schema.go 'return NodeTypes[kind] || (kind == "db" && meta["attach"] == "")' 'return NodeTypes[kind] || kind == "db"'
-mutate "db without attach is not part of the flow" schema/schema.go 'return NodeTypes[kind] || (kind == "db" && meta["attach"] == "")' 'return NodeTypes[kind]'
+mutate "attach becomes required" schema/schema.go '	Refs:        []Ref{{Key: "attach", Note: attachNote, SameLane: true}},' '	Refs:        []Ref{{Key: "attach", Required: true, Note: attachNote, SameLane: true}},'
+mutate "start gets no warning for incoming edges" schema/elements.go '"start":     {AlwaysInFlow: true, WarnInEdge: true},' '"start":     {AlwaysInFlow: true},'
+mutate "attached db counts as part of the flow" schema/schema.go 'return e.AlwaysInFlow || (e.InFlowUnattached && meta["attach"] == "")' 'return e.AlwaysInFlow || e.InFlowUnattached'
+mutate "db without attach is not part of the flow" schema/schema.go 'return e.AlwaysInFlow || (e.InFlowUnattached && meta["attach"] == "")' 'return e.AlwaysInFlow'
 mutate "edge rejects style dashed" schema/schema.go 'StyleValues: []string{"highlight", "dashed", "bold", "noarrow"}' 'StyleValues: []string{"highlight", "bold", "noarrow"}'
 mutate "duplicate id lets the later row overwrite the earlier" validate/validate.go 'if j, dup := v.byID[r.ID]; dup {' 'if j, dup := v.byID[r.ID]; false {'
-mutate "rest-of-table marker row also needs parent" validate/validate.go 'case !isMarker(r):' 'case true:'
+mutate "rest-of-table marker row also needs parent" validate/validate.go 'case !schema.IsRestMarker(r):' 'case true:'
 mutate "styleList keeps duplicate values" validate/validate.go 'if !dup {' 'if true {'
 mutate "location taken from first row instead of last" validate/validate.go 'if r.ID != "" {
 			pos[r.ID] = i
@@ -178,13 +173,14 @@ mutate "location taken from first row instead of last" validate/validate.go 'if 
 			pos[r.ID] = i
 		}'
 mutate "db and text not skipped when checking the next edge" validate/validate.go 'for p < len(v.rows) && schema.AttachTypes[v.rows[p].Type] && v.rows[p].Meta["attach"] == r.ID {' 'for false {'
-mutate "condition needs only one outgoing edge" validate/validate.go 'r.Type == "condition" && len(es) < 2' 'r.Type == "condition" && len(es) < 1'
+mutate "condition needs only one outgoing edge" schema/elements.go 'MinOutEdges: 2,' 'MinOutEdges: 1,'
+mutate "minimum outgoing edges not enforced" validate/validate.go 'if len(es) < el.MinOutEdges {' 'if false {'
 mutate "no warning for condition edge without label" validate/validate.go 'if e.Text() == "" {' 'if false {'
 mutate "duplicate-id rows not skipped in graph checks" validate/validate.go 'if j, ok := v.byID[r.ID]; !ok || j != i {' 'if j, ok := v.byID[r.ID]; false || j == -1 && !ok {'
 mutate "message uses %q instead of straight quotes" validate/validate.go 'fmt.Sprintf("metadata \"%s\" does not apply to type %s, ignored", k, r.Type)' 'fmt.Sprintf("metadata %q does not apply to type %s, ignored", k, r.Type)'
 
 # Static FMA check
-mutate "drop float64() wrapper from multiply before add" layout/size.go 'float64(tw*1.42)+24+pad' 'tw*1.42+24+pad'
+mutate "drop float64() wrapper from multiply before add" layout/shape.go 'float64(tw*1.42)+24+pad' 'tw*1.42+24+pad'
 
 # layout/place
 mutate "topo prefers later rows instead of earlier" layout/topo.go 'return h[i].Order < h[j].Order' 'return h[i].Order > h[j].Order'
@@ -199,7 +195,7 @@ mutate "attachSide defaults to left" layout/branch.go 'if !right {' 'if right {'
 mutate "condition needs three side branches to keep both sides" layout/place.go 'l.sideBranches(v) >= 2' 'l.sideBranches(v) >= 3'
 mutate "horizontal arrows disabled" layout/place.go 'if len(preds) == 1 && l.nonBackIn(vid) == 1' 'if false && len(preds) == 1 && l.nonBackIn(vid) == 1'
 mutate "side branch drifts only one column" layout/place.go 'tries < 3' 'tries < 1'
-mutate "start not placed at row 0" layout/place.go 'case v.Kind == "start":' 'case false:'
+mutate "start not placed at row 0" layout/place.go 'case geometryOf(v.Type).StartsFlow:' 'case false:'
 mutate "db and text try the opposite side first" layout/place.go '[]int{side, -side, 2 * side, -2 * side}' '[]int{-side, side, 2 * side, -2 * side}'
 mutate "horizontal arrow does not avoid other horizontal arrows" layout/place.go 'if s.row == r && s.a.less(b) && a.less(s.b) {' 'if false {'
 mutate "horizontal arrow does not avoid occupied cells in between" layout/place.go 'if k.row == r && a.less(gk{k.lane, k.col}) && (gk{k.lane, k.col}).less(b) {' 'if false {'
@@ -229,7 +225,7 @@ mutate "same column heads left" layout/route.go 'if gkOf(u) == gkOf(v) || gkOf(u
 mutate "drop port set that avoids side middle" layout/tracks.go '} else if (len(fixed) > 0 || entries) && n <= 6 {' '} else if false {'
 mutate "outgoing wire not separated from incoming wire on the same side" layout/tracks.go 'entries := len(l.sideIn[key]) > 0' 'entries := false'
 mutate "separated port not on diamond outline" layout/shape.go '		inset = math.Abs(t - 0.5)' '		inset = 0'
-mutate "condition accepts horizontal wire on a side" layout/shape.go '"condition": {Shape: ShapeDiamond, EntryTopOnly: true},' '"condition": {Shape: ShapeDiamond},'
+mutate "condition accepts horizontal wire on a side" layout/shape.go 'Shape: ShapeDiamond, EntryTopOnly: true,' 'Shape: ShapeDiamond,'
 mutate "side ports ordered by column instead of row" layout/tracks.go "if side == 'L' || side == 'R' {" 'if false {'
 mutate "left side port placed at right edge" layout/shape.go '	return [2]float64{inset, t}' '	return [2]float64{far, t}'
 mutate "shared track to same target not preferred" layout/tracks.go 'if fits(s, ti, true) {' 'if false {'
