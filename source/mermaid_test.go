@@ -154,8 +154,9 @@ func TestMermaidWarningsInLineOrder(t *testing.T) {
   a --> b
   click a "x"
   c{Một} --> d
-  e[(Kho)] --> f
-  click f "y"`)
+  e[Kho]:::x --> f
+  click f "y"
+  g{Hai} --> h`)
 	var lines []int
 	for _, i := range tb.Issues {
 		lines = append(lines, i.Loc.Line)
@@ -238,23 +239,23 @@ func TestMermaidSubgraphBecomesLane(t *testing.T) {
 	expectCodes(t, tb, "mermaid.nested_subgraph", "mermaid.outside_subgraph")
 }
 
-func TestMermaidDbPlacedBesideNode(t *testing.T) {
+func TestMermaidDbIsAFlowNodeWithItsEdges(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
-  a[Ghi] -->|lưu| db[(Kho)]
-  a --> b[Xong]
-  x[Đọc] --> db2[(Chung)]
-  y[Đọc nữa] --> db2
-  y --> x`)
+  a[Write] -->|save| db[(Store)]
+  db --> b[Done]`)
 	rows := strings.Join(rowsOf(tb), "\n")
 	for _, want := range []string{
-		"a | task |  | Ghi | \ndb | db |  | Kho | attach=a\na-->b",
-		"db2 | task |  | Chung | ",
+		"db | db |  | Store | ",
+		"a-->db | edge |  | save | from=a;to=db",
+		"db-->b | edge |  |  | from=db;to=b",
 	} {
 		if !strings.Contains(rows, want) {
 			t.Errorf("missing %q in:\n%s", want, rows)
 		}
 	}
-	expectCodes(t, tb, "mermaid.db_attach", "mermaid.db_edge_label", "mermaid.db_shape")
+	if len(tb.Issues) != 0 {
+		t.Errorf("a db with edges should raise no warning, got %v", tb.Issues)
+	}
 }
 
 func TestMermaidLabelText(t *testing.T) {

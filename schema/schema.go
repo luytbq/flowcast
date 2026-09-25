@@ -6,7 +6,9 @@
 // docs/adr/0001.
 package schema
 
-// Row types.
+// Row types. NodeTypes are always in the flow. AttachTypes may carry attach and
+// then stand beside the node they attach to; nothing requires them to. A db
+// without attach is in the flow like a node and may have edges.
 var (
 	NodeTypes   = set("start", "end", "task", "condition", "external")
 	AttachTypes = set("db", "text")
@@ -41,8 +43,8 @@ type TypeSpec struct {
 	Refs []Ref
 }
 
-const edgeNote = "edges only connect start/end/task/condition/external"
-const attachNote = "can only attach to start/end/task/condition/external"
+const edgeNote = "edges only connect start/end/task/condition/external or a db without attach"
+const attachNote = "can only attach to start/end/task/condition/external or a db without attach"
 
 // defaultSpec applies to every node type: only style is accepted, and style only accepts highlight.
 var defaultSpec = TypeSpec{Keys: []string{"style"}, StyleValues: []string{"highlight"}}
@@ -60,13 +62,21 @@ var swimlane = map[string]TypeSpec{
 	"db": {
 		Keys:        []string{"attach", "style"},
 		StyleValues: []string{"highlight"},
-		Refs:        []Ref{{Key: "attach", Required: true, Note: attachNote, SameLane: true}},
+		Refs:        []Ref{{Key: "attach", Note: attachNote, SameLane: true}},
 	},
 	"text": {
 		Keys:        []string{"attach", "style"},
 		StyleValues: []string{"highlight"},
 		Refs:        []Ref{{Key: "attach", Note: attachNote, SameLane: true}},
 	},
+}
+
+// InFlow reports whether a row of this type and metadata takes part in the flow:
+// it can be the end of an edge, has its own row, column and outgoing edges, and
+// other elements can attach to it. A node always does; a db does when it does
+// not attach to anything.
+func InFlow(kind string, meta map[string]string) bool {
+	return NodeTypes[kind] || (kind == "db" && meta["attach"] == "")
 }
 
 // For returns the schema of a row type.

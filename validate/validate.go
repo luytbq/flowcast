@@ -54,7 +54,7 @@ func (v *validator) row(id string) (model.Row, bool) {
 
 func (v *validator) isNode(id string) bool {
 	r, ok := v.row(id)
-	return ok && schema.NodeTypes[r.Type]
+	return ok && schema.InFlow(r.Type, r.Meta)
 }
 
 func (v *validator) checkIDs() {
@@ -146,7 +146,7 @@ func (v *validator) checkRefs(r model.Row, spec schema.TypeSpec) {
 			v.err(r, "ref.dangling", fmt.Sprintf("%s=%s points to an id that does not exist", ref.Key, val))
 			continue
 		}
-		if !schema.NodeTypes[target.Type] {
+		if !schema.InFlow(target.Type, target.Meta) {
 			v.err(r, "ref.bad_target",
 				fmt.Sprintf("%s=%s is %s; %s", ref.Key, val, target.Type, ref.Note))
 			continue
@@ -202,7 +202,7 @@ func (v *validator) checkGraph() {
 	}
 
 	for i, r := range v.rows {
-		if !schema.NodeTypes[r.Type] {
+		if !schema.InFlow(r.Type, r.Meta) {
 			continue
 		}
 		if j, ok := v.byID[r.ID]; !ok || j != i {

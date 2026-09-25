@@ -2,7 +2,7 @@ issue table.parent_not_empty ERROR   line 5 [A]: lane must leave parent empty
 issue ref.missing_parent ERROR   line 7 [A-1]: missing parent (id of the lane containing the element)
 issue table.parent_not_empty ERROR   line 8 [E1]: edge must leave parent empty
 issue schema.missing_key ERROR   line 8 [E1]: edge is missing to
-issue ref.bad_target ERROR   line 9 [E2]: from=A is lane; edges only connect start/end/task/condition/external
+issue ref.bad_target ERROR   line 9 [E2]: from=A is lane; edges only connect start/end/task/condition/external or a db without attach
 issue ref.dangling ERROR   line 10 [A-2]: attach=KHONGCO points to an id that does not exist
-issue ref.bad_target ERROR   line 11 [A-3]: attach=B is lane; can only attach to start/end/task/condition/external
+issue ref.bad_target ERROR   line 11 [A-3]: attach=B is lane; can only attach to start/end/task/condition/external or a db without attach
 issue graph.no_out_edge WARNING line 7 [A-1]: task has no outgoing edge

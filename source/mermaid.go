@@ -718,23 +718,10 @@ func (m *mermaid) table() model.Table {
 		ins[e.to] = append(ins[e.to], e)
 	}
 	types := map[string]string{}
-	attach := map[string]string{}
-	dropped := map[*mmEdge]bool{}
 	for _, id := range order {
-		types[id] = m.nodeType(m.nodes[id], ins[id], outs[id], attach, dropped)
+		types[id] = m.nodeType(m.nodes[id], ins[id], outs[id])
 	}
-	// Edges of a db replaced by attach are no longer edges.
-	var kept []*mmEdge
-	for _, e := range edges {
-		if !dropped[e] {
-			kept = append(kept, e)
-		}
-	}
-	ins, outs = map[string][]*mmEdge{}, map[string][]*mmEdge{}
-	for _, e := range kept {
-		outs[e.from] = append(outs[e.from], e)
-		ins[e.to] = append(ins[e.to], e)
-	}
+	kept := edges
 	for _, id := range order {
 		if types[id] == "condition" && len(outs[id]) < 2 {
 			types[id] = "task"
@@ -745,7 +732,7 @@ func (m *mermaid) table() model.Table {
 
 	laneOf := m.assignLanes(order)
 	ids := m.rowIDs(order)
-	flow := orderFlow(order, types, kept, ins, outs, attach)
+	flow := orderFlow(order, types, kept, ins, outs)
 
 	var rows []model.Row
 	add := func(r model.Row) {
@@ -778,24 +765,11 @@ func (m *mermaid) table() model.Table {
 		n := m.nodes[id]
 		r := model.Row{ID: ids[id], Type: types[id], Parent: laneOf[id], Lines: lines(n.text), Loc: loc(n.line),
 			Meta: map[string]string{}}
-		if a := attach[id]; a != "" {
-			r.Meta["attach"], r.MetaKeys = ids[a], []string{"attach"}
-		}
 		if m.nodeHighlight(n) {
 			r.Meta["style"] = "highlight"
 			r.MetaKeys = append(r.MetaKeys, "style")
 		}
 		add(r)
-		for _, a := range flow.attached[id] {
-			an := m.nodes[a]
-			ar := model.Row{ID: ids[a], Type: "db", Parent: laneOf[a], Lines: lines(an.text), Loc: loc(an.line),
-				Meta: map[string]string{"attach": ids[id]}, MetaKeys: []string{"attach"}}
-			if m.nodeHighlight(an) {
-				ar.Meta["style"] = "highlight"
-				ar.MetaKeys = append(ar.MetaKeys, "style")
-			}
-			add(ar)
-		}
 		for _, e := range outs[id] {
 			r := model.Row{ID: edgeIDs[e], Type: "edge", Lines: lines(normalize(labelText(e.text))), Loc: loc(e.line),
 				Meta: map[string]string{"from": ids[e.from], "to": ids[e.to]}, MetaKeys: []string{"from", "to"}}
@@ -832,9 +806,9 @@ func (m *mermaid) table() model.Table {
 	return model.Table{Title: m.title, Rows: rows, Issues: m.issues, Source: "mermaid", Direction: m.dir}
 }
 
-// nodeType infers the type from the node's shape. A db connected to exactly one
-// node is placed beside that node, and the edges connecting it are dropped.
-func (m *mermaid) nodeType(n *mmNode, ins, outs []*mmEdge, attach map[string]string, dropped map[*mmEdge]bool) string {
+// nodeType infers the type from the node's shape. A cylinder is a db that sits
+// in the flow like any other node, with its edges kept.
+func (m *mermaid) nodeType(n *mmNode, ins, outs []*mmEdge) string {
 	in, out := 0, 0
 	for _, e := range ins {
 		if e.from != n.id {
@@ -865,40 +839,6 @@ func (m *mermaid) nodeType(n *mmNode, ins, outs []*mmEdge, attach map[string]str
 		m.warn(n.line, "mermaid.shape", n.id+" has a start/end shape but sits mid-flow, drawn as task")
 		return "task"
 	case "cylinder":
-		peers := map[string]bool{}
-		var touching []*mmEdge
-		for _, e := range append(append([]*mmEdge{}, ins...), outs...) {
-			if e.from == n.id && e.to == n.id {
-				continue
-			}
-			touching = append(touching, e)
-			if e.from == n.id {
-				peers[e.to] = true
-			} else {
-				peers[e.from] = true
-			}
-		}
-		if len(peers) != 1 {
-			m.warn(n.line, "mermaid.db_shape",
-				fmt.Sprintf("db %s connects to %d nodes; a db sits beside exactly one node, so it is drawn as task", n.id, len(peers)))
-			return "task"
-		}
-		var peer string
-		for p := range peers {
-			peer = p
-		}
-		if m.nodes[peer].shape == "cylinder" {
-			m.warn(n.line, "mermaid.db_shape", "db "+n.id+" only connects to another db, drawn as task")
-			return "task"
-		}
-		for _, e := range touching {
-			dropped[e] = true
-			if e.text != "" {
-				m.warn(e.line, "mermaid.db_edge_label", "dropping label \""+e.text+"\" of the edge to db "+n.id)
-			}
-		}
-		attach[n.id] = peer
-		m.warn(n.line, "mermaid.db_attach", "db "+n.id+" placed beside "+peer+" instead of a connecting arrow")
 		return "db"
 	}
 	m.warn(n.line, "mermaid.shape", "shape "+n.shape+" of "+n.id+" is not supported, drawn as task")
@@ -980,8 +920,7 @@ func (m *mermaid) rowIDs(order []string) map[string]string {
 }
 
 type flowOrder struct {
-	nodes    []string            // nodes in row order, excluding db placed beside a node
-	attached map[string][]string // db placed beside each node
+	nodes []string // nodes in row order
 }
 
 // orderFlow orders nodes by the reading order of the Flow Table spec: follow the
@@ -992,17 +931,9 @@ type flowOrder struct {
 // Loop edges are determined first, by a DFS in the same order: an edge pointing
 // back to a node on the current path. This way the merge condition never waits
 // for a source reachable only through that very node.
-func orderFlow(order []string, types map[string]string, edges []*mmEdge,
-	ins, outs map[string][]*mmEdge, attach map[string]string) flowOrder {
-	fo := flowOrder{attached: map[string][]string{}}
-	var nodes []string
-	for _, id := range order {
-		if types[id] == "db" {
-			fo.attached[attach[id]] = append(fo.attached[attach[id]], id)
-			continue
-		}
-		nodes = append(nodes, id)
-	}
+func orderFlow(order []string, types map[string]string, edges []*mmEdge, ins, outs map[string][]*mmEdge) flowOrder {
+	var fo flowOrder
+	nodes := order
 	// Roots: start first, then nodes with no incoming edge, in declaration order.
 	var roots []string
 	for _, id := range nodes {

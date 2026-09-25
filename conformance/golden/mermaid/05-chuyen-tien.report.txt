@@ -1,2 +1,1 @@
-issue mermaid.db_attach WARNING line 15: db K placed beside J instead of a connecting arrow
-diagram: 0 lanes, 13 elements, 14 edges
+diagram: 0 lanes, 13 elements, 15 edges

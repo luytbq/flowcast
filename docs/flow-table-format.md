@@ -25,15 +25,15 @@ The element type also determines the shape, so there is no separate metadata for
 | end | Flow end point | lane | style |
 | task | Processing step box | lane | style |
 | condition | Branching diamond | lane | style |
-| db | Data table cylinder, stands next to a node, not connected by edges | lane | attach (required), style |
+| db | Data table cylinder. With attach it stands next to a node; without it, it is a step in the flow and edges can go in and out of it | lane | attach, style |
 | external | Ellipse, points to another flow outside the diagram | lane | style |
-| text | Note, no frame | lane | attach, style |
+| text | Note, no frame. With attach it stands next to a node | lane | attach, style |
 | edge | Arrow connecting two elements | empty | from, to (required), style, back |
 
 Meaning of each key:
 
-- **from, to:** ids of the elements at the start and end of the arrow. An edge can connect two different lanes, so an edge belongs to no lane.
-- **attach:** id of the node that the data table or note stands next to.
+- **from, to:** ids of the elements at the start and end of the arrow: a start, end, task, condition, external, or a db without attach. An edge can connect two different lanes, so an edge belongs to no lane.
+- **attach:** id of the element that the data table or note stands next to. It is optional: no element has to attach to another. A db or text with attach stands beside its element and takes no edges. A db without attach is part of the flow like a task, so edges can connect to it and other db or text elements can attach to it.
 - **style:** highlight if the element is filled with an accent color in the diagram. Edges additionally accept dashed for a dashed line, bold for a thick line, and noarrow for no arrowhead. Multiple values are separated by commas, for example style=dashed,noarrow.
 - **back:** write back=true for an edge that goes back to an element already passed, that is, an edge that forms a loop.
 
@@ -112,9 +112,8 @@ Reading this table:
 Errors, must be fixed:
 
 - Duplicate id.
-- from, to or attach points to an id that does not exist.
+- from, to or attach points to an id that does not exist, or to an element that cannot take it (a text, or a db that is itself attached).
 - An edge missing from or to.
-- A db missing attach.
 - An element in a lane whose parent is empty or is not the id of a lane.
 - A condition with fewer than 2 outgoing edges.
 - An outgoing edge of an element that does not come right after that element (and after the db and text elements attached to it).

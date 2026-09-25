@@ -5,9 +5,9 @@ ERROR   line 5 [A]: lane must leave parent empty
 ERROR   line 7 [A-1]: missing parent (id of the lane containing the element)
 ERROR   line 8 [E1]: edge must leave parent empty
 ERROR   line 8 [E1]: edge is missing to
-ERROR   line 9 [E2]: from=A is lane; edges only connect start/end/task/condition/external
+ERROR   line 9 [E2]: from=A is lane; edges only connect start/end/task/condition/external or a db without attach
 ERROR   line 10 [A-2]: attach=KHONGCO points to an id that does not exist
-ERROR   line 11 [A-3]: attach=B is lane; can only attach to start/end/task/condition/external
+ERROR   line 11 [A-3]: attach=B is lane; can only attach to start/end/task/condition/external or a db without attach
 WARNING line 7 [A-1]: task has no outgoing edge
 check: 7 errors, 1 warnings
 [exit 1]
@@ -17,9 +17,9 @@ ERROR   line 5 [A]: lane must leave parent empty
 ERROR   line 7 [A-1]: missing parent (id of the lane containing the element)
 ERROR   line 8 [E1]: edge must leave parent empty
 ERROR   line 8 [E1]: edge is missing to
-ERROR   line 9 [E2]: from=A is lane; edges only connect start/end/task/condition/external
+ERROR   line 9 [E2]: from=A is lane; edges only connect start/end/task/condition/external or a db without attach
 ERROR   line 10 [A-2]: attach=KHONGCO points to an id that does not exist
-ERROR   line 11 [A-3]: attach=B is lane; can only attach to start/end/task/condition/external
+ERROR   line 11 [A-3]: attach=B is lane; can only attach to start/end/task/condition/external or a db without attach
 WARNING line 7 [A-1]: task has no outgoing edge
 check: 7 errors, 1 warnings
 build: stopped because the table has errors
