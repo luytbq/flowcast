@@ -1,14 +1,14 @@
 # input: csv-10-delimiter-priority -> in.csv
 $ ["check", "$T/in.csv"]
-check: đọc bảng từ csv (dấu phẩy, utf-8-sig)
-check: 0 lỗi, 0 cảnh báo
+check: read table from csv (comma, utf-8-sig)
+check: 0 errors, 0 warnings
 [exit 0]
 $ ["build", "$T/in.csv"]
-check: đọc bảng từ csv (dấu phẩy, utf-8-sig)
-check: 0 lỗi, 0 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 2 cạnh, 394.02x250px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from csv (comma, utf-8-sig)
+check: 0 errors, 0 warnings
+build: mode new
+build: wrote $T/in.drawio (2 lanes, 3 elements, 2 edges, 394.02x250px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 4d7b6f186dbeb53a  in.csv

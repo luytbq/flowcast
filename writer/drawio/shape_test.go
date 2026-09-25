@@ -6,10 +6,10 @@ import (
 	"github.com/luytbq/flowcast/layout"
 )
 
-func TestMoiHinhNguyenThuyDeuCoStyle(t *testing.T) {
+func TestEveryPrimitiveShapeHasStyle(t *testing.T) {
 	for kind, k := range layout.Kinds {
 		if _, ok := shapeStyle[k.Shape]; !ok {
-			t.Errorf("hình %s của loại %s chưa có style", k.Shape, kind)
+			t.Errorf("shape %s of kind %s has no style", k.Shape, kind)
 		}
 	}
 }

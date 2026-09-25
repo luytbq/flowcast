@@ -2,8 +2,8 @@ package layout
 
 import "sort"
 
-// sameLaneOuts trả về các cạnh ra không phải back mà đích cùng lane với nguồn,
-// theo thứ tự dòng trong bảng.
+// sameLaneOuts returns the non-back outgoing edges whose target is in the same
+// lane as the source, in table row order.
 func (l *Layout) sameLaneOuts(nid string) []*Edge {
 	u := l.items[nid]
 	var out []*Edge
@@ -15,11 +15,12 @@ func (l *Layout) sameLaneOuts(nid string) []*Edge {
 	return out
 }
 
-// branchDrift nói nhánh này rốt cuộc đi sang lane bên nào: -1 trái, 1 phải, 0
-// chưa rõ.
+// branchDrift reports which side this branch eventually moves to in terms of
+// lanes: -1 left, 1 right, 0 unknown.
 //
-// Đi dọc nhánh tới cạnh đầu tiên rời khỏi lane. Dừng ở node hợp nhánh vì từ đó
-// trở đi là luồng chung, không còn là hướng của riêng nhánh này.
+// Walks along the branch to the first edge that leaves the lane. Stops at a
+// merge node because from there on the flow is shared and no longer tells the
+// direction of this branch alone.
 func (l *Layout) branchDrift(e *Edge) int {
 	v := l.items[e.Dst]
 	seen := map[string]bool{v.ID: true}
@@ -53,12 +54,14 @@ func (l *Layout) branchDrift(e *Edge) int {
 	return 0
 }
 
-// mainEdge trả về chỉ số của nhánh chính trong các cạnh ra cùng lane.
+// mainEdge returns the index of the main branch among the same-lane outgoing
+// edges.
 //
-// Sơ đồ có lane theo quy ước của Flow Table: nhánh chính là cạnh viết sau cùng,
-// vì người viết bảng được dặn đặt nhánh đi tiếp dài nhất ở cuối. Sơ đồ không
-// có lane thường đến từ mermaid, nơi không có quy ước đó, nên nhánh chính là
-// nhánh sâu nhất; hòa thì vẫn lấy cạnh viết sau.
+// Diagrams with lanes follow the Flow Table convention: the main branch is the
+// edge written last, because table authors are told to put the longest
+// continuing branch at the end. Diagrams without lanes usually come from
+// mermaid, which has no such convention, so the main branch is the deepest one;
+// on a tie the edge written later still wins.
 func (l *Layout) mainEdge(same []*Edge) int {
 	last := len(same) - 1
 	if !l.NoLanes {
@@ -73,9 +76,9 @@ func (l *Layout) mainEdge(same []*Edge) int {
 	return best
 }
 
-// branchDepth là số node trên đường dài nhất đi từ id, không qua cạnh vòng
-// lặp. Dừng trước node hợp nhánh: từ đó trở đi là luồng chung của nhiều nhánh,
-// không nói gì về độ dài của riêng một nhánh.
+// branchDepth is the number of nodes on the longest path from id, not following
+// loop edges. Stops before a merge node: from there on the flow is shared by
+// several branches and says nothing about the length of any single branch.
 func (l *Layout) branchDepth(id string) int {
 	if d, ok := l.depth[id]; ok {
 		return d
@@ -95,9 +98,10 @@ func (l *Layout) branchDepth(id string) int {
 	return d
 }
 
-// spineOf trả về các node của xương sống: đi từ mỗi điểm đầu theo nhánh chính
-// cho tới hết. Node hợp nhánh nằm ngoài xương sống là nơi các nhánh phụ đổ về,
-// như một bước báo lỗi chung, và không được kéo về cột chính.
+// spineOf returns the nodes of the spine: from each starting point, follow the
+// main branch to the end. A merge node outside the spine is where side branches
+// converge, such as a shared error-reporting step, and must not be pulled back
+// to the main column.
 func (l *Layout) spineOf(order []string) map[string]bool {
 	spine := map[string]bool{}
 	for _, id := range order {
@@ -126,14 +130,17 @@ func (l *Layout) nonBackIn(id string) int {
 	return n
 }
 
-// branchSlots trả về cột tương đối cho mọi cạnh ra cùng lane của một node.
+// branchSlots returns the relative column for every same-lane outgoing edge of
+// a node.
 //
-// Nhánh chính giữ cột 0. Nhánh phụ, gần nhánh chính trước, lệch sang phía mà
-// nhánh đó dẫn tới, để mũi tên rời nhánh không phải vòng ngược qua node khác.
-// Nhánh không rõ hướng xen kẽ phải rồi trái. Mặt nào đã có mũi tên ngang thì
-// mọi nhánh phụ dồn sang mặt kia.
+// The main branch keeps column 0. Side branches, those nearest the main branch
+// first, shift toward the side the branch leads to, so the arrow leaving the
+// branch does not have to loop back across another node. Branches with no clear
+// direction alternate right then left. If one side already has a horizontal
+// arrow, all side branches move to the other side.
 //
-// Kết quả đổi theo hside, tức theo những mũi tên ngang đã đặt tới lúc gọi.
+// The result depends on hside, that is, on the horizontal arrows placed so far
+// at the time of the call.
 func (l *Layout) branchSlots(nid string) map[string]int {
 	same := l.sameLaneOuts(nid)
 	res := map[string]int{}
@@ -174,11 +181,13 @@ func (l *Layout) branchSlots(nid string) map[string]int {
 
 func (l *Layout) branchSlot(e *Edge) int { return l.branchSlots(e.Src)[e.ID] }
 
-// mergeCol trả về cột cho node có nhiều nhánh cùng lane đi vào.
+// mergeCol returns the column for a node with several incoming same-lane
+// branches.
 //
-// Các nhánh đó rẽ ra từ một node chung; luồng chung nên quay về đúng cột của
-// node rẽ gần nhất, thay vì bám theo cột của nhánh được xếp sau cùng. Không có
-// node chung thì ok là false và caller giữ cách cũ.
+// Those branches split off from a common node; the shared flow should return to
+// the column of the nearest branching node rather than follow the column of the
+// branch placed last. Without a common node ok is false and the caller keeps
+// its default placement.
 func (l *Layout) mergeCol(same []*Edge, v *Item) (col int, ok bool) {
 	var sets []map[string]bool
 	for _, e := range same {
@@ -213,8 +222,8 @@ func (l *Layout) mergeCol(same []*Edge, v *Item) (col int, ok bool) {
 			continue
 		}
 		it := l.items[id]
-		// Gần nhất nghĩa là hàng lớn nhất; hòa thì dòng đứng sau trong bảng.
-		// Thứ tự dòng là duy nhất nên không phụ thuộc thứ tự duyệt map.
+		// Nearest means the largest row; on a tie, the later row in the table.
+		// Row order is unique, so this does not depend on map iteration order.
 		if best == nil || it.Row > best.Row || (it.Row == best.Row && it.Order > best.Order) {
 			best = it
 		}
@@ -225,9 +234,10 @@ func (l *Layout) mergeCol(same []*Edge, v *Item) (col int, ok bool) {
 	return best.Col, true
 }
 
-// sideBranches đếm số nhánh phụ cùng lane: mọi cạnh ra cùng lane trừ nhánh
-// chính. Bản tham chiếu đếm các cạnh có khoảng cách tới nhánh chính lớn hơn 0;
-// khoảng cách đó là một hoán vị của 0 tới n-1, nên hai cách đếm luôn bằng nhau.
+// sideBranches counts the same-lane side branches: every same-lane outgoing
+// edge except the main branch. The reference implementation counts edges whose
+// distance to the main branch is greater than 0; those distances are a
+// permutation of 0 to n-1, so both counts are always equal.
 func (l *Layout) sideBranches(v *Item) int {
 	if n := len(l.sameLaneOuts(v.ID)); n > 0 {
 		return n - 1
@@ -235,8 +245,9 @@ func (l *Layout) sideBranches(v *Item) int {
 	return 0
 }
 
-// attachSide chọn phía cho db và text đứng cạnh node: phía không có cạnh nối.
-// Trả 1 cho phải, -1 cho trái. Cả hai phía đều có cạnh thì chọn phải.
+// attachSide picks the side for a db or text standing next to a node: the side
+// with no connecting edge. Returns 1 for right, -1 for left. If both sides have
+// edges, right is chosen.
 func (l *Layout) attachSide(v *Item) int {
 	right, left := false, false
 	all := append(append([]*Edge(nil), l.outs[v.ID]...), l.ins[v.ID]...)

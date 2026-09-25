@@ -1,7 +1,7 @@
 #!/bin/sh
-# Ghi lại các đối số không phải đường dẫn vào file kết quả: nhờ vậy bản ghi CLI
-# chốt luôn những gì tool truyền cho drawio, như tỉ lệ của ảnh PNG. Đường dẫn
-# thì không ghi, vì thư mục tạm khác nhau giữa hai lần chạy.
+# Records the non-path arguments in the output file, so the CLI transcripts also
+# pin what the tool passes to drawio, such as the PNG scale. Paths are not
+# recorded because the temp directory differs between runs.
 fmt=''
 out=''
 scale=''
@@ -23,5 +23,5 @@ done
 if [ "$fmt" = svg ]; then
 	printf '<svg xmlns="http://www.w3.org/2000/svg"><g /></svg>' > "$out"
 else
-	printf 'PNG giả: định dạng %s, tỉ lệ "%s", cờ%s\n' "$fmt" "$scale" "$flags" > "$out"
+	printf 'fake PNG: format %s, scale "%s", flags%s\n' "$fmt" "$scale" "$flags" > "$out"
 fi

@@ -1,16 +1,16 @@
 # input: 91-invalid-duplicate-id -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 9 [A-2]: id trùng với dòng 8
-WARNING dòng 8 [A-2]: task không có cạnh ra
-check: 1 lỗi, 1 cảnh báo
+check: read table from markdown
+ERROR   line 9 [A-2]: id duplicates line 8
+WARNING line 8 [A-2]: task has no outgoing edge
+check: 1 errors, 1 warnings
 [exit 1]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 9 [A-2]: id trùng với dòng 8
-WARNING dòng 8 [A-2]: task không có cạnh ra
-check: 1 lỗi, 1 cảnh báo
-build: dừng vì bảng có lỗi
+check: read table from markdown
+ERROR   line 9 [A-2]: id duplicates line 8
+WARNING line 8 [A-2]: task has no outgoing edge
+check: 1 errors, 1 warnings
+build: stopped because the table has errors
 [exit 1]
 --- files
 3313a3569b2cda0d  in.md

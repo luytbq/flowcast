@@ -1,1 +1,1 @@
-issue ref.dangling ERROR   dòng 5 [E1]: to=B-1 trỏ tới id không tồn tại
+issue ref.dangling ERROR   line 5 [E1]: to=B-1 points to an id that does not exist

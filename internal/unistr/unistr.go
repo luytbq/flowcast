@@ -1,16 +1,16 @@
-// Package unistr định nghĩa khoảng trắng và chữ thường mà flowcast dùng khắp
-// nơi để cắt và so chuỗi.
+// Package unistr defines the whitespace and lowercasing that flowcast uses
+// everywhere to trim and compare strings.
 //
-// Khoảng trắng gồm mọi ký tự unicode.IsSpace cộng thêm bốn ký tự phân tách
-// U+001C tới U+001F. Bốn ký tự đó hay lọt vào ô khi dán từ bảng tính, và không
-// ai muốn một ô chỉ chứa chúng bị coi là có chữ. Chữ thường theo SpecialCasing
-// của Unicode, nên "İ" thành "i" cộng dấu chấm trên kết hợp. Không dùng thẳng
-// strings.TrimSpace, strings.Fields hay strings.ToLower vì chúng khác ở đúng
-// những chỗ đó.
+// Whitespace is every unicode.IsSpace character plus the four separators
+// U+001C to U+001F. Those four often slip into cells when pasting from
+// spreadsheets, and nobody wants a cell containing only them to count as having
+// text. Lowercasing follows Unicode SpecialCasing, so "İ" becomes "i" plus a
+// combining dot above. strings.TrimSpace, strings.Fields and strings.ToLower are
+// not used directly because they differ at exactly those points.
 //
-// Bảng Unicode là bảng của phiên bản Go đang dùng. Chữ Hy Lạp Σ ở cuối từ không
-// được đổi thành ς; chỗ duy nhất bị ảnh hưởng là thông điệp lỗi của một type
-// viết bằng chữ Hy Lạp.
+// The Unicode tables are those of the Go version in use. A word-final Greek Σ
+// is not turned into ς; the only place affected is the error message for a
+// type written in Greek.
 package unistr
 
 import (
@@ -18,19 +18,19 @@ import (
 	"unicode"
 )
 
-// IsSpace nói r có phải khoảng trắng không.
+// IsSpace reports whether r is whitespace.
 func IsSpace(r rune) bool { return unicode.IsSpace(r) || (r >= 0x1c && r <= 0x1f) }
 
-// Strip, LStrip, RStrip cắt khoảng trắng ở hai đầu, đầu trái, đầu phải.
+// Strip, LStrip, RStrip trim whitespace from both ends, the left end, the right end.
 func Strip(s string) string  { return strings.TrimFunc(s, IsSpace) }
 func LStrip(s string) string { return strings.TrimLeftFunc(s, IsSpace) }
 func RStrip(s string) string { return strings.TrimRightFunc(s, IsSpace) }
 
-// Fields tách chuỗi theo khoảng trắng, bỏ các đoạn rỗng.
+// Fields splits a string on whitespace, dropping empty pieces.
 func Fields(s string) []string { return strings.FieldsFunc(s, IsSpace) }
 
-// Lower đổi chữ thường. U+0130 thành "i" cộng dấu chấm trên kết hợp, theo
-// SpecialCasing của Unicode.
+// Lower lowercases. U+0130 becomes "i" plus a combining dot above, per Unicode
+// SpecialCasing.
 func Lower(s string) string {
 	var b strings.Builder
 	for _, r := range s {

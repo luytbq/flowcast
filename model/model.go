@@ -1,13 +1,14 @@
-// Package model giữ các kiểu dữ liệu chung của bảng đầu vào.
+// Package model holds the shared data types of the input table.
 //
-// Nằm riêng khỏi gói gốc vì mọi source adapter đều cần chúng, còn gói gốc lại
-// cần các adapter. Gói gốc phơi lại bằng bí danh kiểu.
+// It is separate from the root package because every source adapter needs these
+// types, while the root package needs the adapters. The root package re-exports
+// them with type aliases.
 package model
 
-// Row là một dòng bảng đã tách ô, chưa diễn giải theo ngữ nghĩa sơ đồ.
+// Row is a table row split into cells, not yet interpreted with diagram semantics.
 type Row struct {
-	// Idx là thứ tự trong số các dòng đọc được, không phải số dòng trong file.
-	// Dòng hỏng bị bỏ qua nên hai con số này lệch nhau.
+	// Idx is the position among the rows read, not the line number in the file.
+	// Broken rows are skipped, so the two numbers differ.
 	Idx    int
 	Loc    Location
 	ID     string
@@ -15,24 +16,25 @@ type Row struct {
 	Parent string
 	Lines  []string
 	Meta   map[string]string
-	// MetaKeys là thứ tự key viết trong ô. Cần vì map của Go duyệt ngẫu nhiên,
-	// còn thứ tự cảnh báo về key lạ phải theo đúng thứ tự người dùng viết.
+	// MetaKeys is the order of keys as written in the cell. Needed because Go maps
+	// iterate randomly, while warnings about unknown keys must follow the order the
+	// user wrote them in.
 	MetaKeys []string
 }
 
-// Text nối các dòng nội dung rồi cắt khoảng trắng. Kết quả rỗng nghĩa là ô
-// không có chữ thật.
+// Text joins the content lines and trims whitespace. An empty result means the
+// cell has no real text.
 func (r Row) Text() string { return trimSpace(joinLines(r.Lines)) }
 
-// Table là kết quả đọc một nguồn đầu vào.
+// Table is the result of reading one input source.
 type Table struct {
 	Title string
 	Rows  []Row
-	// Issues ở đây chỉ là phát hiện của tầng đọc. Kiểm tra theo ngữ nghĩa sơ đồ
-	// nằm ở tầng validate.
+	// Issues here are only findings of the reading layer. Checks against diagram
+	// semantics live in the validate layer.
 	Issues []Issue
 	Source string
-	// Direction là hướng nguồn tự khai báo, như dòng flowchart LR của mermaid.
-	// Rỗng nghĩa là nguồn không nói gì.
+	// Direction is the direction the source declares itself, like mermaid's
+	// flowchart LR line. Empty means the source says nothing.
 	Direction string
 }

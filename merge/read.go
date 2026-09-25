@@ -1,9 +1,9 @@
-// Package merge sinh lại sơ đồ mà vẫn giữ những gì người dùng đã sửa tay trong
-// file .drawio cũ: vị trí node, bề rộng lane, điểm gấp của dây, và các cell tự
-// vẽ thêm.
+// Package merge regenerates a diagram while keeping the manual edits the user
+// made in the old .drawio file: node positions, lane widths, wire waypoints, and
+// added freehand cells.
 //
-// Merge chỉ dành cho CLI, nơi file cũ nằm ngay cạnh bảng. Dịch vụ web không
-// nhận file cũ nên không dùng tới gói này.
+// Merge is only for the CLI, where the old file sits right next to the table.
+// The web service does not accept an old file, so it does not use this package.
 package merge
 
 import (
@@ -17,15 +17,17 @@ import (
 	"github.com/luytbq/flowcast/internal/unistr"
 )
 
-// Old là trang đầu của file .drawio cũ, cùng các trang còn lại được giữ nguyên.
+// Old is the first page of the old .drawio file, along with the remaining pages
+// kept as is.
 type Old struct {
-	ids   []string // theo thứ tự xuất hiện lần đầu
+	ids   []string // in order of first appearance
 	cells map[string]*oldCell
 	Pages []*etree.Element
 }
 
-// oldCell là một cell của trang đầu. elem là phần tử nằm thẳng dưới root: chính
-// mxCell, hoặc phần tử object bọc ngoài khi cell có thuộc tính riêng.
+// oldCell is a cell of the first page. elem is the element directly under root:
+// the mxCell itself, or the wrapping object element when the cell has custom
+// attributes.
 type oldCell struct {
 	id    string
 	elem  *etree.Element
@@ -64,8 +66,8 @@ func (c *oldCell) points() [][2]float64 {
 	return nil
 }
 
-// style là style của một cell: khóa theo thứ tự xuất hiện lần đầu, khóa không
-// có dấu bằng mang giá trị rỗng và set là false.
+// style is the style of a cell: keys in order of first appearance, and a key
+// without an equals sign carries an empty value with set false.
 type style struct {
 	keys []string
 	vals map[string]styleVal
@@ -114,8 +116,8 @@ func cut(s string, sep byte) (string, string, bool) {
 	return s, "", false
 }
 
-// attrf đọc một thuộc tính số, như float(el.get(key, 0)): thiếu hoặc không đọc
-// được thì là 0.
+// attrf reads a numeric attribute, like float(el.get(key, 0)): missing or
+// unreadable means 0.
 func attrf(el *etree.Element, key string) float64 {
 	if el == nil {
 		return 0
@@ -131,39 +133,40 @@ func attrf(el *etree.Element, key string) float64 {
 	return v
 }
 
-// ErrRead là lỗi khiến không merge được. Thông báo đã kèm tên file.
+// ErrRead is an error that prevents merging. The message already includes the
+// file name.
 type ErrRead struct{ Msg string }
 
 func (e *ErrRead) Error() string { return e.Msg }
 
-// Read đọc file .drawio cũ. name chỉ dùng trong thông báo lỗi.
+// Read reads the old .drawio file. name is only used in error messages.
 //
-// Trang đầu có thể được draw.io nén: base64 của dữ liệu deflate thô, bên trong
-// là XML đã mã hóa theo kiểu URL.
+// The first page may be compressed by draw.io: base64 of raw deflate data,
+// containing URL-encoded XML.
 func Read(data []byte, name string) (*Old, error) {
 	root, err := etree.Parse(data)
 	if err != nil {
-		return nil, &ErrRead{fmt.Sprintf("không đọc được %s: %v", name, err)}
+		return nil, &ErrRead{fmt.Sprintf("cannot read %s: %v", name, err)}
 	}
 	old := &Old{cells: map[string]*oldCell{}}
 	model := root
 	if root.Tag != "mxGraphModel" {
 		pages := root.FindAll("diagram")
 		if len(pages) == 0 {
-			return nil, &ErrRead{name + " không có trang nào"}
+			return nil, &ErrRead{name + " has no pages"}
 		}
 		model = pages[0].Find("mxGraphModel")
 		if model == nil {
 			model, err = decodeDiagram(unistr.Strip(pages[0].Text))
 			if err != nil {
-				return nil, &ErrRead{fmt.Sprintf("không giải nén được trang đầu của %s: %v", name, err)}
+				return nil, &ErrRead{fmt.Sprintf("cannot decompress the first page of %s: %v", name, err)}
 			}
 		}
 		old.Pages = pages[1:]
 	}
 	groot := model.Find("root")
 	if groot == nil {
-		return nil, &ErrRead{name + " không có mxGraphModel/root"}
+		return nil, &ErrRead{name + " has no mxGraphModel/root"}
 	}
 	for i, el := range groot.Children {
 		cell := el
@@ -176,7 +179,8 @@ func Read(data []byte, name string) (*Old, error) {
 		if cid == "" {
 			continue
 		}
-		// id trùng: cell sau thay cell trước nhưng giữ chỗ của cell trước.
+		// duplicate id: the later cell replaces the earlier one but keeps the earlier
+		// one's slot.
 		if _, ok := old.cells[cid]; !ok {
 			old.ids = append(old.ids, cid)
 		}

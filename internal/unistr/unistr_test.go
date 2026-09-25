@@ -2,19 +2,19 @@ package unistr
 
 import "testing"
 
-func TestKhoangTrangGomCacKyTuPhanTach(t *testing.T) {
+func TestWhitespaceIncludesSeparatorChars(t *testing.T) {
 	for r := rune(0x1c); r <= 0x1f; r++ {
 		if !IsSpace(r) {
-			t.Errorf("U+%04X phải là khoảng trắng", r)
+			t.Errorf("U+%04X must be whitespace", r)
 		}
 	}
 	if Strip("\x1f a \x1c") != "a" {
-		t.Errorf("Strip không cắt U+001C và U+001F")
+		t.Errorf("Strip does not trim U+001C and U+001F")
 	}
 }
 
-func TestLowerChuIMangChamTrenRaHaiKyTu(t *testing.T) {
+func TestLowerDottedCapitalIGivesTwoChars(t *testing.T) {
 	if got := Lower("İD"); got != "i̇d" {
-		t.Errorf("Lower(İD) = %q, muốn %q", got, "i̇d")
+		t.Errorf("Lower(İD) = %q, want %q", got, "i̇d")
 	}
 }

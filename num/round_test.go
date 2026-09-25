@@ -8,10 +8,10 @@ import (
 	"testing"
 )
 
-// TestRoundKhopVectorTungBit so Round với vector trên 60.000 giá trị, gồm cả số
-// đúng nửa chừng và bit ngẫu nhiên, và so từng bit chứ không so chuỗi đã định
-// dạng.
-func TestRoundKhopVectorTungBit(t *testing.T) {
+// TestRoundMatchesVectorsBitForBit compares Round against vectors over 60,000
+// values, including exact halfway numbers and random bits, and compares bit by
+// bit rather than formatted strings.
+func TestRoundMatchesVectorsBitForBit(t *testing.T) {
 	data, err := os.ReadFile("../conformance/round-vectors.json")
 	if err != nil {
 		t.Fatal(err)
@@ -35,22 +35,22 @@ func TestRoundKhopVectorTungBit(t *testing.T) {
 			if got := Round(x, d); math.Float64bits(got) != math.Float64bits(want) {
 				bad++
 				if bad <= 5 {
-					t.Errorf("Round(%v, %d) = %v, vector ra %v", x, d, got, want)
+					t.Errorf("Round(%v, %d) = %v, vector gives %v", x, d, got, want)
 				}
 			}
 		}
 	}
 	if bad > 0 {
-		t.Errorf("%d trên %d phép làm tròn lệch", bad, 2*len(vs))
+		t.Errorf("%d of %d roundings mismatched", bad, 2*len(vs))
 	}
-	t.Logf("đã so %d phép làm tròn", 2*len(vs))
+	t.Logf("compared %d roundings", 2*len(vs))
 }
 
-// TestMathRoundKhongDungDuoc giữ lại lý do không dùng math.Round, để không ai
-// "đơn giản hóa" Round về nó.
-func TestMathRoundKhongDungDuoc(t *testing.T) {
+// TestMathRoundIsNotUsable keeps the reason math.Round is not used, so nobody
+// "simplifies" Round back to it.
+func TestMathRoundIsNotUsable(t *testing.T) {
 	naive := math.Round(2.675*100) / 100
 	if Round(2.675, 2) == naive {
-		t.Fatalf("math.Round và Round cho cùng kết quả ở 2.675; lý do tồn tại của Round đã mất")
+		t.Fatalf("math.Round and Round give the same result at 2.675; Round's reason to exist is gone")
 	}
 }

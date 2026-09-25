@@ -1,14 +1,15 @@
-// Lệnh metrics đo chất lượng bố cục trên một bộ sơ đồ, để heuristic xếp hình
-// được đánh giá bằng số liệu chứ không bằng cảm nhận.
+// Command metrics measures layout quality over a set of diagrams, so that layout
+// heuristics are judged by numbers rather than by feel.
 //
 //	go run ./tools/metrics conformance/mermaid/*.mmd conformance/flowchart/*.md
 //
-// Mỗi sơ đồ in ra: số dây mỗi kiểu đi dây (A thẳng đứng, B thẳng ngang, C chữ
-// L, D đi vòng qua kênh), tổng số điểm gấp, số chỗ hai dây cắt nhau, tổng chiều
-// dài dây, kích thước, số
-// phát hiện tự kiểm, và số cạnh của đường chính được vẽ thẳng đứng trên tổng
-// số cạnh của đường chính. Đường chính là đường dài nhất từ một điểm đầu tới
-// một điểm cuối, không đi qua cạnh vòng lặp.
+// For each diagram it prints: the number of wires per routing case (A straight
+// vertical, B straight horizontal, C L-shaped, D detour through a channel), the
+// total number of bend points, the number of places where two wires cross, the
+// total wire length, the size, the number
+// of self-check findings, and the number of main-path edges drawn straight vertical
+// out of the total number of main-path edges. The main path is the longest path
+// from a start point to an end point that does not go through a loop edge.
 package main
 
 import (
@@ -54,9 +55,9 @@ func measure(r layout.Result, findings int) row {
 	return m
 }
 
-// crossings đếm số cặp đoạn dây của hai cạnh khác nhau cắt nhau. Một đoạn dọc
-// và một đoạn ngang cắt nhau là chỗ người đọc phải dừng lại để lần xem dây nào
-// đi đâu, nên càng ít càng tốt.
+// crossings counts the pairs of wire segments from two different edges that cross.
+// A vertical and a horizontal segment crossing is where the reader has to stop and
+// trace which wire goes where, so fewer is better.
 func crossings(r layout.Result) int {
 	type seg struct {
 		edge           int
@@ -78,7 +79,7 @@ func crossings(r layout.Result) int {
 			}
 			horizA, horizB := a.y0 == a.y1, b.y0 == b.y1
 			if horizA == horizB {
-				continue // hai đoạn cùng phương thì chồng nhau chứ không cắt nhau
+				continue // two parallel segments overlap rather than cross
 			}
 			h, v := a, b
 			if horizB {
@@ -92,8 +93,8 @@ func crossings(r layout.Result) int {
 	return n
 }
 
-// longestPath trả về các cạnh của đường dài nhất theo số cạnh trên đồ thị đã
-// bỏ cạnh vòng lặp. Hòa thì lấy đường gặp trước theo thứ tự dòng.
+// longestPath returns the edges of the longest path, by edge count, in the graph
+// with loop edges removed. Ties go to the path met first in row order.
 func longestPath(r layout.Result) []layout.PlacedEdge {
 	outs := map[string][]layout.PlacedEdge{}
 	ins := map[string]int{}
@@ -131,7 +132,7 @@ func longestPath(r layout.Result) []layout.PlacedEdge {
 
 func main() {
 	var total row
-	fmt.Printf("%-34s %4s %4s %4s %4s %5s %5s %7s %9s %4s %7s\n", "sơ đồ", "A", "B", "C", "D", "gấp", "cắt", "dài", "cỡ", "tk", "chính")
+	fmt.Printf("%-34s %4s %4s %4s %4s %5s %5s %7s %9s %4s %7s\n", "diagram", "A", "B", "C", "D", "bends", "cross", "length", "size", "chk", "main")
 	for _, p := range os.Args[1:] {
 		data, err := os.ReadFile(p)
 		if err != nil {
@@ -140,7 +141,7 @@ func main() {
 		}
 		res, err := flowcast.Build(flowcast.Source{Name: filepath.Base(p), Data: data}, flowcast.Options{})
 		if err != nil || res.Layout == nil {
-			fmt.Fprintf(os.Stderr, "%s: không dựng được: %v\n", p, err)
+			fmt.Fprintf(os.Stderr, "%s: build failed: %v\n", p, err)
 			os.Exit(1)
 		}
 		m := measure(*res.Layout, len(res.Findings))
@@ -157,7 +158,7 @@ func main() {
 		total.spineA += m.spineA
 		total.spineTotal += m.spineTotal
 	}
-	fmt.Printf("%-34s %4d %4d %4d %4d %5d %5d %7.0f %9s %4d %4d/%-2d\n", "tổng", total.cases[0], total.cases[1],
+	fmt.Printf("%-34s %4d %4d %4d %4d %5d %5d %7.0f %9s %4d %4d/%-2d\n", "total", total.cases[0], total.cases[1],
 		total.cases[2], total.cases[3], total.bends, total.crossings, total.length, "", total.findings,
 		total.spineA, total.spineTotal)
 }

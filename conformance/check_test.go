@@ -42,21 +42,23 @@ func hexf(t *testing.T, s string) float64 {
 func assertFindings(t *testing.T, got []layout.Finding, want [][2]string) {
 	t.Helper()
 	if len(got) != len(want) {
-		t.Errorf("có %d phát hiện, cần %d:\n  Go %v\n  Py %v", len(got), len(want), got, want)
+		t.Errorf("got %d findings, want %d:\n  Go %v\n  Py %v", len(got), len(want), got, want)
 		return
 	}
 	for i := range got {
 		if got[i].Level != want[i][0] || got[i].Msg != want[i][1] {
-			t.Errorf("phát hiện %d: được %s %q, vector %s %q", i, got[i].Level, got[i].Msg, want[i][0], want[i][1])
+			t.Errorf("finding %d: got %s %q, vector %s %q", i, got[i].Level, got[i].Msg, want[i][0], want[i][1])
 		}
 	}
 }
 
-// TestTuKiemTrenHinhHocHong chạy tự kiểm trên các hình học hỏng ghi sẵn.
+// TestSelfCheckOnBrokenGeometry runs the self-check on prerecorded broken
+// geometries.
 //
-// Engine đúng không sinh ra lỗi hình học, nên đầu ra của nó không kiểm được tự
-// kiểm. Các hình học này thì hỏng đủ kiểu, và phủ cả tám loại phát hiện.
-func TestTuKiemTrenHinhHocHong(t *testing.T) {
+// A correct engine produces no geometry errors, so its output cannot test the
+// self-check. These geometries are broken in every way, and cover all eight
+// kinds of finding.
+func TestSelfCheckOnBrokenGeometry(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join(Dir(), "check-vectors.json"))
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -91,7 +93,5 @@ func TestTuKiemTrenHinhHocHong(t *testing.T) {
 		})
 		findings += len(v.Findings)
 	}
-	t.Logf("đã so %d phát hiện trên %d hình học hỏng", findings, len(vs))
+	t.Logf("compared %d findings over %d broken geometries", findings, len(vs))
 }
-
-// TestChangCheck chạy tự kiểm trên đầu ra của chính engine Go, qua cả bộ case.

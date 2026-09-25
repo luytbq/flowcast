@@ -1,4 +1,4 @@
-// Package lint giữ các phép kiểm tĩnh trên chính mã nguồn của module.
+// Package lint holds static checks on the module's own source code.
 package lint
 
 import (
@@ -14,17 +14,18 @@ import (
 	"testing"
 )
 
-// TestKhongCoPhepNhanSoThucTranKhoiFMA báo mọi phép nhân số thực không được
-// bọc trong float64().
+// TestNoFloatMultiplicationExposedToFMA reports every float multiplication not
+// wrapped in float64().
 //
-// Đặc tả Go cho phép trình biên dịch gộp a*b + c thành một lệnh FMA, chỉ làm
-// tròn một lần thay vì hai, và được phép gộp cả qua nhiều câu lệnh. Trên arm64
-// điều đó xảy ra ở khoảng một phần tư số phép a*1.42 + c, lệch một đơn vị ở bit
-// cuối so với máy không gộp, nên cùng một bảng ra hai file khác nhau. Chỉ phép
-// chuyển kiểu tường minh mới chặn được việc gộp, nên mọi phép nhân số thực phải
-// được bọc, trừ khi kết quả của nó đi thẳng vào một phép nhân hoặc chia khác:
-// FMA chỉ gộp nhân với cộng và trừ.
-func TestKhongCoPhepNhanSoThucTranKhoiFMA(t *testing.T) {
+// The Go spec allows the compiler to fuse a*b + c into one FMA instruction,
+// rounding once instead of twice, and it may fuse even across statements. On
+// arm64 this happens in about a quarter of a*1.42 + c operations, off by one
+// unit in the last bit compared with a machine that does not fuse, so the same
+// table yields two different files. Only an explicit conversion prevents
+// fusion, so every float multiplication must be wrapped, unless its result
+// feeds straight into another multiplication or division: FMA only fuses
+// multiplication with addition and subtraction.
+func TestNoFloatMultiplicationExposedToFMA(t *testing.T) {
 	root, err := filepath.Abs("../..")
 	if err != nil {
 		t.Fatal(err)
@@ -74,8 +75,8 @@ func packageDirs(t *testing.T, root string) []string {
 	return dirs
 }
 
-// parseDir chỉ đọc file mã nguồn chính, không đọc file test: test không đi vào
-// binary và không sinh ra toạ độ nào.
+// parseDir reads only the main source files, not test files: tests do not go
+// into the binary and produce no coordinates.
 func parseDir(t *testing.T, fset *token.FileSet, dir string) []*ast.File {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
@@ -120,8 +121,8 @@ func unparen(e ast.Expr) ast.Expr {
 	}
 }
 
-// scan duyệt cây cú pháp, nhớ cha của từng nút, rồi báo phép nhân nào không có
-// cha an toàn.
+// scan walks the syntax tree, remembering each node's parent, and reports every
+// multiplication without a safe parent.
 func scan(fset *token.FileSet, root string, f *ast.File, info *types.Info) []string {
 	var out []string
 	var stack []ast.Node
@@ -133,7 +134,7 @@ func scan(fset *token.FileSet, root string, f *ast.File, info *types.Info) []str
 		if b, ok := n.(*ast.BinaryExpr); ok && b.Op == token.MUL && isFloat(info, b) && !safeParent(stack, info) {
 			pos := fset.Position(b.Pos())
 			rel, _ := filepath.Rel(root, pos.Filename)
-			out = append(out, rel+":"+itoa(pos.Line)+": phép nhân số thực chưa bọc float64(), trình biên dịch có thể gộp thành FMA")
+			out = append(out, rel+":"+itoa(pos.Line)+": float multiplication not wrapped in float64(), the compiler may fuse it into an FMA")
 		}
 		stack = append(stack, n)
 		return true
@@ -141,9 +142,10 @@ func scan(fset *token.FileSet, root string, f *ast.File, info *types.Info) []str
 	return out
 }
 
-// safeParent: cha gần nhất bỏ qua ngoặc là một phép chuyển kiểu sang số thực
-// hoặc số nguyên, hoặc là một phép nhân hay chia số thực khác. Chuyển sang số
-// nguyên cũng an toàn vì nó không kèm phép cộng nào để gộp.
+// safeParent: the nearest parent, ignoring parentheses, is a conversion to a
+// float or integer type, or another float multiplication or division.
+// Converting to an integer is also safe because it carries no addition to fuse
+// with.
 func safeParent(stack []ast.Node, info *types.Info) bool {
 	for i := len(stack) - 1; i >= 0; i-- {
 		switch p := stack[i].(type) {

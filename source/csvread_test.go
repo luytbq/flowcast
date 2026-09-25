@@ -7,9 +7,10 @@ import (
 	"testing"
 )
 
-// TestReadCSVKhopVector so readCSV với vector trên hàng nghìn chuỗi ngẫu nhiên
-// và các chuỗi dựng tay ở đúng những góc mà encoding/csv của Go hiểu khác.
-func TestReadCSVKhopVector(t *testing.T) {
+// TestReadCSVMatchesVectors compares readCSV against vectors over thousands of
+// random strings and hand-built strings at exactly the corners where Go's
+// encoding/csv behaves differently.
+func TestReadCSVMatchesVectors(t *testing.T) {
 	data, err := os.ReadFile("../conformance/csv-vectors.json")
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -33,12 +34,12 @@ func TestReadCSVKhopVector(t *testing.T) {
 		if gotErr != v.Error || fmt.Sprintf("%q", got) != fmt.Sprintf("%q", v.Rows) && v.Error == "" {
 			bad++
 			if bad <= 5 {
-				t.Errorf("%q với dấu %q:\n  Go %q %s\n  Py %q %s", v.Text, v.Delim, got, gotErr, v.Rows, v.Error)
+				t.Errorf("%q with delimiter %q:\n  Go %q %s\n  Py %q %s", v.Text, v.Delim, got, gotErr, v.Rows, v.Error)
 			}
 		}
 	}
 	if bad > 5 {
-		t.Errorf("... và %d vector lệch nữa", bad-5)
+		t.Errorf("... and %d more mismatched vectors", bad-5)
 	}
-	t.Logf("đã so %d vector", len(vs))
+	t.Logf("compared %d vectors", len(vs))
 }

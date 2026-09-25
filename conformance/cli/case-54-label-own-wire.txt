@@ -1,19 +1,19 @@
 # input: 54-label-own-wire -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 14 [B-3]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
+check: read table from markdown
+WARNING line 14 [B-3]: task has no outgoing edge
+check: 0 errors, 1 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 14 [B-3]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (2 lane, 4 phần tử, 4 cạnh, 467.19x279px)
-WARNING layout: E4: nhãn "gửi yêu cầu" không tìm được chỗ trống hoàn toàn
-WARNING layout: nhãn E3 đè nhãn E4
-WARNING layout: nhãn E4 đè dây E3
-layout: 0 lỗi, 2 cảnh báo
+check: read table from markdown
+WARNING line 14 [B-3]: task has no outgoing edge
+check: 0 errors, 1 warnings
+build: mode new
+build: wrote $T/in.drawio (2 lanes, 4 elements, 4 edges, 467.19x279px)
+WARNING layout: E4: label "gửi yêu cầu" could not find a completely free spot
+WARNING layout: label E3 overlaps label E4
+WARNING layout: label E4 overlaps wire E3
+layout: 0 errors, 2 warnings
 [exit 0]
 --- files
 b7e6352a8857530e  in.drawio

@@ -7,26 +7,26 @@ import (
 	"github.com/luytbq/flowcast/text"
 )
 
-// Item là một phần tử được vẽ: node, hoặc db và text đứng cạnh node.
+// Item is a drawn element: a node, or a db or text standing next to a node.
 type Item struct {
 	ID        string
 	Kind      string
 	Lane      int
 	Lines     []string
 	W, H      float64
-	Order     int // thứ tự dòng trong bảng, dùng để phá thế hòa
+	Order     int // row order in the table, used to break ties
 	Highlight bool
-	// Attach là id của node mà db hoặc text đứng cạnh. Rỗng với node.
+	// Attach is the id of the node a db or text stands next to. Empty for nodes.
 	Attach string
 
-	// Row và Col chỉ có nghĩa khi Placed. Col âm được, vì nhánh phụ dạt sang
-	// trái của cột gốc.
+	// Row and Col are meaningful only when Placed. Col may be negative, because
+	// side branches drift to the left of the origin column.
 	Placed   bool
 	Row, Col int
 	X, Y     float64
 }
 
-// Edge là một mũi tên giữa hai node.
+// Edge is an arrow between two nodes.
 type Edge struct {
 	ID        string
 	Src, Dst  string
@@ -35,12 +35,12 @@ type Edge struct {
 	Order     int
 	Dashed    bool
 	Highlight bool
-	Bold      bool // nét đậm
-	NoArrow   bool // không có đầu mũi tên
-	// Back đánh dấu cạnh tạo vòng lặp. Nó không tham gia xếp hàng.
+	Bold      bool // bold stroke
+	NoArrow   bool // no arrowhead
+	// Back marks an edge that forms a loop. It takes no part in row assignment.
 	Back bool
 
-	// Kết quả của route. Case là một trong A, B, C, D.
+	// Output of route. Case is one of A, B, C, D.
 	Case      byte
 	ExitSide  byte
 	EntrySide byte
@@ -48,29 +48,29 @@ type Edge struct {
 	EntryFrac [2]float64
 	Sym       []SymPair
 
-	// Kết quả của pha hình học và nhãn, theo toạ độ trong pool.
+	// Output of the geometry and label phases, in pool coordinates.
 	Pts      [][2]float64
-	Label    *[4]float64 // hộp nhãn; nil khi cạnh không có nhãn hoặc không đặt được
-	LabelT   float64     // vị trí nhãn dọc đường, từ -1 ở nguồn tới 1 ở đích
-	LabelOff [2]float64  // độ lệch từ điểm neo trên đường tới tâm hộp nhãn
+	Label    *[4]float64 // label box; nil when the edge has no label or it could not be placed
+	LabelT   float64     // label position along the path, from -1 at the source to 1 at the target
+	LabelOff [2]float64  // offset from the anchor on the path to the center of the label box
 }
 
-// Layout là trạng thái của một lần xếp hình. Các pha chạy lần lượt và mỗi pha
-// đọc kết quả của pha trước.
+// Layout is the state of one layout run. The phases run in sequence and each
+// phase reads the output of the previous one.
 type Layout struct {
 	Cfg Config
 	tm  *text.Measure
 
 	Lanes   []model.Row
 	laneIdx map[string]int
-	// NoLanes: bảng không có lane nào, Lanes chỉ chứa một lane ẩn.
+	// NoLanes: the table has no lanes; Lanes holds only one hidden lane.
 	NoLanes bool
-	depth   map[string]int // bộ nhớ của branchDepth, làm mới mỗi lần Place
-	// Dir là hướng của sơ đồ, xem axis.go. Rỗng nghĩa là TD.
+	depth   map[string]int // memo for branchDepth, reset on each Place
+	// Dir is the diagram direction, see axis.go. Empty means TD.
 	Dir string
 
-	// items và Edges giữ thứ tự dòng trong bảng. Map của Go duyệt ngẫu nhiên,
-	// nên mọi vòng duyệt cần thứ tự đều đi qua ItemOrder.
+	// items and Edges keep table row order. Go maps iterate in random order, so
+	// every loop that needs an order goes through ItemOrder.
 	items     map[string]*Item
 	ItemOrder []*Item
 	Edges     []*Edge
@@ -78,7 +78,7 @@ type Layout struct {
 
 	Warnings []Warning
 
-	// Kết quả của place.
+	// Output of place.
 	TopoOrder   []string
 	NRows       int
 	Cols        map[int][]int
@@ -87,24 +87,25 @@ type Layout struct {
 	occ         map[cell]string
 	hside       map[string]map[byte]bool
 
-	// Kết quả của route.
+	// Output of route.
 	Segs    []*Seg
 	NTracks map[Res]int
 	sideOut map[sideKey][]*Edge
 	sideIn  map[sideKey][]*Edge
 
-	// Kết quả của pha hình học.
+	// Output of the geometry phase.
 	LaneX, LaneW []float64
 	PoolW, PoolH float64
 	g            *geom
 }
 
-// Item trả về phần tử theo id.
+// Item returns the element with the given id.
 func (l *Layout) Item(id string) *Item { return l.items[id] }
 
-// New dựng trạng thái ban đầu từ các dòng đã qua validate.
+// New builds the initial state from rows that have passed validate.
 //
-// Không kiểm lại đầu vào: gọi với bảng còn lỗi là vi phạm điều kiện tiên quyết.
+// It does not re-check the input: calling it with a table that still has errors
+// violates a precondition.
 func New(rows []model.Row, cfg Config, tm *text.Measure) *Layout {
 	l := &Layout{
 		Cfg:     cfg,
@@ -123,8 +124,8 @@ func New(rows []model.Row, cfg Config, tm *text.Measure) *Layout {
 		}
 	}
 	if len(l.Lanes) == 0 {
-		// Flowchart: một lane ẩn chứa mọi phần tử, không có header nào. Thuật
-		// toán xếp hình chạy nguyên vẹn trên một lane.
+		// Flowchart: one hidden lane holds every element, with no headers. The
+		// layout algorithm runs unchanged on a single lane.
 		l.NoLanes = true
 		l.laneIdx[""] = 0
 		l.Lanes = []model.Row{{Type: "lane"}}
@@ -138,8 +139,8 @@ func New(rows []model.Row, cfg Config, tm *text.Measure) *Layout {
 		if schema.AttachTypes[r.Type] {
 			attach = r.Meta["attach"]
 		}
-		// db và text vẽ trong lane của node chúng bám, không phải lane chúng
-		// tự khai. validate đã cảnh báo khi hai lane này lệch nhau.
+		// A db or text is drawn in the lane of the node it attaches to, not the
+		// lane it declares itself. validate has already warned when the two differ.
 		laneID := r.Parent
 		if attach != "" {
 			laneID = byID[attach].Parent
@@ -186,9 +187,9 @@ func hasStyle(r model.Row, v string) bool {
 	return false
 }
 
-// Warning là một cảnh báo của engine: sơ đồ vẫn dựng được nhưng có chỗ engine
-// phải chấp nhận một phương án kém hơn. Code là mã máy ổn định, ID là phần tử
-// hoặc cạnh liên quan nếu có, Msg là thông điệp cho người đọc.
+// Warning is an engine warning: the diagram can still be built, but somewhere
+// the engine had to accept a worse option. Code is a stable machine code, ID is
+// the element or edge involved if any, Msg is the human-readable message.
 type Warning struct {
 	Code string
 	ID   string

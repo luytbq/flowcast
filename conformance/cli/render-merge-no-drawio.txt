@@ -1,26 +1,26 @@
 # input: merge/moved-node -> *
 # drawio: none
 $ ["build", "$T/flow.md", "--mode", "merge", "--verify"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ merge, giữ chỉnh sửa tay
-build: đã ghi $T/flow.drawio (3 lane, 10 phần tử, 8 cạnh, 1363.13x420px)
-build: bản sao file cũ $T/flow.drawio.bak
-merge: giữ vị trí (10): USR-1, API-1, API-1.1, API-2, API-3, SVC-1, SVC-2, SVC-3, USR-2, SVC-4
-merge: element mới (0): -
-merge: element mới phải dịch xuống vì chồng (0): -
-merge: đổi lane trong bảng hoặc bị kéo sang lane khác, đặt lại (0): -
-merge: edge giữ waypoint (8): E1, E2, E3, E4, E5, E6, E7, E7.1
-merge: edge để draw.io tự đi dây, cần chỉnh tay (0): -
-merge: edge đã sửa tay, nhãn về giữa đường (0): -
-merge: xoá vì không còn trong bảng (0): -
-merge: lane được nới (0): -
-merge: cell tự vẽ giữ lại (0): -
-merge: cell tự vẽ bỏ đi (cha đã bị xoá) (0): -
-merge: cell tự vẽ mất đầu nối (0): -
-merge: element chồng nhau (1): API-1/API-1.1
-layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG
-WARNING không có drawio CLI, bỏ qua xuất ảnh và kiểm render
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode merge, keep manual edits
+build: wrote $T/flow.drawio (3 lanes, 10 elements, 8 edges, 1363.13x420px)
+build: backup of the old file $T/flow.drawio.bak
+merge: kept position (10): USR-1, API-1, API-1.1, API-2, API-3, SVC-1, SVC-2, SVC-3, USR-2, SVC-4
+merge: new element (0): -
+merge: new element shifted down due to overlap (0): -
+merge: lane changed in table or dragged to another lane, re-placed (0): -
+merge: edge kept waypoints (8): E1, E2, E3, E4, E5, E6, E7, E7.1
+merge: edge left to draw.io routing, needs manual edits (0): -
+merge: edge manually edited, label moved to midpoint (0): -
+merge: removed, no longer in table (0): -
+merge: lane widened (0): -
+merge: freehand cell kept (0): -
+merge: freehand cell dropped (parent removed) (0): -
+merge: freehand cell lost endpoint (0): -
+merge: overlapping elements (1): API-1/API-1.1
+layout: merge does not self-check wires and labels; see the list above and the PNG image
+WARNING drawio CLI not found, skipping image export and render check
 [exit 0]
 --- files
 dc1cd605cec5427a  flow.drawio

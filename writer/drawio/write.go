@@ -1,4 +1,4 @@
-// Package drawio sinh file .drawio từ một sơ đồ đã xếp.
+// Package drawio produces .drawio files from a laid out diagram.
 package drawio
 
 import (
@@ -14,13 +14,14 @@ const (
 	highlightText = "fillColor=#dae8fc;strokeColor=none;"
 	highlightEdge = "strokeColor=#6c8ebf;strokeWidth=2;"
 	font          = "fontFamily=Verdana;fontSize=12;"
-	// mark đánh dấu cell do tool sinh. Khi sinh lại, merge dùng nó để tách cell
-	// người dùng tự vẽ ra khỏi cell của tool.
+	// mark tags cells produced by the tool. On regenerate, merge uses it to tell
+	// the user's freehand cells apart from the tool's cells.
 	mark = "flowtable=1;"
 )
 
-// shapeStyle không bật whiteSpace=wrap: chữ đã được ngắt dòng sẵn bằng <br>, và
-// để draw.io tự ngắt lại thì số dòng có thể khác kích thước node đã tính.
+// shapeStyle does not enable whiteSpace=wrap: text is already wrapped with <br>,
+// and letting draw.io wrap it again could produce a line count that does not
+// match the computed node size.
 var shapeStyle = map[layout.Shape]string{
 	layout.ShapeRect:          "rounded=0;html=1;",
 	layout.ShapeDiamond:       "rhombus;html=1;",
@@ -31,9 +32,10 @@ var shapeStyle = map[layout.Shape]string{
 	layout.ShapeNote:          "text;html=1;align=left;verticalAlign=middle;spacingLeft=4;",
 }
 
-// htmlLines nối các dòng bằng <br> sau khi thoát ký tự html. Phép thoát này
-// chồng lên phép thoát thuộc tính XML lúc ghi file, nên & trong nội dung thành
-// &amp;amp; trong file: draw.io giải thuộc tính trước, rồi giải html.
+// htmlLines joins lines with <br> after escaping html characters. This escaping
+// stacks on top of the XML attribute escaping done when writing the file, so &
+// in the content becomes &amp;amp; in the file: draw.io decodes the attribute
+// first, then the html.
 func htmlLines(lines []string) string {
 	r := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")
 	out := make([]string, len(lines))
@@ -49,12 +51,12 @@ func geo(cell *etree.Element, x, y, w, h float64) {
 	cell.Add("mxGeometry", "x", f(x), "y", f(y), "width", f(w), "height", f(h), "as", "geometry")
 }
 
-// Write sinh nội dung một file .drawio.
+// Write produces the content of a .drawio file.
 func Write(r layout.Result, title string) string { return WriteMerged(r, title, nil, nil) }
 
-// WriteMerged sinh file .drawio kèm những gì merge giữ lại từ file cũ: extras
-// là các cell người dùng tự vẽ, nối vào cuối trang đầu; pages là các trang còn
-// lại, nối nguyên vẹn sau trang đầu.
+// WriteMerged produces a .drawio file along with what merge kept from the old
+// file: extras are the user's freehand cells, appended to the end of the first
+// page; pages are the remaining pages, appended intact after the first page.
 func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) string {
 	ox, oy := r.Origin[0], r.Origin[1]
 	if title == "" {
@@ -74,8 +76,9 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 	root.Add("mxCell", "id", "0")
 	root.Add("mxCell", "id", "1", "parent", "0")
 
-	// Toạ độ trong Result tính theo pool. Sơ đồ không có lane thì không có pool
-	// làm cha: phần tử và dây nằm thẳng trên layer, nên cộng gốc pool vào.
+	// Coordinates in Result are relative to the pool. A diagram without lanes has
+	// no pool as parent: elements and wires sit directly on the layer, so the
+	// pool origin is added.
 	parentOf := func(it layout.PlacedItem) string { return r.Lanes[it.Lane].ID }
 	edgeParent, dx, dy := "pool", 0.0, 0.0
 	if r.NoLanes {
@@ -127,8 +130,8 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 		if e.Highlight {
 			style += highlightEdge
 		}
-		// Sau highlight: draw.io lấy giá trị viết sau cùng, và nét đậm phải đậm
-		// hơn nét tô nhấn.
+		// After highlight: draw.io takes the last value written, and the bold
+		// stroke must be heavier than the highlight stroke.
 		if e.Bold {
 			style += "strokeWidth=3;"
 		}
@@ -163,8 +166,9 @@ func WriteMerged(r layout.Result, title string, extras, pages []*etree.Element) 
 	return mxfile.String()
 }
 
-// horizontalLanes: sơ đồ đi ngang, lane là băng ngang với header ở bên trái.
-// LaneX và LaneW khi đó là vị trí và bề dày của băng theo trục dọc.
+// horizontalLanes: the diagram runs horizontally, and lanes are horizontal bands
+// with the header on the left. LaneX and LaneW are then the position and
+// thickness of the band along the vertical axis.
 func horizontalLanes(r layout.Result) bool { return r.Dir == layout.DirLR || r.Dir == layout.DirRL }
 
 func writePool(root *etree.Element, r layout.Result, title string, ox, oy float64) {

@@ -1,25 +1,25 @@
 # input: merge/fuzz-64 -> *
 $ ["build", "$T/flow.md", "--mode", "merge"]
-check: đọc bảng từ markdown
-WARNING dòng 14 [B-4]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
-build: chế độ merge, giữ chỉnh sửa tay
-build: đã ghi $T/flow.drawio (3 lane, 4 phần tử, 3 cạnh, 584x461.6px)
-build: bản sao file cũ $T/flow.drawio.bak
-merge: giữ vị trí (4): D-1, A-2, D-3, B-4
-merge: element mới (0): -
-merge: element mới phải dịch xuống vì chồng (0): -
-merge: đổi lane trong bảng hoặc bị kéo sang lane khác, đặt lại (0): -
-merge: edge giữ waypoint (3): E1, E2, E3
-merge: edge để draw.io tự đi dây, cần chỉnh tay (0): -
-merge: edge đã sửa tay, nhãn về giữa đường (0): -
-merge: xoá vì không còn trong bảng (0): -
-merge: lane được nới (1): B +74px
-merge: cell tự vẽ giữ lại (2): hand-g0, hand-g0c
-merge: cell tự vẽ bỏ đi (cha đã bị xoá) (0): -
-merge: cell tự vẽ mất đầu nối (0): -
-merge: element chồng nhau (0): -
-layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG
+check: read table from markdown
+WARNING line 14 [B-4]: task has no outgoing edge
+check: 0 errors, 1 warnings
+build: mode merge, keep manual edits
+build: wrote $T/flow.drawio (3 lanes, 4 elements, 3 edges, 584x461.6px)
+build: backup of the old file $T/flow.drawio.bak
+merge: kept position (4): D-1, A-2, D-3, B-4
+merge: new element (0): -
+merge: new element shifted down due to overlap (0): -
+merge: lane changed in table or dragged to another lane, re-placed (0): -
+merge: edge kept waypoints (3): E1, E2, E3
+merge: edge left to draw.io routing, needs manual edits (0): -
+merge: edge manually edited, label moved to midpoint (0): -
+merge: removed, no longer in table (0): -
+merge: lane widened (1): B +74px
+merge: freehand cell kept (2): hand-g0, hand-g0c
+merge: freehand cell dropped (parent removed) (0): -
+merge: freehand cell lost endpoint (0): -
+merge: overlapping elements (0): -
+layout: merge does not self-check wires and labels; see the list above and the PNG image
 [exit 0]
 --- files
 d3b8d62e6bfa6aeb  flow.drawio

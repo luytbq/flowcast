@@ -1,1 +1,1 @@
-sơ đồ: 3 lane, 8 phần tử, 8 cạnh
+diagram: 3 lanes, 8 elements, 8 edges

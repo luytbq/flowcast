@@ -1,8 +1,8 @@
 # input: merge/broken-no-pages -> *
 $ ["build", "$T/flow.md", "--mode", "merge"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-ERROR   $T/flow.drawio không có trang nào; không ghi đè. Dùng --mode force nếu muốn sinh lại toàn bộ
+check: read table from markdown
+check: 0 errors, 0 warnings
+ERROR   $T/flow.drawio has no pages; not overwriting. Use --mode force to regenerate everything
 [exit 4]
 --- files
 5c66e290362846e8  flow.drawio

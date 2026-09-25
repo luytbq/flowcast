@@ -1,8 +1,8 @@
 # input: 03-condition-two -> in.md
 # drawio: fail
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
 [exit 0]
 --- files
 35ce030c1847ff7d  in.md

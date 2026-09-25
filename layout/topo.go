@@ -6,11 +6,11 @@ import (
 	"strings"
 )
 
-// topo sắp các node theo thứ tự topo, bỏ qua cạnh back. Cùng mức thì node đứng
-// trước trong bảng ra trước.
+// topo sorts nodes in topological order, ignoring back edges. At the same level,
+// the node earlier in the table comes first.
 //
-// Node còn lại sau khi hết đường, tức nằm trong một vòng lặp chưa đánh dấu
-// back=true, được nối vào cuối theo thứ tự bảng, kèm một cảnh báo.
+// Nodes left over once no path remains, that is, those inside a loop not marked
+// back=true, are appended at the end in table order, with a warning.
 func (l *Layout) topo() []string {
 	indeg := map[string]int{}
 	var flow []*Item
@@ -59,15 +59,15 @@ func (l *Layout) topo() []string {
 		for i, it := range rest {
 			ids[i] = it.ID
 		}
-		l.warn("layout.unmarked-cycle", "", "có vòng lặp chưa đánh dấu back=true, xếp theo thứ tự bảng: %s",
+		l.warn("layout.unmarked-cycle", "", "found a loop not marked back=true, laid out in table order: %s",
 			strings.Join(ids, ", "))
 		out = append(out, ids...)
 	}
 	return out
 }
 
-// orderHeap là min-heap theo thứ tự dòng trong bảng. Thứ tự đó là duy nhất cho
-// mỗi phần tử, nên kết quả không phụ thuộc thứ tự đẩy vào.
+// orderHeap is a min-heap by table row order. That order is unique per element,
+// so the result does not depend on push order.
 type orderHeap []*Item
 
 func (h orderHeap) Len() int           { return len(h) }

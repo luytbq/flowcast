@@ -1,115 +1,117 @@
-# Cấu trúc project
+# Project structure
 
-Tài liệu này dành cho người sắp sửa code flowcast lần đầu. Đọc xong, bạn biết
-một thay đổi nằm ở package nào, dữ liệu đi qua các package theo thứ tự nào, và
-package nào được phép làm gì.
+This document is for someone about to change flowcast code for the first time. After
+reading it, you know which package a change belongs in, in what order data passes
+through the packages, and what each package is allowed to do.
 
-Các từ như lane, kind, máng, kênh, track được định nghĩa trong
-[CONTEXT.md](../CONTEXT.md). Nên đọc tài liệu đó trước.
+Terms such as lane, kind, gutter, channel, track are defined in
+[CONTEXT.md](../CONTEXT.md). It is best to read that document first.
 
-## Một lần dựng sơ đồ đi qua những đâu?
+## Where does a single diagram build go?
 
-Mọi đường vào (dòng lệnh, dịch vụ web, thư viện) đều gọi cùng một hàm Build ở
-package gốc. Build nhận bytes và trả về văn bản .drawio kèm dữ liệu chẩn đoán.
-Nó không đọc ghi file, không gọi tiến trình ngoài và không in gì ra.
+Every entry point (command line, web service, library) calls the same Build function
+in the root package. Build takes bytes and returns the .drawio text along with
+diagnostic data. It does not read or write files, does not call external processes and
+prints nothing.
 
 ```
-bytes đầu vào
-  --> source     đọc markdown, csv, xlsx hoặc mermaid, quy về một Table
-  --> validate   kiểm Table theo lược đồ metadata và luật của sơ đồ
-  --> layout     đo chữ, xếp chỗ, đi dây, tính toạ độ, đặt nhãn
-  --> layout     tự kiểm hình học trên kết quả
-  --> layout     đổi trục nếu hướng không phải từ trên xuống
-  --> merge      (chỉ khi có file cũ) áp chỉnh sửa tay từ file cũ
-  --> writer     sinh văn bản .drawio
+input bytes
+  --> source     read markdown, csv, xlsx or mermaid, reduce to a Table
+  --> validate   check the Table against the metadata schema and the diagram rules
+  --> layout     measure text, placement, routing, compute coordinates, place labels
+  --> layout     geometry self-check on the result
+  --> layout     axis swap if the direction is not top-down
+  --> merge      (only when there is an old file) apply manual edits from the old file
+  --> writer     generate the .drawio text
 ```
 
-Bảng có lỗi thì Build dừng sau bước validate và chỉ trả về danh sách lỗi. Hàm
-Check ở package gốc chạy đúng hai bước đầu.
+If the table has errors, Build stops after the validate step and returns only the
+list of errors. The Check function in the root package runs exactly the first two
+steps.
 
-Kết quả của bước xếp hình là một kiểu dữ liệu thuần tên Result: toạ độ từng phần
-tử, điểm gấp từng dây, vị trí từng nhãn. Tự kiểm, merge và writer đều chỉ đọc
-Result, không đụng vào trạng thái bên trong engine.
+The result of the layout step is a plain data type named Result: the coordinates of
+each element, the waypoints of each wire, the position of each label. Self-check,
+merge and writer all read only the Result and never touch the engine's internal state.
 
-## Package nào làm gì?
+## What does each package do?
 
-| Thư mục | Vai trò | Sửa ở đây khi |
+| Directory | Role | Change it when |
 |---|---|---|
-| gốc repo | Build, Check, Options, Result, và các hồ sơ giới hạn tài nguyên cho dòng lệnh và web | Đổi giao diện công khai của thư viện, đổi giới hạn tài nguyên |
-| model | Kiểu dữ liệu chung: Row, Table, Issue, Location, Error | Thêm trường cho Issue hay vị trí lỗi |
-| num | Quy tắc làm tròn và in số, dùng chung cho mọi tầng | Đổi cách số được ghi vào file |
-| source | Đọc từng định dạng đầu vào: markdown, csv, xlsx, mermaid; đoán định dạng và bảng mã | Thêm định dạng đầu vào, sửa lỗi đọc file |
-| schema | Khai báo các key metadata hợp lệ cho từng loại dòng | Thêm key metadata, thêm loại dòng |
-| validate | Kiểm một Table đã đọc: tham chiếu hợp lệ, id trùng, luật riêng của sơ đồ | Thêm luật kiểm bảng |
-| text | Đo chữ và ngắt dòng bằng bảng độ rộng ký tự | Đổi cách ngắt dòng |
-| data | Bảng độ rộng ký tự của font, nhúng vào binary | Đổi font đo chữ |
-| layout | Engine xếp hình và đi dây, tự kiểm hình học, đổi trục | Mọi thay đổi về bố cục, xem bảng bên dưới |
-| writer/drawio | Sinh file .drawio từ Result | Đổi hình vẽ, style, cấu trúc XML đầu ra |
-| merge | Đọc file .drawio cũ, áp chỉnh sửa tay lên Result mới, lập báo cáo | Đổi những gì được giữ khi sinh lại |
-| render | Gọi drawio CLI để xuất PNG và SVG, so dây draw.io vẽ với toạ độ đã tính | Đổi cách xuất ảnh hay cách kiểm render |
-| cmd/flowcast | Dòng lệnh: đọc cờ, đọc ghi file, chọn chế độ ghi, in kết quả, mã thoát | Thêm cờ, đổi dòng in ra |
-| cmd/flowcastd | Dịch vụ web và trang upload | Thêm API, đổi trang upload |
-| internal/etree | Đọc ghi cây XML, dùng cho writer và merge | Hiếm khi |
-| internal/unistr | Định nghĩa khoảng trắng và chữ thường dùng chung | Hiếm khi |
-| internal/lint | Test tĩnh chạy trên chính mã nguồn, ví dụ bắt phép nhân số thực có thể bị gộp thành FMA | Thêm luật kiểm mã nguồn |
-| conformance | Bộ case đầu vào, golden đầu ra, và các test so golden cùng các bất biến chạy trên mọi case | Thêm case, cập nhật golden, xem [testing.md](testing.md) |
-| tools | Script kiểm tra toàn repo, nghiệm thu với drawio thật, thử đột biến, đo chất lượng bố cục, trích số đo từ file font | Thêm công cụ phát triển |
-| docs | Đặc tả định dạng bảng, thiết kế, quyết định đã chốt | |
+| repo root | Build, Check, Options, Result, and the resource limit profiles for the command line and the web | Changing the library's public interface, changing resource limits |
+| model | Shared data types: Row, Table, Issue, Location, Error | Adding fields to Issue or to error locations |
+| num | Number rounding and printing rules, shared by every layer | Changing how numbers are written to files |
+| source | Reads each input format: markdown, csv, xlsx, mermaid; guesses format and encoding | Adding an input format, fixing file reading bugs |
+| schema | Declares the valid metadata keys for each row type | Adding a metadata key, adding a row type |
+| validate | Checks a parsed Table: valid references, duplicate ids, diagram-specific rules | Adding a table validation rule |
+| text | Measures and wraps text using the character width table | Changing how text wraps |
+| data | The font's character width table, embedded in the binary | Changing the measuring font |
+| layout | The layout and routing engine, geometry self-check, axis swap | Any layout change, see the table below |
+| writer/drawio | Generates the .drawio file from a Result | Changing shapes, styles, the output XML structure |
+| merge | Reads the old .drawio file, applies manual edits onto the new Result, builds the report | Changing what is kept when regenerating |
+| render | Calls the drawio CLI to export PNG and SVG, compares the wires draw.io draws against the computed coordinates | Changing image export or render checking |
+| cmd/flowcast | Command line: reads flags, reads and writes files, chooses the write mode, prints results, exit codes | Adding flags, changing printed lines |
+| cmd/flowcastd | Web service and upload page | Adding APIs, changing the upload page |
+| internal/etree | Reads and writes XML trees, used by writer and merge | Rarely |
+| internal/unistr | Shared definitions of whitespace and lowercase | Rarely |
+| internal/lint | Static tests that run over the source code itself, for example catching floating point multiplications that could be fused into FMA | Adding a source code check rule |
+| conformance | The input case suite, output goldens, and the tests comparing goldens along with the invariants run over every case | Adding cases, updating goldens, see [testing.md](testing.md) |
+| tools | Scripts for repo-wide checks, end-to-end acceptance checks with the real drawio, mutation testing, measuring layout quality, extracting measurements from font files | Adding development tools |
+| docs | The table format specification, designs, settled decisions | |
 
-### Bên trong layout
+### Inside layout
 
-Engine chia file theo pha. Mỗi pha đọc kết quả của pha trước. Cách các pha phối
-hợp với nhau nằm ở [algorithm.md](algorithm.md).
+The engine splits its files by phase. Each phase reads the result of the previous
+one. How the phases work together is described in [algorithm.md](algorithm.md).
 
-| File | Nội dung |
+| File | Contents |
 |---|---|
-| config.go | Tham số xếp hình, mặc định và miền giá trị. Dòng lệnh và web đều sinh danh sách tham số từ đây |
-| model.go | Trạng thái của một lần xếp hình: phần tử, cạnh, lưới; cảnh báo của engine |
-| shape.go | Khai báo hình học của từng loại phần tử: hình nguyên thủy, luật nối dây, điểm trên đường viền |
-| size.go | Đo và ngắt dòng từng phần tử, trước mọi bước xếp chỗ |
-| topo.go | Thứ tự topo của các node |
-| branch.go | Chọn nhánh chính, xếp cột cho nhánh phụ, tìm cột hợp nhánh |
-| place.go | Xếp chỗ: gán lane, hàng, cột cho mọi phần tử |
-| route.go | Chọn kiểu đi dây cho từng cạnh và ghi các đoạn dây vào máng, kênh |
-| tracks.go | Đặt cổng trên mặt node, xếp đoạn dây vào track |
-| seg.go | Kiểu dữ liệu của đoạn dây và tài nguyên chứa dây |
-| geometry.go | Đổi lưới thành điểm ảnh, dựng đường gấp khúc cho từng dây |
-| labels.go | Chừa chỗ và đặt nhãn cho dây, cùng hàm Run chạy đủ các pha |
-| axis.go | Đổi trục cho các hướng LR, RL, BT |
-| result.go | Result, kiểu dữ liệu thuần trả ra ngoài |
-| check.go | Tự kiểm hình học trên Result |
+| config.go | Layout parameters, defaults and value ranges. Both the command line and the web build their option lists from here |
+| model.go | The state of one layout run: elements, edges, grid; engine warnings |
+| shape.go | The geometry declaration of each element type: primitive shape, wiring rules, points on the outline |
+| size.go | Measures and wraps each element, before any placement step |
+| topo.go | Topological order of the nodes |
+| branch.go | Chooses the main branch, assigns columns to side branches, finds the join column |
+| place.go | Placement: assigns lane, row and column to every element |
+| route.go | Chooses the routing style for each edge and records wire segments into gutters and channels |
+| tracks.go | Places ports on node faces, assigns wire segments to tracks |
+| seg.go | Data types for wire segments and the resources holding wires |
+| geometry.go | Converts the grid to pixels, builds the polyline for each wire |
+| labels.go | Reserves space and places labels for wires, plus the Run function that runs all phases |
+| axis.go | Axis swap for the LR, RL, BT directions |
+| result.go | Result, the plain data type returned to the outside |
+| check.go | Geometry self-check on a Result |
 
-## Package nào được phép làm gì?
+## What is each package allowed to do?
 
-Các ranh giới sau giữ cho cùng một đường code phục vụ được cả dòng lệnh, web và
-thư viện:
+The following boundaries keep the same code path able to serve the command line, the
+web and the library:
 
-- Core gồm package gốc cùng model, num, source, schema, validate, text, data,
-  layout, writer, merge và internal. Core không đọc ghi file và không gọi tiến
-  trình ngoài. Dữ liệu vào là bytes, dữ liệu ra là văn bản.
-- render gọi tiến trình drawio nên nằm ngoài core. Chỉ dòng lệnh và test dùng
-  nó.
-- merge thuộc core và cũng nhận bytes, nhưng chỉ dòng lệnh dùng, vì chỉ dòng
-  lệnh có file cũ nằm cạnh bảng. Dịch vụ web không nhận file cũ.
-- model và num nằm riêng khỏi package gốc vì mọi package đọc đầu vào đều cần
-  chúng, còn package gốc lại cần các package đó. Package gốc phơi lại các kiểu
-  của model bằng bí danh.
-- Tự kiểm, merge và writer chỉ đọc Result. Nhờ vậy tự kiểm kiểm được cả hình học
-  do người dùng sửa tay hoặc do test cố tình làm hỏng.
-- Chỉ axis.go biết về hướng vẽ. Các pha khác luôn tính như sơ đồ đi từ trên
-  xuống.
+- The core consists of the root package plus model, num, source, schema, validate,
+  text, data, layout, writer, merge and internal. The core does not read or write files
+  and does not call external processes. Input is bytes, output is text.
+- render calls the drawio process so it lives outside the core. Only the command line
+  and tests use it.
+- merge belongs to the core and also takes bytes, but only the command line uses it,
+  because only the command line has an old file sitting next to the table. The web
+  service does not accept old files.
+- model and num are separate from the root package because every input-reading package
+  needs them, while the root package needs those packages. The root package re-exports
+  the model types through aliases.
+- Self-check, merge and writer only read the Result. That way the self-check can check
+  geometry that the user edited by hand or that a test deliberately broke.
+- Only axis.go knows about direction. The other phases always compute as if the
+  diagram goes top-down.
 
-Chiều phụ thuộc giữa các package:
+Dependency direction between packages:
 
 ```
-package gốc --> source, validate, layout, merge, writer/drawio, text, data, model
-source      --> model
-validate    --> schema, model
-layout      --> text, schema, model, num
-writer      --> layout, num
-merge       --> layout, num
-render      --> layout
+root package --> source, validate, layout, merge, writer/drawio, text, data, model
+source       --> model
+validate     --> schema, model
+layout       --> text, schema, model, num
+writer       --> layout, num
+merge        --> layout, num
+render       --> layout
 ```
 
-Tất cả đều có thể dùng internal. Không package nào trong core được import render
-hay cmd.
+All of them may use internal. No package in the core may import render or cmd.

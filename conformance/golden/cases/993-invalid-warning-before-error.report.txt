@@ -1,2 +1,2 @@
-issue schema.unknown_key WARNING dòng 6 [A-1]: metadata "mau" không dùng cho type start, bị bỏ qua
-issue ref.dangling ERROR   dòng 7 [E1]: to=A-9 trỏ tới id không tồn tại
+issue schema.unknown_key WARNING line 6 [A-1]: metadata "mau" does not apply to type start, ignored
+issue ref.dangling ERROR   line 7 [E1]: to=A-9 points to an id that does not exist

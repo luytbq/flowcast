@@ -1,39 +1,39 @@
 package layout
 
-// Result là sơ đồ đã xếp xong, ở dạng dữ liệu thuần: toạ độ đã có và thuật toán
-// đã chạy xong.
+// Result is a fully laid-out diagram as plain data: the coordinates are computed
+// and the algorithm has finished.
 //
-// Tự kiểm và writer đọc Result chứ không đọc Layout. Tự kiểm nhờ vậy kiểm được
-// bất kỳ hình học nào, kể cả hình học hỏng mà một engine đúng không bao giờ sinh
-// ra; đó là cách duy nhất để kiểm chính tự kiểm.
+// The self-check and writers read Result, not Layout. This lets the self-check
+// examine any geometry, including broken geometry that a correct engine never
+// produces; that is the only way to test the self-check itself.
 //
-// Phần tử mang hình nguyên thủy trong Shape, và writer chỉ đọc Shape. Kind là
-// loại ngữ nghĩa (task, condition, ...), giữ lại cho caller muốn biết phần tử
-// là gì, ví dụ khi ghi toạ độ ra JSON.
+// An element carries its primitive shape in Shape, and writers read only Shape.
+// Kind is the semantic type (task, condition, ...), kept for callers that want
+// to know what the element is, for example when writing coordinates to JSON.
 type Result struct {
 	PoolW, PoolH           float64
 	Origin                 [2]float64
 	PoolHeader, LaneHeader int
-	// NoLanes: sơ đồ không có lane. Lanes khi đó là một lane ẩn không được vẽ,
-	// và không có pool.
+	// NoLanes: the diagram has no lanes. Lanes is then one hidden lane that is
+	// not drawn, and there is no pool.
 	NoLanes bool
-	// Dir là hướng của sơ đồ. Result do Layout.Result trả về luôn ở không gian
-	// TD ảo; Orient đưa nó về hướng thật. Writer cần biết hướng để vẽ lane
-	// thành băng dọc hay băng ngang.
+	// Dir is the diagram direction. A Result returned by Layout.Result is always
+	// in the virtual TD space; Orient maps it to the real direction. Writers need
+	// the direction to draw lanes as vertical or horizontal bands.
 	Dir          string
 	MinChannel   int
 	Lanes        []PlacedLane
 	LaneX, LaneW []float64
-	Items        []PlacedItem // theo thứ tự dòng trong bảng
-	Edges        []PlacedEdge // theo thứ tự dòng trong bảng
-	// TopoOrder là thứ tự topo của các node. Merge đặt node mới theo thứ tự này
-	// để node đứng trước trong luồng có chỗ trước.
+	Items        []PlacedItem // in table row order
+	Edges        []PlacedEdge // in table row order
+	// TopoOrder is the topological order of the nodes. Merge places new nodes in
+	// this order so that nodes earlier in the flow get their spot first.
 	TopoOrder []string
 }
 
 type PlacedLane struct {
 	ID    string
-	Lines []string // tên lane như trong bảng, chưa ngắt dòng
+	Lines []string // lane name as in the table, not yet wrapped
 }
 
 type PlacedItem struct {
@@ -65,21 +65,22 @@ type PlacedEdge struct {
 	LabelT              float64
 	LabelOff            [2]float64
 
-	// Các trường dưới chỉ do merge đặt.
+	// The fields below are set only by merge.
 
-	// Auto: để draw.io tự đi dây, không ghi điểm neo, điểm gấp hay nhãn.
+	// Auto: let draw.io do the routing; write no anchors, waypoints or label.
 	Auto bool
-	// Kept: dây giữ nguyên từ file cũ. Constraints thay cho điểm neo tính được,
-	// Waypoints thay cho các điểm gấp.
+	// Kept: the wire is kept as-is from the existing file. Constraints replace
+	// the computed anchors, Waypoints replace the bend points.
 	Kept        bool
 	Constraints [][2]string
 	Waypoints   [][2]float64
-	// NoLabelPos: nhãn về giữa đường, vì dây đã bị sửa tay và vị trí nhãn tính
-	// cho đường cũ không còn đúng.
+	// NoLabelPos: the label goes to the middle of the path, because the wire was
+	// edited manually and the label position computed for the old path no
+	// longer holds.
 	NoLabelPos bool
 }
 
-// Result chụp lại kết quả hiện tại của Layout. Gọi sau Run.
+// Result snapshots the current output of Layout. Call it after Run.
 func (l *Layout) Result() Result {
 	r := Result{
 		PoolW: l.PoolW, PoolH: l.PoolH, Origin: Origin,

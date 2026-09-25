@@ -6,10 +6,11 @@ import (
 	"strings"
 )
 
-// breakChars là các ký tự mà sau chúng được phép ngắt một từ dài.
+// breakChars are the characters after which a long word may be broken.
 //
-// Bản tham chiếu viết luật này bằng lookbehind: (?<=[/._,(){}=&?-])|(?<=::).
-// RE2 không có lookbehind, nên chỗ ngắt được tìm thẳng thay vì bằng regexp.
+// The reference implementation writes this rule with lookbehind:
+// (?<=[/._,(){}=&?-])|(?<=::). RE2 has no lookbehind, so break points are found
+// directly instead of with a regexp.
 const breakChars = "/._,(){}=&?-"
 
 const (
@@ -17,7 +18,7 @@ const (
 	DefaultLineH = 15.0
 )
 
-// Measure ngắt dòng và đo hộp chữ.
+// Measure wraps lines and measures text boxes.
 type Measure struct {
 	m     *Metrics
 	Size  float64
@@ -31,13 +32,13 @@ func NewMeasure(m *Metrics) *Measure {
 
 func (t *Measure) W(s string) float64 { return t.m.Width(s, t.Size) }
 
-// Hard cho biết lần ngắt dòng gần nhất có phải cắt giữa một từ hay không.
+// Hard reports whether the most recent wrap had to cut in the middle of a word.
 //
-// Đây là cờ tạm, đặt lại theo từng dòng bên trong Wrap. Đọc nó một lần sau khi
-// ngắt nhiều dòng là đọc dòng cuối cùng, không phải cả cụm.
+// This is a scratch flag, reset per line inside Wrap. Reading it once after
+// wrapping several lines reflects the last line, not the whole batch.
 func (t *Measure) Hard() bool { return t.hard }
 
-// Box trả về bề rộng dòng dài nhất và tổng bề cao.
+// Box returns the width of the longest line and the total height.
 func (t *Measure) Box(lines []string) (w, h float64) {
 	for _, l := range lines {
 		if x := t.W(l); x > w {
@@ -47,7 +48,7 @@ func (t *Measure) Box(lines []string) (w, h float64) {
 	return w, float64(float64(len(lines)) * t.LineH)
 }
 
-// breakAfter nói có được ngắt ngay trước vị trí i hay không. Gọi với 1 <= i <= len(r).
+// breakAfter reports whether a break is allowed right before position i. Call with 1 <= i <= len(r).
 func breakAfter(r []rune, i int) bool {
 	if strings.ContainsRune(breakChars, r[i-1]) {
 		return true
@@ -55,7 +56,7 @@ func breakAfter(r []rune, i int) bool {
 	return i >= 2 && r[i-1] == ':' && r[i-2] == ':'
 }
 
-// breakSplit cắt một từ tại mọi chỗ được phép ngắt, bỏ mảnh rỗng.
+// breakSplit cuts a word at every allowed break point, dropping empty pieces.
 func breakSplit(word string) []string {
 	r := []rune(word)
 	var out []string
@@ -74,8 +75,8 @@ func breakSplit(word string) []string {
 	return out
 }
 
-// splitLong cắt một từ rộng hơn maxw, ưu tiên chỗ được phép ngắt; hết cách thì
-// cắt cứng giữa từ và bật cờ hard.
+// splitLong cuts a word wider than maxw, preferring allowed break points; when
+// none is left it hard-cuts mid-word and sets the hard flag.
 func (t *Measure) splitLong(word string, maxw float64) []string {
 	chunks := breakSplit(word)
 	var out []string
@@ -137,8 +138,9 @@ func (t *Measure) wrapLine(line string, maxw float64) []string {
 	return append(out, cur)
 }
 
-// Wrap ngắt dòng ở bề rộng maxw, rồi thu hẹp tới mức nhỏ nhất vẫn giữ nguyên số
-// dòng, để các dòng dài xấp xỉ nhau thay vì một dòng đầy và một dòng cụt.
+// Wrap wraps lines at width maxw, then narrows to the smallest width that keeps
+// the same line count, so lines end up about equally long instead of one full
+// line and one stub.
 func (t *Measure) Wrap(lines []string, maxw float64) []string {
 	var out []string
 	for _, line := range lines {

@@ -8,11 +8,11 @@ import (
 	"github.com/luytbq/flowcast/model"
 )
 
-// ParseMarkdown đọc bảng đầu tiên có đủ năm cột header trong một tài liệu
-// markdown.
+// ParseMarkdown reads the first table with all five header columns in a
+// markdown document.
 //
-// Tiêu đề lấy từ heading cấp một đầu tiên. Không có thì Title để rỗng và caller
-// tự lùi về tên nguồn.
+// The title comes from the first level-one heading. Without one, Title is left
+// empty and the caller falls back to the source name.
 func ParseMarkdown(data []byte) (model.Table, error) {
 	lines := splitLines(string(data))
 
@@ -33,11 +33,11 @@ func ParseMarkdown(data []byte) (model.Table, error) {
 	}
 	if start < 0 {
 		return model.Table{}, model.Errf("source.no_header",
-			"không tìm thấy bảng có header: %s", strings.Join(Header, " | "))
+			"no table found with header: %s", strings.Join(Header, " | "))
 	}
 	if start+1 >= len(lines) || !isSeparator(lines[start+1]) {
 		return model.Table{}, model.Errf("source.no_separator",
-			"dòng %d: thiếu dòng phân cách |---| sau header", start+2)
+			"line %d: missing |---| separator line after header", start+2)
 	}
 
 	var rows []model.Row
@@ -50,7 +50,7 @@ func ParseMarkdown(data []byte) (model.Table, error) {
 				Code:  "table.cell_count",
 				Level: model.LevelError,
 				Loc:   loc,
-				Msg: fmt.Sprintf("dòng có %d cột, cần 5 (gạch đứng trong nội dung phải viết \\|)",
+				Msg: fmt.Sprintf("row has %d columns, needs 5 (a pipe in content must be written \\|)",
 					len(cells)),
 			})
 			continue
@@ -70,13 +70,13 @@ func ParseMarkdown(data []byte) (model.Table, error) {
 	return model.Table{Title: title, Rows: rows, Issues: issues, Source: "markdown"}, nil
 }
 
-// h1Title nhận đúng heading cấp một theo biểu thức ^#\s+(.+?)\s*$ của bản
-// tham chiếu: dấu thăng ở đầu dòng, ít nhất một khoảng trắng, rồi nội dung.
-// "##" và "#không-khoảng-trắng" đều không tính.
+// h1Title accepts exactly a level-one heading per the reference implementation's
+// expression ^#\s+(.+?)\s*$: a hash at the start of the line, at least one space,
+// then content. "##" and "#no-space" do not count.
 //
-// Dòng chỉ gồm dấu thăng và từ hai khoảng trắng trở lên vẫn khớp, với tiêu đề là
-// đúng khoảng trắng cuối cùng: \s+ lùi lại một ký tự để nhóm (.+?) có cái mà
-// khớp.
+// A line made of the hash and two or more spaces still matches, with the title
+// being exactly the last space: \s+ backtracks one character so the group (.+?)
+// has something to match.
 func h1Title(ln string) (string, bool) {
 	if !strings.HasPrefix(ln, "#") {
 		return "", false
@@ -95,10 +95,10 @@ func h1Title(ln string) (string, bool) {
 	return unescape(unistr.RStrip(string(rest[i:]))), true
 }
 
-// isSeparator nhận dòng |---|---| ngay dưới header, tức một dòng khớp
-// ^\s*\|[\s:\-|]+\|?\s*$. Chỉ cắt khoảng trắng đầu dòng:
-// khoảng trắng cuối dòng thuộc tập ký tự hợp lệ, nên "| " cũng là một dòng phân
-// cách.
+// isSeparator accepts the |---|---| line right below the header, that is a line
+// matching ^\s*\|[\s:\-|]+\|?\s*$. Only leading whitespace is trimmed:
+// trailing whitespace belongs to the valid character set, so "| " is also a
+// separator line.
 func isSeparator(ln string) bool {
 	s := unistr.LStrip(ln)
 	if !strings.HasPrefix(s, "|") || len(s) == 1 {
@@ -112,7 +112,7 @@ func isSeparator(ln string) bool {
 	return true
 }
 
-// mdLines tách nội dung một ô thành các dòng hiển thị.
+// mdLines splits the content of a cell into display lines.
 func mdLines(cell string) []string {
 	if cell == "" {
 		return []string{""}
@@ -125,9 +125,10 @@ func mdLines(cell string) []string {
 	return out
 }
 
-// parseMeta đọc ô metadata dạng key=value ngăn bằng dấu chấm phẩy.
+// parseMeta reads a metadata cell of key=value pairs separated by semicolons.
 //
-// Khóa không được gỡ escape, chỉ giá trị. Khóa trùng thì cái sau đè cái trước.
+// Keys are not unescaped, only values. For a repeated key the later one
+// overrides the earlier.
 func parseMeta(cell string, loc model.Location, rid string, issues *[]model.Issue,
 	unesc func(string) string) (map[string]string, []string) {
 	meta := map[string]string{}
@@ -144,12 +145,12 @@ func parseMeta(cell string, loc model.Location, rid string, issues *[]model.Issu
 				Level: model.LevelError,
 				Loc:   loc,
 				ID:    rid,
-				Msg:   fmt.Sprintf("metadata sai cú pháp: \"%s\" (cần key=value)", part),
+				Msg:   fmt.Sprintf("invalid metadata syntax: \"%s\" (expected key=value)", part),
 			})
 			continue
 		}
 		key := unistr.Strip(k)
-		// Key viết lại thì giá trị đè lên nhưng vị trí giữ ở lần viết đầu.
+		// A repeated key overrides the value but keeps the position of its first occurrence.
 		if _, seen := meta[key]; !seen {
 			order = append(order, key)
 		}

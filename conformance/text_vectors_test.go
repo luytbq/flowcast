@@ -45,16 +45,16 @@ type vectorFile struct {
 	Budgets map[string]int `json:"budgets"`
 }
 
-// TestVectorNgatDong quét bề rộng từng pixel một.
+// TestWrapVectors sweeps the width one pixel at a time.
 //
-// Cổng dựa vào bộ case sơ đồ quá lỏng cho module này: Wrap thu hẹp về bề rộng
-// nhỏ nhất vẫn giữ nguyên số dòng, nên lệch vài pixel ở ngân sách thường không
-// đổi đầu ra. Quét từng pixel thì mọi sai lệch dù một pixel đều lật ít nhất một
-// dòng trong bảng.
-func TestVectorNgatDong(t *testing.T) {
+// A gate based on the diagram case suite is too loose for this module: Wrap
+// shrinks to the smallest width that keeps the same line count, so a budget off
+// by a few pixels usually does not change the output. Sweeping pixel by pixel
+// makes any deviation, even of one pixel, flip at least one row in the table.
+func TestWrapVectors(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join(Dir(), "text-vectors.json"))
 	if err != nil {
-		t.Fatalf("không đọc được vector: %v", err)
+		t.Fatalf("cannot read vectors: %v", err)
 	}
 	var vf vectorFile
 	if err := json.Unmarshal(data, &vf); err != nil {
@@ -66,7 +66,7 @@ func TestVectorNgatDong(t *testing.T) {
 	}
 	tm := text.NewMeasure(m)
 	if tm.Size != vf.Size || tm.LineH != vf.LineH {
-		t.Fatalf("cỡ chữ hoặc bề cao dòng lệch: Go %v/%v, vector %v/%v",
+		t.Fatalf("font size or line height mismatch: Go %v/%v, vector %v/%v",
 			tm.Size, tm.LineH, vf.Size, vf.LineH)
 	}
 
@@ -89,7 +89,7 @@ func TestVectorNgatDong(t *testing.T) {
 			if bad {
 				failed++
 				if failed <= 5 {
-					t.Errorf("%q tại maxw=%d:\n  Go   lines=%q hard=%v w=%s h=%s\n  Py   lines=%q hard=%v w=%s h=%s",
+					t.Errorf("%q at maxw=%d:\n  Go   lines=%q hard=%v w=%s h=%s\n  Py   lines=%q hard=%v w=%s h=%s",
 						s.Text, v.MaxW, got, tm.Hard(), num.Fmt(gw), num.Fmt(gh),
 						v.Lines, v.Hard, v.W, v.H)
 				}
@@ -97,17 +97,17 @@ func TestVectorNgatDong(t *testing.T) {
 		}
 	}
 	if failed > 5 {
-		t.Errorf("... và %d vector lệch nữa", failed-5)
+		t.Errorf("... and %d more mismatched vectors", failed-5)
 	}
-	t.Logf("đã so %d vector", checked)
+	t.Logf("compared %d vectors", checked)
 }
 
-// TestNganSachNgatDong chốt thẳng con số, không qua hành vi.
+// TestWrapBudgets pins the numbers directly, not through behavior.
 //
-// Một hằng số lệch 2px gần như không lộ ra qua đầu ra: ranh giới ký tự phải rơi
-// đúng vào khoảng lệch đó mới đổi số dòng, và với chữ rộng khoảng 7px thì cửa
-// sổ 2px thường rỗng. Đã kiểm bằng mutation test.
-func TestNganSachNgatDong(t *testing.T) {
+// A constant off by 2px hardly shows in the output: a character boundary has to
+// fall exactly inside that gap to change the line count, and with characters
+// about 7px wide a 2px window is usually empty. Verified by mutation testing.
+func TestWrapBudgets(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join(Dir(), "text-vectors.json"))
 	if err != nil {
 		t.Fatal(err)
@@ -117,33 +117,34 @@ func TestNganSachNgatDong(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(vf.Budgets) == 0 {
-		t.Fatal("vector không có mục ngân sách")
+		t.Fatal("vectors have no budget entries")
 	}
 	cfg := layout.DefaultConfig()
 	for kind, want := range vf.Budgets {
 		if kind == "__label__" {
 			if got := cfg.LabelWrap; got != want {
-				t.Errorf("ngân sách nhãn cạnh = %d, cần %d", got, want)
+				t.Errorf("edge label budget = %d, want %d", got, want)
 			}
 			continue
 		}
 		if got := layout.WrapBudget(cfg, kind); got != float64(want) {
-			t.Errorf("ngân sách của %q = %v, cần %d", kind, got, want)
+			t.Errorf("budget of %q = %v, want %d", kind, got, want)
 		}
 	}
-	t.Logf("đã so %d ngân sách", len(vf.Budgets))
+	t.Logf("compared %d budgets", len(vf.Budgets))
 }
 
-// TestVectorKichThuoc chốt ngân sách ngắt dòng của từng loại phần tử.
+// TestSizeVectors pins the wrap budget of each element kind.
 //
-// Ngân sách là hằng số trong SizeItem, và nó gần như vô hình với bộ case sơ đồ:
-// Wrap thu hẹp về bề rộng nhỏ nhất vẫn giữ nguyên số dòng, nên lệch vài pixel
-// hiếm khi đổi đầu ra. Thang bậc dài dần dưới đây vượt qua mọi ranh giới số
-// dòng, nên chỗ lật dịch đi ngay khi ngân sách sai dù chỉ 2px.
-func TestVectorKichThuoc(t *testing.T) {
+// The budget is a constant in SizeItem, and it is nearly invisible to the
+// diagram case suite: Wrap shrinks to the smallest width that keeps the same
+// line count, so a few pixels off rarely changes the output. The ladder of
+// increasing lengths below crosses every line-count boundary, so the flip point
+// moves as soon as the budget is off by even 2px.
+func TestSizeVectors(t *testing.T) {
 	data, err := os.ReadFile(filepath.Join(Dir(), "text-vectors.json"))
 	if err != nil {
-		t.Fatalf("không đọc được vector: %v", err)
+		t.Fatalf("cannot read vectors: %v", err)
 	}
 	var vf vectorFile
 	if err := json.Unmarshal(data, &vf); err != nil {
@@ -180,10 +181,10 @@ func TestVectorKichThuoc(t *testing.T) {
 		}
 	}
 	if failed > 5 {
-		t.Errorf("... và %d vector lệch nữa", failed-5)
+		t.Errorf("... and %d more mismatched vectors", failed-5)
 	}
 	if checked == 0 {
-		t.Fatal("không có vector kích thước nào")
+		t.Fatal("no size vectors")
 	}
-	t.Logf("đã so %d vector kích thước", checked)
+	t.Logf("compared %d size vectors", checked)
 }

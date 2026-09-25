@@ -1,4 +1,4 @@
-issue schema.unknown_key WARNING dòng 7 [E1]: metadata "zeta" không dùng cho type edge, bị bỏ qua
-issue schema.unknown_key WARNING dòng 7 [E1]: metadata "alpha" không dùng cho type edge, bị bỏ qua
-issue schema.unknown_key WARNING dòng 7 [E1]: metadata "mu" không dùng cho type edge, bị bỏ qua
-sơ đồ: 1 lane, 2 phần tử, 1 cạnh
+issue schema.unknown_key WARNING line 7 [E1]: metadata "zeta" does not apply to type edge, ignored
+issue schema.unknown_key WARNING line 7 [E1]: metadata "alpha" does not apply to type edge, ignored
+issue schema.unknown_key WARNING line 7 [E1]: metadata "mu" does not apply to type edge, ignored
+diagram: 1 lanes, 2 elements, 1 edges

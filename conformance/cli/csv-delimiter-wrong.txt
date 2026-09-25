@@ -1,6 +1,6 @@
 # input: csv-01-comma -> in.csv
 $ ["check", "$T/in.csv", "--delimiter", ";"]
-ERROR   không tìm thấy hàng header trong csv; kiểm tra dấu phân cách, hoặc dùng --delimiter
+ERROR   header row not found in csv; check the delimiter, or use --delimiter
 [exit 1]
 --- files
 96a08709c8ded76c  in.csv

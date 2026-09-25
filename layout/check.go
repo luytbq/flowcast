@@ -6,19 +6,19 @@ import (
 	"sort"
 )
 
-// Finding là một phát hiện của tự kiểm hình học. Code là mã máy ổn định để
-// caller phân loại; Msg là thông điệp cho người đọc.
+// Finding is a finding of the geometry self-check. Code is a stable machine
+// code for callers to classify by; Msg is the human-readable message.
 type Finding struct {
-	Level string // "error" hoặc "warning"
+	Level string // "error" or "warning"
 	Code  string
 	Msg   string
 }
 
 func shrink(b box, d float64) box { return box{b[0] + d, b[1] + d, b[2] - d, b[3] - d} }
 
-// collinearOverlap là bề dài phần hai đoạn nằm chồng lên nhau trên cùng một
-// đường ngang hoặc dọc. Hai đoạn cách nhau dưới nửa điểm ảnh coi như cùng
-// đường, vì khi vẽ ra mắt không phân biệt được.
+// collinearOverlap is the length over which two segments overlap on the same
+// horizontal or vertical line. Two segments less than half a pixel apart count
+// as the same line, because once drawn the eye cannot tell them apart.
 func collinearOverlap(a1, b1, a2, b2 [2]float64) float64 {
 	if math.Abs(a1[1]-b1[1]) < 0.01 && math.Abs(a2[1]-b2[1]) < 0.01 && math.Abs(a1[1]-a2[1]) < 0.5 {
 		lo := fmax(fmin(a1[0], b1[0]), fmin(a2[0], b2[0]))
@@ -33,12 +33,14 @@ func collinearOverlap(a1, b1, a2, b2 [2]float64) float64 {
 	return 0
 }
 
-// Check tìm lỗi hình học trong một sơ đồ đã xếp: node chồng node, node tràn ra
-// ngoài lane, đoạn dây xiên, dây cắt qua node, hai dây khác nguồn khác đích
-// chồng lên nhau, và nhãn đè lên node, nhãn khác hay dây khác.
+// Check looks for geometry errors in a laid-out diagram: overlapping nodes,
+// nodes extending outside their lane, oblique wire segments, wires crossing
+// nodes, overlapping wires with different sources and different targets, and
+// labels overlapping nodes, other labels or other wires.
 //
-// Engine đúng không bao giờ sinh ra các lỗi này; Check là lưới an toàn cho
-// chính engine. Kết quả đã bỏ trùng và giữ thứ tự phát hiện đầu tiên.
+// A correct engine never produces these errors; Check is a safety net for the
+// engine itself. The result is deduplicated and keeps the order of first
+// detection.
 func Check(r Result) []Finding {
 	var issues []Finding
 	add := func(level, code, format string, a ...any) {
@@ -57,14 +59,14 @@ func Check(r Result) []Finding {
 	for i, a := range ids {
 		for _, b := range ids[i+1:] {
 			if area(boxes[a], boxes[b]) > 0 {
-				add("error", "check.node-overlap", "%s và %s chồng lên nhau", a, b)
+				add("error", "check.node-overlap", "%s and %s overlap", a, b)
 			}
 		}
 	}
 	for _, it := range r.Items {
 		lx, lw := r.LaneX[it.Lane], r.LaneW[it.Lane]
 		if it.X < lx || it.X+it.W > lx+lw {
-			add("error", "check.outside-lane", "%s tràn ra ngoài lane", it.ID)
+			add("error", "check.outside-lane", "%s extends outside its lane", it.ID)
 		}
 	}
 
@@ -78,16 +80,16 @@ func Check(r Result) []Finding {
 		for k := 0; k+1 < len(pts); k++ {
 			a, b := pts[k], pts[k+1]
 			if math.Abs(a[0]-b[0]) > 0.01 && math.Abs(a[1]-b[1]) > 0.01 {
-				add("error", "check.oblique-segment", "%s: đoạn %d không vuông góc", e.ID, k)
+				add("error", "check.oblique-segment", "%s: segment %d is not orthogonal", e.ID, k)
 			}
 			for _, it := range r.Items {
-				// Đoạn đầu và đoạn cuối được chạm vào chính node nguồn và node
-				// đích, vì chúng xuất phát và kết thúc ở mép node đó.
+				// The first and last segments may touch the source and target
+				// nodes themselves, since they start and end on those nodes' edges.
 				if (it.ID == e.Src || it.ID == e.Dst) && (k == 0 || k == len(pts)-2) {
 					continue
 				}
 				if segHits(a, b, shrink(boxes[it.ID], 1)) {
-					add("error", "check.edge-crosses-node", "%s: dây cắt qua %s", e.ID, it.ID)
+					add("error", "check.edge-crosses-node", "%s: wire crosses %s", e.ID, it.ID)
 				}
 			}
 			all = append(all, wire{ei, a, b})
@@ -96,13 +98,13 @@ func Check(r Result) []Finding {
 	for i, w1 := range all {
 		for _, w2 := range all[i+1:] {
 			e1, e2 := r.Edges[w1.edge], r.Edges[w2.edge]
-			// Dây cùng nguồn hoặc cùng đích được phép chồng: chúng gộp thành
-			// một đường chung.
+			// Wires with the same source or the same target may overlap: they
+			// merge into one shared line.
 			if w1.edge == w2.edge || e1.Dst == e2.Dst || e1.Src == e2.Src {
 				continue
 			}
 			if collinearOverlap(w1.a, w1.b, w2.a, w2.b) > 1 {
-				add("error", "check.edge-overlap", "%s và %s chồng dây", e1.ID, e2.ID)
+				add("error", "check.edge-overlap", "%s and %s have overlapping wires", e1.ID, e2.ID)
 			}
 		}
 	}
@@ -121,17 +123,17 @@ func Check(r Result) []Finding {
 		id := r.Edges[lb.edge].ID
 		for _, it := range r.Items {
 			if area(lb.b, boxes[it.ID]) > 0 {
-				add("warning", "check.label-over-node", "nhãn %s đè lên %s", id, it.ID)
+				add("warning", "check.label-over-node", "label %s overlaps %s", id, it.ID)
 			}
 		}
 		for _, lb2 := range labels[i+1:] {
 			if area(lb.b, lb2.b) > 0 {
-				add("warning", "check.label-over-label", "nhãn %s đè nhãn %s", id, r.Edges[lb2.edge].ID)
+				add("warning", "check.label-over-label", "label %s overlaps label %s", id, r.Edges[lb2.edge].ID)
 			}
 		}
 		for _, w := range all {
 			if w.edge != lb.edge && segHits(w.a, w.b, lb.b) {
-				add("warning", "check.label-over-edge", "nhãn %s đè dây %s", id, r.Edges[w.edge].ID)
+				add("warning", "check.label-over-edge", "label %s overlaps wire %s", id, r.Edges[w.edge].ID)
 			}
 		}
 	}

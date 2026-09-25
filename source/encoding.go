@@ -5,14 +5,14 @@ import (
 	"unicode/utf8"
 )
 
-// csvEncodings là các bảng mã thử lần lượt khi không chỉ định. utf-8-sig đứng
-// trước nên mọi file utf-8 hợp lệ đều được báo là utf-8-sig, kể cả khi không có
-// BOM. cp1252 đứng cuối vì nó giải mã được gần như mọi chuỗi byte.
+// csvEncodings are the encodings tried in turn when none is specified. utf-8-sig
+// comes first, so every valid utf-8 file is reported as utf-8-sig, even without a
+// BOM. cp1252 comes last because it can decode almost any byte sequence.
 var csvEncodings = []string{"utf-8-sig", "utf-8", "cp1252"}
 
-// encodingAliases chuẩn hóa tên bảng mã người dùng gõ vào --encoding về tên mà
-// decode hiểu. Chỉ nhận bốn bảng mã, đủ cho file csv xuất từ bảng tính; tên
-// khác bị báo là không hỗ trợ.
+// encodingAliases normalizes the encoding name the user passes to --encoding
+// into a name decode understands. Only four encodings are accepted, enough for
+// csv files exported from spreadsheets; other names are reported as unsupported.
 var encodingAliases = map[string]string{
 	"utf-8": "utf-8", "utf8": "utf-8", "u8": "utf-8",
 	"utf-8-sig": "utf-8-sig", "utf8-sig": "utf-8-sig",
@@ -26,9 +26,9 @@ func normalizeEncoding(name string) (string, bool) {
 	return canon, ok
 }
 
-// decode giải mã bytes theo một bảng mã, và không thay ký tự lỗi: một byte
-// không giải mã được là cả file không giải mã được. ok là false khi giải mã không
-// được hoặc không biết bảng mã.
+// decode decodes bytes with one encoding and never substitutes replacement
+// characters: one undecodable byte makes the whole file undecodable. ok is false
+// when decoding fails or the encoding is unknown.
 func decode(raw []byte, enc string) (string, bool) {
 	canon, ok := normalizeEncoding(enc)
 	if !ok {

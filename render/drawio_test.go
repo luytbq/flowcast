@@ -9,17 +9,18 @@ import (
 	"github.com/luytbq/flowcast"
 )
 
-// TestDrawioThatVeDungToaDo xuất SVG bằng drawio thật cho các golden rồi kiểm
-// render: sơ đồ đúng phải cho 0 điểm lệch. Test này chạy drawio, mất khoảng một
-// giây mỗi case, nên chỉ chạy khi FLOWCAST_DRAWIO_TEST=1; tools/check.sh bật nó
-// khi máy có drawio.
-func TestDrawioThatVeDungToaDo(t *testing.T) {
+// TestRealDrawioDrawsComputedCoordinates exports SVGs with the real drawio for
+// the goldens and then runs the render check: a correct diagram must yield 0
+// mismatches. This test runs drawio, taking about a second per case, so it only
+// runs when FLOWCAST_DRAWIO_TEST=1; tools/check.sh enables it when the machine
+// has drawio.
+func TestRealDrawioDrawsComputedCoordinates(t *testing.T) {
 	if os.Getenv("FLOWCAST_DRAWIO_TEST") != "1" {
-		t.Skip("đặt FLOWCAST_DRAWIO_TEST=1 để chạy với drawio thật")
+		t.Skip("set FLOWCAST_DRAWIO_TEST=1 to run with the real drawio")
 	}
 	exe := Bin()
 	if exe == "" {
-		t.Fatal("không có drawio CLI")
+		t.Fatal("no drawio CLI")
 	}
 	for _, c := range []string{"cases/05-merge-node", "cases/16-route-general", "cases/18-labels-crowded",
 		"cases/28-tracks-fan-in", "cases/47-place-attach-overflow", "flowchart/05-merge-node",

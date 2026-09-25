@@ -1,16 +1,16 @@
 # input: 03-condition-two -> in.md
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 3 cạnh, 325.26x334px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode new
+build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 325.26x334px)
+layout: 0 errors, 0 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-ERROR   $T/in.drawio đã tồn tại; chọn --mode merge (giữ vị trí, lane, waypoint đã sửa tay) hoặc --mode force (sinh lại toàn bộ)
-build: dừng, chưa chọn chế độ ghi
+check: read table from markdown
+check: 0 errors, 0 warnings
+ERROR   $T/in.drawio already exists; choose --mode merge (keep manually edited positions, lanes, waypoints) or --mode force (regenerate everything)
+build: stopped, no write mode chosen
 [exit 4]
 --- files
 d6401975adfee782  in.drawio

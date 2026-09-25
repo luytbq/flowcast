@@ -1,324 +1,360 @@
-# Thuật toán xếp hình và đi dây
+# Layout and routing algorithm
 
-Tài liệu này dành cho người sửa engine xếp hình. Đọc xong, bạn lần ra được pha
-nào gây ra một lỗi bố cục, và sửa mà không phá tính tất định: cùng một đầu vào
-luôn cho ra cùng một file.
+This document is for people who modify the layout engine. After reading it, you
+can trace which phase causes a layout bug, and fix it without breaking
+determinism: the same input always produces the same file.
 
-Cần đọc [CONTEXT.md](../CONTEXT.md) trước, nhất là các từ lane, nhánh chính,
-flow, cross, máng, kênh và track. Vị trí từng file của engine nằm ở
+Read [CONTEXT.md](../CONTEXT.md) first, especially the terms lane, main branch,
+flow, cross, gutter, channel and track. The location of each engine file is in
 [structure.md](structure.md).
 
-## Engine chạy qua những pha nào?
+## Which phases does the engine run through?
 
-Engine không tính điểm ảnh ngay. Nó xếp mọi thứ lên một lưới trừu tượng trước:
-mỗi phần tử có một lane, một hàng và một cột trong lane. Mỗi đoạn dây nằm trong
-một máng hoặc một kênh, ở một track nào đó. Chỉ khi lưới đã xong thì engine mới
-đổi lưới ra điểm ảnh.
+The engine does not compute pixels right away. It first places everything on an
+abstract grid: each element has a lane, a row and a column within the lane. Each
+wire segment lies in a gutter or a channel, on some track. Only once the grid is
+done does the engine convert the grid to pixels.
 
-Engine chỉ biết một hướng là từ trên xuống. Các hướng khác được dựng trong một
-không gian ảo từ trên xuống rồi đổi trục ở cuối.
+The engine knows only one direction, top-down. Other directions are built in a
+virtual top-down space and then axis-swapped at the end.
 
-Các pha theo thứ tự:
+The phases in order:
 
-1. Đo kích thước từng phần tử.
-2. Xếp chỗ: gán lane, hàng, cột.
-3. Đi dây: chọn kiểu dây cho từng cạnh, đặt cổng, xếp đoạn dây vào track.
-4. Hình học: đổi lưới ra điểm ảnh, dựng đường gấp khúc.
-5. Lặp lại pha 4 một lần, sau khi biết thêm chỗ cần chừa cho nhãn.
-6. Đặt nhãn.
-7. Tự kiểm hình học.
-8. Đổi trục theo hướng vẽ.
+1. Measure the size of each element.
+2. Placement: assign lane, row, column.
+3. Routing: pick a wire kind for each edge, set ports, assign wire segments to tracks.
+4. Geometry: convert the grid to pixels, build polylines.
+5. Repeat phase 4 once, after learning how much extra room labels need.
+6. Place labels.
+7. Geometry self-check.
+8. Axis swap according to the direction.
 
-Pha 1 chạy khi dựng trạng thái ban đầu, pha 7 và 8 chạy trong Build. Các pha
-còn lại nằm trong hàm Run.
+Phase 1 runs while building the initial state, phases 7 and 8 run in Build. The
+remaining phases are in the Run function.
 
-## 1. Đo kích thước
+## 1. Measuring
 
-Mỗi phần tử được ngắt dòng theo bề rộng tối đa của loại nó (task, condition,
-start, end, external, db, ghi chú), rồi đo bằng bảng độ rộng ký tự nhúng sẵn
-trong binary. Kích thước chỉ phụ thuộc loại, nội dung và cấu hình, không phụ
-thuộc chỗ đứng. Vì vậy pha này chạy trước mọi pha khác, và mọi pha sau coi kích
-thước là hằng số.
+Each element is wrapped to the maximum width of its kind (task, condition,
+start, end, external, db, note), then measured with the character width table
+embedded in the binary. Size depends only on kind, content and config, not on
+position. That is why this phase runs before every other phase, and every later
+phase treats sizes as constants.
 
-Chữ được ngắt dòng sẵn và ghi vào file kèm thẻ xuống dòng. File đầu ra không bật
-chế độ tự ngắt dòng của draw.io, vì draw.io ngắt lại có thể ra số dòng khác với
-kích thước đã tính.
+Text is wrapped up front and written to the file with line break tags. The
+output file does not enable draw.io's automatic wrapping, because draw.io
+re-wrapping could produce a different number of lines than the computed size.
 
-## 2. Xếp chỗ
+## 2. Placement
 
-### Thứ tự duyệt
+### Traversal order
 
-Engine duyệt node theo thứ tự topo, bỏ qua các cạnh đánh dấu back (cạnh vòng
-lặp). Hai node cùng mức thì node viết trước trong bảng ra trước. Node nằm trong
-một vòng lặp chưa đánh dấu back thì không có thứ tự topo. Các node đó được nối
-vào cuối theo thứ tự bảng, kèm một cảnh báo.
+The engine visits nodes in topological order, ignoring edges marked back (loop
+edges). Two nodes at the same level come out in the order they are written in
+the table. Nodes inside a loop that is not marked back have no topological
+order. Those nodes are appended at the end in table order, with a warning.
 
-db và ghi chú có attach không tham gia thứ tự này. Chúng được đặt ngay sau node
-mà chúng bám.
+db and notes with attach do not take part in this order. They are placed right
+after the node they attach to.
 
-### Hàng
+### Row
 
-- Node có nguồn đã đặt: hàng bằng hàng sâu nhất trong các nguồn, cộng một.
-- Node start không có nguồn: hàng 0.
-- Node khác không có nguồn: hàng ngay dưới hàng sâu nhất đã dùng.
+- Node whose sources are already placed: its row is the deepest row among the
+  sources, plus one.
+- Start node with no source: row 0.
+- Other node with no source: the row right below the deepest row used so far.
 
-Node chỉ có đúng một nguồn thì được thử đặt cùng hàng với nguồn, để mũi tên đi
-thẳng ngang. Điều kiện:
+A node with exactly one source is tried on the same row as the source, so the
+arrow runs straight across. Conditions:
 
-- nguồn nằm ở lane khác, hoặc node là nhánh phụ của nguồn;
-- các ô nằm giữa nguồn và đích trên hàng đó còn trống, và không có mũi tên ngang
-  nào đã đặt chạy qua;
-- node không phải condition. Condition chỉ nhận dây vào từ đỉnh, nên luôn đứng
-  dưới nguồn;
-- node không phải hình không chữ nhật có từ hai nhánh phụ trở lên, vì nó cần cả
-  hai mặt bên cho các nhánh.
+- the source is in a different lane, or the node is a side branch of the source;
+- the cells between source and target on that row are empty, and no already
+  placed horizontal arrow runs through them;
+- the node is not a condition. A condition only accepts incoming wires at its
+  top, so it always sits below its source;
+- the node is not a non-rectangular shape with two or more side branches,
+  because it needs both sides for the branches.
 
-### Cột và nhánh
+### Column and branches
 
-Các cạnh ra cùng lane của một node được chia thành nhánh chính và nhánh phụ.
+A node's outgoing edges within the same lane are split into a main branch and
+side branches.
 
-- Sơ đồ có lane: nhánh chính là cạnh viết sau cùng trong bảng. Người viết bảng
-  được dặn đặt nhánh đi tiếp dài nhất ở cuối.
-- Sơ đồ không có lane (thường đến từ mermaid): nhánh chính là nhánh sâu nhất,
-  tính bằng số node trên đường dài nhất đi từ đầu nhánh. Hòa thì lấy cạnh viết
-  sau.
+- Diagram with lanes: the main branch is the edge written last in the table.
+  Table authors are told to put the longest continuing branch last.
+- Diagram without lanes (usually from mermaid): the main branch is the deepest
+  branch, measured by the number of nodes on the longest path starting from the
+  head of the branch. On a tie, the edge written later wins.
 
-Nhánh chính giữ cột của node rẽ. Mỗi nhánh phụ lệch sang một bên:
+The main branch keeps the column of the branching node. Each side branch shifts
+to one side:
 
-- Nhánh rốt cuộc rời lane thì lệch về phía lane nó dẫn tới. Engine đi dọc nhánh
-  tới cạnh đầu tiên rời lane, và dừng ở node hợp nhánh vì từ đó là luồng chung.
-  Nhờ vậy một nhánh trả lỗi về lane bên trái nằm bên trái, dây của nó không phải
-  vòng qua node khác.
-- Nhánh không rời lane thì không rõ hướng. Các nhánh như vậy lần lượt sang phải
-  rồi sang trái.
-- Mặt nào của node đã có mũi tên ngang thì mọi nhánh phụ dồn sang mặt kia.
+- A branch that eventually leaves the lane shifts toward the lane it leads to.
+  The engine walks along the branch to the first edge that leaves the lane, and
+  stops at a merge node because from there on it is the shared flow. This way a
+  branch that returns an error to the lane on the left sits on the left, and its
+  wire does not have to go around other nodes.
+- A branch that does not leave the lane has no clear direction. Such branches
+  alternate right, then left.
+- If one side of the node already has a horizontal arrow, all side branches go
+  to the other side.
 
-Node có nhiều nhánh cùng lane đi vào (node hợp nhánh) quay về cột của node rẽ
-gần nhất mà mọi nhánh đều đi qua. Luồng chung sau khi hợp nhánh vì vậy thẳng cột
-với chỗ đã rẽ. Sơ đồ không có lane chỉ áp dụng điều này cho node nằm trên xương
-sống, tức đường đi theo nhánh chính từ mỗi điểm đầu.
+A node with several same-lane branches coming in (a merge node) returns to the
+column of the nearest branching node that every branch passes through. The
+shared flow after the merge is therefore in line with where it branched. Diagrams
+without lanes apply this only to nodes on the spine, that is, the path that
+follows the main branch from each starting point.
 
-Ô định đặt đã có người thì nhánh phụ thử dạt thêm sang bên tối đa ba cột, rồi
-mới chịu xuống hàng dưới.
+If the intended cell is already taken, a side branch tries shifting further
+sideways up to three columns before settling for the row below.
 
-### db và ghi chú
+### db and notes
 
-db và ghi chú đứng cùng hàng với node mà chúng bám, về phía node không có cạnh
-nối. Cả hai phía đều có cạnh thì chọn bên phải. Engine thử ô sát bên phía đó, rồi
-ô sát bên phía kia, rồi ô cách hai cột, và cuối cùng lùi xa hơn kèm một cảnh báo.
+db and notes sit on the same row as the node they attach to, on the side of the
+node that has no connected edge. If both sides have edges, the right side is
+chosen. The engine tries the adjacent cell on that side, then the adjacent cell
+on the other side, then the cell two columns away, and finally backs off further
+with a warning.
 
-Cuối pha, các cột và máng của mọi lane được đánh số liên tục trên trục ngang, để
-các pha sau so vị trí ngang giữa các lane.
+At the end of the phase, the columns and gutters of all lanes are numbered
+continuously along the horizontal axis, so later phases can compare horizontal
+positions across lanes.
 
-## 3. Đi dây
+## 3. Routing
 
-### Kiểu dây
+### Wire kinds
 
-Luật riêng của từng loại phần tử, như condition chỉ nhận dây ở đỉnh hay hình
-nào chỉ có một điểm nối mỗi mặt, đọc từ bảng khai báo hình học của loại đó, không
-viết thành điều kiện rải trong code.
+Rules specific to each element kind, such as a condition only accepting wires at
+its top or which shape has only one connection point per side, are read from
+that kind's geometry declaration table, not written as conditions scattered
+through the code.
 
-Engine quét mọi cạnh bốn lượt, mỗi lượt một kiểu dây, từ đơn giản tới tổng quát.
-Một cạnh nhận kiểu đầu tiên mà đường đi của nó còn trống.
+The engine scans all edges in four passes, one wire kind per pass, from simple
+to general. An edge takes the first kind whose path is still free.
 
-| Kiểu | Hình dạng | Điều kiện |
+| Kind | Shape | Condition |
 |---|---|---|
-| A | Thẳng đứng từ đáy nguồn xuống đỉnh đích | Cùng cột, đích ở hàng dưới, các ô giữa còn trống hoặc chỉ bị dây khác cùng đích chiếm, và đáy nguồn chưa có dây ra |
-| B | Thẳng ngang từ mặt bên nguồn sang mặt bên đích | Cùng hàng, khác cột, hai mặt đó chưa có dây và không có db hay ghi chú đứng cạnh, các ô giữa còn trống, đích không phải condition |
-| C | Chữ L: ra mặt bên nguồn, rẽ xuống đỉnh đích | Đích ở hàng dưới và khác cột, mặt ra còn trống, cả đoạn ngang lẫn đoạn dọc còn trống |
-| D | Tổng quát: đi qua máng và kênh | Mọi cạnh còn lại, kể cả cạnh vòng lặp |
+| A | Straight down from the bottom of the source to the top of the target | Same column, target on a lower row, the cells in between empty or occupied only by other wires with the same target, and the bottom of the source has no outgoing wire yet |
+| B | Straight across from a side of the source to a side of the target | Same row, different column, both of those sides have no wire and no db or note next to them, the cells in between empty, target is not a condition |
+| C | L-shape: out of a side of the source, turn down into the top of the target | Target on a lower row and a different column, the exit side free, both the horizontal and vertical segments free |
+| D | General: goes through gutters and channels | All remaining edges, including loop edges |
 
-Thứ tự lượt là cố ý: dây thẳng được giữ chỗ trước, nên dây phức tạp phải tránh
-chúng chứ không ngược lại.
+The pass order is deliberate: straight wires reserve their space first, so
+complex wires must avoid them and not the other way around.
 
-Dây kiểu A, C, D luôn vào đỉnh đích. Chỉ dây kiểu B vào mặt bên.
+Wires of kind A, C, D always enter the top of the target. Only kind B wires enter
+a side.
 
-### Đường đi của dây kiểu D
+### Path of a kind D wire
 
-Trước hết engine chọn mặt ra. Thứ tự thử là mặt hướng về đích, rồi đáy, rồi mặt
-đối diện. Đích nằm ngang hàng hoặc phía trên thì không thử đáy. Engine lấy mặt
-đầu tiên còn trống. Một mặt không còn trống khi:
+First the engine picks the exit side. The order tried is the side facing the
+target, then the bottom, then the opposite side. If the target is on the same
+row or above, the bottom is not tried. The engine takes the first free side. A
+side is not free when:
 
-- có db hoặc ghi chú đứng cạnh mặt đó;
-- mặt đó đã có dây vào;
-- node không phải hình chữ nhật và mặt đó đã có dây ra, vì hình thoi và elip chỉ
-  có một điểm nối giữa mỗi mặt;
-- node là hình chữ nhật và mặt đó đã có dây kiểu B hoặc C, vì hai kiểu này ra
-  đúng giữa mặt.
+- a db or note sits next to that side;
+- that side already has an incoming wire;
+- the node is not a rectangle and that side already has an outgoing wire,
+  because diamonds and ellipses have only one connection point in the middle of
+  each side;
+- the node is a rectangle and that side already has a kind B or C wire, because
+  those two kinds exit exactly at the middle of the side.
 
-Không mặt nào trống thì engine ra ở mặt hướng về đích, và bước đặt cổng sẽ tách
-cổng ra khỏi các dây vào cùng mặt.
+If no side is free, the engine exits on the side facing the target, and the port
+placement step separates the port from the incoming wires on the same side.
 
-Sau đó đường đi phụ thuộc mặt ra:
+After that, the path depends on the exit side:
 
-- Ra mặt bên: chạy dọc trong máng sát mặt đó, tới kênh ngay trên hàng đích, rồi
-  chạy ngang trong kênh tới cột đích và đi xuống đỉnh đích.
-- Ra đáy, đích ở hàng ngay dưới: chạy ngang trong kênh ngay dưới nguồn tới cột
-  đích.
-- Ra đáy, cột đích còn trống suốt từ hàng nguồn xuống: chạy ngang trong kênh ngay
-  dưới nguồn, rồi đi thẳng xuống theo cột đích.
-- Ra đáy, còn lại: chạy ngang trong kênh ngay dưới nguồn tới máng cạnh cột đích,
-  dọc máng xuống kênh trên hàng đích, rồi ngang vào cột đích.
+- Exit on a side: run vertically in the gutter next to that side, to the channel
+  right above the target row, then run horizontally in the channel to the target
+  column and go down into the top of the target.
+- Exit at the bottom, target on the row right below: run horizontally in the
+  channel right below the source to the target column.
+- Exit at the bottom, target column free all the way down from the source row:
+  run horizontally in the channel right below the source, then go straight down
+  along the target column.
+- Exit at the bottom, otherwise: run horizontally in the channel right below the
+  source to the gutter next to the target column, down the gutter to the channel
+  above the target row, then across into the target column.
 
-Mỗi đoạn ngang hay dọc được ghi thành một khoảng nằm trên một máng hoặc một kênh.
-Toạ độ của đoạn chưa có. Engine chỉ ghi lại đoạn nào nối với đoạn nào và với
-node nào, để pha hình học điền điểm ảnh vào sau.
+Each horizontal or vertical segment is recorded as an interval on a gutter or a
+channel. Its coordinates are not known yet. The engine only records which
+segment connects to which segment and to which node, so the geometry phase can
+fill in the pixels later.
 
-### Đặt cổng
+### Port placement
 
-Cổng là điểm dây chạm vào node, ghi bằng tỉ lệ trên bề rộng và bề cao của node.
+A port is the point where a wire touches a node, recorded as a ratio of the
+node's width and height.
 
-- Dây vào luôn nối giữa mặt.
-- Dây ra cùng một mặt có chung nguồn, nên được phép gộp. Hình thoi và elip cho
-  chúng ra chung đúng giữa mặt. Hình chữ nhật giữ dây A, B, C ở giữa mặt và chia
-  phần còn lại của mặt cho các dây D. Dây rẽ về phía nào thì lấy cổng ở phía đó,
-  để các đoạn đầu không cắt nhau.
-- Mặt vừa có dây ra vừa có dây vào thì dây ra phải tách khỏi giữa mặt, vì dây vào
-  khác cả nguồn lẫn đích nên chồng lên nó là sai. Có một dây ra thì cổng lệch
-  một phần tư mặt về phía dây sẽ rẽ. Với hình thoi và elip, cổng lệch nằm trên
-  đường viền của hình chứ không trên khung bao, và được làm tròn tới hai chữ số
-  như lúc ghi file.
+- Incoming wires always connect at the middle of a side.
+- Outgoing wires on the same side share a source, so they are allowed to join.
+  Diamonds and ellipses let them exit together exactly at the middle of the
+  side. Rectangles keep A, B, C wires at the middle of the side and divide the
+  rest of the side among the D wires. A wire takes a port on the side it turns
+  toward, so the first segments do not cross.
+- If a side has both outgoing and incoming wires, the outgoing wire must move
+  away from the middle of the side, because the incoming wire differs in both
+  source and target, so overlapping it is wrong. With one outgoing wire, the
+  port shifts a quarter of the side toward the direction the wire will turn. For
+  diamonds and ellipses, the shifted port lies on the shape's outline rather than
+  on its bounding box, and is rounded to two decimals as when writing the file.
 
-### Xếp track
+### Track assignment
 
-Mỗi máng và mỗi kênh là một tài nguyên chứa nhiều đoạn dây. Engine xếp các đoạn
-vào track (làn dây) bằng tô màu khoảng, tham lam theo thứ tự đoạn được tạo:
+Each gutter and each channel is a resource that holds many wire segments. The
+engine assigns segments to tracks (wire lanes) by interval coloring, greedily in
+the order segments were created:
 
-- Hai đoạn chồng nhau trên cùng tài nguyên phải nằm ở hai track khác nhau.
-- Hai đoạn cùng đích được dùng chung track, và vẽ ra thành một đường chung.
-- Hai đoạn có chân nối vào cùng một vị trí từ hai phía thì đoạn đến từ phía thấp
-  phải nằm ở track nhỏ hơn. Nếu không, hai chân sẽ đè lên nhau.
+- Two overlapping segments on the same resource must be on different tracks.
+- Two segments with the same target may share a track, and are drawn as one
+  shared line.
+- If two segments have legs connecting to the same position from two sides, the
+  segment coming from the lower side must be on the smaller track. Otherwise the
+  two legs overlap.
 
-Không track nào nhận được đoạn thì engine chèn một track mới vào vị trí thỏa ràng
-buộc thứ tự. Không có vị trí nào thỏa thì track mới nằm ở cuối, kèm một cảnh báo.
+If no track can take a segment, the engine inserts a new track at a position
+that satisfies the ordering constraints. If no position satisfies them, the new
+track goes at the end, with a warning.
 
-Vì thuật toán tham lam theo thứ tự tạo đoạn, thứ tự đó là một phần của kết quả.
-Đổi thứ tự quét cạnh hay thứ tự tạo đoạn là đổi bố cục.
+Because the algorithm is greedy in segment creation order, that order is part of
+the result. Changing the edge scan order or the segment creation order changes
+the layout.
 
-## 4. Hình học
+## 4. Geometry
 
-Pha này đổi lưới ra điểm ảnh.
+This phase converts the grid to pixels.
 
-Bề rộng mỗi cột bằng phần tử rộng nhất trong cột. Bề rộng mỗi máng là tổng của:
+Each column is as wide as the widest element in it. Each gutter's width is the
+sum of:
 
-- số track nhân khoảng cách track, cộng lề hai bên, không nhỏ hơn khoảng trống
-  tối thiểu giữa hai cột;
-- chỗ chừa cho nhãn của các dây ra mặt bên;
-- chỗ chừa cho db hoặc ghi chú đứng sát node.
+- the number of tracks times the track spacing, plus margins on both sides, no
+  smaller than the minimum gap between two columns;
+- room reserved for the labels of wires exiting on a side;
+- room reserved for a db or note sitting next to a node.
 
-Lane có tên dài hơn tổng bề rộng các cột và máng thì phần thiếu được chia đều
-cho hai máng ngoài cùng.
+If a lane's name is wider than the total width of its columns and gutters, the
+shortfall is split evenly between the two outermost gutters.
 
-Trục dọc làm tương tự. Hàng cao bằng phần tử cao nhất trong hàng. Kênh cao theo
-số track cộng lề, cộng chỗ chừa cho nhãn của các dây ra đáy, và không nhỏ hơn
-khoảng trống tối thiểu giữa hai hàng.
+The vertical axis works the same way. A row is as tall as the tallest element in
+it. A channel's height follows the number of tracks plus margins, plus room
+reserved for the labels of wires exiting at the bottom, and is no smaller than
+the minimum gap between two rows.
 
-Phần tử được căn giữa trong ô. db và ghi chú đứng sát node thì đặt cách mép node
-đúng khoảng cách bám. Chúng chỉ đứng sát khi mặt đó của node có đúng một phần tử
-như vậy và không có dây nào ra vào mặt đó. Còn lại chúng căn giữa ô bên cạnh như
-mọi phần tử khác.
+Elements are centered in their cell. A db or note sitting next to a node is
+placed exactly the attach distance from the node's edge. They sit next to the
+node only when that side of the node has exactly one such element and no wire
+entering or leaving that side. Otherwise they are centered in the neighboring
+cell like any other element.
 
-### Dựng đường gấp khúc
+### Building polylines
 
-Mỗi dây bắt đầu ở cổng ra và kết thúc ở cổng vào. Các điểm giữa lấy toạ độ ngang
-từ track của đoạn dọc, toạ độ dọc từ track của đoạn ngang, hoặc từ tâm cột đích.
-Sau đó engine bỏ các điểm trùng nhau và các điểm nằm giữa hai đoạn thẳng hàng,
-rồi làm tròn mọi toạ độ tới hai chữ số thập phân.
+Each wire starts at the exit port and ends at the entry port. The points in
+between take their horizontal coordinate from the track of the vertical segment,
+and their vertical coordinate from the track of the horizontal segment, or from
+the center of the target column. Then the engine drops duplicate points and
+points lying between two collinear segments, and rounds every coordinate to two
+decimal places.
 
-## 5. Lượt hình học thứ hai
+## 5. Second geometry pass
 
-Lượt đầu chưa biết đoạn ngang đầu tiên của các dây B và C dài bao nhiêu, nên chưa
-biết nhãn của chúng có vừa không. Sau lượt đầu, engine đo các đoạn đó, chừa thêm
-chỗ trong máng cho những nhãn không vừa, rồi chạy lại toàn bộ pha 4.
+The first pass does not know how long the first horizontal segment of B and C
+wires is, so it does not know whether their labels fit. After the first pass,
+the engine measures those segments, reserves extra room in the gutters for
+labels that do not fit, and reruns all of phase 4.
 
-## 6. Đặt nhãn
+## 6. Label placement
 
-Với mỗi dây có nhãn, engine liệt kê các chỗ có thể đặt, theo thứ tự ưu tiên:
+For each wire with a label, the engine lists the candidate positions, in order of
+preference:
 
-- đoạn gần nguồn trước;
-- trên mỗi đoạn đủ dài, thử sát đầu đoạn rồi giữa đoạn;
-- mỗi chỗ thử cả hai bên đường.
+- segments near the source first;
+- on each segment long enough, try near the start of the segment, then the middle;
+- each position tries both sides of the line.
 
-Mỗi chỗ có một chi phí: diện tích đè lên node, lên nhãn đã đặt và lên thanh tiêu
-đề, cộng một khoản cố định cho mỗi dây khác hay đường phân cách lane cắt qua.
-Chỗ đầu tiên có chi phí bằng không được nhận ngay. Không có thì lấy chỗ rẻ nhất
-và ghi cảnh báo.
+Each position has a cost: the area overlapping nodes, already placed labels and
+the title bar, plus a fixed amount for each other wire or lane divider crossing
+it. The first position with zero cost is taken immediately. If there is none,
+the cheapest one is taken and a warning is recorded.
 
-Nhãn đặt trước chiếm chỗ của nhãn đặt sau, nên thứ tự dây trong bảng ảnh hưởng
-tới vị trí nhãn.
+Labels placed earlier take space from labels placed later, so the order of wires
+in the table affects label positions.
 
-## 7. Tự kiểm
+## 7. Self-check
 
-Tự kiểm chạy trên Result, không đọc trạng thái của engine. Nó báo lỗi khi:
+The self-check runs on Result and does not read engine state. It reports an
+error when:
 
-- hai phần tử chồng lên nhau;
-- một phần tử tràn ra ngoài lane;
-- một đoạn dây không nằm ngang hay dọc;
-- một dây cắt qua phần tử, trừ đoạn đầu và đoạn cuối chạm vào chính nguồn và
-  đích của nó;
-- hai dây nằm chồng lên nhau trên cùng một đường, trừ khi cùng nguồn hoặc cùng
-  đích, vì khi đó chúng được phép gộp.
+- two elements overlap;
+- an element spills outside its lane;
+- a wire segment is neither horizontal nor vertical;
+- a wire crosses an element, except for the first and last segments touching
+  its own source and target;
+- two wires lie on top of each other on the same line, unless they share a
+  source or a target, since then they are allowed to join.
 
-Nó báo cảnh báo khi nhãn đè lên phần tử, lên nhãn khác, hoặc lên dây khác.
+It reports a warning when a label overlaps an element, another label, or another
+wire.
 
-Một engine đúng không bao giờ sinh ra lỗi ở đây. Tự kiểm báo lỗi nghĩa là engine
-có lỗi, không phải bảng đầu vào có lỗi.
+A correct engine never produces an error here. A self-check error means the
+engine has a bug, not that the input table has an error.
 
-## 8. Đổi trục
+## 8. Axis swap
 
-Với hướng trái sang phải và phải sang trái, bề rộng và bề cao của mọi phần tử và
-nhãn được hoán đổi trước khi xếp. Nhờ vậy hàng của không gian ảo có đúng độ dày
-của cột thật. Chữ vẫn được ngắt dòng theo chiều thật.
+For left-to-right and right-to-left directions, the width and height of every
+element and label are swapped before placement. This way a row in the virtual
+space has exactly the thickness of a real column. Text is still wrapped in the
+real orientation.
 
-Các pha 2 tới 7 chạy y như sơ đồ từ trên xuống. Sau tự kiểm, mọi toạ độ, tỉ lệ
-cổng và hộp nhãn được đổi sang hướng thật:
+Phases 2 through 7 run exactly as for a top-down diagram. After the self-check,
+every coordinate, port ratio and label box is converted to the real direction:
 
-- trái sang phải: đổi chỗ hai trục;
-- dưới lên trên: lật chiều dọc của vùng nội dung;
-- phải sang trái: đổi chỗ hai trục rồi lật.
+- left to right: swap the two axes;
+- bottom to top: flip the content area vertically;
+- right to left: swap the two axes, then flip.
 
-Khi lật, thanh tiêu đề sơ đồ và thanh tên lane vẫn ở đầu băng, chỉ nội dung đổi
-chiều. Đổi trục và lật hình giữ nguyên mọi
-quan hệ chồng lấn và khoảng cách, nên tự kiểm trên không gian ảo vẫn đúng cho
-hình thật.
+When flipping, the diagram title bar and the lane name bars stay at the head of
+the band; only the content reverses. Axis swaps and flips preserve every
+overlap relation and distance, so a self-check on the virtual space still holds
+for the real picture.
 
-## Làm sao lần ra pha gây lỗi?
+## How do you trace which phase caused a bug?
 
-Chạy build với cờ --layout-json để ghi toạ độ ra JSON. File này có hàng và cột
-của từng phần tử, kiểu dây, mặt ra và các điểm của từng dây. Sau đó dò theo
-triệu chứng:
+Run build with the --layout-json flag to write the coordinates to JSON. This file
+has the row and column of each element, and the wire kind, exit side and points
+of each wire. Then follow the symptom:
 
-| Triệu chứng | Nhìn vào |
+| Symptom | Look at |
 |---|---|
-| Node đứng sai hàng, sai cột, sai lane | Xếp chỗ: hàng, nhánh chính, hướng dạt của nhánh phụ |
-| Dây đi đường vòng dù có đường thẳng | Đi dây: kiểu dây đã chọn và lý do các kiểu đơn giản hơn bị loại |
-| Dây ra nhầm mặt | Đi dây: thứ tự thử mặt ra và điều kiện mặt còn trống |
-| Hai dây chồng nhau | Đặt cổng (cùng điểm nối) hoặc xếp track (cùng làn) |
-| Khoảng trống quá rộng hoặc quá hẹp | Hình học: chỗ chừa cho nhãn và cho db, ghi chú đứng sát |
-| Nhãn đặt ở chỗ lạ | Đặt nhãn: danh sách chỗ thử và chi phí |
-| Chỉ sai ở hướng khác từ trên xuống | Đổi trục |
+| Node in the wrong row, column or lane | Placement: row, main branch, side branch shift direction |
+| Wire takes a detour even though a straight path exists | Routing: the chosen wire kind and why the simpler kinds were rejected |
+| Wire exits on the wrong side | Routing: exit side trial order and the side-free conditions |
+| Two wires overlap | Port placement (same connection point) or track assignment (same lane) |
+| Gap too wide or too narrow | Geometry: room reserved for labels and for a db or note sitting alongside |
+| Label placed somewhere odd | Label placement: candidate list and costs |
+| Wrong only in directions other than top-down | Axis swap |
 
-Sửa xong, kiểm bằng ảnh: build với cờ --png để xem, và cờ --verify để draw.io
-xác nhận nó vẽ đúng toạ độ đã tính.
+After fixing, check with images: build with the --png flag to look at it, and
+the --verify flag to have draw.io confirm it draws at the computed coordinates.
 
-## Giữ tính tất định thế nào?
+## How is determinism kept?
 
-Cùng một đầu vào phải cho ra cùng một file trên mọi máy. Các quy tắc sau giữ
-điều đó. Vi phạm một quy tắc thường không làm test đỏ ngay trên máy của mình, mà
-chỉ lộ ra trên máy khác hoặc ở một phiên bản Go khác.
+The same input must produce the same file on every machine. The rules below keep
+it that way. Breaking a rule usually does not turn tests red on your own machine
+right away; it only shows up on another machine or with another Go version.
 
-- Không để thứ tự duyệt map quyết định kết quả. Duyệt theo thứ tự bảng, hoặc sắp
-  xếp khóa trước khi duyệt.
-- Không đổi thứ tự của một phép cộng dồn số thực. Cộng số thực không có tính kết
-  hợp, và toạ độ được cộng dồn theo một thứ tự cố định.
-- Bọc mọi tích số thực trong float64() trước khi cộng hay trừ tiếp. Nếu không,
-  trình biên dịch được phép gộp phép nhân và phép cộng thành một lệnh FMA trên
-  một số kiến trúc, cho kết quả khác ở bit cuối. Một test tĩnh trong repo bắt lỗi
-  này.
-- Khi hai số bằng nhau, max và min trong engine trả số đứng trước, không dùng
-  math.Max và math.Min. Hai hàm này đổi dấu của số không, và dấu đó lọt được vào
-  file đầu ra.
-- Làm tròn toạ độ tới hai chữ số ở cuối, trước khi ghi. Giá trị nào so với số
-  đọc lại từ file, như tỉ lệ cổng mà merge so, thì phải làm tròn giống hệt lúc
-  ghi.
-- Đo chữ bằng bảng độ rộng nhúng sẵn, không bao giờ bằng font cài trên máy.
+- Do not let map iteration order decide the result. Iterate in table order, or
+  sort the keys before iterating.
+- Do not change the order of a floating-point accumulation. Floating-point
+  addition is not associative, and coordinates are accumulated in a fixed order.
+- Wrap every floating-point product in float64() before adding or subtracting
+  further. Otherwise the compiler may fuse the multiply and add into one FMA
+  instruction on some architectures, giving a different result in the last bit.
+  A static test in the repo catches this.
+- When two numbers are equal, max and min in the engine return the first one;
+  do not use math.Max and math.Min. Those two functions change the sign of zero,
+  and that sign can leak into the output file.
+- Round coordinates to two decimals at the end, before writing. Any value that
+  is compared with a number read back from the file, like the port ratios merge
+  compares, must be rounded exactly as when writing.
+- Measure text with the embedded width table, never with fonts installed on the
+  machine.

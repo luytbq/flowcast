@@ -1,16 +1,16 @@
 # input: 95-invalid-edge-order -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 6 [A-1]: cạnh ra phải nằm liền sau A-1 (và các db/text gắn vào nó); đang lệch: E1
-ERROR   dòng 7 [A-2]: cạnh ra phải nằm liền sau A-2 (và các db/text gắn vào nó); đang lệch: E2
-check: 2 lỗi, 0 cảnh báo
+check: read table from markdown
+ERROR   line 6 [A-1]: outgoing edges must come right after A-1 (and the db/text attached to it); out of place: E1
+ERROR   line 7 [A-2]: outgoing edges must come right after A-2 (and the db/text attached to it); out of place: E2
+check: 2 errors, 0 warnings
 [exit 1]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 6 [A-1]: cạnh ra phải nằm liền sau A-1 (và các db/text gắn vào nó); đang lệch: E1
-ERROR   dòng 7 [A-2]: cạnh ra phải nằm liền sau A-2 (và các db/text gắn vào nó); đang lệch: E2
-check: 2 lỗi, 0 cảnh báo
-build: dừng vì bảng có lỗi
+check: read table from markdown
+ERROR   line 6 [A-1]: outgoing edges must come right after A-1 (and the db/text attached to it); out of place: E1
+ERROR   line 7 [A-2]: outgoing edges must come right after A-2 (and the db/text attached to it); out of place: E2
+check: 2 errors, 0 warnings
+build: stopped because the table has errors
 [exit 1]
 --- files
 d128c3b29f5bffcf  in.md

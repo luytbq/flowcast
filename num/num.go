@@ -1,7 +1,7 @@
-// Package num giữ hai quy tắc chuẩn hóa số dùng chung cho mọi tầng.
+// Package num holds the two number normalization rules shared by every layer.
 //
-// Chúng quyết định từng byte trong file .drawio sinh ra, nên đổi chúng là đổi
-// mọi golden.
+// They determine every byte of the generated .drawio file, so changing them
+// changes every golden.
 package num
 
 import (
@@ -10,10 +10,11 @@ import (
 	"strings"
 )
 
-// Fmt sinh dạng số dùng trong file .drawio: hai chữ số thập phân, rồi cắt số 0
-// thừa và dấu chấm thừa. Số âm làm tròn về không ra "0", không ra "-0".
+// Fmt produces the number form used in .drawio files: two decimal places, then
+// trailing zeros and a trailing dot are trimmed. A negative number that rounds
+// to zero gives "0", not "-0".
 func Fmt(v float64) string {
-	// Toạ độ đọc từ file .drawio cũ có thể là inf hay nan.
+	// Coordinates read from an old .drawio file can be inf or nan.
 	switch {
 	case math.IsNaN(v):
 		return "nan"
@@ -31,19 +32,20 @@ func Fmt(v float64) string {
 	return s
 }
 
-// Rnd làm tròn lên tới số nguyên chẵn gần nhất. Mọi bề rộng và bề cao của phần
-// tử đều đi qua đây, nên toạ độ luôn rơi vào lưới chẵn.
+// Rnd rounds up to the nearest even integer. Every element width and height
+// goes through here, so coordinates always land on an even grid.
 func Rnd(v float64) int {
 	return int(math.Ceil(v/2.0) * 2)
 }
 
-// Round làm tròn tới d chữ số thập phân, dựa trên giá trị nhị phân thật của x.
+// Round rounds to d decimal places, based on the true binary value of x.
 //
-// Không dùng math.Round(x*100)/100 vì nó sai ở hai chỗ. Phép nhân làm tròn thêm
-// một lần, nên 2.675 (thật ra là 2.67499...) thành 2.68. Và math.Round đẩy
-// đúng một nửa ra xa số không, nên 0.125 thành 0.13. Đi qua chuỗi thập phân
-// được làm tròn đúng thì ra 2.67 và 0.12 (nửa chính xác về số chẵn), và Round
-// cùng Fmt luôn thống nhất với nhau. Đã kiểm trên conformance/round-vectors.json.
+// math.Round(x*100)/100 is not used because it is wrong in two places. The
+// multiplication rounds once more, so 2.675 (really 2.67499...) becomes 2.68.
+// And math.Round pushes exact halves away from zero, so 0.125 becomes 0.13.
+// Going through a correctly rounded decimal string gives 2.67 and 0.12 (exact
+// halves to even), and Round and Fmt always agree with each other. Verified
+// against conformance/round-vectors.json.
 func Round(x float64, d int) float64 {
 	v, err := strconv.ParseFloat(strconv.FormatFloat(x, 'f', d, 64), 64)
 	if err != nil {

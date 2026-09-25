@@ -1,2 +1,2 @@
-issue ref.other_lane WARNING dòng 10 [A-2]: nằm ở lane A nhưng gắn vào B-1 thuộc lane B; sẽ vẽ trong lane B
-sơ đồ: 2 lane, 4 phần tử, 2 cạnh
+issue ref.other_lane WARNING line 10 [A-2]: is in lane A but attaches to B-1 in lane B; will be drawn in lane B
+diagram: 2 lanes, 4 elements, 2 edges

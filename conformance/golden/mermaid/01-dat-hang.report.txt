@@ -1,1 +1,1 @@
-sơ đồ: 0 lane, 12 phần tử, 12 cạnh
+diagram: 0 lanes, 12 elements, 12 edges

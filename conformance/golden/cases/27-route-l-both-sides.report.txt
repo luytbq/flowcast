@@ -1,1 +1,1 @@
-sơ đồ: 3 lane, 6 phần tử, 5 cạnh
+diagram: 3 lanes, 6 elements, 5 edges

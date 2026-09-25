@@ -1,20 +1,20 @@
 # input: 98-invalid-id-and-type -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 6: id trống
-ERROR   dòng 7 [pool]: id "pool" trùng id dành riêng của draw.io
-ERROR   dòng 8 [A-1]: type không hợp lệ: "procedure"
-WARNING dòng 7 [pool]: task không có cạnh ra
-check: 3 lỗi, 1 cảnh báo
+check: read table from markdown
+ERROR   line 6: empty id
+ERROR   line 7 [pool]: id "pool" collides with a draw.io reserved id
+ERROR   line 8 [A-1]: invalid type: "procedure"
+WARNING line 7 [pool]: task has no outgoing edge
+check: 3 errors, 1 warnings
 [exit 1]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 6: id trống
-ERROR   dòng 7 [pool]: id "pool" trùng id dành riêng của draw.io
-ERROR   dòng 8 [A-1]: type không hợp lệ: "procedure"
-WARNING dòng 7 [pool]: task không có cạnh ra
-check: 3 lỗi, 1 cảnh báo
-build: dừng vì bảng có lỗi
+check: read table from markdown
+ERROR   line 6: empty id
+ERROR   line 7 [pool]: id "pool" collides with a draw.io reserved id
+ERROR   line 8 [A-1]: invalid type: "procedure"
+WARNING line 7 [pool]: task has no outgoing edge
+check: 3 errors, 1 warnings
+build: stopped because the table has errors
 [exit 1]
 --- files
 39297693977e1ae5  in.md

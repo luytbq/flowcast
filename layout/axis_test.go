@@ -2,10 +2,10 @@ package layout
 
 import "testing"
 
-// Orient phải đổi mọi thứ mang toạ độ: điểm của dây, hộp của phần tử, hộp của
-// nhãn, điểm neo và độ lệch nhãn. Bỏ sót một thứ là sơ đồ vẫn vẽ ra được nhưng
-// một phần nằm sai chỗ.
-func TestOrientDoiMoiThuMangToaDo(t *testing.T) {
+// Orient must transform everything that carries coordinates: wire points,
+// element boxes, label boxes, anchor points and label offsets. Missing one still
+// yields a drawable diagram, but part of it ends up in the wrong place.
+func TestOrientTransformsEverythingWithCoordinates(t *testing.T) {
 	label := [4]float64{10, 100, 40, 120}
 	base := Result{
 		PoolW: 200, PoolH: 400, PoolHeader: 30, LaneHeader: 30,
@@ -31,67 +31,67 @@ func TestOrientDoiMoiThuMangToaDo(t *testing.T) {
 		got := Orient(r)
 		it := got.Items[0]
 		if [4]float64{it.X, it.Y, it.W, it.H} != want.item {
-			t.Errorf("%s: phần tử %v, mong %v", dir, [4]float64{it.X, it.Y, it.W, it.H}, want.item)
+			t.Errorf("%s: element %v, want %v", dir, [4]float64{it.X, it.Y, it.W, it.H}, want.item)
 		}
 		e := got.Edges[0]
 		if e.Pts[0] != want.pt0 {
-			t.Errorf("%s: điểm đầu %v, mong %v", dir, e.Pts[0], want.pt0)
+			t.Errorf("%s: first point %v, want %v", dir, e.Pts[0], want.pt0)
 		}
 		if e.ExitFrac != want.exit {
-			t.Errorf("%s: điểm neo ra %v, mong %v", dir, e.ExitFrac, want.exit)
+			t.Errorf("%s: exit anchor %v, want %v", dir, e.ExitFrac, want.exit)
 		}
 		if e.LabelOff != want.off {
-			t.Errorf("%s: độ lệch nhãn %v, mong %v", dir, e.LabelOff, want.off)
+			t.Errorf("%s: label offset %v, want %v", dir, e.LabelOff, want.off)
 		}
 		if got.PoolW != want.poolW {
-			t.Errorf("%s: bề rộng pool %v, mong %v", dir, got.PoolW, want.poolW)
+			t.Errorf("%s: pool width %v, want %v", dir, got.PoolW, want.poolW)
 		}
-		// Hộp nhãn phải đi cùng dây, không được giữ nguyên toạ độ cũ.
+		// The label box must move with the wire, not keep its old coordinates.
 		if *e.Label == label {
-			t.Errorf("%s: hộp nhãn không đổi trục", dir)
+			t.Errorf("%s: label box was not axis-swapped", dir)
 		}
 		b := *e.Label
 		if b[0] > b[2] || b[1] > b[3] {
-			t.Errorf("%s: hộp nhãn ngược %v", dir, b)
+			t.Errorf("%s: label box inverted %v", dir, b)
 		}
 		if base.Edges[0].Pts[0] != [2]float64{20, 120} || *base.Edges[0].Label != label {
-			t.Errorf("%s: Orient sửa cả kết quả gốc", dir)
+			t.Errorf("%s: Orient modified the original result", dir)
 		}
 	}
 	if r := Orient(base); r.Edges[0].Pts[0] != [2]float64{20, 120} {
-		t.Error("hướng rỗng phải trả nguyên kết quả")
+		t.Error("an empty direction must return the result unchanged")
 	}
 }
 
-func TestValidateConfigChanCaHaiDau(t *testing.T) {
+func TestValidateConfigRejectsBothBounds(t *testing.T) {
 	c := DefaultConfig()
 	if err := ValidateConfig(c); err != nil {
-		t.Fatalf("cấu hình mặc định phải hợp lệ: %v", err)
+		t.Fatalf("the default config must be valid: %v", err)
 	}
 	for _, f := range Fields() {
 		for _, v := range []int{f.Lo - 1, f.Hi + 1} {
 			bad := DefaultConfig()
 			*f.Get(&bad) = v
 			if err := ValidateConfig(bad); err == nil {
-				t.Errorf("%s = %d nằm ngoài miền %d..%d mà không bị chặn", f.Name, v, f.Lo, f.Hi)
+				t.Errorf("%s = %d is outside the range %d..%d but was not rejected", f.Name, v, f.Lo, f.Hi)
 			}
 		}
 	}
 }
 
-// Fields trả về bản sao: người gọi sửa danh sách không được làm hỏng cấu hình
-// mặc định của tiến trình.
-func TestFieldsTraVeBanSao(t *testing.T) {
+// Fields returns a copy: a caller modifying the list must not corrupt the
+// process's default config.
+func TestFieldsReturnsCopy(t *testing.T) {
 	fs := Fields()
 	if len(fs) == 0 {
-		t.Fatal("không có trường nào")
+		t.Fatal("no fields")
 	}
-	fs[0].Default, fs[0].Name = -1, "hỏng"
+	fs[0].Default, fs[0].Name = -1, "broken"
 	again := Fields()
-	if again[0].Name == "hỏng" || again[0].Default == -1 {
-		t.Error("Fields trả về chính slice bên trong")
+	if again[0].Name == "broken" || again[0].Default == -1 {
+		t.Error("Fields returned the internal slice itself")
 	}
 	if *again[0].Get(&Config{}) != 0 {
-		t.Error("Get phải trỏ vào Config được truyền")
+		t.Error("Get must point into the Config passed in")
 	}
 }

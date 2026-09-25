@@ -1,18 +1,18 @@
 # input: xlsx-06-hidden-and-merged -> in.xlsx
 $ ["check", "$T/in.xlsx"]
-check: đọc bảng từ xlsx sheet Flow
-WARNING Flow dòng 5: hàng đang bị ẩn nhưng vẫn được đọc
-WARNING Flow!D6:E6: ô gộp: chỉ ô trên cùng bên trái giữ giá trị
-check: 0 lỗi, 2 cảnh báo
+check: read table from xlsx sheet Flow
+WARNING Flow row 5: row is hidden but is still read
+WARNING Flow!D6:E6: merged cell: only the top-left cell keeps its value
+check: 0 errors, 2 warnings
 [exit 0]
 $ ["build", "$T/in.xlsx"]
-check: đọc bảng từ xlsx sheet Flow
-WARNING Flow dòng 5: hàng đang bị ẩn nhưng vẫn được đọc
-WARNING Flow!D6:E6: ô gộp: chỉ ô trên cùng bên trái giữ giá trị
-check: 0 lỗi, 2 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 2 cạnh, 394.02x250px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from xlsx sheet Flow
+WARNING Flow row 5: row is hidden but is still read
+WARNING Flow!D6:E6: merged cell: only the top-left cell keeps its value
+check: 0 errors, 2 warnings
+build: mode new
+build: wrote $T/in.drawio (2 lanes, 3 elements, 2 edges, 394.02x250px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 65bc5d55ec9a5176  in.drawio

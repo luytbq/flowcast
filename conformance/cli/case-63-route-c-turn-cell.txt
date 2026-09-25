@@ -1,16 +1,16 @@
 # input: 63-route-c-turn-cell -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 14 [B-4]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
+check: read table from markdown
+WARNING line 14 [B-4]: task has no outgoing edge
+check: 0 errors, 1 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 14 [B-4]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (3 lane, 4 phần tử, 3 cạnh, 510x324px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+WARNING line 14 [B-4]: task has no outgoing edge
+check: 0 errors, 1 warnings
+build: mode new
+build: wrote $T/in.drawio (3 lanes, 4 elements, 3 edges, 510x324px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 5cb873c60fc51538  in.drawio

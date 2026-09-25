@@ -1,16 +1,16 @@
 # input: 59-label-touching-edge -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 13 [C-3]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
+check: read table from markdown
+WARNING line 13 [C-3]: task has no outgoing edge
+check: 0 errors, 1 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 13 [C-3]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (1 lane, 5 phần tử, 3 cạnh, 513.66x374px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+WARNING line 13 [C-3]: task has no outgoing edge
+check: 0 errors, 1 warnings
+build: mode new
+build: wrote $T/in.drawio (1 lanes, 5 elements, 3 edges, 513.66x374px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 f1b1bb5cfd46d29f  in.drawio

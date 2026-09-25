@@ -8,8 +8,9 @@ import (
 	"github.com/luytbq/flowcast/num"
 )
 
-// gzKey là một nửa của máng: phần sát cột bên trái ('l') hoặc bên phải ('r').
-// Chỗ chừa cho nhãn và cho db bám sát được cộng vào đúng nửa đó.
+// gzKey is one half of a gutter: the part next to the column on the left ('l')
+// or on the right ('r'). Space reserved for labels and for hugging dbs is added
+// to exactly that half.
 type gzKey struct {
 	lane, gi int
 	side     byte
@@ -20,26 +21,27 @@ type hug struct {
 	side byte
 }
 
-// Hình học của một lần tính. Pha hình học chạy hai lượt, nên mọi thứ ở đây
-// được dựng lại từ đầu mỗi lượt.
+// Geometry of one computation. The geometry phase runs two passes, so
+// everything here is rebuilt from scratch on each pass.
 type geom struct {
 	lzG, azG map[gzKey]float64
 	lzC      map[int]float64
 	hugs     map[string]hug
 	gutX     map[[2]int]float64
-	colX     map[[2]int][2]float64 // x trái và bề rộng của một cột
+	colX     map[[2]int][2]float64 // left x and width of a column
 	chanY    map[int]float64
-	rowY     map[int][2]float64 // y trên và bề cao của một hàng
+	rowY     map[int][2]float64 // top y and height of a row
 }
 
-// Origin là khoảng lề từ mép trang tới pool.
+// Origin is the margin from the page edge to the pool.
 var Origin = [2]float64{40, 40}
 
-// labelReservations chừa chỗ cho nhãn cạnh: ở máng phía cổng ra khi cạnh ra
-// ngang, ở kênh ngay dưới nguồn khi cạnh ra đáy.
+// labelReservations reserves space for edge labels: in the gutter on the exit
+// port side when the edge exits sideways, in the channel just below the source
+// when the edge exits from the bottom.
 //
-// spans là bề dài phần ngang đầu tiên của các cạnh B và C, đo được sau lượt
-// tính đầu. Lượt đầu chưa có nên truyền nil.
+// spans is the length of the first horizontal part of B and C edges, measured
+// after the first pass. The first pass has none yet, so it passes nil.
 func (l *Layout) labelReservations(spans map[string]float64) (map[gzKey]float64, map[int]float64) {
 	lzG := map[gzKey]float64{}
 	lzC := map[int]float64{}
@@ -69,11 +71,13 @@ func (l *Layout) labelReservations(spans map[string]float64) (map[gzKey]float64,
 	return lzG, lzC
 }
 
-// hugPlan chọn db và text nào được đặt bám sát node, và ở mặt nào.
+// hugPlan picks which dbs and texts are placed hugging their node, and on which
+// side.
 //
-// Chỉ bám khi mặt đó có đúng một phần tử ở ô sát bên, và không có dây nào ra
-// hoặc vào mặt đó: đoạn dây ngang sát node sẽ cắt qua chỗ định đặt. Mặt bận thì
-// phần tử căn giữa ô bên cạnh như mọi phần tử khác.
+// An element hugs only when that side has exactly one element in the adjacent
+// cell and no wire exits or enters that side: a horizontal wire segment next to
+// the node would cross the intended spot. On a busy side the element is
+// centered in the adjacent cell like every other element.
 func (l *Layout) hugPlan() map[string]hug {
 	hugs := map[string]hug{}
 	for aid, atts := range l.Attachments {
@@ -94,12 +98,14 @@ func (l *Layout) hugPlan() map[string]hug {
 	return hugs
 }
 
-// computeGeometry đổi lưới lane, cột, hàng và số track thành toạ độ pixel.
+// computeGeometry turns the grid of lanes, columns, rows and track counts into
+// pixel coordinates.
 //
-// Thứ tự cộng là một phần của kết quả, vì cộng số thực không có tính kết hợp:
-// x của cột tiếp theo được cộng dồn riêng từ bề rộng từng máng và từng cột, nên
-// nó có thể lệch bit cuối so với x của lane cộng với tổng bề rộng. Đổi thứ tự
-// cộng là đổi file đầu ra.
+// The order of additions is part of the result, because floating-point addition
+// is not associative: the x of the next column is accumulated separately from
+// the width of each gutter and each column, so it may differ in the last bit
+// from the lane's x plus the total width. Changing the order of additions
+// changes the output file.
 func (l *Layout) computeGeometry(lzG map[gzKey]float64, lzC map[int]float64) {
 	cfg := l.Cfg
 	g := &geom{
@@ -146,8 +152,8 @@ func (l *Layout) computeGeometry(lzG map[gzKey]float64, lzC map[int]float64) {
 			cw += colW[[2]int{lane, c}]
 		}
 		total += cw
-		// Tên lane nối các dòng bằng ký tự xuống dòng rồi mới đo, nên mỗi lần
-		// xuống dòng được tính thêm bề rộng một glyph .notdef.
+		// The lane name joins its lines with newline characters before being
+		// measured, so each line break adds the width of one .notdef glyph.
 		head := l.tm.W(unistr.Strip(strings.Join(lrow.Lines, "\n"))) + 30
 		if need := fmax(float64(cfg.MinLaneW), head) - total; need > 0 {
 			widths[0] += need / 2
@@ -214,8 +220,8 @@ func (l *Layout) trackY(s *Seg) float64 {
 	return g.chanY[s.Res.A] + g.lzC[s.Res.A] + float64(cfg.ChannelMargin) + float64(s.Track*cfg.TrackGap)
 }
 
-// resolvePaths dựng đường gấp khúc cho từng cạnh từ sym của nó, rồi bỏ điểm
-// trùng và điểm nằm giữa hai đoạn thẳng hàng.
+// resolvePaths builds the polyline of each edge from its sym, then drops
+// duplicate points and points lying between two collinear segments.
 func (l *Layout) resolvePaths() {
 	for _, e := range l.Edges {
 		u, v := l.items[e.Src], l.items[e.Dst]
@@ -264,8 +270,9 @@ func (l *Layout) resolvePaths() {
 			}
 			out = append(out, b)
 		}
-		// Luôn nối điểm cuối, kể cả khi clean chỉ còn một điểm: khi đó đường có
-		// hai điểm trùng nhau, và mọi dây vẫn có điểm đầu lẫn điểm cuối.
+		// Always append the last point, even when clean has only one point left:
+		// the path then has two identical points, and every wire still has both
+		// a start and an end point.
 		out = append(out, clean[len(clean)-1])
 		for i := range out {
 			out[i] = [2]float64{num.Round(out[i][0], 2), num.Round(out[i][1], 2)}
@@ -274,8 +281,8 @@ func (l *Layout) resolvePaths() {
 	}
 }
 
-// horizontalSpans đo bề dài phần ngang đầu tiên của các cạnh B và C có nhãn,
-// tức chỗ nhãn sẽ nằm, sau lượt tính đầu.
+// horizontalSpans measures the length of the first horizontal part of labeled B
+// and C edges, where the label will sit, after the first pass.
 func (l *Layout) horizontalSpans() map[string]float64 {
 	spans := map[string]float64{}
 	for _, e := range l.Edges {

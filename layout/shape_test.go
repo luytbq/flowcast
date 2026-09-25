@@ -6,17 +6,17 @@ import (
 	"github.com/luytbq/flowcast/schema"
 )
 
-func TestMoiLoaiPhanTuDeuCoKhaiBaoHinhHoc(t *testing.T) {
+func TestEveryElementTypeHasGeometryDeclaration(t *testing.T) {
 	for _, set := range []map[string]bool{schema.NodeTypes, schema.AttachTypes} {
 		for kind := range set {
 			if _, ok := Kinds[kind]; !ok {
-				t.Errorf("loại %s chưa có khai báo trong Kinds", kind)
+				t.Errorf("type %s has no declaration in Kinds", kind)
 			}
 		}
 	}
 }
 
-func TestDiemTrenDuongVienNamTrenHinh(t *testing.T) {
+func TestOutlinePointLiesOnShape(t *testing.T) {
 	for _, tc := range []struct {
 		shape Shape
 		side  byte
@@ -30,7 +30,7 @@ func TestDiemTrenDuongVienNamTrenHinh(t *testing.T) {
 		{ShapeEllipse, 'L', 0.5, [2]float64{0, 0.5}},
 	} {
 		if got := tc.shape.outline(tc.side, tc.t); got != tc.want {
-			t.Errorf("%s mặt %c tại %v: %v, muốn %v", tc.shape, tc.side, tc.t, got, tc.want)
+			t.Errorf("%s side %c at %v: %v, want %v", tc.shape, tc.side, tc.t, got, tc.want)
 		}
 	}
 }

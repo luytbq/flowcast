@@ -7,29 +7,29 @@ import (
 	"github.com/luytbq/flowcast/source"
 )
 
-// Limits chặn tài nguyên mà một lần dựng được dùng. Giá trị 0 là không chặn.
+// Limits caps the resources one build may use. A value of 0 means no cap.
 //
-// Số dòng là chặn chính, vì nó chặn luôn thời gian chạy: thời gian dựng tăng
-// gần theo bình phương số phần tử, 1000 phần tử mất khoảng 0,1 giây và 3000
-// phần tử mất khoảng 0,9 giây. Timeout là chặn phụ, chỉ kiểm giữa các pha chứ
-// không cắt ngang một pha.
+// The row count is the primary cap, because it also bounds run time: build time
+// grows roughly with the square of the element count, 1000 elements take about
+// 0.1 seconds and 3000 elements about 0.9 seconds. Timeout is a secondary cap,
+// only checked between phases rather than interrupting a phase.
 type Limits struct {
-	MaxBytes    int   // kích thước đầu vào
-	MaxUnzipped int64 // tổng số byte giải nén từ một file xlsx
-	MaxRows     int   // số dòng bảng, gồm cả lane và cạnh
+	MaxBytes    int   // input size
+	MaxUnzipped int64 // total bytes decompressed from one xlsx file
+	MaxRows     int   // table row count, including lanes and edges
 	MaxEdges    int
 	Timeout     time.Duration
 }
 
-// Hai hồ sơ dựng sẵn. CLI chạy trên máy của chính người dùng nên nới; dịch vụ
-// web nhận file của người lạ nên siết.
+// Two built-in profiles. The CLI runs on the user's own machine, so it is
+// loose; the web service accepts files from strangers, so it is strict.
 var (
 	CLILimits = Limits{MaxBytes: 64 << 20, MaxUnzipped: 512 << 20, MaxRows: 50000, MaxEdges: 50000}
 	WebLimits = Limits{MaxBytes: 1 << 20, MaxUnzipped: 16 << 20, MaxRows: 1000, MaxEdges: 1000,
 		Timeout: 10 * time.Second}
 )
 
-// budget theo dõi một lần dựng so với Limits.
+// budget tracks one build against Limits.
 type budget struct {
 	lim   Limits
 	start time.Time
@@ -44,7 +44,7 @@ func newBudget(l *Limits) budget {
 
 func (b budget) source(src Source) (Source, error) {
 	if b.lim.MaxBytes > 0 && len(src.Data) > b.lim.MaxBytes {
-		return src, model.Errf("limit.bytes", "file %d byte, quá giới hạn %d byte", len(src.Data), b.lim.MaxBytes)
+		return src, model.Errf("limit.bytes", "file is %d bytes, over the limit of %d bytes", len(src.Data), b.lim.MaxBytes)
 	}
 	if b.lim.MaxUnzipped > 0 && (src.MaxUnzipped == 0 || src.MaxUnzipped > b.lim.MaxUnzipped) {
 		src.MaxUnzipped = b.lim.MaxUnzipped
@@ -54,7 +54,7 @@ func (b budget) source(src Source) (Source, error) {
 
 func (b budget) table(t model.Table) error {
 	if b.lim.MaxRows > 0 && len(t.Rows) > b.lim.MaxRows {
-		return model.Errf("limit.rows", "bảng có %d dòng, quá giới hạn %d dòng", len(t.Rows), b.lim.MaxRows)
+		return model.Errf("limit.rows", "table has %d rows, over the limit of %d rows", len(t.Rows), b.lim.MaxRows)
 	}
 	edges := 0
 	for _, r := range t.Rows {
@@ -63,15 +63,15 @@ func (b budget) table(t model.Table) error {
 		}
 	}
 	if b.lim.MaxEdges > 0 && edges > b.lim.MaxEdges {
-		return model.Errf("limit.edges", "bảng có %d cạnh, quá giới hạn %d cạnh", edges, b.lim.MaxEdges)
+		return model.Errf("limit.edges", "table has %d edges, over the limit of %d edges", edges, b.lim.MaxEdges)
 	}
 	return b.check()
 }
 
-// check báo quá thời gian. Gọi giữa các pha.
+// check reports a timeout. Call it between phases.
 func (b budget) check() error {
 	if b.lim.Timeout > 0 && time.Since(b.start) > b.lim.Timeout {
-		return model.Errf("limit.timeout", "dựng quá %v, dừng", b.lim.Timeout)
+		return model.Errf("limit.timeout", "build exceeded %v, stopped", b.lim.Timeout)
 	}
 	return nil
 }

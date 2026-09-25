@@ -1,15 +1,16 @@
-// Lệnh flowcastd là dịch vụ web: người dùng tải bảng lên và nhận về file
-// .drawio.
+// Command flowcastd is a web service: users upload a table and get back a
+// .drawio file.
 //
 //	flowcastd [-addr :8080] [-concurrent 4]
 //
-// POST /api/build nhận multipart/form-data với trường file, cùng các trường tùy
-// chọn title, sheet, delimiter và encoding. Trả JSON gồm issue, cảnh báo và nội
-// dung .drawio; thêm ?download=1 thì trả thẳng file khi dựng được. POST
-// /api/check chỉ kiểm tra bảng. GET / là trang upload.
+// POST /api/build accepts multipart/form-data with a file field, plus the optional
+// fields title, sheet, delimiter and encoding. It returns JSON with issues,
+// warnings and the .drawio content; with ?download=1 it returns the file directly
+// when the build succeeds. POST /api/check only checks the table. GET / is the
+// upload page.
 //
-// Dịch vụ dùng hồ sơ giới hạn WebLimits, không merge và không gọi drawio: nó
-// không đọc ghi file và không chạy tiến trình ngoài.
+// The service uses the WebLimits limit profile, does not merge and does not call
+// drawio: it neither reads nor writes files and runs no external processes.
 package main
 
 import (
@@ -28,8 +29,8 @@ import (
 )
 
 func main() {
-	addr := flag.String("addr", ":8080", "địa chỉ lắng nghe")
-	concurrent := flag.Int("concurrent", runtime.NumCPU(), "số lần dựng chạy cùng lúc")
+	addr := flag.String("addr", ":8080", "address to listen on")
+	concurrent := flag.Int("concurrent", runtime.NumCPU(), "number of builds running concurrently")
 	flag.Parse()
 	log := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
@@ -49,9 +50,9 @@ func main() {
 		defer cancel()
 		srv.Shutdown(shut)
 	}()
-	log.Info("flowcastd lắng nghe", "addr", *addr)
+	log.Info("flowcastd listening", "addr", *addr)
 	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		log.Error("dừng", "err", err)
+		log.Error("stopped", "err", err)
 		os.Exit(1)
 	}
 }

@@ -1,7 +1,8 @@
-// Package source đọc các định dạng đầu vào và quy chúng về một model.Table.
+// Package source reads the input formats and reduces them to a model.Table.
 //
-// Nhận bytes chứ không nhận đường dẫn: core không chạm filesystem, nên cùng một
-// đường code phục vụ được CLI đọc file và dịch vụ web nhận upload.
+// It takes bytes rather than paths: the core never touches the filesystem, so
+// the same code path serves both the CLI reading files and the web service
+// receiving uploads.
 package source
 
 import (
@@ -11,17 +12,17 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
-// Header là năm tên cột bắt buộc. Số cột là một cam kết tương thích, xem
-// docs/adr/0001.
+// Header is the five required column names. The column count is a
+// compatibility commitment, see docs/adr/0001.
 var Header = []string{"id", "type", "parent", "content", "metadata"}
 
-// mdEscapable là tập ký tự mà markdown cho phép đặt gạch chéo ngược phía trước.
+// mdEscapable is the set of characters markdown allows a backslash in front of.
 const mdEscapable = "\\`*_{}[]()#+-.!|<>~"
 
-// splitLines cắt dòng theo mọi ranh giới dòng, không chỉ theo xuống dòng kiểu
-// Unix: LF, CR, CRLF, VT, FF, các ký tự phân tách U+001C tới U+001E, NEL, và
-// dấu phân dòng, phân đoạn của Unicode. File soạn trên Windows dùng CRLF, và
-// vài nguồn dán vào có dấu phân đoạn của Unicode.
+// splitLines splits on every line boundary, not only Unix line breaks: LF, CR,
+// CRLF, VT, FF, the separators U+001C to U+001E, NEL, and the Unicode line and
+// paragraph separators. Files written on Windows use CRLF, and some pasted
+// sources contain Unicode paragraph separators.
 func splitLines(s string) []string {
 	var out []string
 	start, i := 0, 0
@@ -49,10 +50,10 @@ func splitLines(s string) []string {
 	return out
 }
 
-// splitCells tách một dòng bảng markdown thành các ô.
+// splitCells splits a markdown table line into cells.
 //
-// Chỉ gạch đứng không có gạch chéo ngược phía trước mới là dấu ngăn cột, nên
-// nội dung viết \| giữ được gạch đứng mà không vỡ bảng.
+// Only a pipe not preceded by a backslash separates columns, so content written
+// as \| keeps its pipe without breaking the table.
 func splitCells(line string) []string {
 	s := unistr.Strip(line)
 	s = strings.TrimPrefix(s, "|")
@@ -75,11 +76,11 @@ func splitCells(line string) []string {
 	return append(cells, unistr.Strip(cur.String()))
 }
 
-// unescape gỡ gạch chéo ngược của markdown rồi chuẩn hóa về NFC.
+// unescape removes markdown backslashes and then normalizes to NFC.
 //
-// Chuẩn hóa là bắt buộc chứ không phải làm cho đẹp: "Xử lý" ở dạng tách dấu đo
-// ra 42.43px thay vì 30.75px, tức bố cục đổi hẳn, và macOS thường sinh dạng
-// tách dấu khi chép chữ tiếng Việt. Xem docs/adr/0005.
+// Normalization is required, not cosmetic: "Xử lý" in decomposed form measures
+// 42.43px instead of 30.75px, which changes the layout outright, and macOS often
+// produces the decomposed form when copying Vietnamese text. See docs/adr/0005.
 func unescape(s string) string {
 	var b strings.Builder
 	r := []rune(s)
@@ -96,8 +97,8 @@ func unescape(s string) string {
 
 func normalize(s string) string { return norm.NFC.String(s) }
 
-// splitBR cắt một ô tại các thẻ xuống dòng của html, như BR_RE.split của bản
-// tham chiếu với biểu thức <br\s*/?> không phân biệt hoa thường.
+// splitBR splits a cell at html line break tags, like BR_RE.split of the
+// reference implementation with the case-insensitive expression <br\s*/?>.
 func splitBR(cell string) []string {
 	r := []rune(cell)
 	var out []string
@@ -114,14 +115,17 @@ func splitBR(cell string) []string {
 	return append(out, string(r[start:]))
 }
 
-// matchBR trả về số ký tự của thẻ br ở đầu r, hoặc 0 nếu không có.
+// matchBR returns the number of characters of the br tag at the start of r, or
+// 0 if there is none.
 //
-// So từng ký tự thay vì hạ chữ thường cả chuỗi rồi dò vị trí: hạ chữ thường đổi
-// được độ dài chuỗi, như İ thành i cộng dấu chấm, nên vị trí dò trên chuỗi đã hạ
-// không cắt đúng chuỗi gốc. Không phân biệt hoa thường chỉ áp cho b và r, và
-// chỉ khớp đúng B và R, không khớp ký tự Unicode nào khác.
-// Tham lam không lùi là đủ: khoảng trắng, dấu gạch chéo và dấu lớn hơn không lẫn
-// vào nhau nên không có cách lùi nào khớp được khi cách tham lam không khớp.
+// It compares character by character instead of lowercasing the whole string
+// and searching: lowercasing can change the string length, as İ becomes i plus a
+// dot, so positions found in the lowercased string do not cut the original
+// correctly. Case-insensitivity applies only to b and r, and matches only B and
+// R, no other Unicode character.
+// Greedy matching without backtracking is enough: whitespace, the slash and the
+// greater-than sign never overlap, so no backtracking could match where the
+// greedy match fails.
 func matchBR(r []rune) int {
 	if len(r) < 4 || r[0] != '<' || (r[1] != 'b' && r[1] != 'B') || (r[2] != 'r' && r[2] != 'R') {
 		return 0

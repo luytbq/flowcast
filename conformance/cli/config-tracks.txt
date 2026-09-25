@@ -1,10 +1,10 @@
 # input: 28-tracks-fan-in -> in.md
 $ ["build", "$T/in.md", "--track-gap", "30", "--gutter-margin", "5", "--channel-margin", "20"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (2 lane, 11 phần tử, 14 cạnh, 443.66x964px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode new
+build: wrote $T/in.drawio (2 lanes, 11 elements, 14 edges, 443.66x964px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 cae7ad0b852b52bd  in.drawio

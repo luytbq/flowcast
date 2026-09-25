@@ -55,16 +55,16 @@ func decode(t *testing.T, rec *httptest.ResponseRecorder) apiResponse {
 	t.Helper()
 	var r apiResponse
 	if err := json.Unmarshal(rec.Body.Bytes(), &r); err != nil {
-		t.Fatalf("JSON hỏng: %v\n%s", err, rec.Body.String())
+		t.Fatalf("broken JSON: %v\n%s", err, rec.Body.String())
 	}
 	return r
 }
 
-func TestBuildTraVeDrawioGiongGolden(t *testing.T) {
+func TestBuildReturnsDrawioMatchingGolden(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
 	rec := upload(t, h, "/api/build", "05-merge-node.md", readCase(t, "05-merge-node.md"), nil)
 	if rec.Code != http.StatusOK {
-		t.Fatalf("mã %d: %s", rec.Code, rec.Body.String())
+		t.Fatalf("code %d: %s", rec.Code, rec.Body.String())
 	}
 	r := decode(t, rec)
 	golden, err := os.ReadFile("../../conformance/golden/cases/05-merge-node.drawio")
@@ -72,15 +72,15 @@ func TestBuildTraVeDrawioGiongGolden(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !r.OK || r.Drawio != string(golden) || r.Filename != "05-merge-node.drawio" || r.Stats.Items != 5 {
-		t.Errorf("ok=%v filename=%q stats=%+v, drawio khớp golden: %v", r.OK, r.Filename, r.Stats, r.Drawio == string(golden))
+		t.Errorf("ok=%v filename=%q stats=%+v, drawio matches golden: %v", r.OK, r.Filename, r.Stats, r.Drawio == string(golden))
 	}
 }
 
-func TestDownloadTraThangFile(t *testing.T) {
+func TestDownloadReturnsFileDirectly(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
 	rec := upload(t, h, "/api/build?download=1", "Sơ đồ đặt hàng.md", readCase(t, "05-merge-node.md"), nil)
 	if rec.Code != http.StatusOK || !strings.HasPrefix(rec.Body.String(), "<mxfile") {
-		t.Fatalf("mã %d: %.200s", rec.Code, rec.Body.String())
+		t.Fatalf("code %d: %.200s", rec.Code, rec.Body.String())
 	}
 	if ct := rec.Header().Get("Content-Type"); !strings.HasPrefix(ct, "application/vnd.jgraph.mxfile") {
 		t.Errorf("Content-Type %q", ct)
@@ -91,7 +91,7 @@ func TestDownloadTraThangFile(t *testing.T) {
 	}
 }
 
-func TestTenFileChiLayPhanTen(t *testing.T) {
+func TestFilenameKeepsOnlyBaseName(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
 	rec := upload(t, h, "/api/build", `..\..\etc/bang.md`, readCase(t, "05-merge-node.md"), nil)
 	if r := decode(t, rec); r.Filename != "bang.drawio" {
@@ -99,13 +99,13 @@ func TestTenFileChiLayPhanTen(t *testing.T) {
 	}
 }
 
-func TestBangLoiTra422KemIssue(t *testing.T) {
+func TestInvalidTableReturns422WithIssues(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
 	for _, url := range []string{"/api/build", "/api/check"} {
 		rec := upload(t, h, url, "loi.md", readCase(t, "90-invalid-dangling-ref.md"), nil)
 		r := decode(t, rec)
 		if rec.Code != http.StatusUnprocessableEntity || r.OK || r.Drawio != "" || len(r.Issues) == 0 {
-			t.Fatalf("%s: mã %d, %+v", url, rec.Code, r)
+			t.Fatalf("%s: code %d, %+v", url, rec.Code, r)
 		}
 		found := false
 		for _, i := range r.Issues {
@@ -114,39 +114,39 @@ func TestBangLoiTra422KemIssue(t *testing.T) {
 			}
 		}
 		if !found {
-			t.Errorf("%s: không có issue lỗi mang mã và vị trí: %+v", url, r.Issues)
+			t.Errorf("%s: no error issue carrying a code and location: %+v", url, r.Issues)
 		}
 	}
 }
 
-func TestCheckKhongTraDrawio(t *testing.T) {
+func TestCheckReturnsNoDrawio(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
 	rec := upload(t, h, "/api/check", "a.md", readCase(t, "05-merge-node.md"), nil)
 	if r := decode(t, rec); rec.Code != http.StatusOK || !r.OK || r.Drawio != "" || r.Source != "markdown" {
-		t.Errorf("mã %d, %+v", rec.Code, r)
+		t.Errorf("code %d, %+v", rec.Code, r)
 	}
 }
 
-func TestXlsxVaTuyChonDoc(t *testing.T) {
+func TestXlsxAndReadOptions(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
 	rec := upload(t, h, "/api/build", "hai.xlsx", readCase(t, "xlsx-08-two-flows.xlsx"), map[string]string{"sheet": "Hai"})
 	r := decode(t, rec)
 	if rec.Code != http.StatusOK || !r.OK || r.Source == "" {
-		t.Fatalf("mã %d: %s", rec.Code, rec.Body.String())
+		t.Fatalf("code %d: %s", rec.Code, rec.Body.String())
 	}
 	rec = upload(t, h, "/api/build", "hai.xlsx", readCase(t, "xlsx-08-two-flows.xlsx"), map[string]string{"sheet": "Không có"})
 	if r := decode(t, rec); rec.Code != http.StatusUnprocessableEntity || r.Error == nil {
-		t.Errorf("sheet không có: mã %d, %s", rec.Code, rec.Body.String())
+		t.Errorf("missing sheet: code %d, %s", rec.Code, rec.Body.String())
 	}
 }
 
-func TestVuotGioiHanTra413(t *testing.T) {
+func TestExceedingLimitReturns413(t *testing.T) {
 	lim := flowcast.WebLimits
 	lim.MaxRows = 5
 	h := testServer(lim, 2)
 	rec := upload(t, h, "/api/build", "a.md", readCase(t, "05-merge-node.md"), nil)
 	if r := decode(t, rec); rec.Code != http.StatusRequestEntityTooLarge || r.Error == nil || r.Error.Code != "limit.rows" {
-		t.Errorf("mã %d, %s", rec.Code, rec.Body.String())
+		t.Errorf("code %d, %s", rec.Code, rec.Body.String())
 	}
 	lim = flowcast.WebLimits
 	lim.MaxBytes = 1000
@@ -154,15 +154,15 @@ func TestVuotGioiHanTra413(t *testing.T) {
 	big := bytes.Repeat([]byte("x"), 200<<10)
 	rec = upload(t, h, "/api/build", "a.md", big, nil)
 	if r := decode(t, rec); rec.Code != http.StatusRequestEntityTooLarge || r.Error == nil || r.Error.Code != "limit.bytes" {
-		t.Errorf("thân quá lớn: mã %d, %s", rec.Code, rec.Body.String())
+		t.Errorf("body too large: code %d, %s", rec.Code, rec.Body.String())
 	}
 	rec = upload(t, h, "/api/build", "a.md", bytes.Repeat([]byte("x"), 2000), nil)
 	if r := decode(t, rec); rec.Code != http.StatusRequestEntityTooLarge || r.Error == nil || r.Error.Code != "limit.bytes" {
-		t.Errorf("file quá lớn trong phần dư multipart: mã %d, %s", rec.Code, rec.Body.String())
+		t.Errorf("file too large within the multipart allowance: code %d, %s", rec.Code, rec.Body.String())
 	}
 }
 
-// countReader đếm số byte máy chủ thật sự đọc từ thân yêu cầu.
+// countReader counts the bytes the server actually reads from the request body.
 type countReader struct {
 	r io.Reader
 	n int64
@@ -174,10 +174,10 @@ func (c *countReader) Read(p []byte) (int, error) {
 	return n, err
 }
 
-// Thân yêu cầu phải bị chặn ngay lúc đọc, không phải đọc hết rồi mới so với
-// giới hạn: file 8 MB gửi tới máy chủ giới hạn 1 KB không được nằm trọn trong
-// bộ nhớ.
-func TestThanYeuCauBiChanNgayLucDoc(t *testing.T) {
+// The request body must be cut off while it is being read, not read in full and
+// then compared with the limit: an 8 MB file sent to a server with a 1 KB limit
+// must not end up entirely in memory.
+func TestRequestBodyIsCutOffWhileReading(t *testing.T) {
 	lim := flowcast.WebLimits
 	lim.MaxBytes = 1000
 	h := testServer(lim, 2)
@@ -195,42 +195,42 @@ func TestThanYeuCauBiChanNgayLucDoc(t *testing.T) {
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 	if r := decode(t, rec); rec.Code != http.StatusRequestEntityTooLarge || r.Error == nil {
-		t.Fatalf("mã %d, %s", rec.Code, rec.Body.String())
+		t.Fatalf("code %d, %s", rec.Code, rec.Body.String())
 	}
 	if max := int64(lim.MaxBytes) + multipartSlack + 64<<10; counted.n > max {
-		t.Errorf("máy chủ đọc %d byte, quá mức cần để biết là vượt giới hạn (%d)", counted.n, max)
+		t.Errorf("server read %d bytes, more than needed to know the limit was exceeded (%d)", counted.n, max)
 	}
 }
 
-func TestThieuFileTra400(t *testing.T) {
+func TestMissingFileReturns400(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
 	rec := upload(t, h, "/api/build", "", nil, map[string]string{"title": "x"})
 	if r := decode(t, rec); rec.Code != http.StatusBadRequest || r.Error == nil {
-		t.Errorf("mã %d, %s", rec.Code, rec.Body.String())
+		t.Errorf("code %d, %s", rec.Code, rec.Body.String())
 	}
 }
 
-func TestSaiPhuongThucTra405(t *testing.T) {
+func TestWrongMethodReturns405(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/build", nil))
 	if rec.Code != http.StatusMethodNotAllowed {
-		t.Errorf("mã %d", rec.Code)
+		t.Errorf("code %d", rec.Code)
 	}
 }
 
-func TestBanThiTra503(t *testing.T) {
+func TestBusyReturns503(t *testing.T) {
 	s := testServer(flowcast.WebLimits, 1)
-	// Chỗ duy nhất đã có người giữ: yêu cầu phải được báo bận thay vì xếp hàng mãi.
+	// The only slot is already taken: the request must be told busy instead of queueing forever.
 	s.slot <- struct{}{}
 	s.wait = 0
 	rec := upload(t, s, "/api/build", "a.md", readCase(t, "05-merge-node.md"), nil)
 	if r := decode(t, rec); rec.Code != http.StatusServiceUnavailable || r.Error == nil || r.Error.Code != "server.busy" {
-		t.Errorf("mã %d, %s", rec.Code, rec.Body.String())
+		t.Errorf("code %d, %s", rec.Code, rec.Body.String())
 	}
 }
 
-func TestFieldsKhaiBaoDuThamSo(t *testing.T) {
+func TestFieldsDeclaresEveryParameter(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 1)
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/fields", nil))
@@ -242,48 +242,48 @@ func TestFieldsKhaiBaoDuThamSo(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(got.Fields) != len(layout.Fields()) || len(got.Directions) != 4 {
-		t.Fatalf("%d trường, %d hướng", len(got.Fields), len(got.Directions))
+		t.Fatalf("%d fields, %d directions", len(got.Fields), len(got.Directions))
 	}
 	for _, f := range got.Fields {
 		if f.Name == "" || f.Help == "" || f.Lo > f.Default || f.Default > f.Hi {
-			t.Errorf("trường hỏng: %+v", f)
+			t.Errorf("broken field: %+v", f)
 		}
 	}
 }
 
-func TestThamSoXepHinhVaHuongQuaWeb(t *testing.T) {
+func TestLayoutParametersAndDirectionOverWeb(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 2)
 	data := readCase(t, "05-merge-node.md")
 	base := decode(t, upload(t, h, "/api/build", "a.md", data, nil))
 	wide := decode(t, upload(t, h, "/api/build", "a.md", data, map[string]string{"task-min-w": "400"}))
 	if !wide.OK || wide.Stats.W <= base.Stats.W {
-		t.Errorf("task-min-w không đổi bố cục: %v rồi %v", base.Stats, wide.Stats)
+		t.Errorf("task-min-w did not change the layout: %v then %v", base.Stats, wide.Stats)
 	}
 	lr := decode(t, upload(t, h, "/api/build", "a.md", data, map[string]string{"direction": "LR"}))
 	if !lr.OK || lr.Stats.W <= lr.Stats.H || !strings.Contains(lr.Drawio, "horizontal=0") {
-		t.Errorf("hướng LR phải cho sơ đồ nằm ngang với lane ngang: %v", lr.Stats)
+		t.Errorf("direction LR must give a horizontal diagram with horizontal lanes: %v", lr.Stats)
 	}
-	// track-gap nhận cả số 0, nên "x" chỉ bị bắt nếu máy chủ thật sự kiểm chữ
-	// thành số chứ không lẳng lặng lấy 0.
+	// track-gap accepts 0, so "x" is only caught if the server really checks the
+	// text converts to a number rather than silently taking 0.
 	for _, bad := range []map[string]string{{"task-min-w": "x"}, {"track-gap": "x"}, {"task-min-w": "-5"},
 		{"task-min-w": "999999"}, {"direction": "XY"}} {
 		rec := upload(t, h, "/api/build", "a.md", data, bad)
 		if r := decode(t, rec); rec.Code != http.StatusBadRequest || r.Error == nil {
-			t.Errorf("%v: mã %d, %s", bad, rec.Code, rec.Body.String())
+			t.Errorf("%v: code %d, %s", bad, rec.Code, rec.Body.String())
 		}
 	}
 }
 
-func TestTrangChuVaHeaderBaoVe(t *testing.T) {
+func TestHomePageAndSecurityHeaders(t *testing.T) {
 	h := testServer(flowcast.WebLimits, 1)
 	for _, p := range []string{"/", "/app.js", "/style.css", "/healthz"} {
 		rec := httptest.NewRecorder()
 		h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, p, nil))
 		if rec.Code != http.StatusOK {
-			t.Errorf("%s: mã %d", p, rec.Code)
+			t.Errorf("%s: code %d", p, rec.Code)
 		}
 		if rec.Header().Get("X-Content-Type-Options") != "nosniff" || rec.Header().Get("Content-Security-Policy") == "" {
-			t.Errorf("%s: thiếu header bảo vệ", p)
+			t.Errorf("%s: missing security headers", p)
 		}
 	}
 }

@@ -1,20 +1,20 @@
 # input: 83-warn-meta-key-order -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 7 [E1]: metadata "zeta" không dùng cho type edge, bị bỏ qua
-WARNING dòng 7 [E1]: metadata "alpha" không dùng cho type edge, bị bỏ qua
-WARNING dòng 7 [E1]: metadata "mu" không dùng cho type edge, bị bỏ qua
-check: 0 lỗi, 3 cảnh báo
+check: read table from markdown
+WARNING line 7 [E1]: metadata "zeta" does not apply to type edge, ignored
+WARNING line 7 [E1]: metadata "alpha" does not apply to type edge, ignored
+WARNING line 7 [E1]: metadata "mu" does not apply to type edge, ignored
+check: 0 errors, 3 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 7 [E1]: metadata "zeta" không dùng cho type edge, bị bỏ qua
-WARNING dòng 7 [E1]: metadata "alpha" không dùng cho type edge, bị bỏ qua
-WARNING dòng 7 [E1]: metadata "mu" không dùng cho type edge, bị bỏ qua
-check: 0 lỗi, 3 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (1 lane, 2 phần tử, 1 cạnh, 128x244px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+WARNING line 7 [E1]: metadata "zeta" does not apply to type edge, ignored
+WARNING line 7 [E1]: metadata "alpha" does not apply to type edge, ignored
+WARNING line 7 [E1]: metadata "mu" does not apply to type edge, ignored
+check: 0 errors, 3 warnings
+build: mode new
+build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 128x244px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 03f35d5389bec26e  in.drawio

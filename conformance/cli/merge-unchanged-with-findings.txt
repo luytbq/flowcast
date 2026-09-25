@@ -1,27 +1,27 @@
 # input: merge/unchanged-with-findings -> *
 $ ["build", "$T/flow.md", "--mode", "merge"]
-check: đọc bảng từ markdown
-WARNING dòng 14 [A-5]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
-build: chế độ merge, giữ chỉnh sửa tay
-build: đã ghi $T/flow.drawio (1 lane, 5 phần tử, 4 cạnh, 338x386px)
-build: bản sao file cũ $T/flow.drawio.bak
-WARNING layout: E3: nhãn "trả kết quả kèm mã lỗi chi tiết" không tìm được chỗ trống hoàn toàn
-WARNING layout: E5: nhãn "trả kết quả kèm mã lỗi chi tiết" không tìm được chỗ trống hoàn toàn
-merge: giữ vị trí (5): A-3, A-3.0, A-4, A-4.0, A-5
-merge: element mới (0): -
-merge: element mới phải dịch xuống vì chồng (0): -
-merge: đổi lane trong bảng hoặc bị kéo sang lane khác, đặt lại (0): -
-merge: edge giữ waypoint (4): E3, E4, E5, E6
-merge: edge để draw.io tự đi dây, cần chỉnh tay (0): -
-merge: edge đã sửa tay, nhãn về giữa đường (0): -
-merge: xoá vì không còn trong bảng (0): -
-merge: lane được nới (0): -
-merge: cell tự vẽ giữ lại (0): -
-merge: cell tự vẽ bỏ đi (cha đã bị xoá) (0): -
-merge: cell tự vẽ mất đầu nối (0): -
-merge: element chồng nhau (0): -
-layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG
+check: read table from markdown
+WARNING line 14 [A-5]: task has no outgoing edge
+check: 0 errors, 1 warnings
+build: mode merge, keep manual edits
+build: wrote $T/flow.drawio (1 lanes, 5 elements, 4 edges, 338x386px)
+build: backup of the old file $T/flow.drawio.bak
+WARNING layout: E3: label "trả kết quả kèm mã lỗi chi tiết" could not find a completely free spot
+WARNING layout: E5: label "trả kết quả kèm mã lỗi chi tiết" could not find a completely free spot
+merge: kept position (5): A-3, A-3.0, A-4, A-4.0, A-5
+merge: new element (0): -
+merge: new element shifted down due to overlap (0): -
+merge: lane changed in table or dragged to another lane, re-placed (0): -
+merge: edge kept waypoints (4): E3, E4, E5, E6
+merge: edge left to draw.io routing, needs manual edits (0): -
+merge: edge manually edited, label moved to midpoint (0): -
+merge: removed, no longer in table (0): -
+merge: lane widened (0): -
+merge: freehand cell kept (0): -
+merge: freehand cell dropped (parent removed) (0): -
+merge: freehand cell lost endpoint (0): -
+merge: overlapping elements (0): -
+layout: merge does not self-check wires and labels; see the list above and the PNG image
 [exit 0]
 --- files
 8d9277ba3a931cc0  flow.drawio

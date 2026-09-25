@@ -1,14 +1,14 @@
 # input: 40-place-second-start -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (2 lane, 5 phần tử, 3 cạnh, 422x324px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode new
+build: wrote $T/in.drawio (2 lanes, 5 elements, 3 edges, 422x324px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 94fbe04807c81d7a  in.drawio

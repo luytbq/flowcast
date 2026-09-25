@@ -1,2 +1,2 @@
-issue graph.start_has_in WARNING dòng 6 [A-1]: start có cạnh đi vào: E2
-sơ đồ: 1 lane, 3 phần tử, 1 cạnh
+issue graph.start_has_in WARNING line 6 [A-1]: start has incoming edges: E2
+diagram: 1 lanes, 3 elements, 1 edges

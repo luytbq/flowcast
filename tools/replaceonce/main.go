@@ -1,10 +1,11 @@
-// Lệnh replaceonce thay đúng một chỗ trong một file, dùng cho tools/mutate.sh.
+// Command replaceonce replaces exactly one occurrence in a file, used by tools/mutate.sh.
 //
-//	go run ./tools/replaceonce [-check] FILE TỪ THÀNH
+//	go run ./tools/replaceonce [-check] FILE FROM TO
 //
-// Chuỗi TỪ phải xuất hiện đúng một lần. Thay chỗ đầu khi có nhiều chỗ sẽ để lại
-// bản sao còn nguyên, và đột biến thành vô hại, khiến bộ test trông như bỏ lọt.
-// -check chỉ kiểm số chỗ khớp, không ghi file.
+// The string FROM must occur exactly once. Replacing the first of several
+// occurrences would leave an intact copy behind and make the mutation harmless,
+// so the test suite would look as if it missed it.
+// -check only checks the match count and does not write the file.
 package main
 
 import (
@@ -15,10 +16,10 @@ import (
 )
 
 func main() {
-	check := flag.Bool("check", false, "chỉ kiểm, không ghi")
+	check := flag.Bool("check", false, "check only, do not write")
 	flag.Parse()
 	if flag.NArg() != 3 {
-		fmt.Fprintln(os.Stderr, "dùng: replaceonce [-check] FILE TỪ THÀNH")
+		fmt.Fprintln(os.Stderr, "usage: replaceonce [-check] FILE FROM TO")
 		os.Exit(2)
 	}
 	path, from, to := flag.Arg(0), flag.Arg(1), flag.Arg(2)
@@ -29,7 +30,7 @@ func main() {
 	}
 	s := string(data)
 	if n := strings.Count(s, from); n != 1 {
-		fmt.Fprintf(os.Stderr, "ERROR %s: tìm thấy %d chỗ khớp %q, cần đúng 1\n", path, n, from)
+		fmt.Fprintf(os.Stderr, "ERROR %s: found %d matches of %q, need exactly 1\n", path, n, from)
 		os.Exit(1)
 	}
 	if *check {

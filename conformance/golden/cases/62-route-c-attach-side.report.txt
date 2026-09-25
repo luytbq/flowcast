@@ -1,3 +1,3 @@
-issue graph.no_out_edge WARNING dòng 18 [A-8]: task không có cạnh ra
-engine layout.attach-far: A-4.2: không còn ô trống cạnh A-4, đặt xa hơn
-sơ đồ: 2 lane, 8 phần tử, 4 cạnh
+issue graph.no_out_edge WARNING line 18 [A-8]: task has no outgoing edge
+engine layout.attach-far: A-4.2: no free cell next to A-4, placed farther away
+diagram: 2 lanes, 8 elements, 4 edges

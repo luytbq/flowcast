@@ -1,22 +1,22 @@
 # input: 992-invalid-refs-order -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 12 [A-1]: id trùng với dòng 6
-ERROR   dòng 11 [E9]: from=KHONG1 trỏ tới id không tồn tại
-ERROR   dòng 11 [E9]: to=KHONG2 trỏ tới id không tồn tại
-ERROR   dòng 6 [A-1]: cạnh ra phải nằm liền sau A-1 (và các db/text gắn vào nó); đang lệch: E1
-WARNING dòng 7 [E1]: A-2 đứng trước nguồn A-1 nhưng cạnh không ghi back=true
-check: 4 lỗi, 1 cảnh báo
+check: read table from markdown
+ERROR   line 12 [A-1]: id duplicates line 6
+ERROR   line 11 [E9]: from=KHONG1 points to an id that does not exist
+ERROR   line 11 [E9]: to=KHONG2 points to an id that does not exist
+ERROR   line 6 [A-1]: outgoing edges must come right after A-1 (and the db/text attached to it); out of place: E1
+WARNING line 7 [E1]: A-2 comes before its source A-1 but the edge does not say back=true
+check: 4 errors, 1 warnings
 [exit 1]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 12 [A-1]: id trùng với dòng 6
-ERROR   dòng 11 [E9]: from=KHONG1 trỏ tới id không tồn tại
-ERROR   dòng 11 [E9]: to=KHONG2 trỏ tới id không tồn tại
-ERROR   dòng 6 [A-1]: cạnh ra phải nằm liền sau A-1 (và các db/text gắn vào nó); đang lệch: E1
-WARNING dòng 7 [E1]: A-2 đứng trước nguồn A-1 nhưng cạnh không ghi back=true
-check: 4 lỗi, 1 cảnh báo
-build: dừng vì bảng có lỗi
+check: read table from markdown
+ERROR   line 12 [A-1]: id duplicates line 6
+ERROR   line 11 [E9]: from=KHONG1 points to an id that does not exist
+ERROR   line 11 [E9]: to=KHONG2 points to an id that does not exist
+ERROR   line 6 [A-1]: outgoing edges must come right after A-1 (and the db/text attached to it); out of place: E1
+WARNING line 7 [E1]: A-2 comes before its source A-1 but the edge does not say back=true
+check: 4 errors, 1 warnings
+build: stopped because the table has errors
 [exit 1]
 --- files
 5a0e6f2b0a291ed4  in.md

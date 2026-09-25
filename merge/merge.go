@@ -12,20 +12,21 @@ import (
 )
 
 const (
-	pad  = 10.0 // lề tối thiểu giữa node và mép lane hay node khác
-	step = 10.0 // bước dịch xuống khi node mới chồng lên thứ khác
+	pad  = 10.0 // minimum margin between a node and the lane edge or another node
+	step = 10.0 // shift-down step when a new node overlaps something
 )
 
-// constraintKeys là các khóa style neo đầu dây vào node. Dây giữ từ file cũ
-// mang theo đúng các khóa này, theo thứ tự này.
+// constraintKeys are the style keys that anchor wire ends to nodes. Wires kept
+// from the old file carry exactly these keys, in this order.
 var constraintKeys = [...]string{"exitX", "exitY", "exitDx", "exitDy", "exitPerimeter",
 	"entryX", "entryY", "entryDx", "entryDy", "entryPerimeter"}
 
-// isLayer: "0" là gốc và "1" là layer mặc định của mọi trang draw.io.
+// isLayer: "0" is the root and "1" is the default layer of every draw.io page.
 func isLayer(id string) bool { return id == "0" || id == "1" }
 
-// looksLikeTableID nhận id theo quy ước của bảng, như API-3, SVC-2.1 hay E7.1.
-// Chữ số là mọi chữ số Unicode, và id được phép có một dấu xuống dòng ở cuối.
+// looksLikeTableID accepts ids following the table convention, such as API-3,
+// SVC-2.1 or E7.1. A digit is any Unicode digit, and the id may end with one
+// newline.
 func looksLikeTableID(s string) bool {
 	s = strings.TrimSuffix(s, "\n")
 	digitsDots := func(t string) bool {
@@ -63,8 +64,8 @@ func overlap(a, b box) bool {
 	return fmin(a[2], b[2])-fmax(a[0], b[0]) > 0 && fmin(a[3], b[3])-fmax(a[1], b[1]) > 0
 }
 
-// fmax và fmin trả về số đứng trước khi hai số bằng nhau, để dấu của số không
-// không bị đổi.
+// fmax and fmin return the first argument when the two are equal, so the sign
+// of zero is not changed.
 func fmax(a, b float64) float64 {
 	if b > a {
 		return b
@@ -79,8 +80,8 @@ func fmin(a, b float64) float64 {
 	return a
 }
 
-// fsum cộng có bù sai số làm tròn (thuật toán Neumaier), để sai số không tích
-// lũy qua nhiều lane.
+// fsum sums with rounding-error compensation (Neumaier's algorithm), so the
+// error does not accumulate across many lanes.
 func fsum(xs []float64) float64 {
 	hi, lo := 0.0, 0.0
 	for _, x := range xs {
@@ -101,12 +102,12 @@ func fsum(xs []float64) float64 {
 type movable struct {
 	lane  int
 	shift func(dx, dy float64)
-	// rel: toạ độ tương đối theo lane, lane dịch thì tự dịch theo.
+	// rel: coordinates relative to the lane, moved along when the lane shifts.
 	rel bool
 }
 
-// span là khoảng x của một lane cũ trong pool, cùng độ dịch sang vị trí mới và
-// lane mới nhận những gì từng nằm trong nó.
+// span is the x range of an old lane in the pool, with its shift to the new
+// position and the new lane that takes over what used to lie inside it.
 type span struct {
 	x0, x1, dx float64
 	target     int
@@ -114,7 +115,7 @@ type span struct {
 
 type fhGeom struct {
 	g     *etree.Element
-	frame string // "lane", "pool" hoặc "abs"
+	frame string // "lane", "pool" or "abs"
 	lane  int
 }
 
@@ -139,7 +140,7 @@ type merger struct {
 
 	spans     []span
 	movables  []movable
-	final     []*layout.PlacedItem // theo thứ tự được chốt vị trí
+	final     []*layout.PlacedItem // in the order their positions were fixed
 	inFinal   map[string]bool
 	pinned    map[string]bool
 	fhBoxes   []box
@@ -147,11 +148,12 @@ type merger struct {
 	freehands []string
 }
 
-// Apply chỉnh sơ đồ vừa xếp r theo file cũ old và trả về các cell tự vẽ cần
-// giữ. r bị sửa tại chỗ: vị trí node, lane, dây và kích thước pool.
+// Apply adjusts the freshly laid out diagram r to the old file old and returns
+// the freehand cells to keep. r is modified in place: node positions, lanes,
+// wires and pool size.
 //
-// Merge không chạy lại tự kiểm: dây giữ từ file cũ hoặc do draw.io tự đi, nên
-// tự kiểm không có gì để nói về chúng.
+// Merge does not rerun the self-check: wires are either kept from the old file
+// or routed by draw.io, so the self-check has nothing to say about them.
 func Apply(r *layout.Result, old *Old) ([]*etree.Element, Report) {
 	m := &merger{r: r, old: old,
 		items: map[string]*layout.PlacedItem{}, laneIdx: map[string]int{},
@@ -209,7 +211,7 @@ func (m *merger) run() []*etree.Element {
 	}
 	m.ox, m.oy = r.Origin[0], r.Origin[1]
 
-	// Ảnh chụp layout mới tính, dùng làm khoảng lệch cho node mới.
+	// Snapshot of the freshly computed layout, used as the offset for new nodes.
 	for i := range r.Items {
 		it := &r.Items[i]
 		m.freshC[it.ID] = [2]float64{it.X + it.W/2, it.Y + it.H/2}
@@ -251,8 +253,8 @@ func (m *merger) run() []*etree.Element {
 	return extras
 }
 
-// origin là gốc toạ độ tuyệt đối của hệ con của cell cid: toạ độ của các
-// vertex lồng nhau cộng dồn.
+// origin is the absolute coordinate origin of the child frame of cell cid: the
+// coordinates of nested vertices add up.
 func (o *Old) origin(cid string) (float64, float64) {
 	x, y := 0.0, 0.0
 	seen := map[string]bool{}
@@ -295,9 +297,10 @@ func (m *merger) layoutLanes() {
 	x := 0.0
 	for i, ln := range r.Lanes {
 		w := r.LaneW[i]
-		// File chỉ ghi bề rộng đã làm tròn hai chữ số. Bề rộng cũ khớp bề rộng
-		// mới sau khi làm tròn nghĩa là lane chưa bị sửa tay; lấy lại số chưa làm
-		// tròn thì tổng bề rộng pool mới không lệch so với lúc sinh.
+		// The file only stores widths rounded to two decimals. An old width that
+		// matches the new width after rounding means the lane has no manual edits;
+		// taking back the unrounded number keeps the new pool width total equal
+		// to what was generated.
 		if oc := m.oldLane(ln.ID); oc != nil {
 			if ow := attrf(oc.geo(), "width"); num.Fmt(ow) != num.Fmt(w) {
 				w = ow
@@ -334,8 +337,8 @@ func (m *merger) layoutLanes() {
 		if ok {
 			base = newX[target]
 		} else {
-			// Lane đã bị xoá: những gì nằm trong nó theo lane còn lại kế tiếp,
-			// hoặc lane cuối nếu không còn lane nào sau nó.
+			// Lane was removed: what lay inside it follows the next remaining lane,
+			// or the last lane if no lane remains after it.
 			target, base = len(r.Lanes)-1, x
 			for _, o2 := range olds[k+1:] {
 				if t, ok := m.laneIdx[o2.id]; ok {
@@ -349,7 +352,7 @@ func (m *merger) layoutLanes() {
 	r.LaneX, r.LaneW = newX, newW
 }
 
-// mapX trả về độ dịch và lane mới cho một toạ độ x cũ trong pool.
+// mapX returns the shift and the new lane for an old x coordinate in the pool.
 func (m *merger) mapX(x float64) (float64, int) {
 	if len(m.spans) == 0 {
 		return 0, 0
@@ -407,8 +410,9 @@ func (m *merger) placeOldItems() {
 	}
 }
 
-// laneCell là id của cell cha chứa các node của lane i trong file. Sơ đồ không
-// có lane đặt node thẳng trên layer "1", nên lane ẩn ứng với layer đó.
+// laneCell is the id of the parent cell holding the nodes of lane i in the
+// file. A diagram without lanes puts nodes directly on layer "1", so the hidden
+// lane maps to that layer.
 func (m *merger) laneCell(i int) string {
 	if m.r.NoLanes {
 		return "1"
@@ -444,8 +448,9 @@ func byBackOrder(es []*layout.PlacedEdge) []*layout.PlacedEdge {
 	return out
 }
 
-// findAnchor tìm node đã chốt vị trí gần v nhất theo đồ thị: nguồn của cạnh vào
-// trước, rồi đích của cạnh ra, rồi lan rộng dần từng vòng.
+// findAnchor finds the fixed-position node closest to v in the graph: sources
+// of incoming edges first, then targets of outgoing edges, then widening ring
+// by ring.
 func (m *merger) findAnchor(v *layout.PlacedItem) (string, bool) {
 	for _, e := range byBackOrder(m.ins[v.ID]) {
 		if m.inFinal[e.Src] {
@@ -513,8 +518,8 @@ func (m *merger) put(it *layout.PlacedItem, cx, cy float64) {
 	m.rep.Placed = append(m.rep.Placed, it.ID)
 }
 
-// laneRelX giữ khoảng lệch của node so với mép trái lane như layout mới tính,
-// nhưng kéo nó vào trong lane nếu lane đủ rộng.
+// laneRelX keeps the node's offset from the lane's left edge as the fresh
+// layout computed it, but pulls it inside the lane if the lane is wide enough.
 func (m *merger) laneRelX(it *layout.PlacedItem) float64 {
 	r := m.r
 	fx := m.freshC[it.ID][0] - m.freshLaneX[it.Lane]
@@ -591,7 +596,7 @@ func (m *merger) putRelative(it *layout.PlacedItem, a string) {
 	m.put(it, cx, ay+fv[1]-fa[1])
 }
 
-// ---- dây
+// ---- wires
 
 func (m *merger) routeEdges() {
 	for i := range m.r.Edges {
@@ -642,8 +647,8 @@ func (m *merger) routeEdges() {
 	}
 }
 
-// untouched: dây vẫn đúng như layout mới tính, tức người dùng chưa sửa nó. Khi
-// đó vị trí nhãn tính được vẫn còn đúng.
+// untouched: the wire is still exactly as the fresh layout computed it, i.e.
+// the user has not edited it. The computed label position then still holds.
 func (m *merger) untouched(e *layout.PlacedEdge) bool {
 	fresh := m.freshWP[e.ID]
 	if len(fresh) != len(e.Waypoints) {
@@ -670,8 +675,9 @@ func (m *merger) untouched(e *layout.PlacedEdge) bool {
 		if !ok {
 			return false
 		}
-		// File ghi tỉ lệ đã làm tròn hai chữ số, nên so sau khi làm tròn giống
-		// hệt lúc ghi. Tỉ lệ như 1/3 lệch 0.0033 so với số đọc lại.
+		// The file stores ratios rounded to two decimals, so compare after
+		// rounding exactly as on write. A ratio like 1/3 differs by 0.0033 from
+		// the number read back.
 		v, ok := parseFloat(s)
 		if !ok || num.Fmt(v) != num.Fmt(w.v) {
 			return false
@@ -680,9 +686,10 @@ func (m *merger) untouched(e *layout.PlacedEdge) bool {
 	return true
 }
 
-// ---- cell tự vẽ
+// ---- freehand cells
 
-// frameOf trả về hệ toạ độ của cell: "lane:<id>", "pool", "abs" hoặc "nested".
+// frameOf returns the coordinate frame of a cell: "lane:<id>", "pool", "abs" or
+// "nested".
 func (m *merger) frameOf(c *oldCell) string {
 	p := c.parent()
 	switch {
@@ -755,7 +762,7 @@ func (m *merger) collectFreehand() []*etree.Element {
 		fr := m.frameOf(c)
 		if lid, ok := strings.CutPrefix(fr, "lane:"); ok {
 			if _, alive := m.laneIdx[lid]; !alive {
-				// Lane đã bị xoá: đưa cell lên pool, giữ nguyên vị trí tuyệt đối.
+				// Lane was removed: move the cell up to the pool, keeping its absolute position.
 				ax, ay := m.old.origin(p)
 				cell.Set("parent", "pool")
 				if g != nil && c.vertex() {
@@ -799,8 +806,8 @@ func shiftPoints(g *etree.Element, dx, dy float64) {
 	eachPoint(g, func(pt *etree.Element) { movePoint(pt, dx, dy) })
 }
 
-// shiftGeo dời một geometry. Geometry tương đối là của dây: vị trí nằm ở các
-// điểm, không ở x và y.
+// shiftGeo moves a geometry. A relative geometry belongs to a wire: its position
+// lives in the points, not in x and y.
 func shiftGeo(g *etree.Element, dx, dy float64) {
 	if v, _ := g.Get("relative"); v == "1" {
 		shiftPoints(g, dx, dy)
@@ -810,8 +817,8 @@ func shiftGeo(g *etree.Element, dx, dy float64) {
 	g.Set("y", num.Fmt(attrf(g, "y")+dy))
 }
 
-// detach tháo đầu dây tự vẽ khỏi node không còn trong sơ đồ, thay bằng một điểm
-// tự do đặt ở tâm cũ của node đó.
+// detach unhooks a freehand wire end from a node no longer in the diagram,
+// replacing it with a free point at that node's old center.
 func (m *merger) detach(c *oldCell, cell, g *etree.Element, alive, kept map[string]bool) {
 	for _, end := range [][2]string{{"source", "sourcePoint"}, {"target", "targetPoint"}} {
 		ref, _ := cell.Get(end[0])
@@ -837,7 +844,8 @@ func (m *merger) detach(c *oldCell, cell, g *etree.Element, alive, kept map[stri
 	}
 }
 
-// track cho cell tự vẽ di chuyển theo lane khi lane dịch hoặc được nới.
+// track makes a freehand cell move with its lane when the lane shifts or is
+// widened.
 func (m *merger) track(c *oldCell, g *etree.Element, fr string) {
 	if g == nil || fr == "nested" || fr == "fixed" {
 		return
@@ -866,7 +874,7 @@ func (m *merger) track(c *oldCell, g *etree.Element, fr string) {
 	})
 }
 
-// ---- nới lane, co giãn pool
+// ---- lane widening, pool resizing
 
 func (m *merger) growLanes() {
 	r := m.r
@@ -908,8 +916,8 @@ func (m *merger) growLanes() {
 	}
 }
 
-// fitVertical đẩy cả sơ đồ xuống khi có node hay điểm gấp bị kéo lên trên đầu
-// lane.
+// fitVertical pushes the whole diagram down when a node or waypoint has been
+// dragged above the top of the lanes.
 func (m *merger) fitVertical() {
 	r := m.r
 	top := float64(r.PoolHeader + r.LaneHeader + pad)
@@ -951,8 +959,9 @@ func (m *merger) finish() {
 	for _, b := range m.freehandBoxesNow() {
 		bottoms = append(bottoms, b[3])
 	}
-	// Sơ đồ không có phần tử nào thì layout mới chỉ có một kênh tối thiểu dưới
-	// header; merge giữ đúng chiều cao đó để không đổi file khi bảng không đổi.
+	// A diagram with no elements gets only one minimum channel below the header
+	// in the fresh layout; merge keeps exactly that height so the file does not
+	// change when the table does not change.
 	h := float64(r.PoolHeader + r.LaneHeader + r.MinChannel)
 	for _, b := range bottoms {
 		h = fmax(h, b+float64(r.MinChannel))

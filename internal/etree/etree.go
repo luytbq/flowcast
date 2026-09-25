@@ -1,19 +1,20 @@
-// Package etree đọc và ghi XML dưới dạng cây phần tử.
+// Package etree reads and writes XML as an element tree.
 //
-// Merge chép nguyên các cell người dùng tự vẽ từ file .drawio cũ sang file mới.
-// Để một file đi qua merge nhiều lần mà không trôi, cây XML được đọc và ghi theo
-// các quy tắc cố định sau:
+// Merge copies the cells the user drew by hand verbatim from the old .drawio file
+// into the new one. So that a file can go through merge many times without
+// drifting, the XML tree is read and written by these fixed rules:
 //
-//   - Text là chữ đứng trước phần tử con đầu tiên, Tail là chữ đứng sau phần tử
-//     đó. Chú thích và chỉ thị xử lý bị bỏ, và chữ hai bên chúng dính liền lại.
-//   - Tab, xuống dòng và CR viết thẳng trong giá trị thuộc tính thành khoảng
-//     trắng, như đặc tả XML quy định; viết bằng tham chiếu số thì được giữ.
-//     encoding/xml không làm việc này, và sau khi giải mã thì không còn phân biệt
-//     được hai cách viết, nên việc chuẩn hóa chạy trên byte thô trước.
-//   - Thuộc tính giữ thứ tự trong tài liệu. Phần tử không có con và không có chữ
-//     ghi thành "<tag ... />" với một khoảng trắng trước dấu gạch chéo.
+//   - Text is the text before the first child element, Tail is the text after
+//     that element. Comments and processing instructions are dropped, and the
+//     text on either side of them is joined.
+//   - Tab, newline and CR written literally in attribute values become spaces,
+//     as the XML specification requires; when written as numeric references they
+//     are kept. encoding/xml does not do this, and after decoding the two forms
+//     can no longer be told apart, so normalization runs on the raw bytes first.
+//   - Attributes keep their document order. An element with no children and no
+//     text is written as "<tag ... />" with a space before the slash.
 //
-// Không xử lý namespace: file .drawio không dùng tới.
+// Namespaces are not handled: .drawio files do not use them.
 package etree
 
 import (
@@ -27,16 +28,16 @@ import (
 	"github.com/luytbq/flowcast/internal/unistr"
 )
 
-// Element là một phần tử XML.
+// Element is an XML element.
 type Element struct {
 	Tag      string
-	Attrs    [][2]string // theo thứ tự trong tài liệu
+	Attrs    [][2]string // in document order
 	Text     string
 	Tail     string
 	Children []*Element
 }
 
-// New dựng một phần tử với các cặp khóa và giá trị thuộc tính.
+// New builds an element with attribute key and value pairs.
 func New(tag string, kv ...string) *Element {
 	e := &Element{Tag: tag}
 	for i := 0; i+1 < len(kv); i += 2 {
@@ -45,14 +46,14 @@ func New(tag string, kv ...string) *Element {
 	return e
 }
 
-// Add thêm một phần tử con, như ET.SubElement.
+// Add appends a child element, like ET.SubElement.
 func (e *Element) Add(tag string, kv ...string) *Element {
 	c := New(tag, kv...)
 	e.Children = append(e.Children, c)
 	return c
 }
 
-// Get đọc một thuộc tính.
+// Get reads an attribute.
 func (e *Element) Get(k string) (string, bool) {
 	for _, a := range e.Attrs {
 		if a[0] == k {
@@ -62,8 +63,8 @@ func (e *Element) Get(k string) (string, bool) {
 	return "", false
 }
 
-// Set gán một thuộc tính. Thuộc tính mới được thêm vào cuối, thuộc tính đã có
-// giữ nguyên vị trí.
+// Set assigns an attribute. A new attribute is appended at the end, an existing
+// one keeps its position.
 func (e *Element) Set(k, v string) {
 	for i := range e.Attrs {
 		if e.Attrs[i][0] == k {
@@ -74,7 +75,7 @@ func (e *Element) Set(k, v string) {
 	e.Attrs = append(e.Attrs, [2]string{k, v})
 }
 
-// Del xóa một thuộc tính.
+// Del removes an attribute.
 func (e *Element) Del(k string) {
 	for i := range e.Attrs {
 		if e.Attrs[i][0] == k {
@@ -84,7 +85,7 @@ func (e *Element) Del(k string) {
 	}
 }
 
-// Find trả về con trực tiếp đầu tiên mang thẻ tag.
+// Find returns the first direct child with tag tag.
 func (e *Element) Find(tag string) *Element {
 	for _, c := range e.Children {
 		if c.Tag == tag {
@@ -94,7 +95,7 @@ func (e *Element) Find(tag string) *Element {
 	return nil
 }
 
-// FindAll trả về mọi con trực tiếp mang thẻ tag.
+// FindAll returns every direct child with tag tag.
 func (e *Element) FindAll(tag string) []*Element {
 	var out []*Element
 	for _, c := range e.Children {
@@ -105,8 +106,8 @@ func (e *Element) FindAll(tag string) []*Element {
 	return out
 }
 
-// Iter duyệt e và mọi hậu duệ mang thẻ tag theo thứ tự tài liệu, như
-// Element.iter. tag rỗng nghĩa là mọi phần tử.
+// Iter walks e and every descendant with tag tag in document order, like
+// Element.iter. An empty tag means every element.
 func (e *Element) Iter(tag string, f func(*Element)) {
 	if tag == "" || e.Tag == tag {
 		f(e)
@@ -116,7 +117,7 @@ func (e *Element) Iter(tag string, f func(*Element)) {
 	}
 }
 
-// Remove bỏ một con trực tiếp.
+// Remove removes a direct child.
 func (e *Element) Remove(c *Element) {
 	for i, x := range e.Children {
 		if x == c {
@@ -126,7 +127,7 @@ func (e *Element) Remove(c *Element) {
 	}
 }
 
-// Copy chép sâu, như copy.deepcopy.
+// Copy makes a deep copy, like copy.deepcopy.
 func (e *Element) Copy() *Element {
 	c := &Element{Tag: e.Tag, Text: e.Text, Tail: e.Tail, Attrs: append([][2]string(nil), e.Attrs...)}
 	for _, ch := range e.Children {
@@ -135,8 +136,8 @@ func (e *Element) Copy() *Element {
 	return c
 }
 
-// normalizeAttrs thay tab, xuống dòng và CR viết thẳng trong giá trị thuộc tính
-// bằng khoảng trắng, bỏ qua chú thích, CDATA và chỉ thị xử lý.
+// normalizeAttrs replaces tab, newline and CR written literally in attribute
+// values with spaces, skipping comments, CDATA and processing instructions.
 func normalizeAttrs(data []byte) []byte {
 	var out bytes.Buffer
 	n := len(data)
@@ -189,7 +190,7 @@ func normalizeAttrs(data []byte) []byte {
 				quote = 0
 				out.WriteByte(c)
 			case '\r':
-				// Xuống dòng được chuẩn hóa trước, nên CRLF chỉ thành một khoảng trắng.
+				// Line breaks are normalized first, so CRLF becomes a single space.
 				out.WriteByte(' ')
 				if i < n && data[i] == '\n' {
 					i++
@@ -204,7 +205,7 @@ func normalizeAttrs(data []byte) []byte {
 	return out.Bytes()
 }
 
-// Parse đọc một tài liệu XML, như ET.fromstring.
+// Parse reads an XML document, like ET.fromstring.
 func Parse(data []byte) (*Element, error) {
 	d := xml.NewDecoder(bytes.NewReader(normalizeAttrs(data)))
 	var stack []*Element
@@ -234,7 +235,7 @@ func Parse(data []byte) (*Element, error) {
 			stack = stack[:len(stack)-1]
 		case xml.CharData:
 			if len(stack) == 0 {
-				continue // chữ ngoài phần tử gốc không thuộc về cây
+				continue // text outside the root element does not belong to the tree
 			}
 			cur := stack[len(stack)-1]
 			if len(cur.Children) == 0 {
@@ -256,8 +257,8 @@ var (
 	textEsc = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")
 )
 
-// String ghi cây như ET.tostring(e, encoding="unicode"): không có khai báo XML,
-// và có cả Tail của chính e.
+// String writes the tree like ET.tostring(e, encoding="unicode"): no XML
+// declaration, and including e's own Tail.
 func (e *Element) String() string {
 	var b strings.Builder
 	e.write(&b)
@@ -281,8 +282,8 @@ func (e *Element) write(b *strings.Builder) {
 	b.WriteString(textEsc.Replace(e.Tail))
 }
 
-// Indent thụt lề như ET.indent(tree, space="  "): chỉ ghi đè Text và Tail khi
-// chúng rỗng hoặc toàn khoảng trắng, nên chữ thật của người dùng được giữ.
+// Indent indents like ET.indent(tree, space="  "): it only overwrites Text and
+// Tail when they are empty or all whitespace, so the user's real text is kept.
 func Indent(root *Element) {
 	if len(root.Children) == 0 {
 		return

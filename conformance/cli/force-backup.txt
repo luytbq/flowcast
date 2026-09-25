@@ -1,18 +1,18 @@
 # input: 03-condition-two -> in.md
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 3 cạnh, 325.26x334px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode new
+build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 325.26x334px)
+layout: 0 errors, 0 warnings
 [exit 0]
 $ ["build", "$T/in.md", "--mode", "force"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ force, sinh lại toàn bộ
-build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 3 cạnh, 325.26x334px)
-build: bản sao file cũ $T/in.drawio.bak
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode force, regenerate everything
+build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 325.26x334px)
+build: backup of the old file $T/in.drawio.bak
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 d6401975adfee782  in.drawio

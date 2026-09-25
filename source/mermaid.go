@@ -11,22 +11,23 @@ import (
 	"github.com/luytbq/flowcast/model"
 )
 
-// Bộ đọc flowchart mermaid. Nó quy sơ đồ về đúng Table mà ba định dạng bảng
-// sinh ra, nên validate, layout và writer không biết đầu vào là mermaid.
+// Mermaid flowchart reader. It reduces the diagram to exactly the Table the three
+// table formats produce, so validate, layout and writer do not know the input
+// was mermaid.
 //
-// Ánh xạ, xem thêm mục 12 của docs/core-design.md:
+// Mapping, see also section 12 of docs/core-design.md:
 //
 //	A[x] A(x) A[[x]]      task
-//	A{x}                  condition; chỉ một cạnh ra thì thành task
-//	A([x])                start nếu không có cạnh vào, end nếu không có cạnh ra
-//	A[(x)]                db, đứng cạnh node duy nhất nó nối tới
+//	A{x}                  condition; with only one outgoing edge it becomes task
+//	A([x])                start if it has no incoming edge, end if it has no outgoing edge
+//	A[(x)]                db, placed beside the only node it connects to
 //	A((x))                external
 //	A(((x)))              end
 //	subgraph              lane
 //	-.->  ==>  ---        style dashed, bold, noarrow
 //
-// Mọi thứ không có chỗ chứa trong Flow Table đều được báo bằng một Issue mức
-// warning, mã bắt đầu bằng "mermaid.", kèm số dòng trong nguồn.
+// Anything with no place in the Flow Table is reported as a warning-level Issue
+// whose code starts with "mermaid.", with the line number in the source.
 
 type mmNode struct {
 	id      string
@@ -60,14 +61,14 @@ type mermaid struct {
 	edges     []*mmEdge
 	lanes     []*mmLane
 	laneByID  map[string]*mmLane
-	stack     []string // subgraph đang mở, ngoài cùng trước
+	stack     []string // open subgraphs, outermost first
 	classDefs map[string]map[string]string
-	links     map[int]map[string]string // linkStyle theo chỉ số cạnh
+	links     map[int]map[string]string // linkStyle by edge index
 	linkAll   map[string]string
 	issues    []model.Issue
 	title     string
 	dir       string
-	seq       int // thứ tự xuất hiện chung của node và lane
+	seq       int // shared order of appearance of nodes and lanes
 }
 
 func (m *mermaid) warn(line int, code, msg string) {
@@ -75,11 +76,11 @@ func (m *mermaid) warn(line int, code, msg string) {
 		Code: code, Level: model.LevelWarning, Loc: model.Location{Kind: "text", Line: line}, Msg: msg})
 }
 
-// ParseMermaid đọc một flowchart mermaid.
+// ParseMermaid reads a mermaid flowchart.
 func ParseMermaid(data []byte, name string) (model.Table, error) {
 	text := strings.TrimPrefix(string(data), "\ufeff")
 	if !utf8.ValidString(text) {
-		return model.Table{}, model.Errf("mermaid.encoding", "%s không phải UTF-8", name)
+		return model.Table{}, model.Errf("mermaid.encoding", "%s is not UTF-8", name)
 	}
 	text = strings.ReplaceAll(strings.ReplaceAll(text, "\r\n", "\n"), "\r", "\n")
 	m := &mermaid{nodes: map[string]*mmNode{}, laneByID: map[string]*mmLane{},
@@ -94,7 +95,7 @@ func ParseMermaid(data []byte, name string) (model.Table, error) {
 			continue
 		}
 		if strings.HasPrefix(raw, "%%{") {
-			m.warn(ln, "mermaid.directive", "bỏ qua chỉ thị cấu hình %%{...}%%")
+			m.warn(ln, "mermaid.directive", "ignoring config directive %%{...}%%")
 			continue
 		}
 		if strings.HasPrefix(raw, "%%") {
@@ -115,15 +116,15 @@ func ParseMermaid(data []byte, name string) (model.Table, error) {
 		}
 	}
 	if !header {
-		return model.Table{}, model.Errf("mermaid.empty", "%s không có sơ đồ mermaid nào", name)
+		return model.Table{}, model.Errf("mermaid.empty", "%s contains no mermaid diagram", name)
 	}
 	for _, id := range m.stack {
-		m.warn(m.laneByID[id].line, "mermaid.unclosed_subgraph", "subgraph "+id+" không có end")
+		m.warn(m.laneByID[id].line, "mermaid.unclosed_subgraph", "subgraph "+id+" has no end")
 	}
 	return m.table(), nil
 }
 
-// frontmatter đọc khối --- ... --- ở đầu file, nơi mermaid khai báo tiêu đề.
+// frontmatter reads the --- ... --- block at the start of the file, where mermaid declares the title.
 func (m *mermaid) frontmatter(lines []string) int {
 	i := 0
 	for i < len(lines) && strings.TrimSpace(lines[i]) == "" {
@@ -148,7 +149,7 @@ func (m *mermaid) header(st string, ln int, name string) error {
 	f := strings.Fields(st)
 	if f[0] != "flowchart" && f[0] != "graph" {
 		return model.Errf("mermaid.not_flowchart",
-			"%s không phải flowchart mermaid: dòng %d bắt đầu bằng %q, chỉ nhận flowchart hoặc graph", name, ln, f[0])
+			"%s is not a mermaid flowchart: line %d starts with %q, only flowchart or graph is accepted", name, ln, f[0])
 	}
 	if len(f) > 1 {
 		switch f[1] {
@@ -157,7 +158,7 @@ func (m *mermaid) header(st string, ln int, name string) error {
 		case "LR", "RL", "BT":
 			m.dir = f[1]
 		default:
-			m.warn(ln, "mermaid.direction", "hướng "+f[1]+" không hợp lệ, sơ đồ vẽ từ trên xuống")
+			m.warn(ln, "mermaid.direction", "direction "+f[1]+" is invalid, the diagram is drawn top-down")
 		}
 	}
 	if len(f) > 2 {
@@ -166,7 +167,7 @@ func (m *mermaid) header(st string, ln int, name string) error {
 	return nil
 }
 
-// splitStatements tách một dòng tại dấu chấm phẩy nằm ngoài dấu nháy và ngoặc.
+// splitStatements splits a line at semicolons outside quotes and brackets.
 func splitStatements(s string) []string {
 	var out []string
 	depth, quote, start := 0, false, 0
@@ -205,13 +206,13 @@ func (m *mermaid) statement(st string, ln int) {
 			break
 		}
 		if len(m.stack) == 0 {
-			m.warn(ln, "mermaid.syntax", "end không đóng subgraph nào")
+			m.warn(ln, "mermaid.syntax", "end does not close any subgraph")
 			return
 		}
 		m.stack = m.stack[:len(m.stack)-1]
 		return
 	case "direction":
-		m.warn(ln, "mermaid.direction", "bỏ qua direction trong subgraph")
+		m.warn(ln, "mermaid.direction", "ignoring direction inside a subgraph")
 		return
 	case "classDef":
 		names, props := firstWord(rest)
@@ -246,14 +247,14 @@ func (m *mermaid) statement(st string, ln int) {
 		for _, s := range strings.Split(idx, ",") {
 			k, err := strconv.Atoi(strings.TrimSpace(s))
 			if err != nil {
-				m.warn(ln, "mermaid.syntax", "linkStyle có chỉ số không hợp lệ: "+s)
+				m.warn(ln, "mermaid.syntax", "linkStyle has an invalid index: "+s)
 				continue
 			}
 			m.links[k] = p
 		}
 		return
 	case "click", "accTitle", "accTitle:", "accDescr", "accDescr:":
-		m.warn(ln, "mermaid.ignored", "bỏ qua "+strings.TrimSuffix(word, ":")+": không có chỗ chứa trong sơ đồ draw.io")
+		m.warn(ln, "mermaid.ignored", "ignoring "+strings.TrimSuffix(word, ":")+": it has no place in a draw.io diagram")
 		return
 	}
 	if word == "subgraph" {
@@ -277,7 +278,7 @@ func (m *mermaid) subgraph(rest string, ln int) {
 	}
 	if len(m.stack) > 0 {
 		m.warn(ln, "mermaid.nested_subgraph",
-			"subgraph "+id+" lồng trong "+m.stack[0]+"; chưa hỗ trợ lane lồng lane, node của nó vào "+m.stack[0])
+			"subgraph "+id+" is nested in "+m.stack[0]+"; nested lanes are not supported, its nodes go into "+m.stack[0])
 		m.stack = append(m.stack, id)
 		return
 	}
@@ -290,8 +291,8 @@ func (m *mermaid) subgraph(rest string, ln int) {
 	m.stack = append(m.stack, id)
 }
 
-// node trả về node id, tạo mới nếu chưa có. Node thuộc subgraph ngoài cùng
-// đang mở ở lần đầu nó được nhắc tới trong một subgraph.
+// node returns node id, creating it if it does not exist yet. A node belongs to
+// the outermost open subgraph the first time it is mentioned inside a subgraph.
 func (m *mermaid) node(id string, ln int) *mmNode {
 	n, ok := m.nodes[id]
 	if !ok {
@@ -306,7 +307,7 @@ func (m *mermaid) node(id string, ln int) *mmNode {
 	return n
 }
 
-// ---- chuỗi node và cạnh
+// ---- chains of nodes and edges
 
 type cursor struct {
 	s string
@@ -328,18 +329,18 @@ func (m *mermaid) chain(st string, ln int) {
 	c := &cursor{s: st}
 	from, ok := m.group(c, ln)
 	if !ok {
-		m.warn(ln, "mermaid.syntax", "không hiểu câu lệnh, bỏ qua: "+st)
+		m.warn(ln, "mermaid.syntax", "unrecognized statement, ignored: "+st)
 		return
 	}
 	for !c.done() {
 		lk, ok := m.link(c, ln)
 		if !ok {
-			m.warn(ln, "mermaid.syntax", "không hiểu cú pháp cạnh ở \""+c.rest()+"\", bỏ phần còn lại của câu lệnh")
+			m.warn(ln, "mermaid.syntax", "unrecognized edge syntax at \""+c.rest()+"\", dropping the rest of the statement")
 			return
 		}
 		to, ok := m.group(c, ln)
 		if !ok {
-			m.warn(ln, "mermaid.syntax", "cạnh thiếu node đích ở \""+c.rest()+"\"")
+			m.warn(ln, "mermaid.syntax", "edge is missing its target node at \""+c.rest()+"\"")
 			return
 		}
 		for _, a := range from {
@@ -373,7 +374,7 @@ func (m *mermaid) group(c *cursor, ln int) ([]string, bool) {
 	}
 }
 
-// shapes theo thứ tự thử: mở dài trước mở ngắn, để "((" không bị đọc thành "(".
+// shapes in trial order: longer openers before shorter ones, so "((" is not read as "(".
 var shapes = []struct{ open, close, name string }{
 	{"(((", ")))", "double"},
 	{"((", "))", "circle"},
@@ -400,8 +401,8 @@ func (m *mermaid) parseNode(c *cursor, ln int) (string, bool) {
 			c.i += w
 			continue
 		}
-		// Gạch ngang và dấu chấm nằm giữa hai ký tự của id, như API-1 hay E4.1,
-		// không phải mũi tên và không phải dấu kết thúc.
+		// A hyphen or dot between two id characters, as in API-1 or E4.1, is
+		// neither an arrow nor a terminator.
 		if (r == '-' || r == '.') && c.i > start && c.i+1 < len(c.s) {
 			if r2, _ := utf8.DecodeRuneInString(c.s[c.i+1:]); isIDRune(r2) {
 				c.i++
@@ -420,7 +421,7 @@ func (m *mermaid) parseNode(c *cursor, ln int) (string, bool) {
 		if end < 0 {
 			return "", false
 		}
-		m.warn(ln, "mermaid.shape", "cú pháp @{...} của "+id+" chưa hỗ trợ, vẽ thành task")
+		m.warn(ln, "mermaid.shape", "@{...} syntax of "+id+" is not supported, drawn as task")
 		c.i += end + 1
 		return id, true
 	}
@@ -475,8 +476,8 @@ type link struct {
 	invisible bool
 }
 
-// link đọc một mũi tên: --> --- -.-> ==> ~~~, các bản dài hơn của chúng, đầu o
-// hoặc x, mũi tên hai chiều, và nhãn viết giữa mũi tên hoặc trong |...|.
+// link reads an arrow: --> --- -.-> ==> ~~~, their longer variants, o or x
+// heads, bidirectional arrows, and labels written inside the arrow or in |...|.
 func (m *mermaid) link(c *cursor, ln int) (link, bool) {
 	c.skip()
 	s := c.rest()
@@ -495,7 +496,7 @@ func (m *mermaid) link(c *cursor, ln int) (link, bool) {
 		case '>':
 			return ">", 1
 		case 'o', 'x':
-			// o và x chỉ là đầu mũi tên khi không dính vào id phía sau.
+			// o and x are arrow heads only when not attached to a following id.
 			if len(t) == 1 || !isIDRune(rune(t[1])) {
 				return string(t[0]), 1
 			}
@@ -514,7 +515,7 @@ func (m *mermaid) link(c *cursor, ln int) (link, bool) {
 		n := run(s, '~')
 		c.i += consumed + n
 		lk.invisible = true
-		m.warn(ln, "mermaid.invisible_link", "bỏ qua cạnh ẩn ~~~: nó chỉ dùng để mermaid xếp chỗ")
+		m.warn(ln, "mermaid.invisible_link", "ignoring invisible link ~~~: it only guides mermaid's placement")
 		m.label(c, &lk)
 		return lk, true
 	case strings.HasPrefix(s, "-."):
@@ -528,7 +529,7 @@ func (m *mermaid) link(c *cursor, ln int) (link, bool) {
 			m.label(c, &lk)
 			return lk, true
 		}
-		// -. nhãn .->
+		// -. label .->
 		end := strings.Index(t, ".-")
 		if end < 0 {
 			return lk, false
@@ -552,7 +553,7 @@ func (m *mermaid) link(c *cursor, ln int) (link, bool) {
 			m.label(c, &lk)
 			return lk, true
 		}
-		// -- nhãn --> và == nhãn ==>
+		// -- label --> and == label ==>
 		t := s[n:]
 		end := strings.Index(t, string([]byte{ch, ch}))
 		if end < 0 {
@@ -575,14 +576,14 @@ func (m *mermaid) finish(lk *link, head string, bidir bool, ln int) {
 	case "":
 		lk.edge.noarrow = true
 	case "o", "x":
-		m.warn(ln, "mermaid.arrow_head", "đầu mũi tên "+head+" chưa hỗ trợ, vẽ thành mũi tên thường")
+		m.warn(ln, "mermaid.arrow_head", "arrow head "+head+" is not supported, drawn as a plain arrow")
 	}
 	if bidir {
-		m.warn(ln, "mermaid.bidirectional", "mũi tên hai chiều vẽ thành một chiều")
+		m.warn(ln, "mermaid.bidirectional", "bidirectional arrow drawn as one-directional")
 	}
 }
 
-// label đọc nhãn dạng |...| ngay sau mũi tên.
+// label reads a |...| label right after the arrow.
 func (m *mermaid) label(c *cursor, lk *link) {
 	c.skip()
 	if !strings.HasPrefix(c.rest(), "|") {
@@ -596,7 +597,7 @@ func (m *mermaid) label(c *cursor, lk *link) {
 	c.i += end + 2
 }
 
-// ---- chữ trong nhãn
+// ---- label text
 
 func unquote(s string) string {
 	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
@@ -608,8 +609,9 @@ func unquote(s string) string {
 var entities = map[string]string{"quot": "\"", "amp": "&", "lt": "<", "gt": ">", "nbsp": " ",
 	"apos": "'", "semi": ";", "num": "#"}
 
-// labelText gỡ cú pháp nhãn của mermaid: dấu nháy, chuỗi markdown `...`, thẻ
-// in đậm và nghiêng, và mã ký tự #quot; #35;. Thẻ br được giữ để tách dòng sau.
+// labelText strips mermaid label syntax: quotes, markdown strings `...`, bold
+// and italic tags, and character codes #quot; #35;. br tags are kept for line
+// splitting later.
 func labelText(s string) string {
 	s = unquote(strings.TrimSpace(s))
 	if len(s) >= 2 && s[0] == '`' && s[len(s)-1] == '`' {
@@ -654,7 +656,7 @@ func lines(text string) []string {
 	return parts
 }
 
-// parseProps đọc thuộc tính style kiểu fill:#f9f,stroke:#333.
+// parseProps reads style properties like fill:#f9f,stroke:#333.
 func parseProps(s string) map[string]string {
 	out := map[string]string{}
 	for _, p := range strings.Split(strings.TrimSuffix(strings.TrimSpace(s), ";"), ",") {
@@ -666,8 +668,9 @@ func parseProps(s string) map[string]string {
 	return out
 }
 
-// Màu nhấn của writer. Node hay cạnh tô đúng màu này thì mang style highlight;
-// màu khác không có chỗ chứa, vì style mang vai trò chứ không mang màu.
+// The writer's highlight colors. A node or edge painted exactly this color gets
+// style highlight; other colors have no place, because style carries a role, not
+// a color.
 const (
 	highlightFill   = "#dae8fc"
 	highlightStroke = "#6c8ebf"
@@ -682,7 +685,7 @@ func sortedKeys(p map[string]string) []string {
 	return ks
 }
 
-// ---- dựng bảng
+// ---- building the table
 
 func (m *mermaid) table() model.Table {
 	if m.linkAll != nil {
@@ -692,12 +695,12 @@ func (m *mermaid) table() model.Table {
 			}
 		}
 	}
-	// Node trùng id với subgraph là cạnh nối vào cả subgraph, thứ không có chỗ
-	// chứa trong Flow Table.
+	// A node with the same id as a subgraph means an edge to the whole subgraph,
+	// which has no place in the Flow Table.
 	var edges []*mmEdge
 	for _, e := range m.edges {
 		if m.laneByID[e.from] != nil || m.laneByID[e.to] != nil {
-			m.warn(e.line, "mermaid.edge_to_subgraph", "bỏ cạnh "+e.from+" --> "+e.to+": chưa hỗ trợ cạnh nối vào subgraph")
+			m.warn(e.line, "mermaid.edge_to_subgraph", "dropping edge "+e.from+" --> "+e.to+": edges to a subgraph are not supported")
 			continue
 		}
 		edges = append(edges, e)
@@ -720,7 +723,7 @@ func (m *mermaid) table() model.Table {
 	for _, id := range order {
 		types[id] = m.nodeType(m.nodes[id], ins[id], outs[id], attach, dropped)
 	}
-	// Cạnh của db đã thay bằng attach thì không còn là cạnh.
+	// Edges of a db replaced by attach are no longer edges.
 	var kept []*mmEdge
 	for _, e := range edges {
 		if !dropped[e] {
@@ -736,7 +739,7 @@ func (m *mermaid) table() model.Table {
 		if types[id] == "condition" && len(outs[id]) < 2 {
 			types[id] = "task"
 			m.warn(m.nodes[id].line, "mermaid.condition_one_branch",
-				fmt.Sprintf("%s là hình thoi nhưng có %d cạnh ra, vẽ thành task", id, len(outs[id])))
+				fmt.Sprintf("%s is a diamond but has %d outgoing edges, drawn as task", id, len(outs[id])))
 		}
 	}
 
@@ -810,7 +813,7 @@ func (m *mermaid) table() model.Table {
 			if p["stroke"] == highlightStroke {
 				styles = append(styles, "highlight")
 			} else if len(p) > 0 {
-				m.warn(e.line, "mermaid.style", "bỏ qua linkStyle của cạnh "+edgeIDs[e]+": "+strings.Join(sortedKeys(p), ", "))
+				m.warn(e.line, "mermaid.style", "ignoring linkStyle of edge "+edgeIDs[e]+": "+strings.Join(sortedKeys(p), ", "))
 			}
 			if len(styles) > 0 {
 				r.Meta["style"] = strings.Join(styles, ",")
@@ -823,14 +826,14 @@ func (m *mermaid) table() model.Table {
 			add(r)
 		}
 	}
-	// Cảnh báo sinh ra theo thứ tự xử lý, không theo thứ tự dòng; người đọc cần
-	// thứ tự dòng.
+	// Warnings are produced in processing order, not line order; readers need
+	// line order.
 	sort.SliceStable(m.issues, func(i, j int) bool { return m.issues[i].Loc.Line < m.issues[j].Loc.Line })
 	return model.Table{Title: m.title, Rows: rows, Issues: m.issues, Source: "mermaid", Direction: m.dir}
 }
 
-// nodeType suy type từ hình của node. db chỉ nối với đúng một node thì đứng cạnh
-// node đó, và các cạnh nối nó bị bỏ.
+// nodeType infers the type from the node's shape. A db connected to exactly one
+// node is placed beside that node, and the edges connecting it are dropped.
 func (m *mermaid) nodeType(n *mmNode, ins, outs []*mmEdge, attach map[string]string, dropped map[*mmEdge]bool) string {
 	in, out := 0, 0
 	for _, e := range ins {
@@ -859,7 +862,7 @@ func (m *mermaid) nodeType(n *mmNode, ins, outs []*mmEdge, attach map[string]str
 		case out == 0:
 			return "end"
 		}
-		m.warn(n.line, "mermaid.shape", n.id+" có hình start/end nhưng nằm giữa luồng, vẽ thành task")
+		m.warn(n.line, "mermaid.shape", n.id+" has a start/end shape but sits mid-flow, drawn as task")
 		return "task"
 	case "cylinder":
 		peers := map[string]bool{}
@@ -877,7 +880,7 @@ func (m *mermaid) nodeType(n *mmNode, ins, outs []*mmEdge, attach map[string]str
 		}
 		if len(peers) != 1 {
 			m.warn(n.line, "mermaid.db_shape",
-				fmt.Sprintf("db %s nối với %d node; db chỉ đứng cạnh đúng một node, nên vẽ thành task", n.id, len(peers)))
+				fmt.Sprintf("db %s connects to %d nodes; a db sits beside exactly one node, so it is drawn as task", n.id, len(peers)))
 			return "task"
 		}
 		var peer string
@@ -885,20 +888,20 @@ func (m *mermaid) nodeType(n *mmNode, ins, outs []*mmEdge, attach map[string]str
 			peer = p
 		}
 		if m.nodes[peer].shape == "cylinder" {
-			m.warn(n.line, "mermaid.db_shape", "db "+n.id+" chỉ nối với một db khác, vẽ thành task")
+			m.warn(n.line, "mermaid.db_shape", "db "+n.id+" only connects to another db, drawn as task")
 			return "task"
 		}
 		for _, e := range touching {
 			dropped[e] = true
 			if e.text != "" {
-				m.warn(e.line, "mermaid.db_edge_label", "bỏ nhãn \""+e.text+"\" của cạnh nối db "+n.id)
+				m.warn(e.line, "mermaid.db_edge_label", "dropping label \""+e.text+"\" of the edge to db "+n.id)
 			}
 		}
 		attach[n.id] = peer
-		m.warn(n.line, "mermaid.db_attach", "db "+n.id+" đứng cạnh "+peer+" thay cho mũi tên nối")
+		m.warn(n.line, "mermaid.db_attach", "db "+n.id+" placed beside "+peer+" instead of a connecting arrow")
 		return "db"
 	}
-	m.warn(n.line, "mermaid.shape", "hình "+n.shape+" của "+n.id+" chưa hỗ trợ, vẽ thành task")
+	m.warn(n.line, "mermaid.shape", "shape "+n.shape+" of "+n.id+" is not supported, drawn as task")
 	return "task"
 }
 
@@ -923,13 +926,13 @@ func (m *mermaid) nodeHighlight(n *mmNode) bool {
 	if props["fill"] == highlightFill {
 		return true
 	}
-	m.warn(n.line, "mermaid.style", "bỏ qua style của "+n.id+": "+strings.Join(sortedKeys(props), ", ")+
-		"; chỉ màu nhấn "+highlightFill+" có chỗ chứa")
+	m.warn(n.line, "mermaid.style", "ignoring style of "+n.id+": "+strings.Join(sortedKeys(props), ", ")+
+		"; only the highlight color "+highlightFill+" has a place")
 	return false
 }
 
-// assignLanes trả về lane của từng node. Khi sơ đồ có subgraph, node nằm ngoài
-// mọi subgraph được gom vào một lane không tên.
+// assignLanes returns the lane of each node. When the diagram has subgraphs,
+// nodes outside every subgraph are grouped into an unnamed lane.
 func (m *mermaid) assignLanes(order []string) map[string]string {
 	out := map[string]string{}
 	if len(m.lanes) == 0 {
@@ -959,35 +962,36 @@ func (m *mermaid) assignLanes(order []string) map[string]string {
 		out[id] = loose
 	}
 	m.warn(l.line, "mermaid.outside_subgraph",
-		fmt.Sprintf("%d node nằm ngoài mọi subgraph, gom vào một lane không tên: %s", len(outside), strings.Join(outside, ", ")))
+		fmt.Sprintf("%d nodes are outside every subgraph, grouped into an unnamed lane: %s", len(outside), strings.Join(outside, ", ")))
 	return out
 }
 
-// rowIDs đổi tên những id trùng với id dành riêng của draw.io và của writer.
+// rowIDs renames ids that collide with ids reserved by draw.io and the writer.
 func (m *mermaid) rowIDs(order []string) map[string]string {
 	out := map[string]string{}
 	for _, id := range order {
 		out[id] = id
 		if id == "0" || id == "1" || id == "pool" {
 			out[id] = "n_" + id
-			m.warn(m.nodes[id].line, "mermaid.renamed_id", "id "+id+" trùng id dành riêng của draw.io, đổi thành n_"+id)
+			m.warn(m.nodes[id].line, "mermaid.renamed_id", "id "+id+" collides with a draw.io reserved id, renamed to n_"+id)
 		}
 	}
 	return out
 }
 
 type flowOrder struct {
-	nodes    []string            // node theo thứ tự dòng, không gồm db đứng cạnh
-	attached map[string][]string // db đứng cạnh từng node
+	nodes    []string            // nodes in row order, excluding db placed beside a node
+	attached map[string][]string // db placed beside each node
 }
 
-// orderFlow xếp node theo thứ tự đọc của đặc tả Flow Table: đi theo luồng từ
-// các điểm đầu, mỗi node kèm ngay các cạnh ra của nó, và node hợp nhánh chỉ
-// được viết sau khi mọi nguồn không phải cạnh vòng lặp của nó đã xuất hiện.
+// orderFlow orders nodes by the reading order of the Flow Table spec: follow the
+// flow from the entry points, each node immediately followed by its outgoing
+// edges, and a merge node is written only after all of its sources that are not
+// loop edges have appeared.
 //
-// Cạnh vòng lặp được xác định trước, bằng DFS theo cùng thứ tự: cạnh trỏ về
-// một node đang nằm trên đường đi hiện tại. Nhờ vậy điều kiện hợp nhánh không
-// bao giờ chờ một nguồn chỉ tới được qua chính node đó.
+// Loop edges are determined first, by a DFS in the same order: an edge pointing
+// back to a node on the current path. This way the merge condition never waits
+// for a source reachable only through that very node.
 func orderFlow(order []string, types map[string]string, edges []*mmEdge,
 	ins, outs map[string][]*mmEdge, attach map[string]string) flowOrder {
 	fo := flowOrder{attached: map[string][]string{}}
@@ -999,7 +1003,7 @@ func orderFlow(order []string, types map[string]string, edges []*mmEdge,
 		}
 		nodes = append(nodes, id)
 	}
-	// Gốc: start trước, rồi node không có cạnh vào, theo thứ tự khai báo.
+	// Roots: start first, then nodes with no incoming edge, in declaration order.
 	var roots []string
 	for _, id := range nodes {
 		if types[id] == "start" {
@@ -1012,7 +1016,7 @@ func orderFlow(order []string, types map[string]string, edges []*mmEdge,
 		}
 	}
 	back := map[*mmEdge]bool{}
-	state := map[string]int{} // 1: đang trên đường đi, 2: xong
+	state := map[string]int{} // 1: on the current path, 2: done
 	var dfs func(string)
 	dfs = func(u string) {
 		state[u] = 1
@@ -1055,9 +1059,9 @@ func orderFlow(order []string, types map[string]string, edges []*mmEdge,
 			visit(r)
 		}
 	}
-	// Phần còn lại, như những vòng lặp không có điểm vào: lấy node đầu tiên đã
-	// sẵn sàng theo thứ tự khai báo. Luôn có một node như vậy, vì bỏ cạnh vòng
-	// lặp thì đồ thị không còn chu trình.
+	// The remainder, such as loops with no entry point: take the first ready
+	// node in declaration order. Such a node always exists, because without loop
+	// edges the graph has no cycles.
 	for len(fo.nodes) < len(nodes) {
 		for _, id := range nodes {
 			if !written[id] && ready(id) {

@@ -1,1 +1,1 @@
-sơ đồ: 1 lane, 2 phần tử, 2 cạnh
+diagram: 1 lanes, 2 elements, 2 edges

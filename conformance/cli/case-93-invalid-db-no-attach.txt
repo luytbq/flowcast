@@ -1,16 +1,16 @@
 # input: 93-invalid-db-no-attach -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 7 [A-2]: db thiếu attach
-ERROR   dòng 6 [A-1]: cạnh ra phải nằm liền sau A-1 (và các db/text gắn vào nó); đang lệch: E1
-check: 2 lỗi, 0 cảnh báo
+check: read table from markdown
+ERROR   line 7 [A-2]: db is missing attach
+ERROR   line 6 [A-1]: outgoing edges must come right after A-1 (and the db/text attached to it); out of place: E1
+check: 2 errors, 0 warnings
 [exit 1]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 7 [A-2]: db thiếu attach
-ERROR   dòng 6 [A-1]: cạnh ra phải nằm liền sau A-1 (và các db/text gắn vào nó); đang lệch: E1
-check: 2 lỗi, 0 cảnh báo
-build: dừng vì bảng có lỗi
+check: read table from markdown
+ERROR   line 7 [A-2]: db is missing attach
+ERROR   line 6 [A-1]: outgoing edges must come right after A-1 (and the db/text attached to it); out of place: E1
+check: 2 errors, 0 warnings
+build: stopped because the table has errors
 [exit 1]
 --- files
 2bf5dd2eb1893bc1  in.md

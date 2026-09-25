@@ -1,81 +1,81 @@
-# Định dạng Flow Table
+# The Flow Table format
 
-Flow Table là cách viết một activity diagram có swimlane thành một bảng markdown duy nhất. Người đọc đọc bảng từ trên xuống là đi theo luồng. Công cụ hoặc một phiên AI khác dựng lại được sơ đồ từ bảng mà không cần xem ảnh gốc.
+A Flow Table is a way of writing an activity diagram with swimlanes as a single markdown table. Reading the table from top to bottom follows the flow. A tool or another AI session can rebuild the diagram from the table without seeing the original image.
 
-## Bảng có những cột nào?
+## What columns does the table have?
 
-| Cột | Ý nghĩa |
+| Column | Meaning |
 |---|---|
-| id | Định danh của dòng, không đổi sau khi đã gán |
-| type | Loại phần tử, xem mục tiếp theo |
-| parent | Id của lane chứa phần tử. Để trống với lane và edge |
-| content | Chữ hiển thị: tên lane, chữ trong node, nhãn trên cạnh, nội dung ghi chú |
-| metadata | Thông tin phụ, dạng key=value, các cặp cách nhau bằng dấu chấm phẩy, không cần nháy |
+| id | Identifier of the row, never changes once assigned |
+| type | Element type, see the next section |
+| parent | Id of the lane holding the element. Left empty for lanes and edges |
+| content | Displayed text: lane name, text in a node, label on an edge, note content |
+| metadata | Extra information, as key=value, pairs separated by semicolons, no quotes needed |
 
-Trong content, xuống dòng viết là <br>, còn ký tự gạch đứng viết là \|, để không vỡ bảng markdown. Chữ trong content giữ nguyên văn như sơ đồ, kể cả lỗi chính tả.
+In content, a line break is written as <br>, and a pipe character is written as \|, so the markdown table does not break. Text in content is kept verbatim as in the diagram, typos included.
 
-## Có những loại phần tử nào?
+## What element types are there?
 
-Loại phần tử quyết định luôn hình vẽ, nên không có metadata riêng cho hình dạng.
+The element type also determines the shape, so there is no separate metadata for shape.
 
-| type | Hình vẽ | parent | Metadata dùng được |
+| type | Shape | parent | Usable metadata |
 |---|---|---|---|
-| lane | Làn dọc | trống | không có |
-| start | Điểm bắt đầu luồng | lane | style |
-| end | Điểm kết thúc luồng | lane | style |
-| task | Hộp bước xử lý | lane | style |
-| condition | Hình thoi rẽ nhánh | lane | style |
-| db | Hình trụ bảng dữ liệu, đứng cạnh node, không nối cạnh | lane | attach (bắt buộc), style |
-| external | Hình elip, trỏ sang một luồng khác nằm ngoài sơ đồ | lane | style |
-| text | Ghi chú, không có khung | lane | attach, style |
-| edge | Mũi tên nối hai phần tử | trống | from, to (bắt buộc), style, back |
+| lane | Vertical lane | empty | none |
+| start | Flow start point | lane | style |
+| end | Flow end point | lane | style |
+| task | Processing step box | lane | style |
+| condition | Branching diamond | lane | style |
+| db | Data table cylinder, stands next to a node, not connected by edges | lane | attach (required), style |
+| external | Ellipse, points to another flow outside the diagram | lane | style |
+| text | Note, no frame | lane | attach, style |
+| edge | Arrow connecting two elements | empty | from, to (required), style, back |
 
-Ý nghĩa của từng key:
+Meaning of each key:
 
-- **from, to:** id phần tử ở đầu và cuối mũi tên. Một cạnh nối được hai lane khác nhau, nên edge không thuộc lane nào.
-- **attach:** id của node mà bảng dữ liệu hoặc ghi chú đứng cạnh.
-- **style:** highlight nếu phần tử được tô màu nhấn trong sơ đồ. Riêng edge còn nhận thêm dashed là nét đứt, bold là nét đậm, và noarrow là không có đầu mũi tên. Nhiều giá trị cách nhau bằng dấu phẩy, ví dụ style=dashed,noarrow.
-- **back:** ghi back=true cho cạnh quay ngược về một phần tử đã đi qua, tức cạnh tạo vòng lặp.
+- **from, to:** ids of the elements at the start and end of the arrow. An edge can connect two different lanes, so an edge belongs to no lane.
+- **attach:** id of the node that the data table or note stands next to.
+- **style:** highlight if the element is filled with an accent color in the diagram. Edges additionally accept dashed for a dashed line, bold for a thick line, and noarrow for no arrowhead. Multiple values are separated by commas, for example style=dashed,noarrow.
+- **back:** write back=true for an edge that goes back to an element already passed, that is, an edge that forms a loop.
 
-## Đặt id thế nào?
+## How are ids assigned?
 
-- **Lane:** mã ngắn viết hoa, ví dụ USR, API, SVC.
-- **Phần tử thuộc lane** (mọi type trừ lane và edge): mã lane, dấu gạch ngang, rồi số, ví dụ API-1, SVC-3.
-- **Edge:** chữ E rồi số, ví dụ E1, E12.
+- **Lane:** a short uppercase code, for example USR, API, SVC.
+- **Elements in a lane** (every type except lane and edge): the lane code, a hyphen, then a number, for example API-1, SVC-3.
+- **Edge:** the letter E followed by a number, for example E1, E12.
 
-Số trong id tăng dần theo thứ tự xuất hiện lúc viết bảng lần đầu. Sau đó id không đánh lại. Cần chèn một phần tử vào giữa hai phần tử có sẵn thì thêm hậu tố thập phân vào id đứng trước:
+Numbers in ids increase in order of appearance when the table is first written. After that ids are never renumbered. To insert an element between two existing elements, add a decimal suffix to the id of the preceding one:
 
-- Chèn một cạnh sau E4, trước E5: E4.1. Chèn tiếp sau E4.1: E4.2.
-- Chèn giữa E4 và E4.1: E4.0.1.
-- Chèn một task sau API-3 trong lane API: API-3.1.
+- Insert an edge after E4, before E5: E4.1. Insert another after E4.1: E4.2.
+- Insert between E4 and E4.1: E4.0.1.
+- Insert a task after API-3 in lane API: API-3.1.
 
-Id được so sánh theo từng đoạn số, nên E4 đứng trước E4.1, E4.1 đứng trước E4.2, và E4.9 đứng trước E4.10. Nhờ vậy số trong id vẫn gần với vị trí trong bảng, dễ tìm khi cuộn file, mà các tham chiếu from, to, attach không bị hỏng.
+Ids are compared segment by segment numerically, so E4 comes before E4.1, E4.1 comes before E4.2, and E4.9 comes before E4.10. This way the number in an id stays close to its position in the table, easy to find while scrolling the file, and the from, to, attach references do not break.
 
-## Các dòng được xếp theo thứ tự nào?
+## In what order are the rows arranged?
 
-Mọi lane đứng đầu bảng, theo thứ tự từ trái sang phải của sơ đồ.
+All lanes come first in the table, in the diagram's left-to-right order.
 
-Sau đó bảng đi theo luồng, bắt đầu từ các phần tử start. Mỗi khi viết một phần tử, lần lượt viết:
+After that the table follows the flow, starting from the start elements. Each time an element is written, write in turn:
 
-1. Chính phần tử đó.
-2. Các db và text gắn vào nó (attach trỏ tới nó).
-3. Tất cả các cạnh đi ra từ nó. Với condition, đây là toàn bộ các nhánh, viết liền nhau ngay sau dòng condition.
-4. Các phần tử đích của những cạnh vừa viết, theo đúng thứ tự cạnh. Mỗi phần tử đích lại lặp từ bước 1.
+1. The element itself.
+2. The db and text elements attached to it (attach points to it).
+3. All edges leaving it. For a condition, these are all the branches, written together right after the condition row.
+4. The target elements of the edges just written, in the same order as the edges. Each target element repeats from step 1.
 
-Thứ tự các cạnh ra do người viết chọn. Nên đặt trước những nhánh kết thúc sớm như trả lỗi hay rẽ sang luồng khác, để nhánh đi tiếp dài nhất nằm cuối và luồng đọc liền mạch.
+The order of outgoing edges is the author's choice. Put branches that end early, such as returning an error or diverting to another flow, first, so that the longest continuing branch comes last and the flow reads continuously.
 
-Phần tử đích bị bỏ qua ở bước 4, chưa viết tại chỗ đó, trong các trường hợp sau:
+A target element is skipped at step 4, not written at that point, in the following cases:
 
-- **Đã có trong bảng:** cạnh chỉ trỏ tới nó bằng id, không viết lại.
-- **Là node hợp nhánh, tức có nhiều cạnh đi vào, mà còn phần tử nguồn chưa viết:** node này chỉ được viết ngay sau khi phần tử nguồn cuối cùng của nó đã xuất hiện. Cạnh có back=true không tính khi xét điều kiện này.
+- **It is already in the table:** the edge only points to it by id, it is not written again.
+- **It is a merge node, meaning it has several incoming edges, and some source element has not been written yet:** this node is written only right after its last source element has appeared. Edges with back=true do not count toward this condition.
 
-Vì quy tắc hợp nhánh, một node đích chung như "trả kết quả cho người dùng" tự rơi xuống sau mọi nhánh dẫn tới nó. Các nhánh phía trên chỉ trỏ tới nó qua to=, người đọc biết node đó nằm ở phía dưới.
+Because of the merge rule, a shared target node such as "return the result to the user" naturally falls below every branch leading to it. The branches above only point to it through to=, and the reader knows that node sits further down.
 
-Phần tử nào không đi tới được từ start thì gom ở cuối bảng, sau một dòng text có nội dung "Phần còn lại".
+Elements that cannot be reached from a start are gathered at the end of the table, after a text row whose content is "Phần còn lại".
 
-## Ví dụ
+## Example
 
-Luồng đặt hàng dưới đây có đủ điều kiện rẽ nhánh, node hợp nhánh, bảng dữ liệu, ghi chú chèn thêm và cạnh nét đứt.
+The ordering flow below has a branching condition, a merge node, a data table, an inserted note and a dashed edge.
 
 | id | type | parent | content | metadata |
 |---|---|---|---|---|
@@ -101,27 +101,27 @@ Luồng đặt hàng dưới đây có đủ điều kiện rẽ nhánh, node h�
 | USR-2 | end | USR | Nhận kết quả | |
 | SVC-4 | end | SVC | Gửi email xác nhận | |
 
-Đọc bảng này:
+Reading this table:
 
-- **E3 và E4 đứng liền sau API-2**, rồi mới tới nội dung từng nhánh theo thứ tự đó: nhánh No (API-3) trước, nhánh Yes (SVC-1) sau.
-- **E5 trỏ tới USR-2 trước khi USR-2 xuất hiện.** USR-2 có hai nguồn là API-3 và SVC-3, nên chỉ được viết sau SVC-3.
-- **API-1.1 và E7.1 là phần tử chèn thêm sau lần viết đầu.** Id của chúng nằm giữa id của hai phần tử liền kề.
+- **E3 and E4 come right after API-2**, and only then the content of each branch in that order: the No branch (API-3) first, the Yes branch (SVC-1) after.
+- **E5 points to USR-2 before USR-2 appears.** USR-2 has two sources, API-3 and SVC-3, so it can only be written after SVC-3.
+- **API-1.1 and E7.1 are elements inserted after the first writing.** Their ids fall between the ids of the two neighboring elements.
 
-## Kiểm tra một bảng có hợp lệ không
+## Checking whether a table is valid
 
-Lỗi, bắt buộc phải sửa:
+Errors, must be fixed:
 
-- Id bị trùng.
-- from, to hoặc attach trỏ tới id không tồn tại.
-- Edge thiếu from hoặc to.
-- db thiếu attach.
-- Phần tử thuộc lane mà parent để trống hoặc không phải id của một lane.
-- Condition có ít hơn 2 cạnh ra.
-- Cạnh ra của một phần tử không nằm liền sau phần tử đó (và sau các db, text gắn vào nó).
+- Duplicate id.
+- from, to or attach points to an id that does not exist.
+- An edge missing from or to.
+- A db missing attach.
+- An element in a lane whose parent is empty or is not the id of a lane.
+- A condition with fewer than 2 outgoing edges.
+- An outgoing edge of an element that does not come right after that element (and after the db and text elements attached to it).
 
-Cảnh báo, cần xem lại:
+Warnings, should be reviewed:
 
-- task hoặc condition không có cạnh ra nào.
-- start có cạnh đi vào, hoặc end có cạnh đi ra.
-- Một node hợp nhánh xuất hiện trước một trong các phần tử nguồn của nó mà cạnh đó không ghi back=true.
-- Cạnh ra của condition không có nhãn. Được phép khi sơ đồ gốc không ghi nhãn, nhưng nên bổ sung.
+- A task or condition with no outgoing edge.
+- A start with an incoming edge, or an end with an outgoing edge.
+- A merge node that appears before one of its source elements, where that edge is not marked back=true.
+- An outgoing edge of a condition without a label. Allowed when the original diagram has no label, but it is better to add one.

@@ -1,20 +1,20 @@
 # input: 35-style-values-order -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 7 [E1]: style "zzz" không dùng cho type edge, bị bỏ qua
-WARNING dòng 7 [E1]: style "aaa" không dùng cho type edge, bị bỏ qua
-WARNING dòng 7 [E1]: style "mmm" không dùng cho type edge, bị bỏ qua
-check: 0 lỗi, 3 cảnh báo
+check: read table from markdown
+WARNING line 7 [E1]: style "zzz" does not apply to type edge, ignored
+WARNING line 7 [E1]: style "aaa" does not apply to type edge, ignored
+WARNING line 7 [E1]: style "mmm" does not apply to type edge, ignored
+check: 0 errors, 3 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 7 [E1]: style "zzz" không dùng cho type edge, bị bỏ qua
-WARNING dòng 7 [E1]: style "aaa" không dùng cho type edge, bị bỏ qua
-WARNING dòng 7 [E1]: style "mmm" không dùng cho type edge, bị bỏ qua
-check: 0 lỗi, 3 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (1 lane, 2 phần tử, 1 cạnh, 128x244px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+WARNING line 7 [E1]: style "zzz" does not apply to type edge, ignored
+WARNING line 7 [E1]: style "aaa" does not apply to type edge, ignored
+WARNING line 7 [E1]: style "mmm" does not apply to type edge, ignored
+check: 0 errors, 3 warnings
+build: mode new
+build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 128x244px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 001d83259baebc4e  in.drawio

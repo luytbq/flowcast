@@ -11,7 +11,7 @@ type box = [4]float64 // x1, y1, x2, y2
 
 func boxOf(it *Item) box { return box{it.X, it.Y, it.X + it.W, it.Y + it.H} }
 
-// area là diện tích phần chồng nhau của hai hộp.
+// area is the area of the overlap between two boxes.
 func area(a, b box) float64 {
 	w := fmin(a[2], b[2]) - fmax(a[0], b[0])
 	h := fmin(a[3], b[3]) - fmax(a[1], b[1])
@@ -21,8 +21,8 @@ func area(a, b box) float64 {
 	return 0
 }
 
-// segHits nói đoạn thẳng từ a tới b có cắt vào trong hộp hay không. Chỉ chạm
-// mép thì không tính.
+// segHits reports whether the segment from a to b cuts into the box. Merely
+// touching the border does not count.
 func segHits(a, b [2]float64, bx box) bool {
 	x1, x2 := fmin(a[0], b[0]), fmax(a[0], b[0])
 	y1, y2 := fmin(a[1], b[1]), fmax(a[1], b[1])
@@ -39,13 +39,13 @@ func pathLen(pts [][2]float64) float64 {
 
 type candidate struct {
 	b      box
-	dist   float64    // khoảng cách dọc đường từ nguồn tới điểm neo
-	anchor [2]float64 // điểm trên đường mà nhãn bám vào
+	dist   float64    // distance along the path from the source to the anchor
+	anchor [2]float64 // point on the path the label attaches to
 }
 
-// labelCandidates liệt kê các chỗ có thể đặt nhãn, theo thứ tự ưu tiên: gần
-// nguồn trước, và trên mỗi đoạn đủ dài thì thử sát đầu đoạn rồi giữa đoạn, mỗi
-// chỗ thử cả hai bên đường.
+// labelCandidates lists the possible label positions in order of preference:
+// nearest the source first, and on each long enough segment try right at the
+// start of the segment and then its middle, each on both sides of the path.
 func labelCandidates(e *Edge) []candidate {
 	w, h := e.LW, e.LH
 	acc := 0.0
@@ -89,12 +89,13 @@ func labelCandidates(e *Edge) []candidate {
 	return out
 }
 
-// placeLabels đặt nhãn cho từng cạnh vào ứng viên có chi phí nhỏ nhất.
+// placeLabels places each edge's label at the candidate with the lowest cost.
 //
-// Chi phí cộng diện tích chồng lên node, lên nhãn đã đặt và lên header, cộng
-// một khoản cố định cho mỗi dây khác cắt qua. Ứng viên đầu tiên có chi phí
-// bằng không được nhận ngay. Thứ tự cộng là một phần của kết quả, vì các tổng
-// này được so sánh với nhau và cộng số thực không có tính kết hợp.
+// The cost adds up the area overlapping nodes, already placed labels and the
+// header, plus a fixed amount for each other wire crossing it. The first
+// candidate with zero cost is accepted immediately. The order of additions is
+// part of the result, because these sums are compared with each other and
+// floating-point addition is not associative.
 func (l *Layout) placeLabels() {
 	type named struct {
 		id string
@@ -107,7 +108,7 @@ func (l *Layout) placeLabels() {
 	boxes = append(boxes, named{"header", box{-1e6, -1e6, 1e6, float64(l.Cfg.PoolHeader + l.Cfg.LaneHeader)}})
 
 	type wire struct {
-		id   string // rỗng với đường phân cách lane
+		id   string // empty for lane separator lines
 		a, b [2]float64
 	}
 	var wires []wire
@@ -149,11 +150,11 @@ func (l *Layout) placeLabels() {
 			}
 		}
 		if best == nil {
-			l.warn("layout.label-no-room", e.ID, "%s: đường quá ngắn, không có chỗ đặt nhãn", e.ID)
+			l.warn("layout.label-no-room", e.ID, "%s: path too short, no room for the label", e.ID)
 			continue
 		}
 		if bestCost > 0 {
-			l.warn("layout.label-crowded", e.ID, "%s: nhãn \"%s\" không tìm được chỗ trống hoàn toàn",
+			l.warn("layout.label-crowded", e.ID, "%s: label \"%s\" could not find a completely free spot",
 				e.ID, strings.Join(e.Lines, " "))
 		}
 		placed = append(placed, best.b)
@@ -169,11 +170,12 @@ func (l *Layout) placeLabels() {
 	}
 }
 
-// Run chạy đủ các pha theo đúng thứ tự.
+// Run runs all phases in the proper order.
 //
-// Hình học tính hai lượt. Lượt đầu chưa biết phần ngang của các cạnh B và C
-// dài bao nhiêu, tức chưa biết nhãn của chúng có vừa không; lượt hai chừa thêm
-// chỗ cho những nhãn không vừa rồi tính lại.
+// Geometry is computed in two passes. The first pass does not yet know how long
+// the horizontal part of B and C edges is, and so whether their labels fit; the
+// second pass reserves extra space for the labels that did not fit and
+// recomputes.
 func (l *Layout) Run() *Layout {
 	l.Place()
 	l.Route()

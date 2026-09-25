@@ -11,15 +11,16 @@ import (
 	"github.com/luytbq/flowcast/internal/unistr"
 )
 
-// parseFloat đọc một số trong file .drawio cũ, dễ dãi với những gì người dùng
-// hay công cụ khác có thể đã ghi vào. Khác strconv.ParseFloat ở chỗ nhận
-// khoảng trắng hai đầu, kể cả khoảng trắng Unicode, nhận chữ số Unicode, nhận
-// dấu gạch dưới giữa hai chữ số, và không nhận số viết theo hệ mười sáu.
+// parseFloat reads a number from the old .drawio file, lenient toward whatever
+// the user or other tools may have written. It differs from strconv.ParseFloat
+// in that it accepts surrounding whitespace, including Unicode whitespace,
+// accepts Unicode digits, accepts an underscore between two digits, and rejects
+// hexadecimal numbers.
 func parseFloat(s string) (float64, bool) {
 	var b strings.Builder
 	for _, r := range s {
-		// Ký tự ASCII giữ nguyên, nên U+001C tới U+001F không phải khoảng trắng ở
-		// đây dù str.isspace nhận chúng.
+		// ASCII characters are kept as is, so U+001C to U+001F are not whitespace
+		// here even though str.isspace accepts them.
 		switch {
 		case r < utf8.RuneSelf:
 			b.WriteRune(r)
@@ -58,8 +59,9 @@ func parseFloat(s string) (float64, bool) {
 	return v, true
 }
 
-// decimalLiteral kiểm cú pháp digits [. digits] [e [sign] digits], trong đó
-// phần nguyên hoặc phần lẻ được vắng một, và trả về chuỗi đã bỏ dấu gạch dưới.
+// decimalLiteral checks the syntax digits [. digits] [e [sign] digits], where
+// either the integer or the fractional part may be absent, and returns the
+// string with underscores removed.
 func decimalLiteral(s string) (string, bool) {
 	var out []byte
 	i := 0
@@ -104,9 +106,9 @@ func decimalLiteral(s string) (string, bool) {
 	return string(out), i == len(s)
 }
 
-// decimalValue trả về giá trị của một chữ số thập phân Unicode. Các chữ số loại
-// Nd luôn đi thành bộ mười liền nhau bắt đầu từ số không, nên giá trị là vị trí
-// trong khoảng tính theo mô-đun mười.
+// decimalValue returns the value of a Unicode decimal digit. Nd digits always
+// come in contiguous runs of ten starting at zero, so the value is the position
+// within the range modulo ten.
 func decimalValue(r rune) (int, bool) {
 	for _, rg := range unicode.Nd.R16 {
 		if rg.Stride == 1 && rune(rg.Lo) <= r && r <= rune(rg.Hi) {
@@ -121,9 +123,9 @@ func decimalValue(r rune) (int, bool) {
 	return 0, false
 }
 
-// b64decode giải base64 ở chế độ không chặt: bỏ qua ký tự ngoài bảng chữ, như
-// xuống dòng mà trình soạn thảo chèn vào, và dừng ở dấu đệm đủ cho nhóm bốn ký
-// tự.
+// b64decode decodes base64 in non-strict mode: it skips characters outside the
+// alphabet, such as newlines inserted by editors, and stops at the padding that
+// completes a group of four characters.
 func b64decode(s string) ([]byte, error) {
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 	var out []byte
@@ -172,8 +174,9 @@ func b64decode(s string) ([]byte, error) {
 	return nil, errors.New("Incorrect padding")
 }
 
-// unquote giải %XX trong nội dung trang draw.io đã nén: chỉ trong các đoạn
-// ASCII, và byte giải ra được đọc thành UTF-8, byte hỏng thành U+FFFD.
+// unquote decodes %XX in the content of a compressed draw.io page: only within
+// ASCII runs, and the decoded bytes are read as UTF-8, with invalid bytes
+// becoming U+FFFD.
 func unquote(s string) string {
 	if !strings.Contains(s, "%") {
 		return s
@@ -225,10 +228,10 @@ func unquoteBytes(s string) []byte {
 	return out
 }
 
-// decodeReplace đọc UTF-8 và thay phần hỏng theo khuyến nghị của Unicode: mỗi
-// đoạn con hợp lệ dài nhất của một chuỗi byte hỏng thành đúng một U+FFFD. Phép
-// chuyển string của Go thay từng byte, nên một chuỗi ba byte bị cắt cụt ra hai
-// U+FFFD thay vì một.
+// decodeReplace reads UTF-8 and replaces invalid parts following the Unicode
+// recommendation: each maximal valid subpart of an invalid byte sequence becomes
+// exactly one U+FFFD. Go's string conversion replaces byte by byte, so a
+// truncated three-byte sequence yields two U+FFFD instead of one.
 func decodeReplace(p []byte) string {
 	var b strings.Builder
 	for i := 0; i < len(p); {

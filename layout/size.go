@@ -8,18 +8,18 @@ import (
 	"github.com/luytbq/flowcast/text"
 )
 
-// WrapBudget là bề rộng ngắt dòng của một loại phần tử.
+// WrapBudget is the wrap width of an element type.
 //
-// Tách ra thành hàm có tên vì hành vi không chốt được nó: Wrap thu hẹp về bề
-// rộng nhỏ nhất vẫn giữ nguyên số dòng, nên ngân sách sai vài pixel chỉ lộ ra
-// khi có ranh giới ký tự rơi đúng vào khoảng lệch đó. Chốt thẳng con số thì
-// không phụ thuộc may rủi.
+// It is split out as a named function because behavior cannot pin it down: Wrap
+// shrinks to the smallest width that keeps the same line count, so a budget off
+// by a few pixels only shows when a character boundary falls exactly within
+// that gap. Pinning the number directly does not depend on luck.
 //
-// Loại không nhận ra dùng ngân sách của ghi chú.
+// Unrecognized types use the note budget.
 func WrapBudget(cfg Config, kind string) float64 {
 	switch kind {
 	case "task":
-		// Trừ đi lề trái phải của hộp task.
+		// Subtract the left and right padding of the task box.
 		return float64(cfg.TaskMaxW - 32)
 	case "condition":
 		return float64(cfg.CondWrap)
@@ -31,10 +31,10 @@ func WrapBudget(cfg Config, kind string) float64 {
 	return float64(cfg.TextWrap)
 }
 
-// SizeItem ngắt dòng nội dung một phần tử rồi trả về kích thước hộp của nó.
+// SizeItem wraps an element's content and returns the size of its box.
 //
-// Phụ thuộc duy nhất vào loại phần tử, nội dung và cấu hình, không phụ thuộc
-// chỗ đứng của phần tử trong sơ đồ. Vì vậy nó chạy trước mọi bước xếp chỗ.
+// It depends only on the element type, content and config, not on where the
+// element sits in the diagram. That is why it runs before any placement step.
 func SizeItem(tm *text.Measure, cfg Config, kind string, lines []string) (wrapped []string, w, h float64) {
 	switch kind {
 	case "task":
@@ -45,13 +45,13 @@ func SizeItem(tm *text.Measure, cfg Config, kind string, lines []string) (wrappe
 	case "condition":
 		wl := tm.Wrap(lines, WrapBudget(cfg, kind))
 		tw, th := tm.Box(wl)
-		// Chữ nằm lọt hình thoi khi tw/W + th/H <= 1.
+		// Text fits inside the diamond when tw/W + th/H <= 1.
 		return wl, float64(num.Rnd(max(100, tw/0.6+10))), float64(num.Rnd(max(60, th/0.4+10)))
 
 	case "start", "end", "external":
 		wl := tm.Wrap(lines, WrapBudget(cfg, kind))
 		tw, th := tm.Box(wl)
-		// end có thêm viền ngoài nên cần rộng hơn cùng một nội dung.
+		// end has an extra outer border, so it needs more room for the same content.
 		pad := 0.0
 		if kind == "end" {
 			pad = 12
@@ -69,11 +69,12 @@ func SizeItem(tm *text.Measure, cfg Config, kind string, lines []string) (wrappe
 	return wl, float64(num.Rnd(tw + 20)), float64(num.Rnd(th + 12))
 }
 
-// SizeLabel đo nhãn của một cạnh.
+// SizeLabel measures an edge's label.
 //
-// Cạnh không có nhãn vẫn nhận kích thước, không phải số không: bề rộng bằng lề
-// hai bên và bề cao bằng 2. Bản tham chiếu cộng lề ngoài nhánh kiểm chuỗi rỗng,
-// nên cạnh trống ra 8 x 2 chứ không ra 0 x 0.
+// An edge without a label still gets a size, not zero: the width equals the
+// padding on both sides and the height is 2. The reference implementation adds
+// the padding outside the empty-string check, so an empty edge comes out 8 x 2
+// rather than 0 x 0.
 func SizeLabel(tm *text.Measure, cfg Config, lines []string) (wrapped []string, w, h float64) {
 	var wl []string
 	if HasText(lines) {
@@ -86,8 +87,8 @@ func SizeLabel(tm *text.Measure, cfg Config, lines []string) (wrapped []string, 
 	return wl, lw + float64(2*cfg.LabelPad), lh + 2
 }
 
-// HasText cho biết nội dung một dòng bảng có chữ thật hay không: nối các dòng
-// bằng xuống dòng rồi cắt khoảng trắng.
+// HasText reports whether a table row's content has real text: join the lines
+// with newlines, then trim whitespace.
 func HasText(lines []string) bool {
 	return unistr.Strip(strings.Join(lines, "\n")) != ""
 }

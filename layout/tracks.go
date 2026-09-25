@@ -2,16 +2,17 @@ package layout
 
 import "sort"
 
-// assignPorts đặt vị trí cổng ra trên mặt của node nguồn.
+// assignPorts sets the positions of exit ports on the source node's sides.
 //
-// Dây vào luôn nối giữa mặt. Các cạnh ra cùng một mặt có chung nguồn nên được
-// phép gộp; chúng chỉ phải tách cổng khi mặt đó còn có dây vào, vì dây vào khác
-// cả nguồn lẫn đích nên chồng lên nó là sai.
+// Incoming wires always connect at the middle of a side. Outgoing edges on the
+// same side share a source, so they may merge; they only need separate ports
+// when that side also has incoming wires, because an incoming wire differs in
+// both source and target, so overlapping it is wrong.
 //
-// Hình thoi và elip ra đúng giữa mặt, trừ khi phải tách: khi đó cổng nằm trên
-// đường viền, lệch khỏi đỉnh. Hộp chữ nhật chỉ có một cạnh ra thì ra giữa mặt;
-// nhiều cạnh ra thì cạnh A, B, C giữ giữa mặt, các cạnh D chia nhau phần còn
-// lại.
+// Diamonds and ellipses exit at the exact middle of a side unless they must be
+// separated: the port then lies on the outline, off the vertex. A rectangle with
+// a single outgoing edge exits at the middle of the side; with several, A, B and
+// C edges keep the middle and D edges share the rest.
 func (l *Layout) assignPorts() {
 	for key, es := range l.sideOut {
 		u := l.items[key.id]
@@ -40,13 +41,13 @@ func (l *Layout) assignPorts() {
 		n := len(loose)
 		var fr []float64
 		if n == 1 && entries {
-			// Né giữa mặt về phía dây sẽ rẽ, để đoạn đầu không cắt dây vào.
+			// Shift off the middle toward where the wire will turn, so the first segment does not cross the incoming wire.
 			fr = []float64{0.25}
 			if d := l.items[loose[0].Dst]; (side == 'B' && gkOf(u).less(gkOf(d))) || (side != 'B' && d.Row > u.Row) {
 				fr = []float64{0.75}
 			}
 		} else if (len(fixed) > 0 || entries) && n <= 6 {
-			// Giữa mặt đã có cạnh cố định, nên các cổng còn lại né khỏi 0.5.
+			// The middle of the side already has a fixed edge, so the remaining ports avoid 0.5.
 			fr = append(fr, []float64{0.25, 0.75, 0.125, 0.875, 0.375, 0.625}[:n]...)
 			sort.Float64s(fr)
 		} else {
@@ -54,8 +55,8 @@ func (l *Layout) assignPorts() {
 				fr = append(fr, float64(i+1)/float64(n+1))
 			}
 		}
-		// Dây rẽ về phía nào thì lấy cổng ở phía đó, để các đoạn đầu không cắt
-		// nhau.
+		// Each wire takes a port on the side it turns toward, so the first
+		// segments do not cross each other.
 		sort.SliceStable(loose, func(i, j int) bool {
 			a, b := l.items[loose[i].Dst], l.items[loose[j].Dst]
 			if side == 'L' || side == 'R' {
@@ -81,15 +82,16 @@ func (l *Layout) assignPorts() {
 	}
 }
 
-// assignTracks tô màu khoảng cho từng kênh và máng.
+// assignTracks performs interval coloring for each channel and gutter.
 //
-// Hai đoạn chồng nhau phải nằm ở hai track khác nhau, trừ khi cùng đích, vì
-// khi đó chúng gộp thành một đường. Thêm một ràng buộc thứ tự: hai đoạn có
-// chân nối vào cùng một vị trí từ hai phía thì đoạn phía thấp phải nằm ở track
-// nhỏ hơn, nếu không hai chân sẽ đè lên nhau.
+// Two overlapping segments must lie on different tracks unless they share a
+// target, because then they merge into one line. There is one more ordering
+// constraint: when two segments have stubs connecting at the same position from
+// opposite sides, the segment from the low side must lie on the lower track,
+// otherwise the two stubs would overlap.
 //
-// Tham lam theo thứ tự đoạn được thêm vào, nên thứ tự đó là một phần của kết
-// quả.
+// The algorithm is greedy in the order segments were added, so that order is
+// part of the result.
 func (l *Layout) assignTracks() {
 	var order []Res
 	byRes := map[Res][]*Seg{}
@@ -169,7 +171,7 @@ func (l *Layout) assignTracks() {
 					}
 				}
 				if lo > hi {
-					l.warn("layout.track-order", "", "không xếp được thứ tự track trong %s", res.label())
+					l.warn("layout.track-order", "", "could not order the tracks in %s", res.label())
 					chosen = len(tracks)
 				} else {
 					chosen = max(lo, min(hi, len(tracks)))
@@ -191,9 +193,10 @@ func (l *Layout) assignTracks() {
 
 func overlap(a, b *Seg) bool { return a.Lo <= b.Hi && b.Lo <= a.Hi }
 
-// mustPrecede nói a phải nằm ở track nhỏ hơn b: cả hai có chân nối vào cùng một
-// vị trí, và chân của a đến từ phía thấp hơn. Hai đoạn cùng đích thì không ràng
-// buộc gì, vì chúng gộp làm một.
+// mustPrecede reports whether a must lie on a lower track than b: both have
+// stubs connecting at the same position, and a's stub comes from the lower side.
+// Two segments with the same target are unconstrained, because they merge into
+// one.
 func mustPrecede(a, b *Seg) bool {
 	if a.Key != "" && a.Key == b.Key {
 		return false

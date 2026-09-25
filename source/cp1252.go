@@ -1,10 +1,10 @@
-// Bảng cp1252 theo đặc tả Windows-1252; không sửa tay.
+// cp1252 table per the Windows-1252 specification; do not edit by hand.
 
 package source
 
-// cp1252High là ánh xạ của cp1252 cho byte 0x80 tới 0x9F. Byte từ 0xA0 trở lên
-// trùng Latin-1. Các byte không có ở đây, 0x81, 0x8D, 0x8F, 0x90, 0x9D, không
-// được định nghĩa trong cp1252, nên giải mã chúng là lỗi chứ không đoán.
+// cp1252High is the cp1252 mapping for bytes 0x80 to 0x9F. Bytes from 0xA0 up
+// match Latin-1. The bytes missing here, 0x81, 0x8D, 0x8F, 0x90, 0x9D, are not
+// defined in cp1252, so decoding them is an error rather than a guess.
 var cp1252High = map[byte]rune{
 	0x80: 0x20AC,
 	0x82: 0x201A,

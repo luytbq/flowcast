@@ -1,13 +1,14 @@
-// Lệnh extractmetrics trích bảng độ rộng ký tự từ một file TTF ra JSON.
+// Command extractmetrics extracts the character width table from a TTF file into JSON.
 //
-// flowcast không đọc file font lúc chạy: nó đọc bảng này, nhúng trong binary.
-// Nhờ vậy cùng một bảng đầu vào cho ra cùng một bố cục trên mọi máy, kể cả máy
-// không cài font, và binary phân phối đi không mang theo file font.
+// flowcast does not read font files at run time: it reads this table, embedded in the
+// binary. As a result the same input table yields the same layout on every machine,
+// including machines without the font installed, and the distributed binary does not
+// carry the font file.
 //
 //	go run ./tools/extractmetrics /usr/share/fonts/truetype/msttcorefonts/Verdana.ttf data/verdana.json
 //
-// Chỉ đọc bảng cmap format 4 (platform 3, encoding 1 hoặc 10), hmtx, head và
-// hhea; đủ cho mọi ký tự trong mặt phẳng đa ngữ cơ bản.
+// Only the cmap format 4 table (platform 3, encoding 1 or 10), hmtx, head and hhea
+// are read; enough for every character in the Basic Multilingual Plane.
 package main
 
 import (
@@ -37,7 +38,7 @@ func parse(data []byte) (*metrics, error) {
 	}
 	for _, t := range []string{"head", "hhea", "hmtx", "cmap"} {
 		if _, ok := tables[t]; !ok {
-			return nil, fmt.Errorf("font thiếu bảng %s", t)
+			return nil, fmt.Errorf("font is missing table %s", t)
 		}
 	}
 	m := &metrics{upem: u16(data, tables["head"]+18)}
@@ -64,7 +65,7 @@ func cmap4(data []byte, base int) (map[int]int, error) {
 		}
 	}
 	if sub < 0 {
-		return nil, errors.New("font không có cmap format 4")
+		return nil, errors.New("font has no cmap format 4")
 	}
 	segx2 := int(u16(data, sub+6))
 	seg := segx2 / 2
@@ -94,8 +95,8 @@ func cmap4(data []byte, base int) (map[int]int, error) {
 	return cmap, nil
 }
 
-// render viết JSON theo đúng khuôn của file đang nhúng: mỗi khóa một dòng,
-// không thụt lề, codepoint tăng dần.
+// render writes JSON in exactly the shape of the embedded file: one key per line,
+// no indentation, codepoints in ascending order.
 func render(m *metrics, family string) string {
 	cps := make([]int, 0, len(m.cmap))
 	for cp := range m.cmap {
@@ -122,7 +123,7 @@ func render(m *metrics, family string) string {
 
 func main() {
 	if len(os.Args) != 3 {
-		fmt.Fprintln(os.Stderr, "dùng: extractmetrics FONT.ttf RA.json")
+		fmt.Fprintln(os.Stderr, "usage: extractmetrics FONT.ttf OUT.json")
 		os.Exit(2)
 	}
 	data, err := os.ReadFile(os.Args[1])
@@ -139,5 +140,5 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	fmt.Printf("%s: %d codepoint, upem %d\n", os.Args[2], len(m.cmap), m.upem)
+	fmt.Printf("%s: %d codepoints, upem %d\n", os.Args[2], len(m.cmap), m.upem)
 }

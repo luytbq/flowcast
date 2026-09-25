@@ -1,1 +1,1 @@
-sơ đồ: 0 lane, 7 phần tử, 7 cạnh
+diagram: 0 lanes, 7 elements, 7 edges

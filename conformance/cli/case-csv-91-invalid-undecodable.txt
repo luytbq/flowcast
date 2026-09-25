@@ -1,9 +1,9 @@
 # input: csv-91-invalid-undecodable -> in.csv
 $ ["check", "$T/in.csv"]
-ERROR   không giải mã được $T/in.csv; thử --encoding
+ERROR   cannot decode $T/in.csv; try --encoding
 [exit 1]
 $ ["build", "$T/in.csv"]
-ERROR   không giải mã được $T/in.csv; thử --encoding
+ERROR   cannot decode $T/in.csv; try --encoding
 [exit 1]
 --- files
 c280e92b56ca18e7  in.csv

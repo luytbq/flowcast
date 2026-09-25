@@ -1,14 +1,14 @@
 # input: 21-styles -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (2 lane, 4 phần tử, 2 cạnh, 598.66x244px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode new
+build: wrote $T/in.drawio (2 lanes, 4 elements, 2 edges, 598.66x244px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 7f6aea23315cc826  in.drawio

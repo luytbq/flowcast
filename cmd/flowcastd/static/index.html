@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,35 +10,35 @@
 <body>
 <main>
   <h1>flowcast</h1>
-  <p class="lead">Tải lên bảng luồng dạng markdown, csv, xlsx, hoặc flowchart mermaid, nhận về file draw.io có bố cục tất định.</p>
+  <p class="lead">Upload a flow table as markdown, csv or xlsx, or a mermaid flowchart, and get back a draw.io file with a deterministic layout.</p>
   <form id="form">
     <label class="drop" id="drop">
       <input type="file" name="file" id="file" accept=".md,.markdown,.txt,.csv,.xlsx,.mmd,.mermaid" required>
-      <span id="drop-text">Chọn hoặc kéo thả file vào đây</span>
+      <span id="drop-text">Choose or drop a file here</span>
     </label>
-    <label>Tiêu đề <input type="text" name="title" placeholder="lấy từ file nếu để trống"></label>
-    <label>Hướng <select name="direction" id="direction"></select></label>
+    <label>Title <input type="text" name="title" placeholder="taken from the file if left empty"></label>
+    <label>Direction <select name="direction" id="direction"></select></label>
     <details>
-      <summary>Tùy chọn đọc file</summary>
+      <summary>File reading options</summary>
       <label>Sheet (xlsx) <input type="text" name="sheet"></label>
-      <label>Dấu phân cách (csv) <input type="text" name="delimiter" maxlength="1" placeholder="tự đoán"></label>
-      <label>Bảng mã (csv) <input type="text" name="encoding" placeholder="tự đoán"></label>
+      <label>Delimiter (csv) <input type="text" name="delimiter" maxlength="1" placeholder="auto-detect"></label>
+      <label>Encoding (csv) <input type="text" name="encoding" placeholder="auto-detect"></label>
     </details>
     <details>
-      <summary>Tham số xếp hình</summary>
+      <summary>Layout parameters</summary>
       <div id="fields" class="fields"></div>
     </details>
     <div class="actions">
-      <button type="submit" id="build">Tạo file .drawio</button>
-      <button type="button" id="check" class="secondary">Chỉ kiểm tra bảng</button>
+      <button type="submit" id="build">Create .drawio file</button>
+      <button type="button" id="check" class="secondary">Check table only</button>
     </div>
   </form>
   <section id="result" hidden>
     <p id="summary"></p>
-    <a id="download" class="button" hidden>Tải lại file</a>
+    <a id="download" class="button" hidden>Download file again</a>
     <ul id="issues"></ul>
   </section>
-  <p class="foot">Định dạng bảng: năm cột id, type, parent, content, metadata. Mermaid: file .mmd, hoặc khối ```mermaid trong file .md. File không được lưu lại trên máy chủ.</p>
+  <p class="foot">Table format: five columns id, type, parent, content, metadata. Mermaid: a .mmd file, or a ```mermaid block in a .md file. Files are not stored on the server.</p>
 </main>
 </body>
 </html>

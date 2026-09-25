@@ -1,5 +1,5 @@
-issue graph.branch_no_label WARNING dòng 9 [E3]: cạnh ra của condition A-3 không có nhãn
-issue graph.branch_no_label WARNING dòng 13 [E7]: cạnh ra của condition A-4 không có nhãn
-issue graph.branch_no_label WARNING dòng 14 [E8]: cạnh ra của condition A-4 không có nhãn
-issue graph.no_out_edge WARNING dòng 17 [A-6]: task không có cạnh ra
-sơ đồ: 1 lane, 6 phần tử, 6 cạnh
+issue graph.branch_no_label WARNING line 9 [E3]: outgoing edge of condition A-3 has no label
+issue graph.branch_no_label WARNING line 13 [E7]: outgoing edge of condition A-4 has no label
+issue graph.branch_no_label WARNING line 14 [E8]: outgoing edge of condition A-4 has no label
+issue graph.no_out_edge WARNING line 17 [A-6]: task has no outgoing edge
+diagram: 1 lanes, 6 elements, 6 edges

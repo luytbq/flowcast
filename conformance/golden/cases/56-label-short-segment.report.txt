@@ -1,2 +1,2 @@
-issue graph.no_out_edge WARNING dòng 14 [B-4]: task không có cạnh ra
-sơ đồ: 3 lane, 4 phần tử, 3 cạnh
+issue graph.no_out_edge WARNING line 14 [B-4]: task has no outgoing edge
+diagram: 3 lanes, 4 elements, 3 edges

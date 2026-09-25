@@ -1,5 +1,5 @@
-issue graph.no_out_edge WARNING dòng 14 [B-3]: task không có cạnh ra
-engine layout.label-crowded: E4: nhãn "gửi yêu cầu" không tìm được chỗ trống hoàn toàn
-tự kiểm warning check.label-over-label: nhãn E3 đè nhãn E4
-tự kiểm warning check.label-over-edge: nhãn E4 đè dây E3
-sơ đồ: 2 lane, 4 phần tử, 4 cạnh
+issue graph.no_out_edge WARNING line 14 [B-3]: task has no outgoing edge
+engine layout.label-crowded: E4: label "gửi yêu cầu" could not find a completely free spot
+self-check warning check.label-over-label: label E3 overlaps label E4
+self-check warning check.label-over-edge: label E4 overlaps wire E3
+diagram: 2 lanes, 4 elements, 4 edges

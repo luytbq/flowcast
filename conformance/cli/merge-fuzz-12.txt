@@ -1,26 +1,26 @@
 # input: merge/fuzz-12 -> *
 $ ["build", "$T/flow.md", "--mode", "merge"]
-check: đọc bảng từ markdown
-WARNING dòng 14 [B-4]: task không có cạnh ra
-WARNING dòng 16 [E90]: A-2 đứng trước nguồn B-90 nhưng cạnh không ghi back=true
-check: 0 lỗi, 2 cảnh báo
-build: chế độ merge, giữ chỉnh sửa tay
-build: đã ghi $T/flow.drawio (3 lane, 5 phần tử, 4 cạnh, 638x384px)
-build: bản sao file cũ $T/flow.drawio.bak
-merge: giữ vị trí (4): D-1, A-2, D-3, B-4
-merge: element mới (1): B-90
-merge: element mới phải dịch xuống vì chồng (1): B-90
-merge: đổi lane trong bảng hoặc bị kéo sang lane khác, đặt lại (0): -
-merge: edge giữ waypoint (2): E1, E3
-merge: edge để draw.io tự đi dây, cần chỉnh tay (2): E2, E90
-merge: edge đã sửa tay, nhãn về giữa đường (0): -
-merge: xoá vì không còn trong bảng (0): -
-merge: lane được nới (3): A +74px, B +63px, D +68px
-merge: cell tự vẽ giữ lại (0): -
-merge: cell tự vẽ bỏ đi (cha đã bị xoá) (0): -
-merge: cell tự vẽ mất đầu nối (0): -
-merge: element chồng nhau (0): -
-layout: merge không tự kiểm dây và nhãn; xem danh sách ở trên và ảnh PNG
+check: read table from markdown
+WARNING line 14 [B-4]: task has no outgoing edge
+WARNING line 16 [E90]: A-2 comes before its source B-90 but the edge does not say back=true
+check: 0 errors, 2 warnings
+build: mode merge, keep manual edits
+build: wrote $T/flow.drawio (3 lanes, 5 elements, 4 edges, 638x384px)
+build: backup of the old file $T/flow.drawio.bak
+merge: kept position (4): D-1, A-2, D-3, B-4
+merge: new element (1): B-90
+merge: new element shifted down due to overlap (1): B-90
+merge: lane changed in table or dragged to another lane, re-placed (0): -
+merge: edge kept waypoints (2): E1, E3
+merge: edge left to draw.io routing, needs manual edits (2): E2, E90
+merge: edge manually edited, label moved to midpoint (0): -
+merge: removed, no longer in table (0): -
+merge: lane widened (3): A +74px, B +63px, D +68px
+merge: freehand cell kept (0): -
+merge: freehand cell dropped (parent removed) (0): -
+merge: freehand cell lost endpoint (0): -
+merge: overlapping elements (0): -
+layout: merge does not self-check wires and labels; see the list above and the PNG image
 [exit 0]
 --- files
 f0199f81c99222f7  flow.drawio

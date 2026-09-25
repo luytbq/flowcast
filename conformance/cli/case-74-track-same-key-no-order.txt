@@ -1,14 +1,14 @@
 # input: 74-track-same-key-no-order -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 4 cạnh, 296x244px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode new
+build: wrote $T/in.drawio (2 lanes, 3 elements, 4 edges, 296x244px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 dd563514376f2e9b  in.drawio

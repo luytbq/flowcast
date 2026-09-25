@@ -6,26 +6,26 @@ import (
 	"strings"
 )
 
-// Mức độ của một Issue.
+// Severity of an Issue.
 const (
 	LevelError   = "error"
 	LevelWarning = "warning"
 )
 
-// Location nói phát hiện nằm ở đâu trong nguồn.
+// Location says where in the source a finding is.
 //
-// Có cấu trúc chứ không phải chuỗi, để web trỏ đúng ô và đúng dòng. String là
-// dạng CLI in ra.
+// Structured rather than a string, so the web UI can point at the right cell and
+// line. String is the form the CLI prints.
 type Location struct {
-	Kind   string `json:"kind"`             // "table" hoặc "text"
-	Row    int    `json:"row,omitempty"`    // table: số dòng trong file, 0 nghĩa là không xác định
+	Kind   string `json:"kind"`             // "table" or "text"
+	Row    int    `json:"row,omitempty"`    // table: line number in the file, 0 means unknown
 	Sheet  string `json:"sheet,omitempty"`  // xlsx
-	Cell   string `json:"cell,omitempty"`   // xlsx: địa chỉ ô, ví dụ B7, hoặc vùng ô gộp như A1:B2
-	Column string `json:"column,omitempty"` // table: tên cột, khi phát hiện quy được về một ô
-	Line   int    `json:"line,omitempty"`   // text: số dòng trong nguồn, dùng cho mermaid
+	Cell   string `json:"cell,omitempty"`   // xlsx: cell address, e.g. B7, or a merged range like A1:B2
+	Column string `json:"column,omitempty"` // table: column name, when the finding maps to one cell
+	Line   int    `json:"line,omitempty"`   // text: line number in the source, used for mermaid
 }
 
-// LineLoc là vị trí của một dòng bảng trong file văn bản.
+// LineLoc is the location of a table row in a text file.
 func LineLoc(row int) Location { return Location{Kind: "table", Row: row} }
 
 func (l Location) String() string {
@@ -33,22 +33,22 @@ func (l Location) String() string {
 	case l.Sheet != "" && l.Cell != "":
 		return l.Sheet + "!" + l.Cell
 	case l.Sheet != "" && l.Row > 0:
-		return fmt.Sprintf("%s dòng %d", l.Sheet, l.Row)
+		return fmt.Sprintf("%s row %d", l.Sheet, l.Row)
 	case l.Sheet != "":
 		return l.Sheet
 	case l.Kind == "text" && l.Line > 0:
-		return fmt.Sprintf("dòng %d", l.Line)
+		return fmt.Sprintf("line %d", l.Line)
 	case l.Row > 0:
-		return fmt.Sprintf("dòng %d", l.Row)
+		return fmt.Sprintf("line %d", l.Row)
 	}
 	return ""
 }
 
-// Issue là một phát hiện trả về cho caller.
+// Issue is a finding returned to the caller.
 //
-// Code là mã máy ổn định, dành cho caller phân loại và cho web trả JSON. Msg
-// là thông điệp tiếng Việt cho người đọc. Core không in Issue ra; caller tự
-// trình bày.
+// Code is a stable machine code, for the caller to classify and for the web
+// service to return as JSON. Msg is the human-readable message. The core never
+// prints Issues; the caller presents them.
 type Issue struct {
 	Code   string
 	Level  string
@@ -58,7 +58,7 @@ type Issue struct {
 	Params map[string]string
 }
 
-// String là dạng CLI in ra cho một Issue.
+// String is the form the CLI prints for an Issue.
 func (i Issue) String() string {
 	tag := ""
 	if i.ID != "" {
@@ -74,9 +74,8 @@ func (i Issue) String() string {
 func joinLines(lines []string) string { return strings.Join(lines, "\n") }
 func trimSpace(s string) string       { return unistr.Strip(s) }
 
-// Error là lỗi khiến việc đọc không thể tiếp tục và không quy được về một dòng
-// cụ thể: không tìm thấy header, file hỏng, vượt giới hạn. Mọi thứ khác là
-// Issue.
+// Error is an error that stops reading and cannot be tied to a specific row:
+// header not found, corrupt file, limit exceeded. Everything else is an Issue.
 type Error struct {
 	Code string
 	Msg  string

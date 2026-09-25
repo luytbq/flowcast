@@ -1,10 +1,10 @@
 # input: 12-text-attach -> in.md
 $ ["build", "--attach-gap", "60", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (1 lane, 4 phần tử, 2 cạnh, 520x324px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode new
+build: wrote $T/in.drawio (1 lanes, 4 elements, 2 edges, 520x324px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 b423bc5cbc3b905b  in.drawio

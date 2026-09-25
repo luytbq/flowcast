@@ -1,8 +1,9 @@
-// Package text đo chữ và ngắt dòng.
+// Package text measures text and wraps lines.
 //
-// Không đọc file font. Số đo lấy từ bảng advance width đã trích sẵn, nên cùng
-// một bảng thì mọi máy đo giống nhau, binary phân phối đi không mang theo font,
-// và không phụ thuộc máy đích có cài Verdana hay không.
+// It reads no font files. Measurements come from a pre-extracted advance width
+// table, so with the same table every machine measures the same, the
+// distributed binary carries no font, and nothing depends on whether the target
+// machine has Verdana installed.
 package text
 
 import (
@@ -12,7 +13,7 @@ import (
 	"strconv"
 )
 
-// Metrics là bảng advance width theo từng codepoint, đơn vị là font unit.
+// Metrics is an advance width table per codepoint, in font units.
 type Metrics struct {
 	Family string
 	UPEM   int
@@ -27,7 +28,7 @@ type metricsFile struct {
 	Advances map[string]int `json:"advances"`
 }
 
-// LoadMetrics đọc bảng do tools/extractmetrics sinh ra.
+// LoadMetrics reads a table produced by tools/extractmetrics.
 func LoadMetrics(path string) (*Metrics, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -40,30 +41,30 @@ func LoadMetrics(path string) (*Metrics, error) {
 	return m, nil
 }
 
-// ParseMetrics đọc bảng số đo từ bytes, ví dụ từ bảng nhúng trong gói data.
+// ParseMetrics reads a metrics table from bytes, for example the table embedded in the data package.
 func ParseMetrics(data []byte) (*Metrics, error) {
 	var f metricsFile
 	if err := json.Unmarshal(data, &f); err != nil {
 		return nil, err
 	}
 	if f.UPEM == 0 {
-		return nil, fmt.Errorf("thiếu upem")
+		return nil, fmt.Errorf("missing upem")
 	}
 	m := &Metrics{Family: f.Family, UPEM: f.UPEM, Notdef: f.Notdef, adv: make(map[rune]int, len(f.Advances))}
 	for k, v := range f.Advances {
 		cp, err := strconv.Atoi(k)
 		if err != nil {
-			return nil, fmt.Errorf("codepoint %q không phải số", k)
+			return nil, fmt.Errorf("codepoint %q is not a number", k)
 		}
 		m.adv[rune(cp)] = v
 	}
 	return m, nil
 }
 
-// Width trả về bề rộng chuỗi ở cỡ chữ size, tính theo điểm ảnh.
+// Width returns the width of the string at font size size, in pixels.
 //
-// Codepoint không có trong bảng dùng advance của glyph .notdef, đúng như bản
-// tham chiếu: cmap tra trượt thì ra glyph 0.
+// Codepoints missing from the table use the advance of the .notdef glyph, just
+// like the reference implementation: a cmap miss yields glyph 0.
 func (m *Metrics) Width(s string, size float64) float64 {
 	total := 0
 	for _, r := range s {

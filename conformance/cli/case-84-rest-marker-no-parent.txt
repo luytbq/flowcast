@@ -1,16 +1,16 @@
 # input: 84-rest-marker-no-parent -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 10 [A-3]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
+check: read table from markdown
+WARNING line 10 [A-3]: task has no outgoing edge
+check: 0 errors, 1 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 10 [A-3]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (1 lane, 3 phần tử, 1 cạnh, 168x324px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+WARNING line 10 [A-3]: task has no outgoing edge
+check: 0 errors, 1 warnings
+build: mode new
+build: wrote $T/in.drawio (1 lanes, 3 elements, 1 edges, 168x324px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 16abf46d6fdb293c  in.drawio

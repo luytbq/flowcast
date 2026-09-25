@@ -1,16 +1,16 @@
 # input: 993-invalid-warning-before-error -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 7 [E1]: to=A-9 trỏ tới id không tồn tại
-WARNING dòng 6 [A-1]: metadata "mau" không dùng cho type start, bị bỏ qua
-check: 1 lỗi, 1 cảnh báo
+check: read table from markdown
+ERROR   line 7 [E1]: to=A-9 points to an id that does not exist
+WARNING line 6 [A-1]: metadata "mau" does not apply to type start, ignored
+check: 1 errors, 1 warnings
 [exit 1]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 7 [E1]: to=A-9 trỏ tới id không tồn tại
-WARNING dòng 6 [A-1]: metadata "mau" không dùng cho type start, bị bỏ qua
-check: 1 lỗi, 1 cảnh báo
-build: dừng vì bảng có lỗi
+check: read table from markdown
+ERROR   line 7 [E1]: to=A-9 points to an id that does not exist
+WARNING line 6 [A-1]: metadata "mau" does not apply to type start, ignored
+check: 1 errors, 1 warnings
+build: stopped because the table has errors
 [exit 1]
 --- files
 928744f4958b60fa  in.md

@@ -23,12 +23,12 @@ func limitCode(t *testing.T, err error) string {
 	t.Helper()
 	var e *model.Error
 	if !errors.As(err, &e) {
-		t.Fatalf("mong lỗi model.Error, nhận %v", err)
+		t.Fatalf("want a model.Error, got %v", err)
 	}
 	return e.Code
 }
 
-func TestVuotGioiHanTraVeLoiMaLimit(t *testing.T) {
+func TestExceedingLimitReturnsLimitCode(t *testing.T) {
 	md := caseSource(t, "05-merge-node.md")
 	xlsx := caseSource(t, "xlsx-01-shared-strings.xlsx")
 	cases := []struct {
@@ -47,13 +47,13 @@ func TestVuotGioiHanTraVeLoiMaLimit(t *testing.T) {
 		for _, fn := range []func(Source, Options) (Result, error){Build, Check} {
 			_, err := fn(c.src, Options{Limits: &c.lim})
 			if got := limitCode(t, err); got != c.code {
-				t.Errorf("%s: mã %s, mong %s", c.name, got, c.code)
+				t.Errorf("%s: code %s, want %s", c.name, got, c.code)
 			}
 		}
 	}
 }
 
-func TestDungDuoiGioiHanThiDungNhuKhongChan(t *testing.T) {
+func TestWithinLimitsBuildsSameAsUncapped(t *testing.T) {
 	for _, name := range []string{"05-merge-node.md", "xlsx-01-shared-strings.xlsx"} {
 		src := caseSource(t, name)
 		free, err := Build(src, Options{})
@@ -66,19 +66,19 @@ func TestDungDuoiGioiHanThiDungNhuKhongChan(t *testing.T) {
 			t.Fatalf("%s: %v", name, err)
 		}
 		if free.Text != limited.Text || free.Text == "" {
-			t.Errorf("%s: giới hạn làm đổi đầu ra", name)
+			t.Errorf("%s: limits changed the output", name)
 		}
 	}
 }
 
-func TestGioiHanDungDungBienCuaSoDong(t *testing.T) {
+func TestRowLimitStopsExactlyAtBoundary(t *testing.T) {
 	src := caseSource(t, "05-merge-node.md")
-	// Mỗi dòng dữ liệu bắt đầu bằng "| ", trừ dòng header.
+	// Every data row starts with "| ", except the header row.
 	n := strings.Count(string(src.Data), "\n| ") - 1
 	if _, err := Build(src, Options{Limits: &Limits{MaxRows: n}}); err != nil {
-		t.Errorf("đúng %d dòng mà vẫn bị chặn: %v", n, err)
+		t.Errorf("exactly %d rows yet still blocked: %v", n, err)
 	}
 	if _, err := Build(src, Options{Limits: &Limits{MaxRows: n - 1}}); err == nil {
-		t.Errorf("%d dòng với giới hạn %d mà không bị chặn", n, n-1)
+		t.Errorf("%d rows with limit %d yet not blocked", n, n-1)
 	}
 }

@@ -1,3 +1,3 @@
-issue source.xlsx_hidden WARNING Flow dòng 5: hàng đang bị ẩn nhưng vẫn được đọc
-issue source.xlsx_cell WARNING Flow!D6:E6: ô gộp: chỉ ô trên cùng bên trái giữ giá trị
-sơ đồ: 2 lane, 3 phần tử, 2 cạnh
+issue source.xlsx_hidden WARNING Flow row 5: row is hidden but is still read
+issue source.xlsx_cell WARNING Flow!D6:E6: merged cell: only the top-left cell keeps its value
+diagram: 2 lanes, 3 elements, 2 edges

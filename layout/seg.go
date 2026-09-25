@@ -2,13 +2,13 @@ package layout
 
 import "fmt"
 
-// Res là một tài nguyên chứa dây: kênh ngang nằm giữa hai hàng, hoặc máng dọc
-// nằm giữa hai cột. Nhiều đoạn dây chia nhau một Res bằng cách nằm ở các track
-// khác nhau.
+// Res is a resource that holds wires: a horizontal channel between two rows, or
+// a vertical gutter between two columns. Several wire segments share a Res by
+// lying on different tracks.
 type Res struct {
-	Kind byte // 'C' là kênh, 'G' là máng
-	// Với kênh, A là hàng mà kênh nằm ngay phía trên. Với máng, A là lane và B
-	// là chỉ số máng trong lane đó.
+	Kind byte // 'C' is a channel, 'G' is a gutter
+	// For a channel, A is the row the channel lies directly above. For a gutter,
+	// A is the lane and B is the gutter index within that lane.
 	A, B int
 }
 
@@ -19,37 +19,38 @@ func (r Res) String() string {
 	return fmt.Sprintf("G:%d:%d", r.A, r.B)
 }
 
-// label gọi tên Res cho người đọc cảnh báo.
+// label names the Res for someone reading a warning.
 func (r Res) label() string {
 	if r.Kind == 'C' {
-		return fmt.Sprintf("kênh %d", r.A)
+		return fmt.Sprintf("channel %d", r.A)
 	}
-	return fmt.Sprintf("máng %d của lane %d", r.B, r.A)
+	return fmt.Sprintf("gutter %d of lane %d", r.B, r.A)
 }
 
-// Stub là chỗ một đoạn dây nối vào node hoặc vào đoạn khác, nhìn từ bên trong
-// Res: Pos là vị trí dọc theo Res, Dir là phía nối vào, -1 từ phía thấp và 1
-// từ phía cao.
+// Stub is where a wire segment connects to a node or to another segment, seen
+// from inside the Res: Pos is the position along the Res, Dir is the side it
+// connects from, -1 from the low side and 1 from the high side.
 type Stub struct{ Pos, Dir int }
 
-// Seg là một đoạn dây nằm trong một Res.
+// Seg is a wire segment lying in a Res.
 type Seg struct {
 	Res    Res
 	Lo, Hi int
-	// Key là id của node đích khi đoạn này dùng chung được với các đoạn khác
-	// cùng đích, để chúng gộp thành một đường. Rỗng nghĩa là đoạn riêng.
+	// Key is the id of the target node when this segment can be shared with
+	// other segments to the same target, so they merge into one line. Empty
+	// means a segment of its own.
 	Key   string
 	Track int
 	Stubs []Stub
 }
 
-// RefKind là nguồn của một toạ độ trong Sym.
+// RefKind is the source of a coordinate in Sym.
 type RefKind byte
 
 const (
-	RefSrc RefKind = 's' // lấy từ cổng ra của node nguồn
-	RefCol RefKind = 'c' // lấy từ tâm một cột
-	RefSeg RefKind = 'g' // lấy từ track của một đoạn dây
+	RefSrc RefKind = 's' // taken from the source node's exit port
+	RefCol RefKind = 'c' // taken from the center of a column
+	RefSeg RefKind = 'g' // taken from the track of a wire segment
 )
 
 type Ref struct {
@@ -58,8 +59,9 @@ type Ref struct {
 	Seg       *Seg
 }
 
-// SymPair nói điểm gấp thứ i lấy x từ đâu và y từ đâu. Pha hình học dựng toạ
-// độ thật từ đây sau khi đã biết vị trí pixel của cột và track.
+// SymPair says where the i-th bend point takes its x and its y from. The
+// geometry phase builds real coordinates from this once the pixel positions of
+// columns and tracks are known.
 type SymPair struct{ X, Y Ref }
 
 type sideKey struct {
@@ -74,7 +76,7 @@ func opp(s byte) byte {
 	return 'R'
 }
 
-// sideFrac là điểm giữa của từng mặt, tính theo phần của bề rộng và bề cao.
+// sideFrac is the midpoint of each side, as fractions of width and height.
 var sideFrac = map[byte][2]float64{
 	'R': {1.0, 0.5},
 	'L': {0.0, 0.5},

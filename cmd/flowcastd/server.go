@@ -24,22 +24,22 @@ import (
 //go:embed static
 var static embed.FS
 
-// multipartSlack là phần dư cho header của multipart ngoài chính nội dung file.
+// multipartSlack is the allowance for multipart headers on top of the file content itself.
 const multipartSlack = 64 << 10
 
 type server struct {
 	h    http.Handler
 	lim  flowcast.Limits
-	slot chan struct{} // số lần dựng chạy cùng lúc
-	wait time.Duration // chờ bao lâu để có chỗ trước khi báo bận
+	slot chan struct{} // number of builds running concurrently
+	wait time.Duration // how long to wait for a slot before reporting busy
 	log  *slog.Logger
 }
 
 func newServer(lim flowcast.Limits, concurrent int, log *slog.Logger) *server {
 	s := &server{lim: lim, slot: make(chan struct{}, concurrent), wait: 5 * time.Second, log: log}
 	mux := http.NewServeMux()
-	// Đăng ký từng file thay vì "GET /": mẫu đó khớp mọi đường dẫn, và GET vào
-	// /api/build sẽ ra 404 của file server thay vì 405.
+	// Register each file instead of "GET /": that pattern matches every path, and a
+	// GET to /api/build would get the file server's 404 instead of 405.
 	files, _ := fs.Sub(static, "static")
 	fileServer := http.FileServerFS(files)
 	for _, p := range []string{"GET /{$}", "GET /app.js", "GET /style.css"} {
@@ -55,8 +55,8 @@ func newServer(lim flowcast.Limits, concurrent int, log *slog.Logger) *server {
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) { s.h.ServeHTTP(w, r) }
 
-// secure đặt các header chặn trang bị nhúng hay bị đoán sai kiểu nội dung. Trang
-// không có script hay style nội tuyến nên CSP khóa được về 'self'.
+// secure sets headers that stop the page from being embedded or having its content
+// type sniffed. The page has no inline script or style, so the CSP can be locked to 'self'.
 func secure(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -86,8 +86,8 @@ func (s *server) logged(h http.Handler) http.Handler {
 	})
 }
 
-// apiField là một trường cấu hình ở dạng JSON. Trang web dựng form từ danh
-// sách này, nên thêm một trường trong layout là đủ để nó hiện ra ở web.
+// apiField is one config field in JSON form. The web page builds its form from
+// this list, so adding a field in layout is enough for it to appear on the web.
 type apiField struct {
 	Name    string `json:"name"`
 	Help    string `json:"help"`
@@ -107,8 +107,8 @@ func (s *server) fields(w http.ResponseWriter, _ *http.Request) {
 	})
 }
 
-// apiIssue là một Issue ở dạng JSON. location là chuỗi hiển thị sẵn, loc là
-// vị trí có cấu trúc để giao diện trỏ đúng dòng hay ô.
+// apiIssue is an Issue in JSON form. location is a ready-to-display string, loc is
+// the structured location so the UI can point at the exact row or cell.
 type apiIssue struct {
 	Code     string            `json:"code"`
 	Level    string            `json:"level"`
@@ -157,8 +157,8 @@ func fail(w http.ResponseWriter, status int, code, msg string) {
 		Issues: []apiIssue{}})
 }
 
-// statusOf chọn mã HTTP cho lỗi dừng việc dựng: vượt giới hạn là 413, quá thời
-// gian là 503, còn lại là file người dùng gửi không đọc được.
+// statusOf picks the HTTP status for an error that stops the build: exceeding a
+// limit is 413, a timeout is 503, anything else means the uploaded file could not be read.
 func statusOf(code string) int {
 	switch {
 	case code == "limit.timeout":
@@ -189,19 +189,19 @@ func (s *server) handle(w http.ResponseWriter, r *http.Request, build bool) {
 	if err != nil {
 		var tooBig *http.MaxBytesError
 		if errors.As(err, &tooBig) {
-			fail(w, http.StatusRequestEntityTooLarge, "limit.bytes", "file quá giới hạn "+itoa(s.lim.MaxBytes)+" byte")
+			fail(w, http.StatusRequestEntityTooLarge, "limit.bytes", "file exceeds the limit of "+itoa(s.lim.MaxBytes)+" bytes")
 			return
 		}
-		fail(w, http.StatusBadRequest, "request.file", "thiếu file: gửi multipart/form-data với trường file")
+		fail(w, http.StatusBadRequest, "request.file", "missing file: send multipart/form-data with a file field")
 		return
 	}
 	defer file.Close()
 	data, err := io.ReadAll(file)
 	if err != nil {
-		fail(w, http.StatusRequestEntityTooLarge, "limit.bytes", "file quá giới hạn "+itoa(s.lim.MaxBytes)+" byte")
+		fail(w, http.StatusRequestEntityTooLarge, "limit.bytes", "file exceeds the limit of "+itoa(s.lim.MaxBytes)+" bytes")
 		return
 	}
-	// Chỉ lấy phần tên: tên file đến từ trình duyệt của người lạ.
+	// Keep only the base name: the file name comes from a stranger's browser.
 	name := path.Base(strings.ReplaceAll(hdr.Filename, "\\", "/"))
 	src := flowcast.Source{Name: name, Data: data, Options: map[string]string{}}
 	for _, k := range []string{"sheet", "delimiter", "encoding"} {
@@ -210,7 +210,7 @@ func (s *server) handle(w http.ResponseWriter, r *http.Request, build bool) {
 		}
 	}
 	if !s.acquire(r.Context()) {
-		fail(w, http.StatusServiceUnavailable, "server.busy", "máy chủ đang bận, thử lại sau ít giây")
+		fail(w, http.StatusServiceUnavailable, "server.busy", "server is busy, try again in a few seconds")
 		return
 	}
 	defer func() { <-s.slot }()
@@ -223,7 +223,7 @@ func (s *server) handle(w http.ResponseWriter, r *http.Request, build bool) {
 		}
 		n, err := strconv.Atoi(v)
 		if err != nil {
-			fail(w, http.StatusBadRequest, "schema.bad_value", f.Name+" cần một số nguyên, nhận "+v)
+			fail(w, http.StatusBadRequest, "schema.bad_value", f.Name+" needs an integer, got "+v)
 			return
 		}
 		*f.Get(&cfg) = n
@@ -243,7 +243,7 @@ func (s *server) handle(w http.ResponseWriter, r *http.Request, build bool) {
 			return
 		}
 		s.log.Error("build", "err", err)
-		fail(w, http.StatusInternalServerError, "server.internal", "lỗi máy chủ")
+		fail(w, http.StatusInternalServerError, "server.internal", "internal server error")
 		return
 	}
 

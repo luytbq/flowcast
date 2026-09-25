@@ -1,16 +1,16 @@
 # input: 94-invalid-parent -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 8 [A-2]: parent "A-1" không phải id của một lane
-WARNING dòng 8 [A-2]: task không có cạnh ra
-check: 1 lỗi, 1 cảnh báo
+check: read table from markdown
+ERROR   line 8 [A-2]: parent "A-1" is not the id of a lane
+WARNING line 8 [A-2]: task has no outgoing edge
+check: 1 errors, 1 warnings
 [exit 1]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-ERROR   dòng 8 [A-2]: parent "A-1" không phải id của một lane
-WARNING dòng 8 [A-2]: task không có cạnh ra
-check: 1 lỗi, 1 cảnh báo
-build: dừng vì bảng có lỗi
+check: read table from markdown
+ERROR   line 8 [A-2]: parent "A-1" is not the id of a lane
+WARNING line 8 [A-2]: task has no outgoing edge
+check: 1 errors, 1 warnings
+build: stopped because the table has errors
 [exit 1]
 --- files
 7fda850c477e5d23  in.md

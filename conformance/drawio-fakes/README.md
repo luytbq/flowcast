@@ -1,14 +1,15 @@
-drawio CLI giả cho các bản ghi CLI có --png và --verify. Bản ghi mang dòng
-"# drawio: <tên>" thì test chạy CLI với PATH chỉ gồm thư mục <tên> ở đây, nên
-drawio thật trên máy không lọt vào.
+Fake drawio CLIs for the CLI transcripts that use --png and --verify. A transcript
+carrying the line "# drawio: <name>" makes the test run the CLI with a PATH that
+holds only the <name> directory here, so the real drawio on the machine cannot
+leak in.
 
-| tên | hành vi |
+| name | behavior |
 |---|---|
-| ok | ghi dòng lệnh nhận được vào file PNG, hoặc SVG không có data-cell-id |
-| stdout-fail | in lỗi ra stdout, mã thoát 1 |
-| fail | in lỗi ra stderr, mã thoát 1 |
-| silent | mã thoát 0 nhưng không ghi file nào |
-| none | không có drawio |
+| ok | writes the command line it received into the PNG file, or an SVG without data-cell-id |
+| stdout-fail | prints an error to stdout, exit code 1 |
+| fail | prints an error to stderr, exit code 1 |
+| silent | exit code 0 but writes no file |
+| none | no drawio |
 
-Phần so SVG của kiểm render được chốt riêng, trên SVG thật do drawio xuất, bằng
-verify-vectors.json.
+The SVG comparison part of the render check is pinned separately, on real SVG
+exported by drawio, through verify-vectors.json.

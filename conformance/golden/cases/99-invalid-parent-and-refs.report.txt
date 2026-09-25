@@ -1,8 +1,8 @@
-issue table.parent_not_empty ERROR   dòng 5 [A]: lane phải để trống parent
-issue ref.missing_parent ERROR   dòng 7 [A-1]: thiếu parent (id của lane chứa phần tử)
-issue table.parent_not_empty ERROR   dòng 8 [E1]: edge phải để trống parent
-issue schema.missing_key ERROR   dòng 8 [E1]: edge thiếu to
-issue ref.bad_target ERROR   dòng 9 [E2]: from=A là lane; cạnh chỉ nối start/end/task/condition/external
-issue ref.dangling ERROR   dòng 10 [A-2]: attach=KHONGCO trỏ tới id không tồn tại
-issue ref.bad_target ERROR   dòng 11 [A-3]: attach=B là lane; chỉ gắn được vào start/end/task/condition/external
-issue graph.no_out_edge WARNING dòng 7 [A-1]: task không có cạnh ra
+issue table.parent_not_empty ERROR   line 5 [A]: lane must leave parent empty
+issue ref.missing_parent ERROR   line 7 [A-1]: missing parent (id of the lane containing the element)
+issue table.parent_not_empty ERROR   line 8 [E1]: edge must leave parent empty
+issue schema.missing_key ERROR   line 8 [E1]: edge is missing to
+issue ref.bad_target ERROR   line 9 [E2]: from=A is lane; edges only connect start/end/task/condition/external
+issue ref.dangling ERROR   line 10 [A-2]: attach=KHONGCO points to an id that does not exist
+issue ref.bad_target ERROR   line 11 [A-3]: attach=B is lane; can only attach to start/end/task/condition/external
+issue graph.no_out_edge WARNING line 7 [A-1]: task has no outgoing edge

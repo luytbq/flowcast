@@ -9,9 +9,10 @@ import (
 	"github.com/luytbq/flowcast"
 )
 
-// TestVerifyKhopVector chạy kiểm render trên SVG thật do drawio xuất, nguyên vẹn
-// và bị làm lệch từng kiểu, và so danh sách điểm lệch với vector.
-func TestVerifyKhopVector(t *testing.T) {
+// TestVerifyMatchesVectors runs the render check on real SVGs exported by
+// drawio, both intact and distorted in each way, and compares the list of
+// mismatches with the vectors.
+func TestVerifyMatchesVectors(t *testing.T) {
 	data, err := os.ReadFile("../conformance/verify-vectors.json")
 	if err != nil {
 		t.Fatalf("%v", err)
@@ -30,7 +31,7 @@ func TestVerifyKhopVector(t *testing.T) {
 		}
 		r, err := flowcast.Build(flowcast.Source{Name: v.Case + ".md", Data: src}, flowcast.Options{})
 		if err != nil || r.Layout == nil {
-			t.Fatalf("%s: không dựng được: %v", v.Case, err)
+			t.Fatalf("%s: build failed: %v", v.Case, err)
 		}
 		got, err := Verify(*r.Layout, []byte(v.SVG))
 		if err != nil {

@@ -2,10 +2,11 @@ package num
 
 import "testing"
 
-// Các giá trị dưới đây chọn đúng chỗ làm tròn nửa chừng, nơi cách làm tròn ngây
-// thơ sẽ lệch:
-// 0.125 và 2.675 rơi xuống, 0.135 và 0.005 rơi lên, tuỳ giá trị nhị phân thật.
-func TestFmtLamTronHaiChuSo(t *testing.T) {
+// The values below sit exactly on halfway points, where naive rounding goes
+// wrong:
+// 0.125 and 2.675 round down, 0.135 and 0.005 round up, depending on the true
+// binary value.
+func TestFmtRoundsToTwoDecimals(t *testing.T) {
 	cases := []struct {
 		in   float64
 		want string
@@ -27,19 +28,19 @@ func TestFmtLamTronHaiChuSo(t *testing.T) {
 	}
 	for _, c := range cases {
 		if got := Fmt(c.in); got != c.want {
-			t.Errorf("Fmt(%v) = %q, cần %q", c.in, got, c.want)
+			t.Errorf("Fmt(%v) = %q, want %q", c.in, got, c.want)
 		}
 	}
 }
 
-func TestRndLenSoChanGanNhat(t *testing.T) {
+func TestRndRoundsUpToNearestEven(t *testing.T) {
 	cases := []struct {
 		in   float64
 		want int
 	}{{0, 0}, {1, 2}, {2, 2}, {2.1, 4}, {49.2, 50}, {50, 50}, {-1, 0}}
 	for _, c := range cases {
 		if got := Rnd(c.in); got != c.want {
-			t.Errorf("Rnd(%v) = %d, cần %d", c.in, got, c.want)
+			t.Errorf("Rnd(%v) = %d, want %d", c.in, got, c.want)
 		}
 	}
 }

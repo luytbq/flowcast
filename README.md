@@ -1,151 +1,155 @@
 # flowcast
 
-flowcast biến một sơ đồ luồng viết bằng bảng hoặc bằng mermaid thành file draw.io
-đã xếp hình sẵn. Mọi toạ độ do tool tính, cùng một đầu vào luôn cho ra cùng một
-file, và không ai phải kéo node hay sửa XML bằng tay.
+flowcast turns a flow diagram written as a table or in mermaid into a draw.io file
+with the layout already done. Every coordinate is computed by the tool, the same input
+always produces the same file, and nobody has to drag nodes around or edit XML by hand.
 
-Công cụ vẽ tự động thường xếp hình không đẹp: dây cắt qua node, nhãn đè nhau, các
-nhánh rẽ lộn xộn. flowcast có engine xếp hình và đi dây riêng, tự kiểm hình học
-trước khi ghi file, và kiểm được cả việc draw.io có vẽ đúng thứ nó đã tính hay
-không.
+Automatic diagram tools often produce ugly layouts: wires cutting through nodes,
+overlapping labels, messy branches. flowcast has its own layout and routing engine,
+self-checks the geometry before writing the file, and can even check whether draw.io
+actually draws what it computed.
 
-## Làm được gì
+## What it does
 
-- Đọc bảng luồng viết bằng markdown, csv hoặc xlsx, và flowchart mermaid.
-- Vẽ bốn hướng: từ trên xuống (TD), từ dưới lên (BT), trái sang phải (LR), phải
-  sang trái (RL). Sơ đồ có lane thì lane là băng dọc hoặc băng ngang tùy hướng.
-  Bảng không khai báo lane nào thì vẽ thành flowchart.
-- Sinh lại sơ đồ mà giữ chỉnh sửa tay trong draw.io: vị trí node, bề rộng lane,
-  điểm gấp của dây, và các hình người dùng tự vẽ thêm.
-- Tự kiểm hình học trước khi ghi: dây cắt node, hai dây chồng nhau, nhãn đè.
-- Xuất PNG, và so đường dây draw.io vẽ ra với toạ độ đã tính.
-- Dùng được qua dòng lệnh, qua dịch vụ web, và như một thư viện Go.
+- Reads flow tables written in markdown, csv or xlsx, and mermaid flowcharts.
+- Draws in four directions: top-down (TD), bottom-up (BT), left-to-right (LR),
+  right-to-left (RL). In a diagram with lanes, the lanes are vertical or horizontal
+  bands depending on the direction. A table that declares no lane is drawn as a
+  flowchart.
+- Regenerates a diagram while keeping manual edits made in draw.io: node positions,
+  lane widths, wire waypoints, and shapes the user drew on their own.
+- Self-checks the geometry before writing: wires crossing nodes, two overlapping
+  wires, overlapping labels.
+- Exports PNG, and compares the wires draw.io draws against the computed coordinates.
+- Usable from the command line, as a web service, and as a Go library.
 
 ## Build
 
-Cần Go 1.25 trở lên.
+Requires Go 1.25 or later.
 
 ```
-go build -o flowcast ./cmd/flowcast      # dòng lệnh
-go build -o flowcastd ./cmd/flowcastd    # dịch vụ web
+go build -o flowcast ./cmd/flowcast      # command line
+go build -o flowcastd ./cmd/flowcastd    # web service
 ```
 
-Xuất ảnh và kiểm render cần thêm drawio CLI (bản desktop của draw.io) trên máy.
-Thiếu nó thì mọi chức năng khác vẫn chạy.
+Image export and render checking also need the drawio CLI (the draw.io desktop app)
+on the machine. Without it every other feature still works.
 
-## Chạy từ dòng lệnh
+## Running from the command line
 
 ```
-./flowcast check bang.md                     # chỉ kiểm bảng, không vẽ
-./flowcast build bang.md                     # ghi bang.drawio cạnh file đầu vào
-./flowcast build so-do.mmd                   # flowchart mermaid, hoặc khối mermaid trong file .md
-./flowcast build bang.md --direction LR
-./flowcast build bang.md -o ra.drawio --png --verify
+./flowcast check table.md                    # only check the table, do not draw
+./flowcast build table.md                    # write table.drawio next to the input file
+./flowcast build diagram.mmd                 # mermaid flowchart, or a mermaid block in a .md file
+./flowcast build table.md --direction LR
+./flowcast build table.md -o out.drawio --png --verify
 ```
 
-Định dạng bảng đầu vào nằm ở [docs/flow-table-format.md](docs/flow-table-format.md).
+The input table format is described in [docs/flow-table-format.md](docs/flow-table-format.md).
 
-### Tham số chung
+### Common options
 
-| Tham số | Ý nghĩa |
+| Option | Meaning |
 |---|---|
-| -o, --output FILE | File .drawio ghi ra. Mặc định cùng tên với file đầu vào, đổi đuôi. |
-| --title T | Tiêu đề sơ đồ. Mặc định lấy từ tiêu đề trong file nguồn. |
-| --direction D | TD, BT, LR hoặc RL. Mặc định theo nguồn; nguồn không nói thì TD. |
-| --mode merge hoặc force | Dùng khi file đích đã có. merge giữ chỉnh sửa tay, force sinh lại toàn bộ. Không truyền thì tool hỏi, hoặc dừng nếu không chạy trong terminal. |
-| --no-backup | Không ghi bản sao .bak của file cũ trước khi ghi đè. |
-| --png [FILE] | Xuất ảnh PNG bằng drawio CLI. Không ghi FILE thì ảnh nằm cạnh file .drawio. |
-| --verify | Xuất SVG bằng drawio CLI rồi so từng đường dây với toạ độ đã tính. |
-| --layout-json FILE | Ghi toạ độ đã tính ra JSON, để công cụ khác đọc. |
-| --sheet S | Với xlsx: tên sheet chứa bảng. |
-| --delimiter D | Với csv: dấu phân cách, khi không muốn tool tự đoán. |
-| --encoding E | Với csv: bảng mã, khi không muốn tool tự đoán. |
+| -o, --output FILE | The .drawio file to write. Defaults to the input file name with the extension changed. |
+| --title T | Diagram title. Defaults to the title in the source file. |
+| --direction D | TD, BT, LR or RL. Defaults to the source; if the source says nothing, TD. |
+| --mode merge or force | Used when the target file already exists. merge keeps manual edits, force regenerates everything. If not given, the tool asks, or stops if not running in a terminal. |
+| --no-backup | Do not write a .bak copy of the old file before overwriting. |
+| --png [FILE] | Export a PNG image with the drawio CLI. Without FILE the image is placed next to the .drawio file. |
+| --verify | Export SVG with the drawio CLI and compare each wire against the computed coordinates. |
+| --layout-json FILE | Write the computed coordinates to JSON, for other tools to read. |
+| --sheet S | For xlsx: name of the sheet holding the table. |
+| --delimiter D | For csv: the delimiter, when you do not want the tool to guess. |
+| --encoding E | For csv: the encoding, when you do not want the tool to guess. |
 
-### Tham số xếp hình
+### Layout options
 
-Đơn vị là điểm ảnh. Chạy lệnh flowcast --help để xem miền giá trị của từng tham số.
+Units are pixels. Run flowcast --help to see the value range of each option.
 
-| Tham số | Mặc định | Ý nghĩa |
+| Option | Default | Meaning |
 |---|---|---|
-| --task-min-w | 120 | Bề rộng tối thiểu của hộp task |
-| --task-max-w | 240 | Bề rộng tối đa của hộp task |
-| --cond-wrap | 150 | Bề rộng ngắt dòng trong hình thoi |
-| --term-wrap | 170 | Bề rộng ngắt dòng của start, end và external |
-| --db-wrap | 130 | Bề rộng ngắt dòng của db |
-| --text-wrap | 260 | Bề rộng ngắt dòng của ghi chú |
-| --label-wrap | 180 | Bề rộng ngắt dòng của nhãn trên dây |
-| --track-gap | 12 | Khoảng cách giữa hai dây chạy song song |
-| --gutter-margin | 15 | Lề từ mép khe dọc giữa hai cột tới dây đầu tiên |
-| --channel-margin | 12 | Lề từ mép khe ngang giữa hai hàng tới dây đầu tiên |
-| --min-gutter | 24 | Khoảng trống tối thiểu giữa hai cột |
-| --min-channel | 30 | Khoảng trống tối thiểu giữa hai hàng |
-| --attach-gap | 40 | Khoảng cách từ db hoặc ghi chú tới node nó bám |
-| --lane-header | 30 | Bề dày thanh tên lane |
-| --pool-header | 30 | Bề dày thanh tiêu đề sơ đồ |
-| --min-lane-w | 120 | Bề dày tối thiểu của một lane |
-| --label-pad | 4 | Lề quanh chữ của nhãn trên dây |
+| --task-min-w | 120 | Minimum width of a task box |
+| --task-max-w | 240 | Maximum width of a task box |
+| --cond-wrap | 150 | Wrap width inside a diamond |
+| --term-wrap | 170 | Wrap width of start, end and external |
+| --db-wrap | 130 | Wrap width of db |
+| --text-wrap | 260 | Wrap width of notes |
+| --label-wrap | 180 | Wrap width of labels on wires |
+| --track-gap | 12 | Distance between two parallel wires |
+| --gutter-margin | 15 | Margin from the edge of the vertical gap between two columns to the first wire |
+| --channel-margin | 12 | Margin from the edge of the horizontal gap between two rows to the first wire |
+| --min-gutter | 24 | Minimum space between two columns |
+| --min-channel | 30 | Minimum space between two rows |
+| --attach-gap | 40 | Distance from a db or note to the node it attaches to |
+| --lane-header | 30 | Thickness of the lane name bar |
+| --pool-header | 30 | Thickness of the diagram title bar |
+| --min-lane-w | 120 | Minimum thickness of a lane |
+| --label-pad | 4 | Padding around the text of a label on a wire |
 
-### Mã thoát
+### Exit codes
 
-| Mã | Khi nào |
+| Code | When |
 |---|---|
-| 0 | Thành công |
-| 1 | Không đọc được file, bảng có lỗi, hoặc không ghi được file |
-| 2 | Đã ghi file nhưng tự kiểm hình học báo lỗi |
-| 3 | Đã ghi file nhưng xuất ảnh hỏng, hoặc draw.io vẽ lệch toạ độ đã tính |
-| 4 | Không ghi: file đích đã có mà chưa chọn chế độ, hoặc không đọc được file cũ để merge |
+| 0 | Success |
+| 1 | Could not read the file, the table has errors, or could not write the file |
+| 2 | The file was written but the geometry self-check reported errors |
+| 3 | The file was written but image export failed, or draw.io drew something that deviates from the computed coordinates |
+| 4 | Nothing written: the target file already exists and no mode was chosen, or the old file could not be read for merging |
 
-Bảng quá 50000 dòng hoặc file quá 64 MB bị từ chối.
+Tables over 50000 rows or files over 64 MB are rejected.
 
-## Chạy dịch vụ web
+## Running the web service
 
 ```
 ./flowcastd -addr :8080
-curl -F file=@bang.md 'localhost:8080/api/build?download=1' -o bang.drawio
+curl -F file=@table.md 'localhost:8080/api/build?download=1' -o table.drawio
 ```
 
-Mở địa chỉ gốc của dịch vụ trong trình duyệt sẽ ra trang upload.
+Opening the service's root address in a browser shows the upload page.
 
-| Đường dẫn | Việc làm |
+| Path | What it does |
 |---|---|
-| POST /api/build | Dựng sơ đồ, trả JSON gồm file .drawio và các phát hiện. Thêm download=1 để tải thẳng file .drawio. |
-| POST /api/check | Chỉ kiểm bảng. |
-| GET /api/fields | Danh sách tham số xếp hình kèm mặc định và miền giá trị. |
-| GET /healthz | Kiểm dịch vụ còn sống. |
+| POST /api/build | Builds the diagram, returns JSON with the .drawio file and the findings. Add download=1 to download the .drawio file directly. |
+| POST /api/check | Only checks the table. |
+| GET /api/fields | List of layout options with defaults and value ranges. |
+| GET /healthz | Checks that the service is alive. |
 
-Hai đường dẫn POST nhận multipart với trường file, cùng các trường tùy chọn title,
-direction, sheet, delimiter, encoding và mọi tham số xếp hình (bỏ hai gạch đầu).
-Trang upload và dòng lệnh dựng danh sách tham số từ cùng một khai báo, nên hai
-bên luôn khớp nhau.
+Both POST paths accept multipart with a file field, plus the optional fields title,
+direction, sheet, delimiter, encoding and every layout option (without the two leading
+dashes). The upload page and the command line build their option lists from the same
+declaration, so the two always match.
 
-Cờ -concurrent đặt số lần dựng chạy cùng lúc, mặc định bằng số CPU. Yêu cầu phải
-chờ quá 5 giây để có chỗ thì nhận mã 503.
+The -concurrent flag sets the number of builds running at the same time, defaulting
+to the number of CPUs. A request that has to wait more than 5 seconds for a slot gets
+status 503.
 
-Dịch vụ web chặn chặt hơn dòng lệnh: file tới 1 MB, bảng tới 1000 dòng và 1000
-cạnh, mỗi lần dựng tới 10 giây. Vượt giới hạn thì nhận mã 413. Bảng có lỗi nhận
-422, tham số sai nhận 400. Dịch vụ không merge, không đọc ghi file trên máy chủ
-và không gọi drawio.
+The web service is stricter than the command line: files up to 1 MB, tables up to
+1000 rows and 1000 edges, each build up to 10 seconds. Exceeding a limit gets status
+413. A table with errors gets 422, invalid options get 400. The service does not merge,
+does not read or write files on the server, and does not call drawio.
 
-## Tài liệu
+## Documentation
 
-| Muốn biết | Đọc |
+| To learn | Read |
 |---|---|
-| Viết bảng đầu vào thế nào | [docs/flow-table-format.md](docs/flow-table-format.md) |
-| Nghĩa của các từ dùng trong code và tài liệu | [CONTEXT.md](CONTEXT.md) |
-| Code nằm ở đâu, dữ liệu đi qua những package nào | [docs/structure.md](docs/structure.md) |
-| Engine tính toạ độ và đi dây thế nào | [docs/algorithm.md](docs/algorithm.md) |
-| Chạy kiểm tra, sinh lại golden, thêm case | [docs/testing.md](docs/testing.md) |
-| Thiết kế tổng thể của core | [docs/core-design.md](docs/core-design.md) |
-| Sinh lại mà giữ chỉnh sửa tay hoạt động ra sao | [docs/merge-design.md](docs/merge-design.md) |
-| Đọc csv và xlsx | [docs/input-formats-design.md](docs/input-formats-design.md) |
-| Các quyết định đã chốt và lý do | [docs/adr/](docs/adr/) |
+| How to write the input table | [docs/flow-table-format.md](docs/flow-table-format.md) |
+| What the terms used in code and docs mean | [CONTEXT.md](CONTEXT.md) |
+| Where the code lives, which packages the data passes through | [docs/structure.md](docs/structure.md) |
+| How the engine computes coordinates and routes wires | [docs/algorithm.md](docs/algorithm.md) |
+| Running checks, regenerating goldens, adding cases | [docs/testing.md](docs/testing.md) |
+| Overall design of the core | [docs/core-design.md](docs/core-design.md) |
+| How regenerating while keeping manual edits works | [docs/merge-design.md](docs/merge-design.md) |
+| Reading csv and xlsx | [docs/input-formats-design.md](docs/input-formats-design.md) |
+| Settled decisions and their reasons | [docs/adr/](docs/adr/) |
 
-## Giấy phép
+## License
 
-MIT, xem [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
 
-Tool đo chữ bằng một bảng độ rộng ký tự sinh từ font Verdana, một font thương mại
-của Microsoft, và nhúng bảng này vào binary. Bảng số đo không phải file font,
-nhưng cần người hiểu luật xem qua trước khi phân phối công khai. Lý do phải nhúng
-bảng, và phương án dự phòng là đổi sang một font tự do, nằm ở mục 11 của
+The tool measures text with a character width table generated from the Verdana font,
+a commercial font from Microsoft, and embeds this table in the binary. A table of
+measurements is not a font file, but someone who understands the law should review it
+before public distribution. Why the table has to be embedded, and the fallback plan of
+switching to a free font, are in section 11 of
 [docs/core-design.md](docs/core-design.md).

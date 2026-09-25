@@ -1,7 +1,7 @@
 # input: csv-01-comma -> in.csv
 $ ["check", "$T/in.csv", "--encoding", "UTF8"]
-check: đọc bảng từ csv (dấu phẩy, UTF8)
-check: 0 lỗi, 0 cảnh báo
+check: read table from csv (comma, UTF8)
+check: 0 errors, 0 warnings
 [exit 0]
 --- files
 96a08709c8ded76c  in.csv

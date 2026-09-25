@@ -6,8 +6,8 @@ import (
 	"github.com/luytbq/flowcast/num"
 )
 
-// Shape là hình nguyên thủy của một phần tử. Result và writer nói bằng hình
-// nguyên thủy, không bằng loại ngữ nghĩa, để writer không phải biết về kind.
+// Shape is the primitive shape of an element. Result and writers speak in
+// primitive shapes, not semantic types, so writers need not know about kinds.
 type Shape string
 
 const (
@@ -20,21 +20,22 @@ const (
 	ShapeNote          Shape = "note"
 )
 
-// NodeKind là khai báo hình học của một loại phần tử: engine và writer chỉ đọc
-// khai báo này, không so tên loại. Thêm một loại phần tử là thêm một dòng vào
-// Kinds; kích thước và ngắt dòng của loại mới lấy mặc định ở SizeItem nếu không
-// khai báo riêng.
+// NodeKind is the geometry declaration of an element type: the engine and
+// writers read only this declaration and never compare type names. Adding an
+// element type means adding one line to Kinds; the new type's size and wrapping
+// fall back to the defaults in SizeItem unless declared separately.
 //
-// Luật dây ra dùng chung cho mọi loại nên không nằm ở đây: dây ra chỉ đi ở mặt
-// trái, phải hoặc đáy, không bao giờ ở đỉnh.
+// The outgoing wire rule is shared by all types, so it does not live here:
+// outgoing wires leave only from the left, right or bottom side, never the top.
 type NodeKind struct {
 	Shape Shape
-	// EntryTopOnly: dây vào chỉ nối vào đỉnh. Engine không đặt phần tử cùng hàng
-	// với nguồn của nó và không cho dây đi ngang vào mặt bên.
+	// EntryTopOnly: incoming wires connect only at the top. The engine does not
+	// place the element on the same row as its source and does not let wires
+	// enter a lateral side horizontally.
 	EntryTopOnly bool
 }
 
-// Kinds khai báo hình học cho từng loại phần tử.
+// Kinds declares the geometry of each element type.
 var Kinds = map[string]NodeKind{
 	"task":      {Shape: ShapeRect},
 	"condition": {Shape: ShapeDiamond, EntryTopOnly: true},
@@ -45,7 +46,7 @@ var Kinds = map[string]NodeKind{
 	"text":      {Shape: ShapeNote},
 }
 
-// kindOf trả về khai báo của một loại; loại chưa khai báo coi như hộp chữ nhật.
+// kindOf returns the declaration of a type; an undeclared type counts as a rectangle.
 func kindOf(kind string) NodeKind {
 	if k, ok := Kinds[kind]; ok {
 		return k
@@ -53,10 +54,10 @@ func kindOf(kind string) NodeKind {
 	return NodeKind{Shape: ShapeRect}
 }
 
-// singlePort nói hình này chỉ có một điểm nối giữa mỗi mặt. Đường viền xiên
-// hoặc cong không có đoạn thẳng nào để chia cổng như cạnh hộp chữ nhật, nên
-// nhiều dây trên cùng một mặt phải gộp vào đúng đỉnh của mặt đó, trừ khi buộc
-// phải tách.
+// singlePort reports whether this shape has only one connection point, at the
+// middle of each side. A slanted or curved outline has no straight stretch to
+// split into ports like a rectangle's side, so several wires on the same side
+// must converge on that side's vertex unless they are forced apart.
 func (s Shape) singlePort() bool {
 	switch s {
 	case ShapeDiamond, ShapeEllipse, ShapeDoubleEllipse, ShapeDashedEllipse:
@@ -65,11 +66,12 @@ func (s Shape) singlePort() bool {
 	return false
 }
 
-// outline là điểm trên đường viền của hình, trên mặt side, ở vị trí t dọc theo
-// mặt đó, tính bằng tỉ lệ khung bao. Hộp chữ nhật thì điểm nằm ngay trên cạnh;
-// hình thoi và elip thì điểm lùi vào trong khung bao cho tới khi chạm đường
-// viền, để draw.io vẽ đầu dây đúng chỗ đã tính. Làm tròn tới hai chữ số như
-// writer ghi ra, để merge đọc lại file thấy cổng khớp với cổng tính được.
+// outline is the point on the shape's outline, on side side, at position t
+// along that side, as fractions of the bounding box. For a rectangle the point
+// lies right on the edge; for diamonds and ellipses the point moves inward from
+// the bounding box until it meets the outline, so draw.io draws the wire end
+// exactly where it was computed. Rounded to two digits as the writer outputs
+// it, so that merge reading the file back sees ports matching the computed ones.
 func (s Shape) outline(side byte, t float64) [2]float64 {
 	inset := 0.0
 	switch s {

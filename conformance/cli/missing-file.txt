@@ -1,9 +1,9 @@
 # input: 03-condition-two -> in.md
 $ ["check", "$T/khong-co.md"]
-ERROR   không đọc được $T/khong-co.md: No such file or directory
+ERROR   cannot read $T/khong-co.md: No such file or directory
 [exit 1]
 $ ["build", "$T/khong-co.md"]
-ERROR   không đọc được $T/khong-co.md: No such file or directory
+ERROR   cannot read $T/khong-co.md: No such file or directory
 [exit 1]
 --- files
 35ce030c1847ff7d  in.md

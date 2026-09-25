@@ -1,14 +1,14 @@
 # input: 03-condition-two -> so.do.md
 # drawio: ok
 $ ["build", "$T/so.do.md", "--png=$T/b.png"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/so.do.drawio (1 lane, 4 phần tử, 3 cạnh, 325.26x334px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode new
+build: wrote $T/so.do.drawio (1 lanes, 4 elements, 3 edges, 325.26x334px)
+layout: 0 errors, 0 warnings
 png: $T/b.png
 [exit 0]
 --- files
-0f1a050d0935b5de  b.png
+32dc4544cbadce07  b.png
 d6401975adfee782  so.do.drawio
 35ce030c1847ff7d  so.do.md

@@ -1,2 +1,2 @@
-engine layout.attach-far: D3: không còn ô trống cạnh A-2, đặt xa hơn
-sơ đồ: 2 lane, 6 phần tử, 2 cạnh
+engine layout.attach-far: D3: no free cell next to A-2, placed farther away
+diagram: 2 lanes, 6 elements, 2 edges

@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-// fieldLimit là độ dài tối đa của một ô, để một file hỏng thiếu dấu nháy đóng
-// không nuốt cả file vào một ô.
+// fieldLimit is the maximum length of one cell, so a broken file missing a
+// closing quote does not swallow the whole file into one cell.
 const fieldLimit = 131072
 
 type csvState int
@@ -20,14 +20,14 @@ const (
 	eatCRNL
 )
 
-// readCSV đọc csv với dấu phân cách d, theo cách các bảng tính xuất ra: dấu nháy
-// kép bao ô, hai dấu nháy liền nhau trong ô là một dấu nháy, và không có ký tự
-// thoát.
+// readCSV reads csv with delimiter d, the way spreadsheets export it: double
+// quotes enclose a cell, two adjacent quotes inside a cell are one quote, and
+// there is no escape character.
 //
-// Không dùng encoding/csv vì nó xử lý hai góc khác với điều người dùng bảng tính
-// chờ đợi: "a"b ra a"b thay vì ab, và dòng trống bị bỏ qua thay vì ra một hàng
-// rỗng, trong khi hàng rỗng là thứ kết thúc bảng. Hành vi được chốt trên
-// conformance/csv-vectors.json.
+// encoding/csv is not used because it handles two corners differently from what
+// spreadsheet users expect: "a"b yields a"b instead of ab, and a blank line is
+// skipped instead of yielding an empty row, while an empty row is what ends the
+// table. The behavior is pinned by conformance/csv-vectors.json.
 func readCSV(text string, d rune) ([][]string, error) {
 	var (
 		records [][]string
@@ -52,7 +52,7 @@ func readCSV(text string, d rune) ([][]string, error) {
 		switch state {
 		case startRecord:
 			if c == eol {
-				return nil // dòng trống: một hàng rỗng
+				return nil // blank line: one empty row
 			}
 			if newline {
 				state = eatCRNL
@@ -87,7 +87,7 @@ func readCSV(text string, d rune) ([][]string, error) {
 		case inQuotedField:
 			switch {
 			case c == eol:
-				// Dòng hết khi đang trong dấu nháy: ô tiếp tục sang dòng sau.
+				// Line ends inside quotes: the cell continues on the next line.
 			case c == '"':
 				state = quoteInQuotedField
 			default:
@@ -105,7 +105,7 @@ func readCSV(text string, d rune) ([][]string, error) {
 				save()
 				state = map[bool]csvState{true: startRecord, false: eatCRNL}[c == eol]
 			default:
-				// Không strict: chữ sau dấu nháy đóng được nối vào ô.
+				// Not strict: text after the closing quote is appended to the cell.
 				state = inField
 				return add(c)
 			}
@@ -153,8 +153,8 @@ func readCSV(text string, d rune) ([][]string, error) {
 	}
 }
 
-// splitKeepEnds cắt dòng, giữ nguyên ký tự xuống dòng ở cuối mỗi dòng, và nhận
-// cả LF, CR lẫn CRLF làm ranh giới.
+// splitKeepEnds splits lines, keeping the line break at the end of each line,
+// and accepts LF, CR and CRLF as boundaries.
 func splitKeepEnds(s string) []string {
 	var out []string
 	for len(s) > 0 {

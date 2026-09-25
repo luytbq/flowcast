@@ -1,16 +1,16 @@
 # input: xlsx-05-formulas -> in.xlsx
 $ ["check", "$T/in.xlsx"]
-check: đọc bảng từ xlsx sheet Flow
-WARNING Flow!D4: ô công thức chưa có giá trị lưu sẵn, đọc thành rỗng
-check: 0 lỗi, 1 cảnh báo
+check: read table from xlsx sheet Flow
+WARNING Flow!D4: formula cell has no cached value, read as empty
+check: 0 errors, 1 warnings
 [exit 0]
 $ ["build", "$T/in.xlsx"]
-check: đọc bảng từ xlsx sheet Flow
-WARNING Flow!D4: ô công thức chưa có giá trị lưu sẵn, đọc thành rỗng
-check: 0 lỗi, 1 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (1 lane, 2 phần tử, 1 cạnh, 139.03x244px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from xlsx sheet Flow
+WARNING Flow!D4: formula cell has no cached value, read as empty
+check: 0 errors, 1 warnings
+build: mode new
+build: wrote $T/in.drawio (1 lanes, 2 elements, 1 edges, 139.03x244px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 4ef3ac1bdb0a3d75  in.drawio

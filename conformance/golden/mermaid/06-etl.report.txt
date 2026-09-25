@@ -1,4 +1,4 @@
-issue mermaid.db_attach WARNING dòng 3: db src đứng cạnh extract thay cho mũi tên nối
-issue mermaid.db_attach WARNING dòng 10: db dwh đứng cạnh load thay cho mũi tên nối
-issue graph.no_out_edge WARNING dòng 13 [log]: task không có cạnh ra
-sơ đồ: 0 lane, 12 phần tử, 10 cạnh
+issue mermaid.db_attach WARNING line 3: db src placed beside extract instead of a connecting arrow
+issue mermaid.db_attach WARNING line 10: db dwh placed beside load instead of a connecting arrow
+issue graph.no_out_edge WARNING line 13 [log]: task has no outgoing edge
+diagram: 0 lanes, 12 elements, 10 edges

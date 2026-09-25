@@ -1,14 +1,14 @@
 # input: 29-route-l-down -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (2 lane, 6 phần tử, 6 cạnh, 448.38x494px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode new
+build: wrote $T/in.drawio (2 lanes, 6 elements, 6 edges, 448.38x494px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 f462019ad27ed440  in.drawio

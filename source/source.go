@@ -8,26 +8,26 @@ import (
 	"github.com/luytbq/flowcast/model"
 )
 
-// Source là đầu vào chưa phân tích.
+// Source is unparsed input.
 //
-// Bytes chứ không phải đường dẫn: CLI dựng Source từ file, web dựng từ upload,
-// và core không cần biết bên nào.
+// Bytes rather than a path: the CLI builds a Source from a file, the web service
+// from an upload, and the core does not need to know which.
 type Source struct {
 	Data []byte
-	// Name là tên hiển thị, dùng làm tiêu đề dự phòng và để đoán định dạng.
-	// Không bao giờ dùng để mở file.
+	// Name is the display name, used as the fallback title and to guess the format.
+	// It is never used to open a file.
 	Name    string
-	Format  string // rỗng nghĩa là tự đoán từ Name
+	Format  string // empty means guess from Name
 	Options map[string]string
-	// MaxUnzipped chặn tổng số byte giải nén từ một file xlsx, vì một file zip
-	// vài KB có thể giải ra hàng GB. 0 là không chặn.
+	// MaxUnzipped caps the total bytes decompressed from an xlsx file, because a
+	// zip file of a few KB can expand to gigabytes. 0 means no cap.
 	MaxUnzipped int64
 }
 
-// Parse đọc một Source thành Table.
+// Parse reads a Source into a Table.
 //
-// Tiêu đề lùi về tên nguồn khi nguồn không tự khai báo, đúng như bản tham
-// chiếu lùi về tên file.
+// The title falls back to the source name when the source does not declare one,
+// just as the reference implementation falls back to the file name.
 func Parse(s Source) (model.Table, error) {
 	format := s.Format
 	if format == "" {
@@ -51,10 +51,10 @@ func Parse(s Source) (model.Table, error) {
 		t, err = parseXLSX(s.Data, s.Name, s.Options["sheet"], s.MaxUnzipped)
 	case "":
 		return model.Table{}, model.Errf("source.unknown_format",
-			"không đoán được định dạng của %q; truyền Format", s.Name)
+			"cannot guess the format of %q; pass Format", s.Name)
 	default:
 		return model.Table{}, model.Errf("source.unsupported",
-			"định dạng %q chưa hỗ trợ", format)
+			"format %q is not supported", format)
 	}
 	if err != nil {
 		return model.Table{}, err
@@ -79,8 +79,8 @@ func guessFormat(name string) string {
 	return ""
 }
 
-// Ext tách đuôi file. Dấu chấm ở đầu tên file không tính là dấu tách đuôi, nên
-// file ẩn ".md" không có đuôi.
+// Ext returns the file extension. A leading dot in the file name does not count
+// as an extension separator, so the hidden file ".md" has no extension.
 func Ext(path string) string {
 	base := filepath.Base(path)
 	trimmed := strings.TrimLeft(base, ".")
@@ -101,9 +101,10 @@ func isCode(err error, code string) bool {
 	return ok && e.Code == code
 }
 
-// mermaidBlock lấy khối ```mermaid đầu tiên của một file markdown không có Flow
-// Table, như README nhúng sơ đồ. Các dòng ngoài khối được thay bằng dòng trống
-// để số dòng trong Issue vẫn là số dòng của file gốc.
+// mermaidBlock takes the first ```mermaid block of a markdown file that has no
+// Flow Table, such as a README embedding a diagram. Lines outside the block are
+// replaced with blank lines so line numbers in Issues are still those of the
+// original file.
 func mermaidBlock(data []byte) ([]byte, bool) {
 	lines := strings.Split(string(data), "\n")
 	start := -1

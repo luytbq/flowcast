@@ -1,10 +1,10 @@
-// Package flowcast biến một sơ đồ luồng viết bằng bảng thành file draw.io có bố
-// cục tất định.
+// Package flowcast turns a flow diagram written as a table into a draw.io file
+// with a deterministic layout.
 //
-// Build là điểm vào duy nhất. Nó không chạm filesystem, không gọi tiến trình
-// ngoài và không in gì ra: bytes vào, văn bản đích cộng dữ liệu chẩn đoán ra.
-// Nhờ vậy cùng một đường code phục vụ được CLI đọc file và dịch vụ web nhận
-// upload. Xem docs/core-design.md.
+// Build is the only entry point. It does not touch the filesystem, does not run
+// external processes and prints nothing: bytes in, target text plus diagnostics
+// out. That way the same code path serves both the CLI reading files and the web
+// service receiving uploads. See docs/core-design.md.
 package flowcast
 
 import (
@@ -27,25 +27,26 @@ type (
 	Warning = layout.Warning
 )
 
-// Options là tham số của một lần dựng.
+// Options are the parameters of one build.
 type Options struct {
-	// Config là tham số xếp hình. Giá trị rỗng nghĩa là layout.DefaultConfig().
+	// Config holds the layout parameters. The zero value means layout.DefaultConfig().
 	Config *layout.Config
-	// Title thay tiêu đề lấy từ nguồn. Rỗng thì giữ tiêu đề của nguồn.
+	// Title replaces the title taken from the source. Empty keeps the source title.
 	Title string
-	// Previous là file .drawio sinh lần trước, có thể đã được sửa tay. Khác nil
-	// thì sơ đồ mới giữ lại những chỉnh sửa đó, xem gói merge. Previous chỉ dùng
-	// được một lần: các trang của nó được chuyển sang file mới.
+	// Previous is the .drawio file generated last time, possibly with manual
+	// edits. When non-nil, the new diagram keeps those edits, see package merge.
+	// Previous can only be used once: its pages are moved to the new file.
 	Previous *merge.Old
-	// Direction là hướng của sơ đồ: TD, BT, LR hoặc RL. Rỗng thì theo hướng nguồn
-	// khai báo, nguồn không khai báo thì TD.
+	// Direction is the diagram direction: TD, BT, LR or RL. Empty follows the
+	// direction the source declares, and TD if the source declares none.
 	Direction string
-	// Limits chặn tài nguyên, xem CLILimits và WebLimits. nil là không chặn.
-	// Vượt giới hạn là lỗi trả về, mã model.Error bắt đầu bằng "limit.".
+	// Limits caps resources, see CLILimits and WebLimits. nil means no caps.
+	// Exceeding a limit returns an error whose model.Error code starts with
+	// "limit.".
 	Limits *Limits
 }
 
-// Stats là kích thước của sơ đồ đã dựng.
+// Stats is the size of the built diagram.
 type Stats struct {
 	Lanes int     `json:"lanes"`
 	Items int     `json:"items"`
@@ -54,26 +55,27 @@ type Stats struct {
 	H     float64 `json:"height"`
 }
 
-// Result là kết quả của một lần dựng.
+// Result is the result of one build.
 type Result struct {
 	Title  string
-	Source string // định dạng đã đọc, ví dụ "markdown"
-	// Issues là phát hiện về bảng đầu vào, của cả tầng đọc lẫn tầng kiểm tra.
+	Source string // format that was read, e.g. "markdown"
+	// Issues are findings about the input table, from both the reading and the
+	// validation layers.
 	Issues []Issue
-	// Text là nội dung file .drawio. Rỗng khi bảng có lỗi.
+	// Text is the content of the .drawio file. Empty when the table has errors.
 	Text string
-	// Warnings là cảnh báo của engine xếp hình, Findings là kết quả tự kiểm hình
-	// học. Cả hai rỗng khi bảng có lỗi.
+	// Warnings are the layout engine's warnings, Findings are the results of the
+	// geometry self-check. Both are empty when the table has errors.
 	Warnings []Warning
 	Findings []Finding
 	Layout   *layout.Result
-	// Merge là báo cáo của merge khi Options.Previous khác nil. Findings khi đó
-	// là tự kiểm của layout mới tính, trước khi merge sửa nó.
+	// Merge is the merge report when Options.Previous is non-nil. Findings are
+	// then the self-check of the freshly computed layout, before merge adjusts it.
 	Merge *merge.Report
 	Stats Stats
 }
 
-// HasErrors nói bảng có lỗi chặn việc dựng hay không.
+// HasErrors reports whether the table has errors that block the build.
 func (r Result) HasErrors() bool {
 	for _, i := range r.Issues {
 		if i.Level == model.LevelError {
@@ -94,10 +96,10 @@ func defaultMetrics() (*text.Metrics, error) {
 	return metrics, metricsErr
 }
 
-// Check đọc và kiểm tra bảng mà không dựng sơ đồ.
+// Check reads and validates the table without building the diagram.
 //
-// Lỗi trả về là lỗi khiến việc đọc không thể tiếp tục, như không tìm thấy
-// header. Lỗi của từng dòng nằm trong Result.Issues.
+// The returned error is one that stops reading from continuing, such as a
+// missing header. Errors of individual rows are in Result.Issues.
 func Check(src Source, opt Options) (Result, error) {
 	t, err := parseWithin(src, newBudget(opt.Limits))
 	if err != nil {
@@ -107,7 +109,7 @@ func Check(src Source, opt Options) (Result, error) {
 	return Result{Title: t.Title, Source: t.Source, Issues: issues}, nil
 }
 
-// Build đọc, kiểm tra và dựng sơ đồ.
+// Build reads, validates and builds the diagram.
 func Build(src Source, opt Options) (Result, error) {
 	b := newBudget(opt.Limits)
 	t, err := parseWithin(src, b)
@@ -144,11 +146,11 @@ func Build(src Source, opt Options) (Result, error) {
 		dir = layout.DirTD
 	}
 	if !layout.ValidDirection(dir) {
-		return Result{}, model.Errf("config.direction", "hướng %q không hợp lệ; dùng TD, BT, LR hoặc RL", dir)
+		return Result{}, model.Errf("config.direction", "invalid direction %q; use TD, BT, LR or RL", dir)
 	}
 	if opt.Previous != nil && dir != layout.DirTD {
 		return Result{}, model.Errf("merge.direction",
-			"merge chưa hỗ trợ sơ đồ hướng %s; dùng --mode force để sinh lại toàn bộ", dir)
+			"merge does not support direction %s yet; use --mode force to regenerate everything", dir)
 	}
 	if err := layoutAndWrite(&r, t.Rows, cfg, m, dir, opt.Previous, b); err != nil {
 		return Result{}, err
@@ -156,15 +158,16 @@ func Build(src Source, opt Options) (Result, error) {
 	return r, nil
 }
 
-// layoutAndWrite xếp hình, tự kiểm và sinh văn bản đích cho một bảng đã qua kiểm tra.
+// layoutAndWrite lays out, self-checks and produces the target text for a
+// validated table.
 //
-// Engine chỉ panic khi chính nó vi phạm một bất biến. Lỗi đó được trả về như
-// mọi lỗi khác, để chương trình dùng thư viện và dịch vụ web không sập vì một
-// bảng lạ.
+// The engine only panics when it violates one of its own invariants. That error
+// is returned like any other, so programs using the library and the web service
+// do not crash on an unusual table.
 func layoutAndWrite(r *Result, rows []model.Row, cfg layout.Config, m *text.Metrics, dir string, prev *merge.Old, b budget) (err error) {
 	defer func() {
 		if p := recover(); p != nil {
-			err = model.Errf("layout.internal", "lỗi nội bộ khi xếp hình: %v", p)
+			err = model.Errf("layout.internal", "internal layout error: %v", p)
 		}
 	}()
 	lay := layout.New(rows, cfg, text.NewMeasure(m))

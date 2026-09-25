@@ -8,8 +8,9 @@ import (
 	"github.com/luytbq/flowcast/model"
 )
 
-// findHeader tìm hàng header đầu tiên: năm ô liền nhau mang đúng năm tên cột,
-// bắt đầu ở cột bất kỳ. Nhờ vậy csv và xlsx được phép có cột thừa bên trái.
+// findHeader finds the first header row: five adjacent cells holding exactly the
+// five column names, starting at any column. This lets csv and xlsx have extra
+// columns on the left.
 func findHeader(grid [][]string) (row, col int, ok bool) {
 	for r, cells := range grid {
 		low := make([]string, len(cells))
@@ -25,8 +26,8 @@ func findHeader(grid [][]string) (row, col int, ok bool) {
 	return 0, 0, false
 }
 
-// plainLines tách nội dung một ô csv hoặc xlsx thành các dòng: xuống dòng thật
-// và thẻ br đều là xuống dòng, và không xử lý escape kiểu markdown.
+// plainLines splits the content of a csv or xlsx cell into lines: both real line
+// breaks and br tags break lines, and markdown-style escapes are not processed.
 func plainLines(cell string) []string {
 	if cell == "" {
 		return []string{""}
@@ -42,15 +43,17 @@ func plainLines(cell string) []string {
 	return parts
 }
 
-// tableFromGrid đọc bảng nằm dưới hàng header, kết thúc ở hàng đầu tiên có cả
-// năm ô đều rỗng. Tiêu đề là ô không rỗng đầu tiên phía trên header.
+// tableFromGrid reads the table below the header row, ending at the first row
+// whose five cells are all empty. The title is the first non-empty cell above
+// the header.
 //
-// locs là vị trí của từng hàng trong lưới, để phát hiện trỏ đúng dòng của file.
+// locs is the location of each grid row, so findings point at the right line of
+// the file.
 func tableFromGrid(grid [][]string, locs []model.Location) (title string, rows []model.Row,
 	issues []model.Issue, headerRow int, err error) {
 	hr, hc, ok := findHeader(grid)
 	if !ok {
-		return "", nil, nil, 0, model.Errf("source.no_header", "không tìm thấy hàng header: %s",
+		return "", nil, nil, 0, model.Errf("source.no_header", "header row not found: %s",
 			strings.Join(Header, " | "))
 	}
 	for r := 0; r < hr && title == ""; r++ {
@@ -76,7 +79,7 @@ func tableFromGrid(grid [][]string, locs []model.Location) (title string, rows [
 		}
 		if strings.Contains(cells[3], `\|`) || strings.Contains(cells[4], `\|`) {
 			issues = append(issues, model.Issue{Code: "table.markdown_escape", Level: model.LevelWarning,
-				Loc: locs[r], ID: cells[0], Msg: `nội dung còn escape kiểu markdown (\|); csv/xlsx không cần escape`})
+				Loc: locs[r], ID: cells[0], Msg: `content still has a markdown escape (\|); csv/xlsx needs no escaping`})
 		}
 		meta, keys := parseMeta(cells[4], locs[r], cells[0], &issues, normalize)
 		rows = append(rows, model.Row{Idx: len(rows), Loc: locs[r], ID: cells[0], Type: unistr.Lower(cells[1]),
@@ -85,12 +88,13 @@ func tableFromGrid(grid [][]string, locs []model.Location) (title string, rows [
 	return title, rows, issues, hr, nil
 }
 
-var delimiterNames = map[string]string{",": "dấu phẩy", ";": "dấu chấm phẩy", "\t": "tab"}
+var delimiterNames = map[string]string{",": "comma", ";": "semicolon", "\t": "tab"}
 
-// ParseCSV đọc bảng từ một file csv.
+// ParseCSV reads the table from a csv file.
 //
-// Không chỉ định thì bảng mã thử lần lượt utf-8-sig, utf-8, cp1252, còn dấu phân
-// cách thử dấu phẩy, dấu chấm phẩy, tab, và lấy cái đầu tiên cho ra hàng header.
+// When not specified, the encodings tried in turn are utf-8-sig, utf-8, cp1252,
+// and the delimiters tried are comma, semicolon, tab; the first one that yields a
+// header row wins.
 func ParseCSV(data []byte, name, delimiter, encoding string) (model.Table, error) {
 	encs := csvEncodings
 	if encoding != "" {
@@ -104,7 +108,7 @@ func ParseCSV(data []byte, name, delimiter, encoding string) (model.Table, error
 		}
 	}
 	if used == "" {
-		return model.Table{}, model.Errf("source.decode", "không giải mã được %s; thử --encoding", name)
+		return model.Table{}, model.Errf("source.decode", "cannot decode %s; try --encoding", name)
 	}
 	delims := []string{",", ";", "\t"}
 	if delimiter != "" {
@@ -114,7 +118,7 @@ func ParseCSV(data []byte, name, delimiter, encoding string) (model.Table, error
 	for _, d := range delims {
 		r := []rune(d)
 		if len(r) != 1 {
-			return model.Table{}, model.Errf("source.delimiter", "dấu phân cách phải là đúng một ký tự, nhận %q", d)
+			return model.Table{}, model.Errf("source.delimiter", "delimiter must be exactly one character, got %q", d)
 		}
 		cand, err := readCSV(text, r[0])
 		if err != nil {
@@ -127,7 +131,7 @@ func ParseCSV(data []byte, name, delimiter, encoding string) (model.Table, error
 	}
 	if grid == nil {
 		return model.Table{}, model.Errf("source.no_header",
-			"không tìm thấy hàng header trong csv; kiểm tra dấu phân cách, hoặc dùng --delimiter")
+			"header row not found in csv; check the delimiter, or use --delimiter")
 	}
 	locs := make([]model.Location, len(grid))
 	for i := range grid {
@@ -137,11 +141,11 @@ func ParseCSV(data []byte, name, delimiter, encoding string) (model.Table, error
 	if err != nil {
 		return model.Table{}, err
 	}
-	// So nguyên văn chứ không so tên đã chuẩn hóa: người dùng tự ghi
-	// --encoding CP1252 là đã biết mình chọn gì, nên không cần cảnh báo.
+	// Compare the literal name, not the normalized one: a user who writes
+	// --encoding CP1252 knows what they chose, so no warning is needed.
 	if used == "cp1252" {
 		issues = append(issues, model.Issue{Code: "source.cp1252", Level: model.LevelWarning,
-			Msg: "file không phải utf-8, đã đọc theo cp1252; chữ tiếng Việt có thể đã hỏng từ trước"})
+			Msg: "file is not utf-8, read as cp1252; Vietnamese text may already have been corrupted"})
 	}
 	shown, ok := delimiterNames[delimiter]
 	if !ok {

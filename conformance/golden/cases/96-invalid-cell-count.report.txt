@@ -1,2 +1,2 @@
-issue table.cell_count ERROR   dòng 6: dòng có 4 cột, cần 5 (gạch đứng trong nội dung phải viết \|)
-issue ref.dangling ERROR   dòng 7 [E1]: from=A-1 trỏ tới id không tồn tại
+issue table.cell_count ERROR   line 6: row has 4 columns, needs 5 (a pipe in content must be written \|)
+issue ref.dangling ERROR   line 7 [E1]: from=A-1 points to an id that does not exist

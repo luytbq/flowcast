@@ -1,14 +1,16 @@
 package layout
 
-// Route chọn kiểu đi dây cho từng cạnh rồi gán cổng và track.
+// Route picks a routing style for each edge, then assigns ports and tracks.
 //
-// Thử lần lượt từ đơn giản tới tổng quát, mỗi kiểu một lượt qua mọi cạnh: A
-// thẳng đứng, B thẳng ngang, C chữ L, D qua kênh và máng. Một cạnh nhận kiểu
-// đầu tiên mà đường đi của nó còn trống. Thứ tự lượt quan trọng: cạnh đi thẳng
-// được giữ chỗ trước, rồi các kiểu phức tạp hơn mới phải tránh chúng.
+// Styles are tried in turn from simple to general, one pass over all edges per
+// style: A straight vertical, B straight horizontal, C L-shaped, D through
+// channels and gutters. An edge takes the first style whose path is still free.
+// The pass order matters: straight edges reserve their space first, and only
+// then do the more complex styles have to avoid them.
 //
-// Gọi lại thì bắt đầu từ đầu, cùng lý do như Place: một cạnh đã có Case sẽ bị
-// mọi lượt bỏ qua, và đoạn dây của lần trước sẽ bị gán track chung với lần này.
+// Calling it again starts from scratch, for the same reason as Place: an edge
+// that already has a Case would be skipped by every pass, and the previous
+// run's wire segments would share tracks with this run's.
 func (l *Layout) Route() {
 	for _, e := range l.Edges {
 		e.Case, e.ExitSide, e.EntrySide, e.Sym = 0, 0, 'T', nil
@@ -21,8 +23,9 @@ func (l *Layout) Route() {
 	cellsV := map[cell]map[string]bool{}
 
 	free := func(c cell) bool { _, taken := l.occ[c]; return !taken }
-	// vOK: ô dọc còn trống, hoặc chỉ đang bị dây khác cùng đích chiếm; các dây
-	// cùng đích được phép chồng lên nhau vì chúng gộp thành một đường.
+	// vOK: the vertical cell is free, or occupied only by other wires with the
+	// same target; wires with the same target may overlap because they merge
+	// into one line.
 	vOK := func(c cell, dst string) bool {
 		for id := range cellsV[c] {
 			if id != dst {
@@ -46,7 +49,7 @@ func (l *Layout) Route() {
 		return out
 	}
 
-	// A: thẳng đứng trong cùng cột.
+	// A: straight vertical within the same column.
 	for _, e := range l.Edges {
 		u, v := l.items[e.Src], l.items[e.Dst]
 		if e.Back || gkOf(u) != gkOf(v) || v.Row <= u.Row {
@@ -65,7 +68,7 @@ func (l *Layout) Route() {
 		}
 	}
 
-	// B: thẳng ngang cùng hàng.
+	// B: straight horizontal on the same row.
 	for _, e := range l.Edges {
 		u, v := l.items[e.Src], l.items[e.Dst]
 		if e.Case != 0 || e.Back || v.Row != u.Row || gkOf(u) == gkOf(v) || kindOf(v.Kind).EntryTopOnly {
@@ -88,7 +91,7 @@ func (l *Layout) Route() {
 		}
 	}
 
-	// C: chữ L, ra mặt bên rồi rẽ xuống đỉnh đích.
+	// C: L-shaped, exits a lateral side then turns down into the target's top.
 	for _, e := range l.Edges {
 		u, v := l.items[e.Src], l.items[e.Dst]
 		if e.Case != 0 || e.Back || v.Row <= u.Row || gkOf(u) == gkOf(v) {
@@ -114,7 +117,7 @@ func (l *Layout) Route() {
 		}
 	}
 
-	// D: tổng quát, qua kênh ngang giữa các hàng và máng dọc giữa các cột.
+	// D: general, through horizontal channels between rows and vertical gutters between columns.
 	for _, e := range l.Edges {
 		if e.Case != 0 {
 			continue
@@ -124,7 +127,7 @@ func (l *Layout) Route() {
 		e.Case = 'D'
 		choices := []byte{s, 'B', opp(s)}
 		if e.Back || v.Row <= u.Row {
-			// Đích nằm trên hoặc ngang hàng thì không ra đáy được.
+			// A target above or on the same row cannot be reached by exiting from the bottom.
 			choices = []byte{s, opp(s)}
 		}
 		e.ExitSide = l.pickExit(u, s, choices)
@@ -184,7 +187,7 @@ func xkeyOf(r Res) XKey { return XKey{'G', r.A, r.B} }
 
 func gkOf(it *Item) gk { return gk{it.Lane, it.Col} }
 
-// face là mặt của u hướng về v. Cùng cột thì coi như bên phải.
+// face is the side of u facing v. The same column counts as the right side.
 func face(u, v *Item) byte {
 	if gkOf(u) == gkOf(v) || gkOf(u).less(gkOf(v)) {
 		return 'R'
@@ -201,7 +204,7 @@ func (l *Layout) sideUsed(it *Item, s byte) bool {
 	return len(l.sideOut[sideKey{it.ID, s}]) > 0 || len(l.sideIn[sideKey{it.ID, s}]) > 0
 }
 
-// attachSides là các mặt của u đang có db hoặc text đứng sát.
+// attachSides are the sides of u that have a db or text standing right next to it.
 func (l *Layout) attachSides(u *Item) map[byte]bool {
 	out := map[byte]bool{}
 	for _, a := range l.Attachments[u.ID] {
@@ -214,11 +217,13 @@ func (l *Layout) attachSides(u *Item) map[byte]bool {
 	return out
 }
 
-// sideFree nói mặt đó của u còn nhận thêm một cạnh ra kiểu D được không.
+// sideFree reports whether that side of u can take one more D-style outgoing
+// edge.
 //
-// Hình chỉ có một điểm nối mỗi mặt (thoi, elip) thì một cạnh là kín. Hộp chữ
-// nhật chia được nhiều cổng trên một mặt, trừ khi mặt đó đã có cạnh B hoặc C:
-// chúng ra đúng giữa mặt nên không chia được.
+// A shape with a single connection point per side (diamond, ellipse) is full
+// with one edge. A rectangle can split one side into several ports, unless that
+// side already has a B or C edge: those exit at the exact middle of the side,
+// so it cannot be split.
 func (l *Layout) sideFree(u *Item, side byte) bool {
 	if l.attachSides(u)[side] || len(l.sideIn[sideKey{u.ID, side}]) > 0 {
 		return false
@@ -235,10 +240,11 @@ func (l *Layout) sideFree(u *Item, side byte) bool {
 	return true
 }
 
-// pickExit chọn mặt ra cho một cạnh D: mặt đầu tiên còn trống, không thì mặt
-// hướng về đích. Mặt đó có thể đã có dây vào; assignPorts sẽ tách cổng ra khỏi
-// cổng vào. Mặt đó cũng có thể có db hoặc text; khi ấy chúng không bám sát node
-// mà đứng giữa ô bên cạnh, và dây chạy trong máng ở giữa.
+// pickExit picks the exit side for a D edge: the first free side, otherwise the
+// side facing the target. That side may already have incoming wires;
+// assignPorts will separate the exit port from the entry ports. That side may
+// also have a db or text; they then do not hug the node but stand centered in
+// the adjacent cell, and the wire runs in the gutter between them.
 func (l *Layout) pickExit(u *Item, s byte, choices []byte) byte {
 	for _, c := range choices {
 		if l.sideFree(u, c) {
@@ -248,7 +254,7 @@ func (l *Layout) pickExit(u *Item, s byte, choices []byte) byte {
 	return s
 }
 
-// cellsBetween là các ô nằm ngặt giữa hai cột a và b trên hàng r.
+// cellsBetween are the cells strictly between columns a and b on row r.
 func (l *Layout) cellsBetween(a, b gk, r int) []cell {
 	if b.less(a) {
 		a, b = b, a
@@ -265,7 +271,7 @@ func (l *Layout) cellsBetween(a, b gk, r int) []cell {
 	return out
 }
 
-// gutter là chỉ số máng ngay bên trái hoặc bên phải một cột.
+// gutter is the index of the gutter immediately left or right of a column.
 func (l *Layout) gutter(lane, col int, side byte) int {
 	for i, c := range l.Cols[lane] {
 		if c == col {
@@ -275,7 +281,7 @@ func (l *Layout) gutter(lane, col int, side byte) int {
 			return i + 1
 		}
 	}
-	panic("layout: cột không có trong lane")
+	panic("layout: column not in lane")
 }
 
 func (l *Layout) seg(res Res, lo, hi int, key string, stubs ...Stub) *Seg {

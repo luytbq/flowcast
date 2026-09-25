@@ -2,9 +2,9 @@ package source
 
 import "testing"
 
-// Dấu chấm ở đầu tên file không phải dấu tách đuôi, nên ".md" là một file không
-// có đuôi chứ không phải file markdown.
-func TestExtBoQuaDauChamDauTen(t *testing.T) {
+// A leading dot in a file name is not an extension separator, so ".md" is a file
+// with no extension, not a markdown file.
+func TestExtIgnoresLeadingDot(t *testing.T) {
 	cases := map[string]string{
 		"a.md":          ".md",
 		"so.do.md":      ".md",
@@ -19,13 +19,13 @@ func TestExtBoQuaDauChamDauTen(t *testing.T) {
 	}
 	for in, want := range cases {
 		if got := Ext(in); got != want {
-			t.Errorf("Ext(%q) = %q, mong %q", in, got, want)
+			t.Errorf("Ext(%q) = %q, want %q", in, got, want)
 		}
 	}
 }
 
-// guessFormat chọn bộ đọc theo đuôi file, không phân biệt hoa thường.
-func TestGuessFormatTheoDuoiFile(t *testing.T) {
+// guessFormat picks the reader by file extension, case-insensitively.
+func TestGuessFormatByExtension(t *testing.T) {
 	cases := map[string]string{
 		"a.md": "markdown", "a.MD": "markdown", "a.markdown": "markdown", "a.txt": "markdown",
 		"a.csv": "csv", "a.tsv": "csv", "a.xlsx": "xlsx", "a.xlsm": "xlsx",
@@ -34,7 +34,7 @@ func TestGuessFormatTheoDuoiFile(t *testing.T) {
 	}
 	for in, want := range cases {
 		if got := guessFormat(in); got != want {
-			t.Errorf("guessFormat(%q) = %q, mong %q", in, got, want)
+			t.Errorf("guessFormat(%q) = %q, want %q", in, got, want)
 		}
 	}
 }

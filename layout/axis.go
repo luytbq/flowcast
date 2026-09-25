@@ -1,14 +1,14 @@
 package layout
 
-// Hướng của sơ đồ: chiều mà luồng đi.
+// Diagram direction: the way the flow runs.
 const (
-	DirTD = "TD" // từ trên xuống
-	DirBT = "BT" // từ dưới lên
-	DirLR = "LR" // từ trái sang phải
-	DirRL = "RL" // từ phải sang trái
+	DirTD = "TD" // top to bottom
+	DirBT = "BT" // bottom to top
+	DirLR = "LR" // left to right
+	DirRL = "RL" // right to left
 )
 
-// ValidDirection nói dir có phải một hướng hợp lệ không.
+// ValidDirection reports whether dir is a valid direction.
 func ValidDirection(dir string) bool {
 	switch dir {
 	case DirTD, DirBT, DirLR, DirRL:
@@ -17,18 +17,20 @@ func ValidDirection(dir string) bool {
 	return false
 }
 
-// Engine chỉ biết một hướng: từ trên xuống. Hướng khác được dựng bằng cách xếp
-// trong một không gian TD ảo rồi đổi trục ở cuối. Với LR và RL, bề rộng và bề
-// cao của mọi phần tử và nhãn được hoán đổi trước khi xếp, để hàng của không
-// gian ảo có đúng độ dày của cột thật. Chữ vẫn được ngắt dòng theo chiều thật.
+// The engine knows only one direction: top to bottom. Other directions are built
+// by laying out in a virtual TD space and applying an axis swap at the end. For
+// LR and RL, the width and height of every element and label are swapped before
+// layout, so that a row of the virtual space has exactly the thickness of a real
+// column. Text is still wrapped along the real direction.
 //
-// Nhờ vậy place, route, geometry và labels không có nhánh code nào cho từng
-// hướng, và sơ đồ TD không bị ảnh hưởng khi thêm hướng. Tự kiểm chạy trên kết
-// quả ảo: đổi trục và lật giữ nguyên mọi quan hệ chồng lấn và khoảng cách.
+// As a result place, route, geometry and labels have no code branch per
+// direction, and TD diagrams are unaffected when directions are added. The
+// self-check runs on the virtual result: axis swap and flip preserve every
+// overlap relation and distance.
 
 func transposed(dir string) bool { return dir == DirLR || dir == DirRL }
 
-// SetDirection chọn hướng. Gọi sau New và trước Run.
+// SetDirection selects the direction. Call it after New and before Run.
 func (l *Layout) SetDirection(dir string) {
 	l.Dir = dir
 	if !transposed(dir) {
@@ -42,11 +44,11 @@ func (l *Layout) SetDirection(dir string) {
 	}
 }
 
-// orient là phép biến đổi từ không gian ảo sang hướng thật.
+// orient is the transform from the virtual space to the real direction.
 type orient struct {
 	dir string
-	// Luồng lật trong vùng nội dung [hdr, end]: header của pool và lane vẫn ở
-	// đầu băng, chỉ nội dung đổi chiều.
+	// The flow flips within the content area [hdr, end]: the pool and lane
+	// headers stay at the start of the band, only the content reverses.
 	hdr, end float64
 }
 
@@ -68,7 +70,7 @@ func (o orient) box(b [4]float64) [4]float64 {
 	return [4]float64{fmin(a[0], c[0]), fmin(a[1], c[1]), fmax(a[0], c[0]), fmax(a[1], c[1])}
 }
 
-// frac đổi điểm neo dạng tỉ lệ trên cạnh của một hộp.
+// frac transforms an anchor point given as fractions along the sides of a box.
 func (o orient) frac(f [2]float64) [2]float64 {
 	switch o.dir {
 	case DirBT:
@@ -81,7 +83,7 @@ func (o orient) frac(f [2]float64) [2]float64 {
 	return f
 }
 
-// vec đổi một độ lệch, như độ lệch của nhãn so với điểm neo trên đường.
+// vec transforms an offset, such as a label's offset from its anchor on the path.
 func (o orient) vec(v [2]float64) [2]float64 {
 	switch o.dir {
 	case DirBT:
@@ -94,8 +96,8 @@ func (o orient) vec(v [2]float64) [2]float64 {
 	return v
 }
 
-// Orient đưa kết quả từ không gian ảo về hướng thật. Kết quả trả về không dùng
-// chung vùng nhớ với r. Với TD nó trả nguyên r.
+// Orient maps a result from the virtual space to the real direction. The
+// returned result shares no memory with r. For TD it returns r unchanged.
 func Orient(r Result) Result {
 	if r.Dir == "" || r.Dir == DirTD {
 		return r

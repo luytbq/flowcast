@@ -16,13 +16,13 @@ func splitStyle(s string) []string {
 	return out
 }
 
-// gk là khóa lưới của một cột: lane trước, cột trong lane sau. So sánh theo thứ
-// tự từ điển.
+// gk is the grid key of a column: lane first, then column within the lane.
+// Compared lexicographically.
 type gk struct{ lane, col int }
 
 func (a gk) less(b gk) bool { return a.lane < b.lane || (a.lane == b.lane && a.col < b.col) }
 
-// cell là một ô của lưới.
+// cell is a cell of the grid.
 type cell struct{ lane, col, row int }
 
 func sign(v int) int {
@@ -35,9 +35,10 @@ func sign(v int) int {
 	return 0
 }
 
-// fmax và fmin trả về số đứng trước khi hai số bằng nhau. math.Max và math.Min
-// không dùng được, vì math.Max(-0, 0) luôn trả +0: kết quả khi đó phụ thuộc vào
-// dấu của số không chứ không chỉ vào giá trị, và engine cần kết quả tất định.
+// fmax and fmin return the first argument when the two are equal. math.Max and
+// math.Min cannot be used, because math.Max(-0, 0) always returns +0: the result
+// would then depend on the sign of zero rather than only on the value, and the
+// engine needs deterministic results.
 func fmax(a, b float64) float64 {
 	if b > a {
 		return b

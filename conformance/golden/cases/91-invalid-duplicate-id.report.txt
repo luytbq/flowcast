@@ -1,2 +1,2 @@
-issue ref.duplicate_id ERROR   dòng 9 [A-2]: id trùng với dòng 8
-issue graph.no_out_edge WARNING dòng 8 [A-2]: task không có cạnh ra
+issue ref.duplicate_id ERROR   line 9 [A-2]: id duplicates line 8
+issue graph.no_out_edge WARNING line 8 [A-2]: task has no outgoing edge

@@ -1,2 +1,2 @@
-issue source.xlsx_cell WARNING Flow!D4: ô công thức chưa có giá trị lưu sẵn, đọc thành rỗng
-sơ đồ: 1 lane, 2 phần tử, 1 cạnh
+issue source.xlsx_cell WARNING Flow!D4: formula cell has no cached value, read as empty
+diagram: 1 lanes, 2 elements, 1 edges

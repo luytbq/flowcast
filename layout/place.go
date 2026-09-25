@@ -5,30 +5,33 @@ import (
 	"sort"
 )
 
-// hspan là một mũi tên ngang đã đặt: nằm trên hàng row, chiếm khoảng lưới mở
-// (a, b). Ô nằm trong khoảng đó coi như bị chiếm, vì mũi tên chạy xuyên qua.
+// hspan is a placed horizontal arrow: it lies on row row and occupies the open
+// grid interval (a, b). Cells inside that interval count as occupied, because
+// the arrow runs through them.
 type hspan struct {
 	row  int
 	a, b gk
 }
 
-// XKey là vị trí của một cột hoặc một máng trên trục ngang, trước khi có pixel.
-// Kind là 'G' cho máng, 'c' cho cột; V là chỉ số máng hoặc số cột.
+// XKey is the position of a column or gutter on the horizontal axis, before
+// pixels exist. Kind is 'G' for a gutter, 'c' for a column; V is the gutter
+// index or column number.
 type XKey struct {
 	Kind byte
 	Lane int
 	V    int
 }
 
-// Place gán lane, hàng và cột cho mọi phần tử.
+// Place assigns a lane, row and column to every element.
 //
-// Duyệt theo thứ tự topo. Mỗi node thử đặt cùng hàng với nguồn để mũi tên đi
-// ngang; không được thì xuống hàng dưới nguồn sâu nhất. Nhánh phụ dạt sang bên,
-// và node hợp nhánh quay về cột của node rẽ chung gần nhất. db và text đặt sát
-// cạnh node chúng bám.
+// Iterates in topological order. Each node first tries the same row as its
+// source so the arrow runs horizontally; failing that it goes to the row below
+// its deepest source. Side branches drift sideways, and a merge node returns to
+// the column of the nearest common branching node. dbs and texts are placed
+// right next to the node they attach to.
 //
-// Gọi lại trên cùng một Layout thì bắt đầu từ đầu: trạng thái của lần trước bị
-// xóa, vì nếu không thì mọi phần tử đều trông như đã được đặt.
+// Calling it again on the same Layout starts from scratch: the previous run's
+// state is cleared, because otherwise every element would look already placed.
 func (l *Layout) Place() {
 	for _, it := range l.ItemOrder {
 		it.Placed, it.Row, it.Col = false, 0, 0
@@ -114,11 +117,11 @@ func (l *Layout) Place() {
 		}
 
 		placed := false
-		// Hình chỉ có một điểm nối mỗi mặt mà có từ hai nhánh phụ thì cần cả hai
-		// mặt bên cho các nhánh.
+		// A shape with a single connection point per side and two or more side
+		// branches needs both lateral sides for those branches.
 		needsSides := kindOf(v.Kind).Shape.singlePort() && l.sideBranches(v) >= 2
-		// Phần tử chỉ nhận dây vào từ đỉnh thì không bao giờ đứng cùng hàng với
-		// nguồn của nó.
+		// An element that accepts incoming wires only at its top never stands on
+		// the same row as its source.
 		if len(preds) == 1 && l.nonBackIn(vid) == 1 && !needsSides && !kindOf(v.Kind).EntryTopOnly && (len(same) == 0 || sideBranch != 0) {
 			u := l.items[preds[0].Src]
 			r := u.Row
@@ -158,7 +161,7 @@ func (l *Layout) Place() {
 			}
 		}
 
-		// Nhánh phụ thử dạt sang bên tối đa ba cột trước khi chịu xuống hàng.
+		// A side branch tries drifting sideways up to three columns before moving down a row.
 		tries := 0
 		for !placed && blocked(v.Lane, col, row) {
 			if sideBranch != 0 && tries < 3 {
@@ -184,9 +187,10 @@ func (l *Layout) Place() {
 				}
 			}
 			if !found {
-				// Lùi ra xa chỉ tránh ô đã chiếm, không tránh khoảng của mũi
-				// tên ngang. Phần tử đặt xa có thể nằm trên đường một mũi tên
-				// ngang; khi đó tự kiểm báo dây cắt qua phần tử.
+				// Moving farther out only avoids occupied cells, not the spans
+				// of horizontal arrows. An element placed far away may lie on
+				// the path of a horizontal arrow; the self-check then reports
+				// a wire crossing the element.
 				for d := 3; d < 50; d++ {
 					if _, taken := l.occ[cell{v.Lane, col + d, row}]; !taken {
 						c, found = col+d, true
@@ -194,9 +198,9 @@ func (l *Layout) Place() {
 					}
 				}
 				if !found {
-					panic(fmt.Sprintf("layout: không còn ô nào trong 50 cột cạnh %s", vid))
+					panic(fmt.Sprintf("layout: no free cell within 50 columns next to %s", vid))
 				}
-				l.warn("layout.attach-far", a.ID, "%s: không còn ô trống cạnh %s, đặt xa hơn", a.ID, vid)
+				l.warn("layout.attach-far", a.ID, "%s: no free cell next to %s, placed farther away", a.ID, vid)
 			}
 			a.Row, a.Col, a.Placed = row, c, true
 			l.occ[cell{v.Lane, c, row}] = a.ID

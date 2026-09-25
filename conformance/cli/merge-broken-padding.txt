@@ -1,8 +1,8 @@
 # input: merge/broken-padding -> *
 $ ["build", "$T/flow.md", "--mode", "merge"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-ERROR   không giải nén được trang đầu của $T/flow.drawio: Incorrect padding; không ghi đè. Dùng --mode force nếu muốn sinh lại toàn bộ
+check: read table from markdown
+check: 0 errors, 0 warnings
+ERROR   cannot decompress the first page of $T/flow.drawio: Incorrect padding; not overwriting. Use --mode force to regenerate everything
 [exit 4]
 --- files
 f6533b6c071dc539  flow.drawio

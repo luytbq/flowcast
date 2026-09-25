@@ -1,11 +1,11 @@
 # input: csv-01-comma -> in.csv
 $ ["build", "$T/in.csv", "--encoding", "cp1252"]
-check: đọc bảng từ csv (dấu phẩy, cp1252)
-WARNING -: file không phải utf-8, đã đọc theo cp1252; chữ tiếng Việt có thể đã hỏng từ trước
-check: 0 lỗi, 1 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 2 cạnh, 474.27x250px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from csv (comma, cp1252)
+WARNING -: file is not utf-8, read as cp1252; Vietnamese text may already have been corrupted
+check: 0 errors, 1 warnings
+build: mode new
+build: wrote $T/in.drawio (2 lanes, 3 elements, 2 edges, 474.27x250px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 96a08709c8ded76c  in.csv

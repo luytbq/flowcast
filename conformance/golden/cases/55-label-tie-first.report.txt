@@ -1,2 +1,2 @@
-engine layout.label-crowded: E1: nhãn "gửi yêu cầu" không tìm được chỗ trống hoàn toàn
-sơ đồ: 3 lane, 2 phần tử, 1 cạnh
+engine layout.label-crowded: E1: label "gửi yêu cầu" could not find a completely free spot
+diagram: 3 lanes, 2 elements, 1 edges

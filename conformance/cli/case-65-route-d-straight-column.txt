@@ -1,16 +1,16 @@
 # input: 65-route-d-straight-column -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 12 [B-3]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
+check: read table from markdown
+WARNING line 12 [B-3]: task has no outgoing edge
+check: 0 errors, 1 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-WARNING dòng 12 [B-3]: task không có cạnh ra
-check: 0 lỗi, 1 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (2 lane, 3 phần tử, 3 cạnh, 336x324px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+WARNING line 12 [B-3]: task has no outgoing edge
+check: 0 errors, 1 warnings
+build: mode new
+build: wrote $T/in.drawio (2 lanes, 3 elements, 3 edges, 336x324px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 2d13e9299c8fde63  in.drawio

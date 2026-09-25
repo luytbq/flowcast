@@ -14,7 +14,7 @@ func table(rows ...string) Source {
 	return Source{Name: "t.md", Data: []byte(s)}
 }
 
-func TestLoiNoiBoCuaEngineThanhLoiCoMaKhongPanic(t *testing.T) {
+func TestEngineInternalErrorBecomesCodedErrorNotPanic(t *testing.T) {
 	rows := []string{"| A | lane | | A | |", "| A-1 | task | A | Việc | |"}
 	for i := 0; i < 60; i++ {
 		rows = append(rows, fmt.Sprintf("| A-1.%d | text | A | ghi chú %d | attach=A-1 |", i, i))
@@ -22,11 +22,11 @@ func TestLoiNoiBoCuaEngineThanhLoiCoMaKhongPanic(t *testing.T) {
 	_, err := Build(table(rows...), Options{})
 	var me *model.Error
 	if !errors.As(err, &me) || me.Code != "layout.internal" {
-		t.Fatalf("muốn lỗi layout.internal, được %v", err)
+		t.Fatalf("want error layout.internal, got %v", err)
 	}
 }
 
-func TestCanhBaoVongLapChuaDanhDauCoMa(t *testing.T) {
+func TestUnmarkedCycleWarningHasCode(t *testing.T) {
 	r, err := Build(table(
 		"| A | lane | | A | |",
 		"| A-1 | start | A | Vào | |",
@@ -37,12 +37,12 @@ func TestCanhBaoVongLapChuaDanhDauCoMa(t *testing.T) {
 		"| E3 | edge | | | from=A-3; to=A-2 |",
 	), Options{})
 	if err != nil || r.HasErrors() {
-		t.Fatalf("bảng phải dựng được: %v %v", err, r.Issues)
+		t.Fatalf("table must build: %v %v", err, r.Issues)
 	}
 	for _, w := range r.Warnings {
 		if w.Code == "layout.unmarked-cycle" && strings.Contains(w.Msg, "A-2") {
 			return
 		}
 	}
-	t.Fatalf("thiếu cảnh báo layout.unmarked-cycle: %+v", r.Warnings)
+	t.Fatalf("missing warning layout.unmarked-cycle: %+v", r.Warnings)
 }

@@ -2,9 +2,9 @@ package layout
 
 import "testing"
 
-// TestTuKiemGanMaChoTungLoaiLoi dựng tay một hình học hỏng đủ mọi loại lỗi và
-// kiểm từng loại ra đúng mã.
-func TestTuKiemGanMaChoTungLoaiLoi(t *testing.T) {
+// TestCheckAssignsCodeToEachErrorKind hand-builds a broken geometry with every
+// kind of error and checks that each kind yields the right code.
+func TestCheckAssignsCodeToEachErrorKind(t *testing.T) {
 	r := Result{
 		LaneX: []float64{0},
 		LaneW: []float64{400},
@@ -33,7 +33,7 @@ func TestTuKiemGanMaChoTungLoaiLoi(t *testing.T) {
 	}
 	for _, f := range Check(r) {
 		if f.Code == "" {
-			t.Errorf("phát hiện không có mã: %s", f.Msg)
+			t.Errorf("finding without a code: %s", f.Msg)
 		}
 		if _, ok := want[f.Code]; ok {
 			want[f.Code] = true
@@ -41,7 +41,7 @@ func TestTuKiemGanMaChoTungLoaiLoi(t *testing.T) {
 	}
 	for code, seen := range want {
 		if !seen {
-			t.Errorf("thiếu phát hiện %s", code)
+			t.Errorf("missing finding %s", code)
 		}
 	}
 }

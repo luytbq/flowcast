@@ -1,49 +1,50 @@
-// Package schema khai báo các key metadata hợp lệ cho từng loại dòng.
+// Package schema declares the valid metadata keys for each row type.
 //
-// Bảng Flow Table giữ đúng năm cột, nên cột metadata chở cả tham chiếu bắt
-// buộc như from, to, attach lẫn key tùy chọn như style. Tính tường minh vì vậy
-// không nằm được trong bảng; nó nằm ở đây. Xem docs/adr/0001.
+// The Flow Table keeps exactly five columns, so the metadata column carries both
+// required references such as from, to, attach and optional keys such as style.
+// The explicitness therefore cannot live in the table; it lives here. See
+// docs/adr/0001.
 package schema
 
-// Loại dòng.
+// Row types.
 var (
 	NodeTypes   = set("start", "end", "task", "condition", "external")
 	AttachTypes = set("db", "text")
 	AllTypes    = union(NodeTypes, AttachTypes, set("lane", "edge"))
 )
 
-// ReservedIDs là các id draw.io tự dùng, không được trùng.
+// ReservedIDs are ids draw.io uses itself, which must not be reused.
 var ReservedIDs = set("0", "1", "pool")
 
-// RestMarker là nội dung dòng text đánh dấu phần còn lại của bảng.
+// RestMarker is the content of the text row that marks the rest of the table.
 const RestMarker = "Phần còn lại"
 
-// Ref là một key metadata trỏ tới id của dòng khác.
+// Ref is a metadata key that points to the id of another row.
 type Ref struct {
 	Key      string
 	Required bool
-	// Note là đuôi câu khi tham chiếu trỏ tới loại không nhận được. Nằm ở đây
-	// vì thông điệp là một phần của giao diện: người dùng đọc nó, và cổng đối
-	// chiếu so nguyên văn.
+	// Note is the sentence tail used when the reference points to a type it
+	// cannot accept. It lives here because the message is part of the interface:
+	// users read it, and the conformance gate compares it verbatim.
 	Note string
-	// SameLane bật thì cảnh báo khi đích nằm ở lane khác.
+	// SameLane set means warn when the target is in another lane.
 	SameLane bool
 }
 
-// TypeSpec là lược đồ metadata của một loại dòng.
+// TypeSpec is the metadata schema of one row type.
 type TypeSpec struct {
-	// Keys là các key được phép, theo thứ tự khai báo.
+	// Keys are the allowed keys, in declaration order.
 	Keys        []string
 	StyleValues []string
-	// Refs theo đúng thứ tự cần kiểm, vì thứ tự phát hiện là một phần của
-	// giao diện.
+	// Refs are in exactly the order they must be checked, because the order of
+	// findings is part of the interface.
 	Refs []Ref
 }
 
-const edgeNote = "cạnh chỉ nối start/end/task/condition/external"
-const attachNote = "chỉ gắn được vào start/end/task/condition/external"
+const edgeNote = "edges only connect start/end/task/condition/external"
+const attachNote = "can only attach to start/end/task/condition/external"
 
-// defaultSpec áp cho mọi loại node: chỉ nhận style, và style chỉ nhận highlight.
+// defaultSpec applies to every node type: only style is accepted, and style only accepts highlight.
 var defaultSpec = TypeSpec{Keys: []string{"style"}, StyleValues: []string{"highlight"}}
 
 var swimlane = map[string]TypeSpec{
@@ -68,7 +69,7 @@ var swimlane = map[string]TypeSpec{
 	},
 }
 
-// For trả về lược đồ của một loại dòng.
+// For returns the schema of a row type.
 func For(kind string) TypeSpec {
 	if s, ok := swimlane[kind]; ok {
 		return s

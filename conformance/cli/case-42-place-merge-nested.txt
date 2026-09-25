@@ -1,14 +1,14 @@
 # input: 42-place-merge-nested -> in.md
 $ ["check", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
 [exit 0]
 $ ["build", "$T/in.md"]
-check: đọc bảng từ markdown
-check: 0 lỗi, 0 cảnh báo
-build: chế độ tạo mới
-build: đã ghi $T/in.drawio (1 lane, 7 phần tử, 7 cạnh, 444x523px)
-layout: 0 lỗi, 0 cảnh báo
+check: read table from markdown
+check: 0 errors, 0 warnings
+build: mode new
+build: wrote $T/in.drawio (1 lanes, 7 elements, 7 edges, 444x523px)
+layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 55d4e33afb4e716c  in.drawio

@@ -9,9 +9,10 @@ import (
 	"github.com/luytbq/flowcast/layout"
 )
 
-// args là đối số của một lệnh: cờ đứng trước hay sau tên file đều được, và
-// nhận cả "--cờ giá trị" lẫn "--cờ=giá trị". Gói flag chuẩn của Go dừng ở đối
-// số vị trí đầu tiên nên không dùng được.
+// args holds the arguments of one command: flags may come before or after the
+// file name, and both "--flag value" and "--flag=value" are accepted. Go's
+// standard flag package stops at the first positional argument, so it cannot be
+// used.
 type args struct {
 	cmd        string
 	file       string
@@ -20,7 +21,7 @@ type args struct {
 	direction  string
 	layoutJSON string
 	mode       string
-	png        string // rỗng: không xuất; "-" nghĩa là đường mặc định
+	png        string // empty: no export; "-" means the default path
 	verify     bool
 	noBackup   bool
 	sheet      string
@@ -29,8 +30,8 @@ type args struct {
 	cfg        layout.Config
 }
 
-// configFlags ánh xạ cờ dòng lệnh tới trường của layout.Config. Tên cờ là giao
-// diện mà script gọi flowcast dựa vào, nên chỉ đổi khi có chủ đích.
+// configFlags maps command-line flags to layout.Config fields. Flag names are an
+// interface that scripts calling flowcast rely on, so change them only on purpose.
 func configFlags(c *layout.Config) map[string]*int {
 	out := map[string]*int{}
 	for _, f := range layout.Fields() {
@@ -39,47 +40,47 @@ func configFlags(c *layout.Config) map[string]*int {
 	return out
 }
 
-// errHelp báo rằng người dùng hỏi --help; caller in hướng dẫn rồi thoát 0.
+// errHelp signals that the user asked for --help; the caller prints usage and exits 0.
 var errHelp = errors.New("help")
 
-// helpText dựng hướng dẫn. Phần tham số xếp hình sinh từ khai báo trong
-// layout.Fields, nên thêm một tham số là nó có mặt ở đây.
+// helpText builds the usage text. The layout parameter section is generated from
+// the declarations in layout.Fields, so adding a parameter there makes it appear here.
 func helpText() string {
 	var b strings.Builder
-	b.WriteString(`flowcast: bảng luồng hoặc flowchart mermaid thành file draw.io
+	b.WriteString(`flowcast: turn a flow table or mermaid flowchart into a draw.io file
 
-dùng:
+usage:
   flowcast check <file> [--sheet S] [--delimiter D] [--encoding E]
-  flowcast build <file> [cờ]
+  flowcast build <file> [flags]
 
-cờ của build:
-  -o, --output FILE    file .drawio ghi ra; mặc định cạnh file đầu vào
-  --title T            tiêu đề, mặc định lấy từ nguồn
-  --direction D        TD, BT, LR hoặc RL; mặc định theo nguồn, nguồn không nói thì TD
-  --mode merge|force   khi file đích đã có: merge giữ chỉnh sửa tay, force sinh lại
-  --no-backup          không ghi file .bak khi merge hoặc force
-  --png [FILE]         xuất ảnh PNG bằng drawio CLI
-  --verify             xuất SVG rồi so đường dây draw.io vẽ với toạ độ đã tính
-  --layout-json FILE   ghi toạ độ đã tính ra JSON
+build flags:
+  -o, --output FILE    .drawio file to write; defaults to next to the input file
+  --title T            title; defaults to the one in the source
+  --direction D        TD, BT, LR or RL; defaults to the source, or TD if the source has none
+  --mode merge|force   when the target file exists: merge keeps manual edits, force regenerates
+  --no-backup          do not write a .bak file on merge or force
+  --png [FILE]         export a PNG image with the drawio CLI
+  --verify             export SVG and compare the wires draw.io draws with the computed coordinates
+  --layout-json FILE   write the computed coordinates to JSON
 
-tham số xếp hình, tính bằng điểm ảnh:
+layout parameters, in pixels:
 `)
 	for _, f := range layout.Fields() {
-		fmt.Fprintf(&b, "  --%-15s %s; mặc định %d, miền %d..%d\n", f.Name, f.Help, f.Default, f.Lo, f.Hi)
+		fmt.Fprintf(&b, "  --%-15s %s; default %d, range %d..%d\n", f.Name, f.Help, f.Default, f.Lo, f.Hi)
 	}
 	return b.String()
 }
 
 func parseArgs(argv []string) (*args, error) {
 	if len(argv) == 0 {
-		return nil, fmt.Errorf("thiếu lệnh; dùng check hoặc build")
+		return nil, fmt.Errorf("missing command; use check or build")
 	}
 	if argv[0] == "--help" || argv[0] == "-h" {
 		return nil, errHelp
 	}
 	a := &args{cmd: argv[0], cfg: layout.DefaultConfig()}
 	if a.cmd != "check" && a.cmd != "build" {
-		return nil, fmt.Errorf("lệnh %q không có; dùng check hoặc build", a.cmd)
+		return nil, fmt.Errorf("unknown command %q; use check or build", a.cmd)
 	}
 	ints := configFlags(&a.cfg)
 	strs := map[string]*string{"sheet": &a.sheet, "delimiter": &a.delimiter, "encoding": &a.encoding}
@@ -96,7 +97,7 @@ func parseArgs(argv []string) (*args, error) {
 		}
 		if !strings.HasPrefix(tok, "--") {
 			if a.file != "" {
-				return nil, fmt.Errorf("thừa đối số %q", tok)
+				return nil, fmt.Errorf("unexpected extra argument %q", tok)
 			}
 			a.file = tok
 			continue
@@ -107,7 +108,7 @@ func parseArgs(argv []string) (*args, error) {
 				return val, nil
 			}
 			if i+1 >= len(rest) {
-				return "", fmt.Errorf("--%s cần một giá trị", name)
+				return "", fmt.Errorf("--%s needs a value", name)
 			}
 			i++
 			return rest[i], nil
@@ -116,8 +117,8 @@ func parseArgs(argv []string) (*args, error) {
 		case name == "help":
 			return nil, errHelp
 		case a.cmd == "build" && name == "png":
-			// Giá trị không bắt buộc: lấy đối số kế tiếp làm đường ra nếu nó
-			// không phải một cờ, ngược lại dùng đường mặc định.
+			// The value is optional: take the next argument as the output path if
+			// it is not a flag, otherwise use the default path.
 			a.png = "-"
 			if hasVal {
 				a.png = val
@@ -142,21 +143,21 @@ func parseArgs(argv []string) (*args, error) {
 			}
 			n, err := strconv.Atoi(v)
 			if err != nil {
-				return nil, fmt.Errorf("--%s cần số nguyên, nhận %q", name, v)
+				return nil, fmt.Errorf("--%s needs an integer, got %q", name, v)
 			}
 			*ints[name] = n
 		default:
-			return nil, fmt.Errorf("cờ --%s không có cho lệnh %s", name, a.cmd)
+			return nil, fmt.Errorf("unknown flag --%s for command %s", name, a.cmd)
 		}
 	}
 	if a.file == "" {
-		return nil, fmt.Errorf("thiếu file đầu vào")
+		return nil, fmt.Errorf("missing input file")
 	}
 	if a.mode != "" && a.mode != "merge" && a.mode != "force" {
-		return nil, fmt.Errorf("--mode chỉ nhận merge hoặc force, nhận %q", a.mode)
+		return nil, fmt.Errorf("--mode accepts only merge or force, got %q", a.mode)
 	}
 	if a.direction != "" && !layout.ValidDirection(a.direction) {
-		return nil, fmt.Errorf("--direction chỉ nhận TD, BT, LR hoặc RL, nhận %q", a.direction)
+		return nil, fmt.Errorf("--direction accepts only TD, BT, LR or RL, got %q", a.direction)
 	}
 	return a, nil
 }

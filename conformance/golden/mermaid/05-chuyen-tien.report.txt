@@ -1,2 +1,2 @@
-issue mermaid.db_attach WARNING dòng 15: db K đứng cạnh J thay cho mũi tên nối
-sơ đồ: 0 lane, 13 phần tử, 14 cạnh
+issue mermaid.db_attach WARNING line 15: db K placed beside J instead of a connecting arrow
+diagram: 0 lanes, 13 elements, 14 edges

@@ -8,7 +8,7 @@ import (
 	"github.com/luytbq/flowcast/model"
 )
 
-// rowsOf in bảng gọn thành từng dòng "id type parent chữ meta" để so.
+// rowsOf prints the table compactly as "id type parent text meta" lines for comparison.
 func rowsOf(t model.Table) []string {
 	var out []string
 	for _, r := range t.Rows {
@@ -44,7 +44,7 @@ func expectRows(t *testing.T, got model.Table, want ...string) {
 	t.Helper()
 	rows := rowsOf(got)
 	if strings.Join(rows, "\n") != strings.Join(want, "\n") {
-		t.Errorf("dòng:\n  %s\nmong:\n  %s", strings.Join(rows, "\n  "), strings.Join(want, "\n  "))
+		t.Errorf("rows:\n  %s\nwant:\n  %s", strings.Join(rows, "\n  "), strings.Join(want, "\n  "))
 	}
 }
 
@@ -52,11 +52,11 @@ func expectCodes(t *testing.T, got model.Table, want ...string) {
 	t.Helper()
 	sort.Strings(want)
 	if c := codesOf(got); strings.Join(c, ",") != strings.Join(want, ",") {
-		t.Errorf("mã cảnh báo %v, mong %v", c, want)
+		t.Errorf("warning codes %v, want %v", c, want)
 	}
 }
 
-func TestMermaidHinhNodeThanhType(t *testing.T) {
+func TestMermaidNodeShapeBecomesType(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
   s([Bắt đầu]) --> a[Hộp] --> b(Bo góc) --> c{Rẽ?}
   c -->|x| d[[Con]]
@@ -82,7 +82,7 @@ func TestMermaidHinhNodeThanhType(t *testing.T) {
 	expectCodes(t, tb)
 }
 
-func TestMermaidKieuMuiTen(t *testing.T) {
+func TestMermaidArrowStyles(t *testing.T) {
 	tb := parseMM(t, `graph TD
   a --> b
   a -.-> c
@@ -111,14 +111,14 @@ func TestMermaidKieuMuiTen(t *testing.T) {
 	}
 	rows := rowsOf(tb)
 	if len(rows) < len(want)+1 || strings.Join(rows[1:len(want)+1], "\n") != strings.Join(want, "\n") {
-		t.Errorf("dòng:\n  %s", strings.Join(rows, "\n  "))
+		t.Errorf("rows:\n  %s", strings.Join(rows, "\n  "))
 	}
 	expectCodes(t, tb, "mermaid.arrow_head", "mermaid.bidirectional", "mermaid.invisible_link")
 }
 
-// Id của Flow Table có dạng LANE-1, và mermaid cũng nhận id như vậy, nên gạch
-// giữa hai ký tự của id không được đọc thành mũi tên.
-func TestMermaidIDCoGachNgang(t *testing.T) {
+// Flow Table ids look like LANE-1, and mermaid accepts such ids too, so a hyphen
+// between two id characters must not be read as an arrow.
+func TestMermaidIDWithHyphen(t *testing.T) {
 	tb := parseMM(t, "flowchart TD\n  API-1[Nhận] --> API-2.x[Xử lý]\n  API-2.x --- SVC-3")
 	expectRows(t, tb,
 		"API-1 | task |  | Nhận | ",
@@ -128,13 +128,13 @@ func TestMermaidIDCoGachNgang(t *testing.T) {
 		"SVC-3 | task |  | SVC-3 | ")
 }
 
-// Hình thoi chỉ có một cạnh ra không phải là chỗ rẽ nhánh, mà Flow Table lại
-// bắt condition có ít nhất hai nhánh, nên nó được vẽ thành task.
-func TestMermaidHinhThoiMotNhanhThanhTask(t *testing.T) {
+// A diamond with only one outgoing edge is not a branch point, and the Flow Table
+// requires a condition to have at least two branches, so it is drawn as a task.
+func TestMermaidSingleBranchDiamondBecomesTask(t *testing.T) {
 	tb := parseMM(t, "flowchart TD\n  a{Chỉ một?} --> b[Tiếp]\n  c{Hai?} -->|có| b\n  c -->|không| d[Khác]")
 	rows := rowsOf(tb)
 	if rows[0] != "a | task |  | Chỉ một? | " {
-		t.Errorf("dòng đầu %q", rows[0])
+		t.Errorf("first row %q", rows[0])
 	}
 	found := false
 	for _, r := range rows {
@@ -143,13 +143,13 @@ func TestMermaidHinhThoiMotNhanhThanhTask(t *testing.T) {
 		}
 	}
 	if !found {
-		t.Errorf("hình thoi hai nhánh phải giữ condition:\n  %s", strings.Join(rows, "\n  "))
+		t.Errorf("a two-branch diamond must stay a condition:\n  %s", strings.Join(rows, "\n  "))
 	}
 	expectCodes(t, tb, "mermaid.condition_one_branch")
 }
 
-// Cảnh báo phải đi theo số dòng, vì người đọc dò chúng trên file nguồn.
-func TestMermaidCanhBaoTheoSoDong(t *testing.T) {
+// Warnings must follow line numbers, because readers trace them in the source file.
+func TestMermaidWarningsInLineOrder(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
   a --> b
   click a "x"
@@ -162,15 +162,15 @@ func TestMermaidCanhBaoTheoSoDong(t *testing.T) {
 	}
 	for k := 1; k < len(lines); k++ {
 		if lines[k] < lines[k-1] {
-			t.Fatalf("cảnh báo không theo số dòng: %v", lines)
+			t.Fatalf("warnings not in line order: %v", lines)
 		}
 	}
 	if len(lines) < 4 {
-		t.Errorf("chỉ có %d cảnh báo: %v", len(lines), lines)
+		t.Errorf("only %d warnings: %v", len(lines), lines)
 	}
 }
 
-func TestMermaidChuoiVaVaNhieuNguon(t *testing.T) {
+func TestMermaidChainsAndAmpersandSources(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
   a & b --> c & d; c --> e`)
 	expectRows(t, tb,
@@ -186,9 +186,9 @@ func TestMermaidChuoiVaVaNhieuNguon(t *testing.T) {
 		"d | task |  | d | ")
 }
 
-// Node hợp nhánh chỉ được viết sau mọi nguồn của nó, và cạnh quay về node đã
-// viết mang back=true, đúng luật thứ tự của Flow Table.
-func TestMermaidThuTuHopNhanhVaVongLap(t *testing.T) {
+// A merge node is written only after all of its sources, and an edge returning
+// to an already written node carries back=true, per the Flow Table order rule.
+func TestMermaidMergeAndLoopOrder(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
   s([Vào]) --> c{Ok?}
   c -->|có| m[Hợp]
@@ -210,7 +210,7 @@ func TestMermaidThuTuHopNhanhVaVongLap(t *testing.T) {
 		"x | end |  | Ra | ")
 }
 
-func TestMermaidSubgraphThanhLane(t *testing.T) {
+func TestMermaidSubgraphBecomesLane(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
   subgraph U [Người dùng]
     a([Mở]) --> b[Gửi]
@@ -238,7 +238,7 @@ func TestMermaidSubgraphThanhLane(t *testing.T) {
 	expectCodes(t, tb, "mermaid.nested_subgraph", "mermaid.outside_subgraph")
 }
 
-func TestMermaidDbDungCanhNode(t *testing.T) {
+func TestMermaidDbPlacedBesideNode(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
   a[Ghi] -->|lưu| db[(Kho)]
   a --> b[Xong]
@@ -251,13 +251,13 @@ func TestMermaidDbDungCanhNode(t *testing.T) {
 		"db2 | task |  | Chung | ",
 	} {
 		if !strings.Contains(rows, want) {
-			t.Errorf("thiếu %q trong:\n%s", want, rows)
+			t.Errorf("missing %q in:\n%s", want, rows)
 		}
 	}
 	expectCodes(t, tb, "mermaid.db_attach", "mermaid.db_edge_label", "mermaid.db_shape")
 }
 
-func TestMermaidChuTrongNhan(t *testing.T) {
+func TestMermaidLabelText(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
   a["Dòng một<br/>dòng hai"] --> b["`+"`**đậm** thường`"+`"]
   b --> c[Nháy #quot;kép#quot; và #35;]
@@ -272,7 +272,7 @@ func TestMermaidChuTrongNhan(t *testing.T) {
 		"d | task |  | thẻ bỏ | ")
 }
 
-func TestMermaidMauNhanThanhHighlight(t *testing.T) {
+func TestMermaidHighlightColorBecomesHighlight(t *testing.T) {
 	tb := parseMM(t, `flowchart TD
   a:::hot --> b --> c
   classDef hot fill:#DAE8FC,stroke:#6c8ebf
@@ -287,7 +287,7 @@ func TestMermaidMauNhanThanhHighlight(t *testing.T) {
 	expectCodes(t, tb, "mermaid.style")
 }
 
-func TestMermaidDoiTenIDDanhRieng(t *testing.T) {
+func TestMermaidRenamesReservedIDs(t *testing.T) {
 	tb := parseMM(t, "flowchart TD\n  1 --> pool --> x")
 	expectRows(t, tb,
 		"n_1 | task |  | 1 | ",
@@ -298,48 +298,48 @@ func TestMermaidDoiTenIDDanhRieng(t *testing.T) {
 	expectCodes(t, tb, "mermaid.renamed_id", "mermaid.renamed_id")
 }
 
-func TestMermaidCanhTrungIDThemHauTo(t *testing.T) {
+func TestMermaidDuplicateEdgeIDGetsSuffix(t *testing.T) {
 	tb := parseMM(t, "flowchart TD\n  a -->|một| b\n  a -->|hai| b")
 	if rows := rowsOf(tb); rows[2] != "a-->b#2 | edge |  | hai | from=a;to=b" {
-		t.Errorf("dòng:\n  %s", strings.Join(rows, "\n  "))
+		t.Errorf("rows:\n  %s", strings.Join(rows, "\n  "))
 	}
 }
 
-func TestMermaidHuongVaTieuDe(t *testing.T) {
+func TestMermaidDirectionAndTitle(t *testing.T) {
 	tb := parseMM(t, "---\ntitle: Tiêu đề\n---\nflowchart LR\n  a --> b")
 	if tb.Title != "Tiêu đề" || tb.Direction != "LR" {
-		t.Errorf("tiêu đề %q, hướng %q", tb.Title, tb.Direction)
+		t.Errorf("title %q, direction %q", tb.Title, tb.Direction)
 	}
 	expectCodes(t, tb)
 	for src, want := range map[string]string{"graph TB\n a-->b": "TD", "graph\n a-->b": "", "flowchart BT\n a-->b": "BT"} {
 		if d := parseMM(t, src).Direction; d != want {
-			t.Errorf("%q: hướng %q, mong %q", src, d, want)
+			t.Errorf("%q: direction %q, want %q", src, d, want)
 		}
 	}
 	bad := parseMM(t, "flowchart XY\n  a --> b")
 	expectCodes(t, bad, "mermaid.direction")
 	if bad.Issues[0].Loc.Line != 1 {
-		t.Errorf("cảnh báo hướng ở dòng %d, mong dòng 1", bad.Issues[0].Loc.Line)
+		t.Errorf("direction warning on line %d, want line 1", bad.Issues[0].Loc.Line)
 	}
 }
 
-func TestMermaidKhongPhaiFlowchart(t *testing.T) {
+func TestMermaidNotFlowchart(t *testing.T) {
 	_, err := ParseMermaid([]byte("sequenceDiagram\n  A->>B: hi"), "t.mmd")
 	if !isCode(err, "mermaid.not_flowchart") {
-		t.Errorf("lỗi %v", err)
+		t.Errorf("error %v", err)
 	}
 }
 
-func TestMermaidTrongMarkdown(t *testing.T) {
+func TestMermaidInMarkdown(t *testing.T) {
 	src := "# Tài liệu\n\nVăn bản.\n\n```mermaid\nflowchart TD\n  a --> b\n  a --x c\n```\n"
 	tb, err := Parse(Source{Name: "doc.md", Data: []byte(src)})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if tb.Source != "mermaid" || len(tb.Rows) != 5 {
-		t.Errorf("source %q, %d dòng", tb.Source, len(tb.Rows))
+		t.Errorf("source %q, %d rows", tb.Source, len(tb.Rows))
 	}
 	if len(tb.Issues) != 1 || tb.Issues[0].Loc.Line != 8 {
-		t.Errorf("cảnh báo phải trỏ đúng dòng 8 của file: %+v", tb.Issues)
+		t.Errorf("warning must point at line 8 of the file: %+v", tb.Issues)
 	}
 }

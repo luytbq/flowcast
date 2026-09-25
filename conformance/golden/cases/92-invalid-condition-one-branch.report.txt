@@ -1,1 +1,1 @@
-issue graph.condition_branches ERROR   dòng 8 [A-2]: condition chỉ có 1 cạnh ra, cần ít nhất 2
+issue graph.condition_branches ERROR   line 8 [A-2]: condition has only 1 outgoing edges, needs at least 2

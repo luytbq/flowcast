@@ -1,77 +1,78 @@
-// Package layout xếp chỗ và đi dây cho sơ đồ activity-swimlane.
+// Package layout does placement and routing for activity-swimlane diagrams.
 package layout
 
 import "github.com/luytbq/flowcast/model"
 
-// Config là tham số xếp hình của kind này. Mọi giá trị tính bằng điểm ảnh.
+// Config holds the layout parameters of this kind. All values are in pixels.
 //
-// Đây là cấu hình của kind, không phải của core: mọi trường ở đây đều giả định
-// một sơ đồ có lane, có task và có hình thoi rẽ nhánh. Cấu hình không phụ thuộc
-// kind nằm ở CoreConfig. Xem mục 6 của docs/core-design.md.
+// This is the kind config, not the core config: every field here assumes a
+// diagram with lanes, tasks and branching diamonds. Kind-independent config
+// lives in CoreConfig. See section 6 of docs/core-design.md.
 //
-// Miền giá trị của từng trường được khai báo trong Fields, để CLI sinh cờ và
-// web sinh form từ cùng một nguồn.
+// The range of each field is declared in Fields, so the CLI generates flags and
+// the web generates forms from the same source.
 type Config struct {
-	TaskMinW      int // bề rộng tối thiểu của hộp task
-	TaskMaxW      int // bề rộng tối đa của hộp task
-	CondWrap      int // bề rộng ngắt dòng trong hình thoi
-	TermWrap      int // ngắt dòng start, end, external
+	TaskMinW      int // minimum width of a task box
+	TaskMaxW      int // maximum width of a task box
+	CondWrap      int // wrap width inside a diamond
+	TermWrap      int // wrap width for start, end, external
 	DBWrap        int
 	TextWrap      int
-	LabelWrap     int // ngắt dòng nhãn cạnh
-	TrackGap      int // khoảng cách giữa hai track
-	GutterMargin  int // lề từ mép máng tới track đầu
+	LabelWrap     int // wrap width for edge labels
+	TrackGap      int // spacing between two tracks
+	GutterMargin  int // margin from the gutter edge to the first track
 	ChannelMargin int
-	MinGutter     int // khoảng trống tối thiểu giữa hai cột
-	MinChannel    int // khoảng trống tối thiểu giữa hai hàng
-	AttachGap     int // khoảng cách từ db hoặc text tới node nó bám
+	MinGutter     int // minimum space between two columns
+	MinChannel    int // minimum space between two rows
+	AttachGap     int // distance from a db or text to the node it attaches to
 	LaneHeader    int
 	PoolHeader    int
 	MinLaneW      int
 	LabelPad      int
 }
 
-// Field khai báo một trường cấu hình: tên, miền giá trị và lời giải thích.
+// Field declares a config field: its name, range and description.
 //
-// CLI sinh cờ từ danh sách này, web sinh form và kiểm giá trị cũng từ nó, nên
-// hai bên không lệch nhau được. Miền giá trị rộng có chủ đích: người dùng được
-// phép chọn cấu hình cho ra bố cục xấu, tự kiểm sẽ báo, nhưng không được phép
-// chọn giá trị làm engine chạy sai như số âm.
+// The CLI generates flags from this list, and the web generates forms and
+// validates values from it too, so the two cannot drift apart. The ranges are
+// deliberately wide: users may choose a config that produces an ugly layout,
+// which the self-check will report, but may not choose values that make the
+// engine misbehave, such as negative numbers.
 type Field struct {
-	Name    string // tên cờ của CLI, cũng là tên trường của web
+	Name    string // CLI flag name, also the web field name
 	Help    string
 	Default int
 	Lo, Hi  int
 	get     func(*Config) *int
 }
 
-// Get trả về con trỏ tới trường của c mà f khai báo.
+// Get returns a pointer to the field of c that f declares.
 func (f Field) Get(c *Config) *int { return f.get(c) }
 
 var fields = []Field{
-	{"task-min-w", "bề rộng tối thiểu của hộp task", 120, 20, 2000, func(c *Config) *int { return &c.TaskMinW }},
-	{"task-max-w", "bề rộng tối đa của hộp task", 240, 20, 2000, func(c *Config) *int { return &c.TaskMaxW }},
-	{"cond-wrap", "bề rộng ngắt dòng trong hình thoi", 150, 20, 2000, func(c *Config) *int { return &c.CondWrap }},
-	{"term-wrap", "bề rộng ngắt dòng của start, end và external", 170, 20, 2000, func(c *Config) *int { return &c.TermWrap }},
-	{"db-wrap", "bề rộng ngắt dòng của db", 130, 20, 2000, func(c *Config) *int { return &c.DBWrap }},
-	{"text-wrap", "bề rộng ngắt dòng của ghi chú", 260, 20, 2000, func(c *Config) *int { return &c.TextWrap }},
-	{"label-wrap", "bề rộng ngắt dòng của nhãn cạnh", 180, 20, 2000, func(c *Config) *int { return &c.LabelWrap }},
-	{"track-gap", "khoảng cách giữa hai track dây", 12, 0, 500, func(c *Config) *int { return &c.TrackGap }},
-	{"gutter-margin", "lề từ mép máng tới track đầu", 15, 0, 500, func(c *Config) *int { return &c.GutterMargin }},
-	{"channel-margin", "lề từ mép kênh tới track đầu", 12, 0, 500, func(c *Config) *int { return &c.ChannelMargin }},
-	{"min-gutter", "khoảng trống tối thiểu giữa hai cột", 24, 0, 2000, func(c *Config) *int { return &c.MinGutter }},
-	{"min-channel", "khoảng trống tối thiểu giữa hai hàng", 30, 0, 2000, func(c *Config) *int { return &c.MinChannel }},
-	{"attach-gap", "khoảng cách từ db hoặc ghi chú tới node nó bám", 40, 0, 2000, func(c *Config) *int { return &c.AttachGap }},
-	{"lane-header", "bề dày header của lane", 30, 0, 500, func(c *Config) *int { return &c.LaneHeader }},
-	{"pool-header", "bề dày header của pool", 30, 0, 500, func(c *Config) *int { return &c.PoolHeader }},
-	{"min-lane-w", "bề dày tối thiểu của một lane", 120, 20, 4000, func(c *Config) *int { return &c.MinLaneW }},
-	{"label-pad", "lề quanh chữ của nhãn cạnh", 4, 0, 100, func(c *Config) *int { return &c.LabelPad }},
+	{"task-min-w", "minimum width of a task box", 120, 20, 2000, func(c *Config) *int { return &c.TaskMinW }},
+	{"task-max-w", "maximum width of a task box", 240, 20, 2000, func(c *Config) *int { return &c.TaskMaxW }},
+	{"cond-wrap", "wrap width inside a diamond", 150, 20, 2000, func(c *Config) *int { return &c.CondWrap }},
+	{"term-wrap", "wrap width for start, end and external", 170, 20, 2000, func(c *Config) *int { return &c.TermWrap }},
+	{"db-wrap", "wrap width for db", 130, 20, 2000, func(c *Config) *int { return &c.DBWrap }},
+	{"text-wrap", "wrap width for notes", 260, 20, 2000, func(c *Config) *int { return &c.TextWrap }},
+	{"label-wrap", "wrap width for edge labels", 180, 20, 2000, func(c *Config) *int { return &c.LabelWrap }},
+	{"track-gap", "spacing between two wire tracks", 12, 0, 500, func(c *Config) *int { return &c.TrackGap }},
+	{"gutter-margin", "margin from the gutter edge to the first track", 15, 0, 500, func(c *Config) *int { return &c.GutterMargin }},
+	{"channel-margin", "margin from the channel edge to the first track", 12, 0, 500, func(c *Config) *int { return &c.ChannelMargin }},
+	{"min-gutter", "minimum space between two columns", 24, 0, 2000, func(c *Config) *int { return &c.MinGutter }},
+	{"min-channel", "minimum space between two rows", 30, 0, 2000, func(c *Config) *int { return &c.MinChannel }},
+	{"attach-gap", "distance from a db or note to the node it attaches to", 40, 0, 2000, func(c *Config) *int { return &c.AttachGap }},
+	{"lane-header", "lane header thickness", 30, 0, 500, func(c *Config) *int { return &c.LaneHeader }},
+	{"pool-header", "pool header thickness", 30, 0, 500, func(c *Config) *int { return &c.PoolHeader }},
+	{"min-lane-w", "minimum thickness of a lane", 120, 20, 4000, func(c *Config) *int { return &c.MinLaneW }},
+	{"label-pad", "padding around edge label text", 4, 0, 100, func(c *Config) *int { return &c.LabelPad }},
 }
 
-// Fields trả về khai báo của mọi trường cấu hình, theo thứ tự trong Config.
+// Fields returns the declarations of all config fields, in Config order.
 func Fields() []Field { return append([]Field(nil), fields...) }
 
-// DefaultConfig trả về bộ tham số mặc định.
+// DefaultConfig returns the default parameters.
 func DefaultConfig() Config {
 	var c Config
 	for _, f := range fields {
@@ -80,12 +81,12 @@ func DefaultConfig() Config {
 	return c
 }
 
-// ValidateConfig trả về lỗi đầu tiên tìm được khi một trường nằm ngoài miền
-// của nó.
+// ValidateConfig returns the first error found where a field lies outside its
+// range.
 func ValidateConfig(c Config) error {
 	for _, f := range fields {
 		if v := *f.Get(&c); v < f.Lo || v > f.Hi {
-			return model.Errf("schema.out_of_range", "%s = %d nằm ngoài miền %d..%d", f.Name, v, f.Lo, f.Hi)
+			return model.Errf("schema.out_of_range", "%s = %d is outside the range %d..%d", f.Name, v, f.Lo, f.Hi)
 		}
 	}
 	return nil

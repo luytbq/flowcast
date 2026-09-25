@@ -19,9 +19,9 @@ const (
 	nsRel  = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 )
 
-// xnode là một phần tử XML đã đọc, đủ cho những gì cần đọc trong file xlsx:
-// tên có namespace, thuộc tính, chữ ngay bên trong trước phần tử con đầu tiên,
-// và phần tử con.
+// xnode is a parsed XML element, enough for what needs reading in an xlsx file:
+// the namespaced name, attributes, the text directly inside before the first
+// child element, and child elements.
 type xnode struct {
 	space, local string
 	attrs        []xml.Attr
@@ -54,22 +54,22 @@ func parseXML(data []byte) (*xnode, error) {
 		case xml.EndElement:
 			stack = stack[:len(stack)-1]
 		case xml.CharData:
-			// Chỉ giữ phần chữ đứng trước phần tử con đầu tiên; chữ xen giữa
-			// các phần tử con không mang nội dung ô.
+			// Keep only the text before the first child element; text between
+			// child elements carries no cell content.
 			if len(stack) > 0 && len(stack[len(stack)-1].children) == 0 {
 				stack[len(stack)-1].text += string(t)
 			}
 		}
 	}
 	if root == nil {
-		return nil, fmt.Errorf("không có phần tử gốc")
+		return nil, fmt.Errorf("no root element")
 	}
 	return root, nil
 }
 
 func (n *xnode) is(local string) bool { return n.space == nsMain && n.local == local }
 
-// get đọc thuộc tính theo tên không namespace.
+// get reads an attribute by its non-namespaced name.
 func (n *xnode) get(name string) (string, bool) {
 	for _, a := range n.attrs {
 		if a.Name.Space == "" && a.Name.Local == name {
@@ -88,7 +88,7 @@ func (n *xnode) getNS(space, name string) string {
 	return ""
 }
 
-// iter duyệt n và mọi hậu duệ theo thứ tự tài liệu, như Element.iter.
+// iter walks n and all its descendants in document order, like Element.iter.
 func (n *xnode) iter(local string, f func(*xnode)) {
 	if n.is(local) {
 		f(n)
@@ -98,7 +98,7 @@ func (n *xnode) iter(local string, f func(*xnode)) {
 	}
 }
 
-// find trả về con trực tiếp đầu tiên, như Element.find với một tên đơn.
+// find returns the first direct child, like Element.find with a single name.
 func (n *xnode) find(local string) *xnode {
 	for _, c := range n.children {
 		if c.is(local) {
@@ -114,7 +114,7 @@ func (n *xnode) textOf(local string) string {
 	return b.String()
 }
 
-// colIndex đổi phần chữ đầu của một địa chỉ ô như "AB12" thành chỉ số cột từ 0.
+// colIndex turns the leading letters of a cell address like "AB12" into a zero-based column index.
 func colIndex(ref string) int {
 	n := 0
 	for _, ch := range ref {
@@ -135,7 +135,7 @@ func upperASCII(r rune) rune {
 	return r
 }
 
-// numericZero nhận số như "7.0" mà Excel lưu cho một số nguyên.
+// numericZero matches numbers like "7.0" that Excel stores for an integer.
 var numericZero = regexp.MustCompile(`^-?\d+\.0+$`)
 
 type sheetNote struct {
@@ -143,8 +143,9 @@ type sheetNote struct {
 	row   int
 }
 
-// xlsxGrid dựng lưới ô của một sheet, kèm cảnh báo về ô công thức rỗng, ô kiểu
-// số ở cột id hoặc parent, hàng ẩn và ô gộp. Cảnh báo được lọc về vùng bảng sau.
+// xlsxGrid builds the cell grid of a sheet, with warnings about empty formula
+// cells, numeric cells in the id or parent column, hidden rows and merged cells.
+// The warnings are filtered to the table area later.
 func xlsxGrid(sheet *xnode, shared []string, name string) ([][]string, []model.Location, []sheetNote) {
 	var notes []sheetNote
 	rows := map[int]map[int]string{}
@@ -187,18 +188,18 @@ func xlsxGrid(sheet *xnode, shared []string, name string) ([][]string, []model.L
 				}
 			default:
 				if c.find("f") != nil {
-					note(ref, r, "", "ô công thức chưa có giá trị lưu sẵn, đọc thành rỗng")
+					note(ref, r, "", "formula cell has no cached value, read as empty")
 				}
 			}
 			if val != "" && (!hasT || t == "n") && (ci == 0 || ci == 2) {
-				note(ref, r, val, "ô kiểu số ở cột id/parent; định dạng cột là Text để id như 4.10 không bị đổi")
+				note(ref, r, val, "numeric cell in the id/parent column; format the column as Text so ids like 4.10 are not changed")
 			}
 			cells[ci] = val
 		})
 		rows[r] = cells
 		if h, _ := rowEl.get("hidden"); h == "1" {
 			notes = append(notes, sheetNote{model.Issue{Code: "source.xlsx_hidden", Level: model.LevelWarning,
-				Loc: model.Location{Kind: "table", Sheet: name, Row: r}, Msg: "hàng đang bị ẩn nhưng vẫn được đọc"}, r})
+				Loc: model.Location{Kind: "table", Sheet: name, Row: r}, Msg: "row is hidden but is still read"}, r})
 		}
 	})
 	sheet.iter("mergeCell", func(m *xnode) {
@@ -206,7 +207,7 @@ func xlsxGrid(sheet *xnode, shared []string, name string) ([][]string, []model.L
 		first := strings.Split(ref, ":")[0]
 		digits := regexp.MustCompile(`\D`).ReplaceAllString(first, "")
 		r, _ := strconv.Atoi(digits)
-		note(ref, r, "", "ô gộp: chỉ ô trên cùng bên trái giữ giá trị")
+		note(ref, r, "", "merged cell: only the top-left cell keeps its value")
 	})
 
 	top := 0
@@ -231,7 +232,7 @@ func xlsxGrid(sheet *xnode, shared []string, name string) ([][]string, []model.L
 	return grid, locs, notes
 }
 
-// ParseXLSX đọc bảng từ sheet đầu tiên có hàng header, hoặc từ sheet chỉ định.
+// ParseXLSX reads the table from the first sheet with a header row, or from the given sheet.
 func ParseXLSX(data []byte, name, sheet string) (model.Table, error) {
 	return parseXLSX(data, name, sheet, 0)
 }
@@ -247,13 +248,13 @@ func parseXLSX(data []byte, name, sheet string, maxUnzipped int64) (model.Table,
 		unzipped += int64(len(b))
 		if unzipped > maxUnzipped {
 			over = true
-			return nil, errors.New("vượt giới hạn giải nén")
+			return nil, errors.New("decompression limit exceeded")
 		}
 		return b, err
 	})
 	if over {
 		return model.Table{}, model.Errf("limit.unzipped",
-			"%s giải nén ra quá %d byte; file xlsx lớn bất thường hoặc hỏng", name, maxUnzipped)
+			"%s decompresses to more than %d bytes; the xlsx file is abnormally large or corrupt", name, maxUnzipped)
 	}
 	return t, err
 }
@@ -261,7 +262,7 @@ func parseXLSX(data []byte, name, sheet string, maxUnzipped int64) (model.Table,
 func readXLSX(data []byte, name, sheet string, readAll func(io.Reader) ([]byte, error)) (model.Table, error) {
 	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
 	if err != nil {
-		return model.Table{}, model.Errf("source.xlsx", "không đọc được %s: không phải file xlsx hợp lệ", name)
+		return model.Table{}, model.Errf("source.xlsx", "cannot read %s: not a valid xlsx file", name)
 	}
 	files := map[string]*zip.File{}
 	for _, f := range zr.File {
@@ -283,11 +284,11 @@ func readXLSX(data []byte, name, sheet string, readAll func(io.Reader) ([]byte, 
 	parse := func(p string) (*xnode, error) {
 		b, ok := read(p)
 		if !ok {
-			return nil, model.Errf("source.xlsx", "không đọc được %s: thiếu %s", name, p)
+			return nil, model.Errf("source.xlsx", "cannot read %s: missing %s", name, p)
 		}
 		n, err := parseXML(b)
 		if err != nil {
-			return nil, model.Errf("source.xlsx", "không đọc được %s: %s: %v", name, p, err)
+			return nil, model.Errf("source.xlsx", "cannot read %s: %s: %v", name, p, err)
 		}
 		return n, nil
 	}
@@ -336,7 +337,7 @@ func readXLSX(data []byte, name, sheet string, readAll func(io.Reader) ([]byte, 
 			}
 		}
 		if len(keep) == 0 {
-			return model.Table{}, model.Errf("source.xlsx_sheet", "%s không có sheet tên \"%s\"", name, sheet)
+			return model.Table{}, model.Errf("source.xlsx_sheet", "%s has no sheet named \"%s\"", name, sheet)
 		}
 		sheets = keep
 	}
@@ -347,7 +348,7 @@ func readXLSX(data []byte, name, sheet string, readAll func(io.Reader) ([]byte, 
 		}
 		root, err := parseXML(b)
 		if err != nil {
-			return model.Table{}, model.Errf("source.xlsx", "không đọc được %s: %s: %v", name, s.target, err)
+			return model.Table{}, model.Errf("source.xlsx", "cannot read %s: %s: %v", name, s.target, err)
 		}
 		grid, locs, notes := xlsxGrid(root, shared, s.name)
 		if _, _, found := findHeader(grid); !found {
@@ -357,7 +358,7 @@ func readXLSX(data []byte, name, sheet string, readAll func(io.Reader) ([]byte, 
 		if err != nil {
 			return model.Table{}, err
 		}
-		// Chỉ giữ cảnh báo nằm trong vùng bảng: từ hàng header tới hàng cuối.
+		// Keep only warnings inside the table area: from the header row to the last row.
 		hr := hr0 + 1
 		for _, n := range notes {
 			if hr <= n.row && n.row <= hr+len(rows) {
@@ -366,6 +367,6 @@ func readXLSX(data []byte, name, sheet string, readAll func(io.Reader) ([]byte, 
 		}
 		return model.Table{Title: title, Rows: rows, Issues: issues, Source: "xlsx sheet " + s.name}, nil
 	}
-	return model.Table{}, model.Errf("source.no_header", "không tìm thấy sheet nào có hàng header: %s",
+	return model.Table{}, model.Errf("source.no_header", "no sheet has a header row: %s",
 		strings.Join(Header, " | "))
 }

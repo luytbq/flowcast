@@ -1,7 +1,7 @@
-issue graph.start_has_in WARNING dòng 6 [A-1]: start có cạnh đi vào: E5
-issue graph.branch_no_label WARNING dòng 9 [E2]: cạnh ra của condition A-2 không có nhãn
-issue graph.end_has_out WARNING dòng 11 [A-3]: end có cạnh đi ra: E4
-issue graph.end_has_out WARNING dòng 13 [A-4]: end có cạnh đi ra: E5
-issue order.missing_back WARNING dòng 14 [E5]: A-1 đứng trước nguồn A-4 nhưng cạnh không ghi back=true
-engine layout.unmarked-cycle: có vòng lặp chưa đánh dấu back=true, xếp theo thứ tự bảng: A-1, A-2, A-3, A-4
-sơ đồ: 1 lane, 4 phần tử, 5 cạnh
+issue graph.start_has_in WARNING line 6 [A-1]: start has incoming edges: E5
+issue graph.branch_no_label WARNING line 9 [E2]: outgoing edge of condition A-2 has no label
+issue graph.end_has_out WARNING line 11 [A-3]: end has outgoing edges: E4
+issue graph.end_has_out WARNING line 13 [A-4]: end has outgoing edges: E5
+issue order.missing_back WARNING line 14 [E5]: A-1 comes before its source A-4 but the edge does not say back=true
+engine layout.unmarked-cycle: found a loop not marked back=true, laid out in table order: A-1, A-2, A-3, A-4
+diagram: 1 lanes, 4 elements, 5 edges

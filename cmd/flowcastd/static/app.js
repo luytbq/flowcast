@@ -11,7 +11,7 @@ const buttons = [document.getElementById('build'), document.getElementById('chec
 let lastURL = null;
 
 fileInput.addEventListener('change', () => {
-  dropText.textContent = fileInput.files[0] ? fileInput.files[0].name : 'Chọn hoặc kéo thả file vào đây';
+  dropText.textContent = fileInput.files[0] ? fileInput.files[0].name : 'Choose or drop a file here';
 });
 drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
 drop.addEventListener('dragleave', () => drop.classList.remove('over'));
@@ -24,8 +24,8 @@ drop.addEventListener('drop', (e) => {
   }
 });
 
-// Form của tham số xếp hình và danh sách hướng do máy chủ khai báo, nên thêm
-// một tham số trong core là nó hiện ra ở đây, không phải sửa trang.
+// The layout parameter form and the list of directions are declared by the server,
+// so adding a parameter in core makes it appear here without editing the page.
 async function loadFields() {
   const res = await fetch('/api/fields');
   const data = await res.json();
@@ -82,16 +82,16 @@ function show(data, built) {
   for (const f of data.findings || []) item(f.level, 'layout', f.message);
   if (!data.ok) {
     summary.className = 'bad';
-    summary.textContent = `Bảng có ${errs} lỗi, ${warns} cảnh báo. Sửa lỗi rồi thử lại.`;
+    summary.textContent = `The table has ${errs} errors, ${warns} warnings. Fix the errors and try again.`;
     return;
   }
   summary.className = 'ok';
   if (!built) {
-    summary.textContent = `Bảng hợp lệ: 0 lỗi, ${warns} cảnh báo.`;
+    summary.textContent = `The table is valid: 0 errors, ${warns} warnings.`;
     return;
   }
   const s = data.stats;
-  summary.textContent = `Đã tạo ${data.filename}: ${s.lanes} lane, ${s.items} phần tử, ${s.edges} cạnh.`;
+  summary.textContent = `Created ${data.filename}: ${s.lanes} lanes, ${s.items} elements, ${s.edges} edges.`;
   if (lastURL) URL.revokeObjectURL(lastURL);
   lastURL = URL.createObjectURL(new Blob([data.drawio], { type: 'application/vnd.jgraph.mxfile' }));
   download.href = lastURL;
@@ -107,7 +107,7 @@ async function send(built) {
     const res = await fetch(built ? '/api/build' : '/api/check', { method: 'POST', body: new FormData(form) });
     show(await res.json(), built);
   } catch (e) {
-    show({ error: { message: 'Không gửi được file: ' + e.message } }, built);
+    show({ error: { message: 'Could not send the file: ' + e.message } }, built);
   } finally {
     buttons.forEach((b) => { b.disabled = false; });
   }

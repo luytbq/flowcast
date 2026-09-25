@@ -1,8 +1,9 @@
-// Package render gọi drawio CLI để xuất ảnh, và kiểm xem draw.io có vẽ dây đúng
-// như toạ độ đã tính hay không.
+// Package render calls the drawio CLI to export images, and checks whether
+// draw.io draws the wires exactly at the computed coordinates.
 //
-// Gói này nằm ngoài core: nó chạy tiến trình ngoài và đọc ghi file. Core chỉ
-// sinh văn bản .drawio; ai cần ảnh thì cắm gói này vào.
+// This package lives outside the core: it runs external processes and reads and
+// writes files. The core only produces .drawio text; whoever needs images plugs
+// this package in.
 package render
 
 import (
@@ -23,12 +24,13 @@ import (
 	"github.com/luytbq/flowcast/layout"
 )
 
-// Error là lỗi khiến không xuất được ảnh. Thông báo đã sẵn để in cho người dùng.
+// Error is an error that prevents exporting an image. The message is ready to be
+// shown to the user.
 type Error struct{ Msg string }
 
 func (e *Error) Error() string { return e.Msg }
 
-// Bin trả về đường dẫn tới drawio CLI, hoặc rỗng khi máy không có.
+// Bin returns the path to the drawio CLI, or empty when the machine has none.
 func Bin() string {
 	for _, name := range []string{"drawio", "draw.io"} {
 		if p, err := exec.LookPath(name); err == nil {
@@ -38,15 +40,15 @@ func Bin() string {
 	return ""
 }
 
-// Timeout là thời gian tối đa cho một lần gọi drawio. drawio là ứng dụng
-// Electron, lần chạy đầu trên máy lạnh có thể mất vài chục giây.
+// Timeout is the maximum duration of one drawio call. drawio is an Electron
+// app, and the first run on a cold machine can take several tens of seconds.
 var Timeout = 90 * time.Second
 
-// Export xuất src sang out theo định dạng format ("png" hoặc "svg"). scale 0
-// nghĩa là không đặt tỉ lệ. Quá thời gian thì thử lại một lần.
+// Export exports src to out in the given format ("png" or "svg"). A scale of 0
+// means no scale is set. On timeout it retries once.
 func Export(ctx context.Context, exe, src, out, format string, scale int) error {
 	if exe == "" {
-		return &Error{"không tìm thấy drawio CLI"}
+		return &Error{"drawio CLI not found"}
 	}
 	args := []string{"-x", "-f", format, "-o", out}
 	if scale != 0 {
@@ -69,19 +71,19 @@ func Export(ctx context.Context, exe, src, out, format string, scale int) error 
 			if msg == "" {
 				msg = strings.TrimSpace(stdout.String())
 			}
-			return &Error{"drawio export lỗi: " + msg}
+			return &Error{"drawio export failed: " + msg}
 		}
 		return nil
 	}
-	return &Error{"drawio export quá thời gian: " + strings.Join(append([]string{exe}, args...), " ")}
+	return &Error{"drawio export timed out: " + strings.Join(append([]string{exe}, args...), " ")}
 }
 
 const svgNS = "http://www.w3.org/2000/svg"
 
-// node là một phần tử SVG, chỉ đủ cho việc kiểm: thẻ trong namespace svg,
-// thuộc tính, và con theo thứ tự tài liệu.
+// node is an SVG element, with just enough for the check: the tag in the svg
+// namespace, the attributes, and the children in document order.
 type node struct {
-	tag      string // rỗng khi phần tử không thuộc namespace svg
+	tag      string // empty when the element is not in the svg namespace
 	attrs    map[string]string
 	children []*node
 }
@@ -147,12 +149,13 @@ func attrFloat(n *node, k string) float64 {
 	return v
 }
 
-// Verify so đường dây trong SVG do draw.io vẽ với toạ độ trong r, sai lệch cho
-// phép 2 điểm ảnh, và trả về từng chỗ lệch.
+// Verify compares the wire paths in the SVG drawn by draw.io with the
+// coordinates in r, with a tolerance of 2 pixels, and returns each mismatch.
 //
-// SVG của draw.io đặt sơ đồ ở một gốc toạ độ riêng, nên độ dời được suy ra từ
-// hình của phần tử đầu tiên trong bảng. Đoạn cuối của mỗi dây chỉ so theo trục
-// của nó, vì đầu mũi tên làm draw.io rút ngắn đoạn đó.
+// draw.io's SVG places the diagram at its own coordinate origin, so the offset
+// is derived from the shape of the first element in the table. The last segment
+// of each wire is compared only along its axis, because the arrowhead makes
+// draw.io shorten that segment.
 func Verify(r layout.Result, svg []byte) ([]string, error) {
 	root, err := parseSVG(svg)
 	if err != nil {
@@ -166,7 +169,7 @@ func Verify(r layout.Result, svg []byte) ([]string, error) {
 		return true
 	})
 	if len(cells) == 0 {
-		return []string{"SVG không có data-cell-id, bỏ qua kiểm render"}, nil
+		return []string{"SVG has no data-cell-id, skipping render check"}, nil
 	}
 	if len(r.Items) == 0 {
 		return nil, nil
@@ -203,7 +206,7 @@ func Verify(r layout.Result, svg []byte) ([]string, error) {
 		})
 	}
 	if rect == nil {
-		return []string{"không tìm thấy hình của " + anchor.ID + " trong SVG, bỏ qua kiểm render"}, nil
+		return []string{"shape of " + anchor.ID + " not found in SVG, skipping render check"}, nil
 	}
 	dx, dy := rect[0]-anchor.X, rect[1]-anchor.Y
 	const tol = 2.0
@@ -211,7 +214,7 @@ func Verify(r layout.Result, svg []byte) ([]string, error) {
 	for _, e := range r.Edges {
 		g := cells[e.ID]
 		if g == nil {
-			probs = append(probs, e.ID+": không có trong SVG")
+			probs = append(probs, e.ID+": not in SVG")
 			continue
 		}
 		var path *node
@@ -223,7 +226,7 @@ func Verify(r layout.Result, svg []byte) ([]string, error) {
 			return true
 		})
 		if path == nil {
-			probs = append(probs, e.ID+": không đọc được path")
+			probs = append(probs, e.ID+": cannot read path")
 			continue
 		}
 		nums := pathNums(path.attrs["d"])
@@ -233,13 +236,13 @@ func Verify(r layout.Result, svg []byte) ([]string, error) {
 		}
 		want := e.Pts
 		if len(got) != len(want) {
-			probs = append(probs, fmt.Sprintf("%s: draw.io vẽ %d điểm, tính ra %d điểm", e.ID, len(got), len(want)))
+			probs = append(probs, fmt.Sprintf("%s: draw.io drew %d points, computed %d points", e.ID, len(got), len(want)))
 			continue
 		}
 		for k := 0; k < len(got)-1; k++ {
 			a, b := got[k], want[k]
 			if math.Abs(a[0]-b[0]) > tol || math.Abs(a[1]-b[1]) > tol {
-				probs = append(probs, fmt.Sprintf("%s: điểm %d lệch, vẽ (%.0f,%.0f) thay vì (%.0f,%.0f)",
+				probs = append(probs, fmt.Sprintf("%s: point %d off, drawn (%.0f,%.0f) instead of (%.0f,%.0f)",
 					e.ID, k, a[0], a[1], b[0], b[1]))
 				break
 			}
@@ -253,7 +256,7 @@ func Verify(r layout.Result, svg []byte) ([]string, error) {
 			bad = math.Abs(lastG[1]-lastW[1]) > tol
 		}
 		if bad {
-			probs = append(probs, e.ID+": đoạn cuối lệch trục")
+			probs = append(probs, e.ID+": last segment off axis")
 		}
 	}
 	return probs, nil
