@@ -1,4 +1,3 @@
 *.drawio.bak
 /flowcast
 /flowcastd
-go*.linux-amd64.tar.gz
