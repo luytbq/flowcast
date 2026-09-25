@@ -28,7 +28,7 @@ func TestOrientTransformsEverythingWithCoordinates(t *testing.T) {
 	for dir, want := range cases {
 		r := base
 		r.Dir = dir
-		got := Orient(r)
+		got := orientResult(r)
 		it := got.Items[0]
 		if [4]float64{it.X, it.Y, it.W, it.H} != want.item {
 			t.Errorf("%s: element %v, want %v", dir, [4]float64{it.X, it.Y, it.W, it.H}, want.item)
@@ -58,7 +58,7 @@ func TestOrientTransformsEverythingWithCoordinates(t *testing.T) {
 			t.Errorf("%s: Orient modified the original result", dir)
 		}
 	}
-	if r := Orient(base); r.Edges[0].Pts[0] != [2]float64{20, 120} {
+	if r := orientResult(base); r.Edges[0].Pts[0] != [2]float64{20, 120} {
 		t.Error("an empty direction must return the result unchanged")
 	}
 }

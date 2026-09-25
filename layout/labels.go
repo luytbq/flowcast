@@ -171,13 +171,14 @@ func (l *Layout) placeLabels() {
 	}
 }
 
-// Run runs all phases in the proper order.
+// run runs the grid phases in the proper order: place, route, geometry twice,
+// labels.
 //
 // Geometry is computed in two passes. The first pass does not yet know how long
 // the horizontal part of B and C edges is, and so whether their labels fit; the
 // second pass reserves extra space for the labels that did not fit and
 // recomputes.
-func (l *Layout) Run() *Layout {
+func (l *Layout) run() *Layout {
 	t0 := time.Now()
 	l.Place()
 	l.tracePlace(t0)

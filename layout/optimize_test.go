@@ -45,7 +45,7 @@ func TestOptimizeStraightensGutterDetour(t *testing.T) {
 
 func TestOptimizeOffChangesNothing(t *testing.T) {
 	r := jogResult()
-	if got := Optimize(r, DefaultConfig(), nil); !reflect.DeepEqual(got, r) {
+	if got := optimize(r, DefaultConfig(), nil); !reflect.DeepEqual(got, r) {
 		t.Errorf("optimize = 0 still changed the result")
 	}
 }
@@ -106,7 +106,7 @@ func rowResult() Result {
 func TestOptimizePullsNodeInAndNarrowsLane(t *testing.T) {
 	cfg := DefaultConfig()
 	cfg.Optimize = 10
-	r := Optimize(rowResult(), cfg, nil)
+	r := optimize(rowResult(), cfg, nil)
 	p := r.Edges[0].Pts
 	if l := p[1][0] - p[0][0]; l != float64(cfg.MinGutter) {
 		t.Errorf("wire is %v px long, want the minimum gap %d", l, cfg.MinGutter)
@@ -128,7 +128,7 @@ func TestOptimizeKeepsNotesAtAttachGap(t *testing.T) {
 	r.Items[2] = PlacedItem{ID: "N", Attach: "A", X: 240, Y: 100, W: 80, H: 30}
 	r.Items[1].Y = 200
 	r.Edges[0].Pts = [][2]float64{{150, 140}, {150, 220}, {800, 220}}
-	out := Optimize(r, cfg, nil)
+	out := optimize(r, cfg, nil)
 	a, n := out.Items[0], out.Items[2]
 	if gap := n.X - (a.X + a.W); gap != float64(cfg.AttachGap) {
 		t.Errorf("note sits %v px from its node, want --attach-gap %d", gap, cfg.AttachGap)
@@ -140,7 +140,7 @@ func TestOptimizeNeverNarrowsLaneBelowMinimum(t *testing.T) {
 	cfg.Optimize = 10
 	r := rowResult()
 	r.LaneMinW = []float64{950}
-	out := Optimize(r, cfg, nil)
+	out := optimize(r, cfg, nil)
 	if out.LaneW[0] < 950 {
 		t.Errorf("lane narrowed to %v, below its minimum 950", out.LaneW[0])
 	}

@@ -112,7 +112,7 @@ func (l *Layout) Item(id string) *Item { return l.items[id] }
 //
 // It does not re-check the input: calling it with a table that still has errors
 // violates a precondition.
-func New(rows []model.Row, cfg Config, tm *text.Measure) *Layout {
+func newLayout(rows []model.Row, cfg Config, tm *text.Measure) *Layout {
 	l := &Layout{
 		Cfg:     cfg,
 		tm:      tm,

@@ -18,7 +18,7 @@ type Result struct {
 	// not drawn, and there is no pool.
 	NoLanes bool
 	// Dir is the diagram direction. A Result returned by Layout.Result is always
-	// in the virtual TD space; Orient maps it to the real direction. Writers need
+	// in the virtual TD space; Lay maps it to the real direction before returning it. Writers need
 	// the direction to draw lanes as vertical or horizontal bands.
 	Dir          string
 	MinChannel   int
@@ -83,7 +83,7 @@ type PlacedEdge struct {
 	NoLabelPos bool
 }
 
-// Result snapshots the current output of Layout. Call it after Run.
+// Result snapshots the current output of Layout. Call it after run.
 func (l *Layout) Result() Result {
 	r := Result{
 		PoolW: l.PoolW, PoolH: l.PoolH, Origin: Origin,

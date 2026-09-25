@@ -214,48 +214,25 @@ func Build(src Source, opt Options) (Result, error) {
 	return r, nil
 }
 
-// layoutAndWrite lays out, self-checks and produces the target text for a
-// validated table.
+// layoutAndWrite lays out a validated table and produces the target text.
 //
-// The engine only panics when it violates one of its own invariants. That error
-// is returned like any other, so programs using the library and the web service
-// do not crash on an unusual table.
+// Merge and the writer can still panic on a broken invariant; that error is
+// returned like any other, so programs using the library and the web service do
+// not crash on an unusual file.
 func layoutAndWrite(r *Result, rows []model.Row, cfg layout.Config, m *text.Metrics, dir string, prev *merge.Old, b budget, trace Trace) (err error) {
 	defer func() {
 		if p := recover(); p != nil {
 			err = model.Errf("layout.internal", "internal layout error: %v", p)
 		}
 	}()
-	t0 := time.Now()
-	lay := layout.New(rows, cfg, text.NewMeasure(m))
-	lay.Trace = trace
-	trace.Log("size: measured and wrapped the text of %d elements and %d edges %s", len(lay.ItemOrder), len(lay.Edges), layout.Since(t0))
-	lay.SetDirection(dir)
-	l := lay.Run()
-	if err := b.check(); err != nil {
+	laid, err := layout.Lay(rows, text.NewMeasure(m), layout.Options{
+		Config: cfg, Direction: dir, Trace: trace, Checkpoint: b.check})
+	if err != nil {
 		return err
 	}
-	res := layout.Optimize(l.Result(), cfg, trace)
-	r.Warnings = l.Warnings
-	for _, w := range l.Warnings {
-		trace.Log("warning: %s %s", w.Code, w.Msg)
-	}
-	t0 = time.Now()
-	r.Findings = layout.Check(res)
-	ne := 0
-	for _, f := range r.Findings {
-		if f.Level == "error" {
-			ne++
-		}
-		trace.Log("check:   %s %s %s", f.Level, f.Code, f.Msg)
-	}
-	trace.Log("check: %d errors, %d warnings %s", ne, len(r.Findings)-ne, layout.Since(t0))
-	res = layout.Orient(res)
-	if dir != layout.DirTD {
-		trace.Log("orient: mapped the top-down layout to %s", dir)
-	}
-	r.Layout = &res
-	t0 = time.Now()
+	res := laid.Result
+	r.Warnings, r.Findings, r.Layout = laid.Warnings, laid.Findings, &res
+	t0 := time.Now()
 	if prev != nil {
 		extras, rep := merge.Apply(&res, prev)
 		r.Merge = &rep

@@ -30,8 +30,8 @@ func ValidDirection(dir string) bool {
 
 func transposed(dir string) bool { return dir == DirLR || dir == DirRL }
 
-// SetDirection selects the direction. Call it after New and before Run.
-func (l *Layout) SetDirection(dir string) {
+// setDirection selects the direction. Lay calls it before run.
+func (l *Layout) setDirection(dir string) {
 	l.Dir = dir
 	if !transposed(dir) {
 		return
@@ -96,9 +96,9 @@ func (o orient) vec(v [2]float64) [2]float64 {
 	return v
 }
 
-// Orient maps a result from the virtual space to the real direction. The
+// orientResult maps a result from the virtual space to the real direction. The
 // returned result shares no memory with r. For TD it returns r unchanged.
-func Orient(r Result) Result {
+func orientResult(r Result) Result {
 	if r.Dir == "" || r.Dir == DirTD {
 		return r
 	}

@@ -76,10 +76,13 @@ one. How the phases work together is described in [algorithm.md](algorithm.md).
 | tracks.go | Places ports on node faces, assigns wire segments to tracks |
 | seg.go | Data types for wire segments and the resources holding wires |
 | geometry.go | Converts the grid to pixels, builds the polyline for each wire |
-| labels.go | Reserves space and places labels for wires, plus the Run function that runs all phases |
+| labels.go | Reserves space and places labels for wires, plus the run function that runs the grid phases |
 | axis.go | Axis swap for the LR, RL, BT directions |
 | result.go | Result, the plain data type returned to the outside |
 | check.go | Geometry self-check on a Result |
+| lay.go | Lay, the only entry point: runs every phase in order and returns the finished Result with its warnings and findings |
+| optimize.go, optimize_items.go | The geometric optimizer: straightens wires, moves items sideways, narrows lanes |
+| trace.go | The step log behind --verbose |
 
 ## What is each package allowed to do?
 

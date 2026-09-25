@@ -7,7 +7,7 @@ import (
 	"github.com/luytbq/flowcast/num"
 )
 
-// Optimize improves a finished layout using geometry only.
+// optimize improves a finished layout using geometry only.
 //
 // Placement and routing work on the abstract grid: a column has one x for every
 // row of its lane, and a wire style is chosen per grid cell before any
@@ -22,9 +22,9 @@ import (
 // zero, so the loop cannot oscillate and ends after finitely many moves. The
 // round limit only bounds the running time.
 //
-// Optimize runs in the virtual TD space, before Check and Orient, so one code
+// optimize runs in the virtual TD space, before Check and the axis swap, so one code
 // path serves every direction and the self-check sees the final geometry.
-func Optimize(r Result, cfg Config, trace Trace) Result {
+func optimize(r Result, cfg Config, trace Trace) Result {
 	if cfg.Optimize <= 0 {
 		trace.Log("optimize: off")
 		return r

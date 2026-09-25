@@ -30,8 +30,9 @@ The phases in order:
 8. Geometry self-check.
 9. Axis swap according to the direction.
 
-Phase 1 runs while building the initial state, phases 7 to 9 run in Build. The
-remaining phases are in the Run function. Every phase logs a line per step
+All phases run inside layout.Lay, the only entry point of the package, which
+owns their order: the direction is set before sizing, and the self-check sees
+the top-down space before the axis swap. Every phase logs a line per step
 through Options.Trace, which the CLI prints under --verbose.
 
 ## 1. Measuring

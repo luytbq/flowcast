@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"reflect"
 	"regexp"
 	"strings"
 	"testing"
@@ -248,8 +247,9 @@ func bends(r *layout.Result) int {
 }
 
 // TestOptimizeKeepsInvariants: with the optimizer on, every valid case still
-// passes the self-check, never gains a bend, is a fixed point of the optimizer,
-// and survives a merge of its unedited file unchanged.
+// passes the self-check, never gains a bend, and survives a merge of its
+// unedited file unchanged. That the output is a fixed point of the optimizer is
+// tested in the layout package, which owns the optimizer.
 func TestOptimizeKeepsInvariants(t *testing.T) {
 	opt := optimized()
 	for _, p := range casePaths(t) {
@@ -266,9 +266,6 @@ func TestOptimizeKeepsInvariants(t *testing.T) {
 		}
 		if bends(r.Layout) > bends(plain.Layout) {
 			t.Errorf("%s: optimize added bends: %d > %d", name, bends(r.Layout), bends(plain.Layout))
-		}
-		if again := layout.Optimize(*r.Layout, *opt.Config, nil); !reflect.DeepEqual(again, *r.Layout) {
-			t.Errorf("%s: a second optimize still changed the layout", name)
 		}
 		old, err := merge.Read([]byte(r.Text), "old.drawio")
 		if err != nil {
