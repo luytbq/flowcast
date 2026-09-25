@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/luytbq/flowcast"
+	"github.com/luytbq/flowcast/layout"
 	"github.com/luytbq/flowcast/merge"
 	"github.com/luytbq/flowcast/model"
 )
@@ -228,4 +230,80 @@ func context(got, want string) string {
 	lo := max(0, i-60)
 	cut := func(s string) string { return s[lo:min(len(s), i+60)] }
 	return "\n  got    " + cut(got) + "\n  golden " + cut(want)
+}
+
+// optimized is the options with the geometric optimizer on.
+func optimized() flowcast.Options {
+	cfg := layout.DefaultConfig()
+	cfg.Optimize = 10
+	return flowcast.Options{Config: &cfg}
+}
+
+func bends(r *layout.Result) int {
+	n := 0
+	for _, e := range r.Edges {
+		n += len(e.Pts) - 2
+	}
+	return n
+}
+
+// TestOptimizeKeepsInvariants: with the optimizer on, every valid case still
+// passes the self-check, never gains a bend, is a fixed point of the optimizer,
+// and survives a merge of its unedited file unchanged.
+func TestOptimizeKeepsInvariants(t *testing.T) {
+	opt := optimized()
+	for _, p := range casePaths(t) {
+		name := filepath.Base(p)
+		plain, ok := buildValid(t, p, flowcast.Options{})
+		if !ok {
+			continue
+		}
+		r, _ := buildValid(t, p, opt)
+		for _, f := range r.Findings {
+			if f.Level == "error" {
+				t.Errorf("%s: self-check error after optimize: %s", name, f.Msg)
+			}
+		}
+		if bends(r.Layout) > bends(plain.Layout) {
+			t.Errorf("%s: optimize added bends: %d > %d", name, bends(r.Layout), bends(plain.Layout))
+		}
+		if again := layout.Optimize(*r.Layout, *opt.Config); !reflect.DeepEqual(again, *r.Layout) {
+			t.Errorf("%s: a second optimize still changed the layout", name)
+		}
+		old, err := merge.Read([]byte(r.Text), "old.drawio")
+		if err != nil {
+			t.Fatal(err)
+		}
+		mo := opt
+		mo.Previous = old
+		if merged, _ := buildValid(t, p, mo); merged.Text != r.Text {
+			t.Errorf("%s: merge on the unedited optimized file changed it", name)
+		}
+	}
+}
+
+// TestOptimizeMatchesGolden pins the optimizer's output for every case it
+// changes, in golden/optimize/. Cases it leaves alone have no golden there.
+func TestOptimizeMatchesGolden(t *testing.T) {
+	for _, p := range casePaths(t) {
+		plain, ok := buildValid(t, p, flowcast.Options{})
+		if !ok {
+			continue
+		}
+		r, _ := buildValid(t, p, optimized())
+		set := filepath.Base(filepath.Dir(p))
+		name := strings.TrimSuffix(filepath.Base(p), filepath.Ext(p))
+		golden := filepath.Join(Dir(), "golden", "optimize", set+"-"+name+".drawio")
+		if r.Text == plain.Text {
+			if _, err := os.Stat(golden); err == nil {
+				if *update {
+					os.Remove(golden)
+				} else {
+					t.Errorf("%s: optimize no longer changes this case but a golden remains", name)
+				}
+			}
+			continue
+		}
+		checkGolden(t, golden, r.Text)
+	}
 }

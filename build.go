@@ -176,7 +176,7 @@ func layoutAndWrite(r *Result, rows []model.Row, cfg layout.Config, m *text.Metr
 	if err := b.check(); err != nil {
 		return err
 	}
-	res := l.Result()
+	res := layout.Optimize(l.Result(), cfg)
 	r.Warnings = l.Warnings
 	r.Findings = layout.Check(res)
 	res = layout.Orient(res)
