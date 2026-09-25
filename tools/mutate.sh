@@ -96,6 +96,10 @@ mutate() {
 # - Idx của dòng markdown lấy số dòng trong file thay vì thứ tự dòng bảng. Cả
 #   hai cùng tăng theo thứ tự dòng, và Idx chỉ đi vào engine dưới dạng Order,
 #   nơi mọi chỗ dùng chỉ so sánh hai Order với nhau. Writer không ghi Order.
+# - itemsFree bỏ phép kiểm phần tử đè nhãn. room đã coi mọi nhãn trong dải hàng
+#   là vật cản khi tính khoảng dịch, và mọi bước dịch (trọn khoảng, chia đôi,
+#   căn thẳng hàng) đều nằm trong khoảng đó. Phép kiểm được giữ làm lưới an toàn
+#   cho bước chuyển mới về sau.
 #
 # Mỗi cái sống sót qua hàng chục nghìn bảng sinh ngẫu nhiên, hoặc có lập luận
 # dựa trên cấu trúc đầu vào, trước khi được chứng minh. Suy luận mà không có số
@@ -333,7 +337,6 @@ mutate "tối ưu không neo lại nhãn" layout/optimize.go '	p, dist, _ := anc
 mutate "tối ưu bỏ qua chỗ cắt" layout/optimize.go '					c += costCross' '					c += 0'
 
 mutate "dịch phần tử không coi đoạn đứng yên của dây mình là vật cản" layout/optimize_items.go '			if moving[k] || moving[k+1] {' '			if true {'
-mutate "dịch phần tử bỏ qua nhãn" layout/optimize_items.go '			if e.Label != nil && area(b, *e.Label) > 0 {' '			if false {'
 mutate "không có lực kéo về tâm lane" layout/optimize_items.go 'const costGravity = 0.05' 'const costGravity = 0'
 mutate "ghi chú được kéo sát hơn attach-gap" layout/optimize_items.go 'math.Abs(gap-float64(o.cfg.AttachGap))' 'math.Max(gap-float64(o.cfg.AttachGap), 0)'
 mutate "không thử bước dịch ngắn hơn" layout/optimize_items.go '			if dx, paths, ok = o.bisectShift(m, edges, dx); !ok {' '			if true {'
