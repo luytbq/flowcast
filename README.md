@@ -143,6 +143,7 @@ does not read or write files on the server, and does not call drawio.
 | Running checks, regenerating goldens, adding cases | [docs/testing.md](docs/testing.md) |
 | Overall design of the core | [docs/core-design.md](docs/core-design.md) |
 | How regenerating while keeping manual edits works | [docs/merge-design.md](docs/merge-design.md) |
+| Proposal: re-laying out existing draw.io files and PlantUML input | [docs/drawio-input-design.md](docs/drawio-input-design.md) |
 | Reading csv and xlsx | [docs/input-formats-design.md](docs/input-formats-design.md) |
 | Settled decisions and their reasons | [docs/adr/](docs/adr/) |
 
