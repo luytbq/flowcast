@@ -7,9 +7,9 @@ $ ["build", "$T/in.xlsx"]
 check: read table from xlsx sheet Flow
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (2 lanes, 3 elements, 2 edges, 390.16x250px)
+build: wrote $T/in.drawio (2 lanes, 3 elements, 2 edges, 386.16x250px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-6b404248627a5e5d  in.drawio
+ba9c6f6f29102137  in.drawio
 2543eb2ea6c53304  in.xlsx

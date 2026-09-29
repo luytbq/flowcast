@@ -3,9 +3,9 @@ $ ["build", "$T/in.md", "--task-max-w", "160", "--text-wrap", "120", "--db-wrap"
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 5 elements, 3 edges, 430x596px)
+build: wrote $T/in.drawio (1 lanes, 5 elements, 3 edges, 390x596px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-871885b3e563287e  in.drawio
+2b78cccc4a49fd22  in.drawio
 d938ca443075def4  in.md

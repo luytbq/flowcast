@@ -4,11 +4,11 @@ $ ["build", "$T/so.do.md", "--png=$T/b.png"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/so.do.drawio (1 lanes, 4 elements, 3 edges, 282.26x334px)
+build: wrote $T/so.do.drawio (1 lanes, 4 elements, 3 edges, 276.26x334px)
 layout: 0 errors, 0 warnings
 png: $T/b.png
 [exit 0]
 --- files
 32dc4544cbadce07  b.png
-80c76f35b7e31949  so.do.drawio
+6efaa5711fa012a4  so.do.drawio
 5b87df5db0eb01a0  so.do.md

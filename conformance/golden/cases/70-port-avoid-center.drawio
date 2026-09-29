@@ -14,7 +14,7 @@
           <mxGeometry x="168" y="30" width="128" height="220" as="geometry" />
         </mxCell>
         <mxCell id="B-1" value="B-1 x" vertex="1" parent="B" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="24" y="63" width="80" height="44" as="geometry" />
+          <mxGeometry x="15" y="63" width="80" height="44" as="geometry" />
         </mxCell>
         <mxCell id="A-2" value="A-2 x" vertex="1" parent="A" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="24" y="60" width="120" height="50" as="geometry" />

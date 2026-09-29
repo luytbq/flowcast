@@ -9,10 +9,10 @@ check: read table from markdown
 WARNING line 18 [A-8]: task has no outgoing edge
 check: 0 errors, 1 warnings
 build: mode new
-build: wrote $T/in.drawio (2 lanes, 8 elements, 4 edges, 630x330px)
+build: wrote $T/in.drawio (2 lanes, 8 elements, 4 edges, 498x330px)
 WARNING layout: A-4.2: no free cell next to A-4, placed farther away
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-9bb4f31bbfc423dd  in.drawio
+3cc71478f772f8be  in.drawio
 56e8049bd4449cb2  in.md

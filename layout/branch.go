@@ -255,6 +255,11 @@ func (l *Layout) attachSide(v *Item) int {
 		if e.Back {
 			continue
 		}
+		// An element that takes incoming wires only at its top keeps both sides
+		// free of them, wherever the source is.
+		if e.Dst == v.ID && geometryOf(v.Type).EntryTopOnly {
+			continue
+		}
 		oid := e.Src
 		if e.Src == v.ID {
 			oid = e.Dst

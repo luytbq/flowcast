@@ -7,10 +7,10 @@ $ ["build", "$T/in.md"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 8 elements, 2 edges, 868x334px)
+build: wrote $T/in.drawio (1 lanes, 8 elements, 2 edges, 820x334px)
 WARNING layout: D5: no free cell next to A-2, placed farther away
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-05fe2ffef7443bd3  in.drawio
+ddd6b6f3027df0ce  in.drawio
 35343a86e51217d3  in.md

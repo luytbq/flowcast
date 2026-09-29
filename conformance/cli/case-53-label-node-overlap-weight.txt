@@ -9,11 +9,11 @@ check: read table from markdown
 WARNING line 14 [A-5]: task has no outgoing edge
 check: 0 errors, 1 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 5 elements, 4 edges, 338x371px)
+build: wrote $T/in.drawio (1 lanes, 5 elements, 4 edges, 323x371px)
 WARNING layout: E3: label "return result with error detail" could not find a completely free spot
 WARNING layout: label E3 overlaps wire E5
 layout: 0 errors, 1 warnings
 [exit 0]
 --- files
-872b5454ba11e8ac  in.drawio
+0d7cd8abb91b2f0f  in.drawio
 7394cfe9d21bade1  in.md

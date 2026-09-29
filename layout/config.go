@@ -70,7 +70,7 @@ var fields = []Field{
 	{"pool-header", "pool header thickness", 30, 0, 500, func(c *Config) *int { return &c.PoolHeader }},
 	{"min-lane-w", "minimum thickness of a lane", 120, 20, 4000, func(c *Config) *int { return &c.MinLaneW }},
 	{"label-pad", "padding around edge label text", 4, 0, 100, func(c *Config) *int { return &c.LabelPad }},
-	{"optimize", "rounds of geometric optimization after layout; 0 turns it off", 0, 0, 100, func(c *Config) *int { return &c.Optimize }},
+	{"optimize", "rounds of geometric optimization after layout; 0 turns it off", 3, 0, 100, func(c *Config) *int { return &c.Optimize }},
 }
 
 // Fields returns the declarations of all config fields, in Config order.

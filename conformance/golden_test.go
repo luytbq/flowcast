@@ -231,10 +231,10 @@ func context(got, want string) string {
 	return "\n  got    " + cut(got) + "\n  golden " + cut(want)
 }
 
-// optimized is the options with the geometric optimizer on.
-func optimized() flowcast.Options {
+// withOptimize is the options with the geometric optimizer set to n rounds.
+func withOptimize(n int) flowcast.Options {
 	cfg := layout.DefaultConfig()
-	cfg.Optimize = 10
+	cfg.Optimize = n
 	return flowcast.Options{Config: &cfg}
 }
 
@@ -246,61 +246,37 @@ func bends(r *layout.Result) int {
 	return n
 }
 
-// TestOptimizeKeepsInvariants: with the optimizer on, every valid case still
-// passes the self-check, never gains a bend, and survives a merge of its
-// unedited file unchanged. That the output is a fixed point of the optimizer is
-// tested in the layout package, which owns the optimizer.
+// TestOptimizeKeepsInvariants: at the default number of rounds and at many
+// more, every valid case still passes the self-check, has no more bends than
+// with the optimizer off, and survives a merge of its unedited file unchanged.
+// That the output is a fixed point of the optimizer is tested in the layout
+// package, which owns the optimizer.
 func TestOptimizeKeepsInvariants(t *testing.T) {
-	opt := optimized()
 	for _, p := range casePaths(t) {
 		name := filepath.Base(p)
-		plain, ok := buildValid(t, p, flowcast.Options{})
+		off, ok := buildValid(t, p, withOptimize(0))
 		if !ok {
 			continue
 		}
-		r, _ := buildValid(t, p, opt)
-		for _, f := range r.Findings {
-			if f.Level == "error" {
-				t.Errorf("%s: self-check error after optimize: %s", name, f.Msg)
-			}
-		}
-		if bends(r.Layout) > bends(plain.Layout) {
-			t.Errorf("%s: optimize added bends: %d > %d", name, bends(r.Layout), bends(plain.Layout))
-		}
-		old, err := merge.Read([]byte(r.Text), "old.drawio")
-		if err != nil {
-			t.Fatal(err)
-		}
-		mo := opt
-		mo.Previous = old
-		if merged, _ := buildValid(t, p, mo); merged.Text != r.Text {
-			t.Errorf("%s: merge on the unedited optimized file changed it", name)
-		}
-	}
-}
-
-// TestOptimizeMatchesGolden pins the optimizer's output for every case it
-// changes, in golden/optimize/. Cases it leaves alone have no golden there.
-func TestOptimizeMatchesGolden(t *testing.T) {
-	for _, p := range casePaths(t) {
-		plain, ok := buildValid(t, p, flowcast.Options{})
-		if !ok {
-			continue
-		}
-		r, _ := buildValid(t, p, optimized())
-		set := filepath.Base(filepath.Dir(p))
-		name := strings.TrimSuffix(filepath.Base(p), filepath.Ext(p))
-		golden := filepath.Join(Dir(), "golden", "optimize", set+"-"+name+".drawio")
-		if r.Text == plain.Text {
-			if _, err := os.Stat(golden); err == nil {
-				if *update {
-					os.Remove(golden)
-				} else {
-					t.Errorf("%s: optimize no longer changes this case but a golden remains", name)
+		for _, opt := range []flowcast.Options{{}, withOptimize(10)} {
+			r, _ := buildValid(t, p, opt)
+			for _, f := range r.Findings {
+				if f.Level == "error" {
+					t.Errorf("%s: self-check error after optimize: %s", name, f.Msg)
 				}
 			}
-			continue
+			if bends(r.Layout) > bends(off.Layout) {
+				t.Errorf("%s: optimize added bends: %d > %d", name, bends(r.Layout), bends(off.Layout))
+			}
+			old, err := merge.Read([]byte(r.Text), "old.drawio")
+			if err != nil {
+				t.Fatal(err)
+			}
+			mo := opt
+			mo.Previous = old
+			if merged, _ := buildValid(t, p, mo); merged.Text != r.Text {
+				t.Errorf("%s: merge on the unedited optimized file changed it", name)
+			}
 		}
-		checkGolden(t, golden, r.Text)
 	}
 }

@@ -3,9 +3,9 @@ $ ["build", "--attach-gap", "60", "$T/in.md"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 4 elements, 2 edges, 508x324px)
+build: wrote $T/in.drawio (1 lanes, 4 elements, 2 edges, 484x324px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-cce02cf975a062b2  in.drawio
+8071b2637e38f263  in.drawio
 d6f9c137c1705d5b  in.md

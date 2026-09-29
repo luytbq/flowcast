@@ -24,7 +24,7 @@ render: skipping render check in merge mode (wires are kept from the file or rou
 png: $T/flow.png
 [exit 0]
 --- files
-4d9fc506b8172f1d  flow.drawio
+6b9f770225355cda  flow.drawio
 0f78cbf65f3daefd  flow.drawio.bak
 9602e0fb9bb828a5  flow.md
 32dc4544cbadce07  flow.png

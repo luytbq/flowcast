@@ -26,7 +26,7 @@ The phases in order:
 4. Geometry: convert the grid to pixels, build polylines.
 5. Repeat phase 4 once, after learning how much extra room labels need.
 6. Place labels.
-7. Optimize the finished geometry, when --optimize is above 0.
+7. Optimize the finished geometry, for --optimize rounds (3 by default, 0 turns it off).
 8. Geometry self-check.
 9. Axis swap according to the direction.
 

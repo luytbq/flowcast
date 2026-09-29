@@ -3,14 +3,14 @@ $ ["build", "$T/in.md"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 282.26x334px)
+build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 276.26x334px)
 layout: 0 errors, 0 warnings
 [exit 0]
 $ ["build", "$T/in.md", "--mode", "merge"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode merge, keep manual edits
-build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 282.26x334px)
+build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 276.26x334px)
 build: backup of the old file $T/in.drawio.bak
 merge: kept position (4): A-1, A-2, A-3, A-4
 merge: new element (0): -
@@ -31,7 +31,7 @@ $ ["build", "$T/in.md", "--mode", "merge"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode merge, keep manual edits
-build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 282.26x334px)
+build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 276.26x334px)
 build: backup of the old file $T/in.drawio.bak
 merge: kept position (4): A-1, A-2, A-3, A-4
 merge: new element (0): -
@@ -49,6 +49,6 @@ merge: overlapping elements (0): -
 layout: merge does not self-check wires and labels; see the list above and the PNG image
 [exit 0]
 --- files
-80c76f35b7e31949  in.drawio
-80c76f35b7e31949  in.drawio.bak
+6efaa5711fa012a4  in.drawio
+6efaa5711fa012a4  in.drawio.bak
 5b87df5db0eb01a0  in.md

@@ -14,7 +14,7 @@
           <mxGeometry x="130.43" y="30" width="332" height="249" as="geometry" />
         </mxCell>
         <mxCell id="A-1" value="A-1 x" vertex="1" parent="A" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="25.21" y="68" width="80" height="44" as="geometry" />
+          <mxGeometry x="35.42" y="68" width="80" height="44" as="geometry" />
         </mxCell>
         <mxCell id="B-2" value="B-2 x" vertex="1" parent="B" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="24" y="65" width="120" height="50" as="geometry" />
@@ -29,12 +29,12 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="E2" value="No" edge="1" parent="pool" source="A-1" target="B-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.86">
+          <mxGeometry relative="1" as="geometry" x="-0.85">
             <Array as="points">
-              <mxPoint x="65.21" y="187" />
+              <mxPoint x="75.42" y="187" />
               <mxPoint x="214.43" y="187" />
             </Array>
-            <mxPoint x="17.13" y="0" as="offset" />
+            <mxPoint x="6.92" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="E3" value="ok" edge="1" parent="pool" source="B-2" target="B-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">

@@ -3,7 +3,7 @@ $ ["build", "$T/flow.md", "--mode", "merge"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode merge, keep manual edits
-build: wrote $T/flow.drawio (1 lanes, 5 elements, 2 edges, 520x544px)
+build: wrote $T/flow.drawio (1 lanes, 5 elements, 2 edges, 614x468px)
 build: backup of the old file $T/flow.drawio.bak
 merge: kept position (4): A-2, A-2.0, A-3, A-4
 merge: new element (1): A-1
@@ -13,7 +13,7 @@ merge: edge kept waypoints (1): E2
 merge: edge left to draw.io routing, needs manual edits (1): E1
 merge: edge manually edited, label moved to midpoint (0): -
 merge: removed, no longer in table (0): -
-merge: lane widened (1): A +8px
+merge: lane widened (1): A +102px
 merge: freehand cell kept (1): A-1
 merge: freehand cell dropped (parent removed) (0): -
 merge: freehand cell lost endpoint (0): -
@@ -21,6 +21,6 @@ merge: overlapping elements (0): -
 layout: merge does not self-check wires and labels; see the list above and the PNG image
 [exit 0]
 --- files
-d41c063f65d65a33  flow.drawio
+63f3fbd9be96c7a9  flow.drawio
 8fd16ab1c312f07d  flow.drawio.bak
 c1cd2a8c0c01d7af  flow.md

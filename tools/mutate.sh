@@ -192,6 +192,7 @@ mutate "skip sides that already have a horizontal arrow" layout/branch.go "onlyL
 mutate "mergeCol picks the farthest branching node" layout/branch.go 'if best == nil || it.Row > best.Row' 'if best == nil || it.Row < best.Row'
 mutate "mergeCol disabled" layout/place.go 'if mc, ok := l.mergeCol(same, v); ok && (' 'if mc, ok := l.mergeCol(same, v); false && ok && ('
 mutate "attachSide defaults to left" layout/branch.go 'if !right {' 'if right {'
+mutate "top-entry element counts incoming wires as using a side" layout/branch.go '		if e.Dst == v.ID && geometryOf(v.Type).EntryTopOnly {' '		if false {'
 mutate "condition needs three side branches to keep both sides" layout/place.go 'l.sideBranches(v) >= 2' 'l.sideBranches(v) >= 3'
 mutate "horizontal arrows disabled" layout/place.go 'if len(preds) == 1 && l.nonBackIn(vid) == 1' 'if false && len(preds) == 1 && l.nonBackIn(vid) == 1'
 mutate "side branch drifts only one column" layout/place.go 'tries < 3' 'tries < 1'

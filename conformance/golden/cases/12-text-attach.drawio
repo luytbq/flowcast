@@ -1,14 +1,14 @@
 <mxfile host="flowtable2drawio">
   <diagram id="flowtable" name="Note attached to a node">
-    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="568" pageHeight="404" math="0" shadow="0">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="544" pageHeight="404" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="pool" value="Note attached to a node" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="40" y="40" width="488" height="324" as="geometry" />
+          <mxGeometry x="40" y="40" width="464" height="324" as="geometry" />
         </mxCell>
         <mxCell id="A" value="Lane A" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="0" y="30" width="488" height="294" as="geometry" />
+          <mxGeometry x="0" y="30" width="464" height="294" as="geometry" />
         </mxCell>
         <mxCell id="A-1" value="Enter" vertex="1" parent="A" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="52" y="60" width="80" height="44" as="geometry" />

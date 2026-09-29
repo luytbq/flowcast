@@ -88,7 +88,7 @@ the value range of each option.
 | --pool-header | 30 | Thickness of the diagram title bar |
 | --min-lane-w | 120 | Minimum thickness of a lane |
 | --label-pad | 4 | Padding around the text of a label on a wire |
-| --optimize | 0 | Rounds of geometric optimization after layout, such as removing needless bends; 0 turns it off |
+| --optimize | 3 | Rounds of geometric optimization after layout, such as removing needless bends and pulling elements closer; 0 turns it off |
 
 ### Exit codes
 

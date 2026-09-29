@@ -9,9 +9,9 @@ check: read table from csv (comma, cp1252)
 WARNING -: file is not utf-8, read as cp1252; Vietnamese text may already have been corrupted
 check: 0 errors, 1 warnings
 build: mode new
-build: wrote $T/in.drawio (2 lanes, 3 elements, 2 edges, 388.94x250px)
+build: wrote $T/in.drawio (2 lanes, 3 elements, 2 edges, 384.94x250px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
 ced7129ed9f7f814  in.csv
-3571fe6fc05ae6e2  in.drawio
+19752839f997d3a7  in.drawio

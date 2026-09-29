@@ -1,6 +1,6 @@
 <mxfile host="flowtable2drawio">
   <diagram id="flowtable" name="03-ci">
-    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="726.19" pageHeight="1154" math="0" shadow="0">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="723.19" pageHeight="1154" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -47,7 +47,7 @@
           <mxGeometry x="66" y="925" width="218" height="60" as="geometry" />
         </mxCell>
         <mxCell id="wait" value="Wait approval" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="542.19" y="1034" width="120" height="50" as="geometry" />
+          <mxGeometry x="539.19" y="1034" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="prod" value="Deploy production" vertex="1" parent="1" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="78" y="1034" width="194" height="50" as="geometry" />
@@ -124,7 +124,7 @@
             <Array as="points">
               <mxPoint x="361.19" y="955" />
               <mxPoint x="361.19" y="1022" />
-              <mxPoint x="602.19" y="1022" />
+              <mxPoint x="599.19" y="1022" />
             </Array>
             <mxPoint x="0" y="-11.5" as="offset" />
           </mxGeometry>

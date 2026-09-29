@@ -1,11 +1,11 @@
 <mxfile host="flowtable2drawio">
   <diagram id="flowtable" name="Five lanes, cross traffic">
-    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1066.97" pageHeight="349" math="0" shadow="0">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1062.97" pageHeight="349" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="pool" value="Five lanes, cross traffic" vertex="1" parent="1" style="swimlane;html=1;childLayout=stackLayout;horizontalStack=1;resizeParent=1;resizeParentMax=0;startSize=30;collapsible=0;fontStyle=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="40" y="40" width="986.97" height="269" as="geometry" />
+          <mxGeometry x="40" y="40" width="982.97" height="269" as="geometry" />
         </mxCell>
         <mxCell id="A" value="End user" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="0" y="30" width="186" height="239" as="geometry" />
@@ -14,16 +14,16 @@
           <mxGeometry x="186" y="30" width="168" height="239" as="geometry" />
         </mxCell>
         <mxCell id="C" value="Service" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="354" y="30" width="250.86" height="239" as="geometry" />
+          <mxGeometry x="354" y="30" width="248.86" height="239" as="geometry" />
         </mxCell>
         <mxCell id="D" value="Job queue" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="604.86" y="30" width="214.11" height="239" as="geometry" />
+          <mxGeometry x="602.86" y="30" width="212.11" height="239" as="geometry" />
         </mxCell>
         <mxCell id="E" value="Data store" vertex="1" parent="pool" style="swimlane;html=1;startSize=30;collapsible=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="818.97" y="30" width="168" height="239" as="geometry" />
+          <mxGeometry x="814.97" y="30" width="168" height="239" as="geometry" />
         </mxCell>
         <mxCell id="A-1" value="Send request" vertex="1" parent="A" style="ellipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="24" y="63" width="138" height="44" as="geometry" />
+          <mxGeometry x="33" y="63" width="138" height="44" as="geometry" />
         </mxCell>
         <mxCell id="B-1" value="Auth check" vertex="1" parent="B" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="24" y="60" width="120" height="50" as="geometry" />
@@ -38,7 +38,7 @@
           <mxGeometry x="24" y="60" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="A-2" value="Get results" vertex="1" parent="A" style="shape=doubleEllipse;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="28" y="159" width="130" height="50" as="geometry" />
+          <mxGeometry x="41" y="159" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="E1" value="" edge="1" parent="pool" source="A-1" target="B-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry" />
@@ -47,22 +47,22 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="E3" value="push event" edge="1" parent="pool" source="C-1" target="D-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.34">
+          <mxGeometry relative="1" as="geometry" x="-0.33">
             <mxPoint x="0" y="-11.5" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="E4" value="write" edge="1" parent="pool" source="D-1" target="E-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry relative="1" as="geometry" x="-0.47">
+          <mxGeometry relative="1" as="geometry" x="-0.46">
             <mxPoint x="0" y="-11.5" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="E5" value="confirm" edge="1" parent="pool" source="E-1" target="A-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry" x="-0.97">
             <Array as="points">
-              <mxPoint x="902.97" y="177" />
-              <mxPoint x="93" y="177" />
+              <mxPoint x="898.97" y="177" />
+              <mxPoint x="106" y="177" />
             </Array>
-            <mxPoint x="31.72" y="0" as="offset" />
+            <mxPoint x="31.71" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
       </root>

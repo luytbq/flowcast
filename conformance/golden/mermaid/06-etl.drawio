@@ -1,6 +1,6 @@
 <mxfile host="flowtable2drawio">
   <diagram id="flowtable" name="06-etl">
-    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="542.26" pageHeight="854" math="0" shadow="0">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="458" pageHeight="854" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -11,7 +11,7 @@
           <mxGeometry x="104" y="149" width="150" height="50" as="geometry" />
         </mxCell>
         <mxCell id="src" value="Sales database" vertex="1" parent="1" style="shape=cylinder3;html=1;boundedLbl=1;backgroundOutline=1;size=8;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="359.26" y="144" width="116" height="60" as="geometry" />
+          <mxGeometry x="278" y="144" width="116" height="60" as="geometry" />
         </mxCell>
         <mxCell id="clean" value="Clean the data" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="118" y="234" width="122" height="50" as="geometry" />
@@ -29,7 +29,7 @@
           <mxGeometry x="113" y="569" width="132" height="50" as="geometry" />
         </mxCell>
         <mxCell id="dwh" value="Data warehouse" vertex="1" parent="1" style="shape=cylinder3;html=1;boundedLbl=1;backgroundOutline=1;size=8;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="356.26" y="564" width="122" height="60" as="geometry" />
+          <mxGeometry x="269" y="564" width="122" height="60" as="geometry" />
         </mxCell>
         <mxCell id="report" value="Update reports" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry x="117" y="654" width="124" height="50" as="geometry" />
@@ -38,7 +38,7 @@
           <mxGeometry x="138" y="734" width="82" height="50" as="geometry" />
         </mxCell>
         <mxCell id="log" value="Log anomalies" vertex="1" parent="1" style="rounded=0;html=1;fontFamily=Verdana;fontSize=12;flowtable=1;">
-          <mxGeometry x="357.26" y="234" width="120" height="50" as="geometry" />
+          <mxGeometry x="264" y="234" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="cron--&gt;extract" value="" edge="1" parent="1" source="cron" target="extract" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=default;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Verdana;fontSize=12;flowtable=1;">
           <mxGeometry relative="1" as="geometry" />

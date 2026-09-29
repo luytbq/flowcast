@@ -7,7 +7,7 @@ WARNING line 13 [D3]: is in lane A but attaches to A-2 in lane N1; will be drawn
 WARNING line 10 [A-2]: task has no outgoing edge
 check: 0 errors, 4 warnings
 build: mode merge, keep manual edits
-build: wrote $T/flow.drawio (3 lanes, 5 elements, 1 edges, 1380x180px)
+build: wrote $T/flow.drawio (3 lanes, 5 elements, 1 edges, 1356x180px)
 build: backup of the old file $T/flow.drawio.bak
 WARNING layout: D3: no free cell next to A-2, placed farther away
 merge: kept position (1): B-1
@@ -26,6 +26,6 @@ merge: overlapping elements (0): -
 layout: merge does not self-check wires and labels; see the list above and the PNG image
 [exit 0]
 --- files
-c322b6e9fecb1eeb  flow.drawio
+4c781ddc727cc2aa  flow.drawio
 b2c3f09ba6bc933e  flow.drawio.bak
 9760047b48441e8d  flow.md

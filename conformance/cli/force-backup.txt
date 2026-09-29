@@ -3,18 +3,18 @@ $ ["build", "$T/in.md"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode new
-build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 282.26x334px)
+build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 276.26x334px)
 layout: 0 errors, 0 warnings
 [exit 0]
 $ ["build", "$T/in.md", "--mode", "force"]
 check: read table from markdown
 check: 0 errors, 0 warnings
 build: mode force, regenerate everything
-build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 282.26x334px)
+build: wrote $T/in.drawio (1 lanes, 4 elements, 3 edges, 276.26x334px)
 build: backup of the old file $T/in.drawio.bak
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-80c76f35b7e31949  in.drawio
-80c76f35b7e31949  in.drawio.bak
+6efaa5711fa012a4  in.drawio
+6efaa5711fa012a4  in.drawio.bak
 5b87df5db0eb01a0  in.md

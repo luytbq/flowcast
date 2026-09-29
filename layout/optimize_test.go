@@ -45,7 +45,9 @@ func TestOptimizeStraightensGutterDetour(t *testing.T) {
 
 func TestOptimizeOffChangesNothing(t *testing.T) {
 	r := jogResult()
-	if got := optimize(r, DefaultConfig(), nil); !reflect.DeepEqual(got, r) {
+	cfg := DefaultConfig()
+	cfg.Optimize = 0
+	if got := optimize(r, cfg, nil); !reflect.DeepEqual(got, r) {
 		t.Errorf("optimize = 0 still changed the result")
 	}
 }

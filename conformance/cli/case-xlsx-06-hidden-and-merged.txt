@@ -11,9 +11,9 @@ WARNING Flow row 5: row is hidden but is still read
 WARNING Flow!D6:E6: merged cell: only the top-left cell keeps its value
 check: 0 errors, 2 warnings
 build: mode new
-build: wrote $T/in.drawio (2 lanes, 3 elements, 2 edges, 390.16x250px)
+build: wrote $T/in.drawio (2 lanes, 3 elements, 2 edges, 386.16x250px)
 layout: 0 errors, 0 warnings
 [exit 0]
 --- files
-67f7541b8a77ac87  in.drawio
+3ceb6bba1f9c6d5b  in.drawio
 b8bbb1a890560f16  in.xlsx
